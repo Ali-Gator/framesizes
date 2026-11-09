@@ -17,6 +17,7 @@ Work is an OpenSpec change under `openspec/changes/t<N>-<slug>/` (`T<N>` = its T
 - A capability touched for the first time uses `## ADDED Requirements`, never `MODIFIED`.
 - Archiving a brand-new capability keeps only its Purpose and Requirements. Re-add Public Interface, Behavior and Edge Cases to `openspec/specs/<capability>/spec.md` after archive.
 - Add the capability's row to `openspec/specs/README.md` at archive, not before: until the permanent spec exists, the row blocks every edit to its paths. Leave exempt files (below) out of rows; the hook never gates them.
+- **After every `/opsx:archive` of a `t<N>` change, update the Tracker** (the Tracker doc in "Workflow config", with the docs tools): set row `T<N>`'s Status (`Done` when the change completes the task, otherwise `In progress`) and add one line at the top of the Log table: today's date, `Claude Code`, what the change shipped. A `backlog-<n>` change skips this. No docs tools: print the status and log line for the user to paste. This step lives here, not in the generated OpenSpec skills, so `openspec update` never drops it.
 - A change touching only exempt paths (below) sets `skip_specs: true` in its `.openspec.yaml` instead of inventing a requirement.
 - `openspec validate --changes` runs in CI, not in the pre-commit hook: a half-planned change stays committable.
 

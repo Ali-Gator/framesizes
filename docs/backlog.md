@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-1**
+_Next id:_ **BL-2**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -24,6 +24,14 @@ into separate items rather than letting one grow into a paragraph.
 Tracker, not here. This file holds what no change owns yet: phase-review findings left unfixed,
 and defects or gaps found along the way that are worth fixing later. CLAUDE.md ("Backlog") says
 when to add and when to fold items in.
+
+## Tooling
+
+- **[BL-1] Drop the TypeScript 6 alias** — `typescript` is aliased to `@typescript/typescript6` only because
+  typescript-eslint lacks TS 7 support; once it ships, depend on plain `typescript@^7` and remove
+  `@typescript/native`, so `tsc`, Next.js and eslint use one compiler.
+  _Refs:_ `package.json`, https://github.com/typescript-eslint/typescript-eslint/issues/10940 · _Status:_ deferred — a
+  typescript-eslint release that supports TS 7.1
 
 ## Site
 
