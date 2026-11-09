@@ -418,7 +418,7 @@ record what it shipped.
 Archiving a `t<N>` change SHALL set its Tracker row's status and add one line to the Tracker
 log. Archiving a `backlog-<n>` change SHALL NOT touch the Tracker.
 
-**Unenforced:** the Tracker is a doc outside the repository; the archive skill carries the step and the phase review checks it.
+**Unenforced:** the Tracker is a doc outside the repository; CLAUDE.md carries the step (outside the generated OpenSpec skills, so `openspec update` keeps it) and the phase review checks it.
 
 #### Scenario: A change is archived
 

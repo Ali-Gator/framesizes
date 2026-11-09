@@ -179,12 +179,6 @@ In both branches, never create the root as a side effect: do not run `openspec i
    mv "<changeRoot>" "<planningHome.changesDir>/archive/<target-name>"
    ```
 
-   **Project: finish new capabilities and update the Tracker** (after the move succeeds)
-
-   - For each capability this change created, re-add the sections archive drops (Public Interface, Behavior, Edge Cases) to `openspec/specs/<capability>/spec.md`, and add its row to `openspec/specs/README.md` if it owns source paths.
-   - A `backlog-<n>` change has no Tracker row: skip the next bullet entirely.
-   - The change name starts with its Tracker ID (`t4-analysis-core` → `T4`; see `openspec/specs/spec-workflow/spec.md#requirement-a-change-is-tied-to-its-tracker-row`). Open the Tracker doc named in CLAUDE.md "Workflow config" with the docs tools: set row `T<N>`'s Status (`Done` when the change completes the task, otherwise `In progress`) and add one line at the top of the Log table: today's date, `Claude Code`, what the change shipped. If the docs tools are unavailable, print the exact status and log line for the user to paste.
-
 6. **Display summary**
 
    Show archive completion summary including:
