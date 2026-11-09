@@ -1,0 +1,20 @@
+schema: spec-driven
+
+context: |
+  Product: Frame Sizes (framesizes.app), a widget site for "real sizes of things on a
+  wall". One page = one search intent = one interactive widget on a shared size engine.
+  Audience: US English, mostly mobile, arriving from Google search. Anchor page F1
+  "frame size chart" (/); hubs Frames, Posters, Photo & print, Canvas, Print quality,
+  Gallery wall live in folders. Money: display ads + affiliate blocks, Pro later.
+  Research and site map:
+  https://claude.ai/artifact/3mBdEjuPsrJZsootpaHH18
+  Tracker: see CLAUDE.md "Workflow config".
+
+  Stack: pnpm workspace, Node 22. apps/web is Next.js 16 App Router, React 19,
+  TypeScript strict, Tailwind v4, statically rendered, deployed on Vercel (Root
+  Directory apps/web). Shared pure-TypeScript packages go under packages/.
+  Vitest, Playwright.
+
+  Governance: openspec/specs/constitution/spec.md. A change name starts with its
+  Tracker ID, e.g. t1-frame-chart; a batch of backlog fixes is backlog-<n>
+  and has no Tracker row.
