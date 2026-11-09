@@ -54,7 +54,7 @@ Do these without being asked, in every phase:
 
 Read by the global `backlog-batch`, `backlog-fix` and `phase-review` skills (`~/.claude/skills/`).
 
-- **Tracker:** https://claude.ai/artifact/TRACKER_PENDING (Claude Doc, Tracker tab; edit with the docs tools)
+- **Tracker:** https://claude.ai/artifact/StxPSLNos2SZYKWXUK4ueP (Claude Doc: Tracker table + Log; edit with the docs tools)
 - **Gate commands:** `pnpm fix`, then `pnpm test`. Pre-push checks: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `openspec validate --all --no-interactive`.
 - **Paid scripts (never run without the user's yes):** none yet. Anything that calls a paid API (AI, email, image generation) goes here when added.
 - **Design source:** none yet. Lane-C designs are drawn as a canvas artifact the user approves; record its link here once it exists.
