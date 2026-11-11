@@ -54,11 +54,11 @@ Starts after `t1-site-shell` is merged. Order inside every group: tests first (e
 
 ## 8. Whole-page checks and hand-over
 
-- [ ] 8.1 Extend the axe test to the three widget states at both viewports; verify no violations, fixing the page (not the test) on any.
-- [ ] 8.2 Run `pnpm fix`, then `pnpm test`; verify both are green and `pnpm build` still reports `/` as static.
-- [ ] 8.3 Walk all 16 checks of the guide's pre-publish checklist on the built HTML of `/`; record the result per check in the PR description and log anything open as a `BL-nn` item.
-- [ ] 8.4 Delete the closed items from `docs/home-page-design.md`; delete the file and its mention in CLAUDE.md's "Design source" when nothing is left; verify no open item is dropped silently (each is closed, in the backlog, or named in the PR).
-- [ ] 8.5 Log deliberate gaps as backlog items (for example: the table on a 360px phone, widget analytics events, the 18-card related block on a phone once pages go live); verify `_Next id:_` is bumped.
+- [x] 8.1 Extend the axe test to the three widget states at both viewports; verify no violations, fixing the page (not the test) on any.
+- [x] 8.2 Run `pnpm fix`, then `pnpm test`; verify both are green and `pnpm build` still reports `/` as static.
+- [x] 8.3 Walk all 16 checks of the guide's pre-publish checklist on the built HTML of `/`; record the result per check in the PR description and log anything open as a `BL-nn` item.
+- [x] 8.4 Delete the closed items from `docs/home-page-design.md`; delete the file and its mention in CLAUDE.md's "Design source" when nothing is left; verify no open item is dropped silently (each is closed, in the backlog, or named in the PR).
+- [x] 8.5 Log deliberate gaps as backlog items (for example: the table on a 360px phone, widget analytics events, the 18-card related block on a phone once pages go live); verify `_Next id:_` is bumped.
 
 ## Workflow follow-up
 
