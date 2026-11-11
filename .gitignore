@@ -1,5 +1,6 @@
 node_modules/
 .next/
+.next-analytics/
 out/
 build/
 coverage/

@@ -1,19 +1,63 @@
-# Spec Delta
+# site-shell Specification
 
 ## Purpose
 
 The frame every page renders in: header, hub navigation, footer and the 404 page, plus the things a visitor carries from page to page (the in/cm preference, the theme, the fonts) and how visits are measured.
 
-## ADDED Requirements
+## Public Interface
+
+```typescript
+// apps/web/src/components/site/
+function SiteHeader(props: { hubs: HubLink[] }): JSX.Element; // server component
+function HubNav(props: { links: HubLink[] }): JSX.Element; // client: menu button + hub links
+function SiteFooter(props: { groups: FooterGroup[] }): JSX.Element;
+function UnitToggle(): JSX.Element; // client: in/cm SegmentedControl
+const HOME_LINK_NAME = "framesizes.app home";
+
+// apps/web/src/lib/unit.ts
+type Unit = "in" | "cm";
+function useUnit(): Unit; // "in" on the server and for a first visit
+function setUnit(unit: Unit): void;
+
+// apps/web/src/components/ui/segmented-control.tsx
+function SegmentedControl<T extends string>(props: {
+  options: readonly { value: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
+  label: string;
+  size?: "md" | "sm";
+}): JSX.Element;
+```
+
+`apps/web/src/instrumentation-client.ts` starts PostHog when `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` is set; `apps/web/next.config.ts` proxies `/ingest/*` to PostHog EU Cloud.
+
+## Behavior
+
+The root layout renders `SiteHeader`, `main` and `SiteFooter` around every page, the 404 page included. Header hub links and footer groups come from the site map (`seo-base`): `navHubs()` and `footerGroups()`. `HubNav` marks the hub whose live pages include the current path. Below 600px the link list is hidden until the menu button opens it; choosing a hub or pressing Escape closes it.
+
+The unit is kept in `localStorage` under the key `unit` and read through `useSyncExternalStore`, so the server HTML and hydration use "in" and the stored choice follows. A choice made while storage throws lives in memory for the page view. A `storage` event from another tab replaces it.
+
+Colours, radii, shadows and type styles come from the design system's light tokens in `globals.css`; fonts load through `next/font/google` and are served from the site's origin.
+
+PostHog runs with `cookieless_mode: "always"`, autocapture and session replay off, and `api_host: "/ingest"`. Web Vitals capture is a PostHog project setting.
+
+## Edge Cases
+
+- One live hub: no hub links and no menu button in the header; the footer still links every live page.
+- Storage blocked or throwing: the toggle still switches and nothing is logged.
+- No analytics token (CI, tests): PostHog never starts and no `/ingest` request is made.
+- System colour scheme dark: the page stays light (`color-scheme: light`).
+
+## Requirements
 
 ### Requirement: Every page renders inside one shell
 
-Every page, including the 404 page, SHALL render a header with a link to the home page, exactly one `main` region and a footer. The header's home link SHALL have the accessible name "Frame Sizes home".
+Every page, including the 404 page, SHALL render a header with a link to the home page, exactly one `main` region and a footer. The header's home link SHALL have the accessible name "framesizes.app home", which contains the wordmark the link shows, so a voice user can name it by what they see (WCAG 2.5.3).
 
 #### Scenario: The home page is opened
 
 - **WHEN** a visitor opens `/`
-- **THEN** the page has one banner containing a link named "Frame Sizes home" that points to `/`, one `main` region and one footer
+- **THEN** the page has one banner containing a link named "framesizes.app home" that points to `/`, one `main` region and one footer
 
 ### Requirement: The header lists the live hubs
 

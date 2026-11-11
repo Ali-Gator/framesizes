@@ -1,1 +1,167 @@
 @import "tailwindcss";
+
+/*
+ * Design tokens, light theme only (design system `tokens.css`, version 1794338676-9717).
+ * {@link openspec/specs/site-shell/spec.md#requirement-the-site-ships-in-the-light-theme-only}
+ */
+:root {
+  color-scheme: light;
+  --wall: #f3f4ef;
+  --paper: #ffffff;
+  --stage: #e7e9e2;
+  --line: #dcdfd8;
+  --line-strong: #868d85;
+  --ink: #14181c;
+  --ink-muted: #565d64;
+  --action: #14181c;
+  --on-action: #ffffff;
+  --tape: #ffc21a;
+  --on-tape: #14181c;
+  --tape-soft: #fff0c2;
+  --tape-ink: #7a5400;
+  --focus: #14181c;
+  --good: #0b6e80;
+  --good-soft: #ddf1f4;
+  --fair: #8a5a00;
+  --fair-soft: #fcefd2;
+  --poor: #a93a0b;
+  --poor-soft: #fce6da;
+  --oak: #9c6835;
+  --furniture: #7e847c;
+}
+
+/* Colours and fonts point at runtime variables; `--font-schibsted` / `--font-plex-mono` come from next/font in layout.tsx. */
+@theme inline {
+  --color-wall: var(--wall);
+  --color-paper: var(--paper);
+  --color-stage: var(--stage);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-action: var(--action);
+  --color-on-action: var(--on-action);
+  --color-tape: var(--tape);
+  --color-on-tape: var(--on-tape);
+  --color-tape-soft: var(--tape-soft);
+  --color-tape-ink: var(--tape-ink);
+  --color-focus: var(--focus);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-fair: var(--fair);
+  --color-fair-soft: var(--fair-soft);
+  --color-poor: var(--poor);
+  --color-poor-soft: var(--poor-soft);
+  --color-oak: var(--oak);
+  --color-furniture: var(--furniture);
+  --font-sans:
+    var(--font-schibsted), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* Fixed values. Spacing is Tailwind's default 4px scale, which equals the design system's steps. */
+@theme {
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(20, 24, 28, 0.06), 0 8px 24px rgba(20, 24, 28, 0.06);
+  --shadow-frame: 0 6px 14px rgba(20, 24, 28, 0.18);
+  --spacing-control-md: 44px;
+  --spacing-control-lg: 52px;
+  --container-content: 1120px;
+  --container-prose: 680px;
+}
+
+/* Type styles from tokens.css. */
+@utility display-xl {
+  font-family: var(--font-sans);
+  font-size: 56px;
+  line-height: 58px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+@utility display {
+  font-family: var(--font-sans);
+  font-size: 40px;
+  line-height: 44px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+@utility h2 {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+@utility h3 {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+@utility body-lg {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+}
+@utility body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+@utility small {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+@utility label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+@utility measure-xl {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+@utility measure {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+@layer base {
+  body {
+    background: var(--wall);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+    }
+  }
+}

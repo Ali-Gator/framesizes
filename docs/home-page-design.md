@@ -7,7 +7,7 @@ published. Delete an item in the PR that ships its fix; delete the file when it 
 - **Canvas (approved):** https://claude.ai/artifact/FA2okr9myNhQiZsaGdeuMD (boards: desktop 1280, phone 390)
 - **Design system:** https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5 (version `1794338676-9717`)
 - **On-page SEO guide:** https://claude.ai/artifact/KbaLF8WnJ2jRWc55r5yfcx (row F1, pre-publish checklist)
-- **Owners:** Tracker row T1 (site shell and SEO base) and T2 (size engine and frame size chart).
+- **Owner:** Tracker row T2 (size engine and frame size chart); T1 shipped the shell and SEO base.
   Take the items into the tasks of the change that owns them.
 
 ## Decided by the design
@@ -56,40 +56,30 @@ All numbers on the canvas are typed by hand. The size engine must own them.
 - [ ] **Sticky preview and filters.** Never seen working: the canvas does not scroll. Test in the
       real page. On a phone the sticky preview takes about 40% of the screen; check it on a device
       and shrink or unstick it if the table gets too little room.
-- [ ] **Widget state in the URL.** The design keeps size, unit, orientation, view and reference in
-      memory. The guide wants them as query parameters on one URL with a clean canonical. Decide
-      whether the unit choice is remembered between pages.
+- [ ] **Widget state in the URL.** The design keeps size, orientation, view and reference in
+      memory. The guide wants them as query parameters on one URL with a clean canonical. (The unit
+      is a site-wide preference from T1, never in the URL: `apps/web/src/lib/unit.ts`.)
 - [ ] **Orientation switch.** Going to or from Square resets the selection (12x12 / 16x20).
       Decide the real rule.
 - [ ] **Table rows as controls.** Rows are focusable `tr` elements with `aria-selected`. Review the
       pattern for screen readers before building it (a radio group or a button per row).
 - [ ] **Server-rendered default state.** The table, the default preview (16x20, sofa) and the
       questions must be in the server HTML, and the widget must reserve its height (CLS).
-- [ ] **Dark theme.** The page was designed in light only. `tokens.css` has a dark theme; either
-      check the page in it or ship light only.
-- [ ] **Links to pages that do not exist yet.** Every link is a `#/path` stub. The related block,
-      the footer, the in-text links and "See it on my wall" point at 18 pages that ship later.
-      Show a link only when its page is live.
-
-## Open: shell (T1)
-
-- [ ] **Menu button.** The design toggles it with React state. Build it so the links are in the
-      server HTML and it opens without JavaScript (`<details>`), or as one small client component.
-      At 320px the button wraps to a second row: accept or fix.
-- [ ] **Header and footer links.** Same rule as above: only live pages.
-- [ ] **Tokens and fonts.** Copy the tokens into `globals.css`, load the fonts with `next/font`
-      (design system README, "Using it in the codebase").
+- [ ] **Links to pages that do not exist yet.** The related block, the in-text links and "See it
+      on my wall" point at 18 pages that ship later. Use `PageLink` and `livePages()` from T1 so a
+      link shows only when its page is live (header and footer already do).
 - [ ] **Text rules.** `8x10` with a letter x in headings and sentences, `8 × 10 in` in tables and
       drawings; Title Case for the `h1` only.
+- [ ] **Social image.** T1's card shows the `h1` and the mark. Add the size diagram and rewrite
+      the alt by the guide's size-chart formula (`apps/web/src/app/opengraph-image.tsx`).
 
-## Open: SEO (T1 base, T2 page)
+## Open: SEO (T2 page)
 
-The design covers only what a visitor sees. From the guide's F1 row and checklist:
+The design covers only what a visitor sees. From the guide's F1 row and checklist (T1 shipped the
+head tags, JSON-LD, `robots.txt`, `sitemap.xml` and the 404):
 
-- [ ] Title "Standard Picture Frame Sizes Chart (Inches & cm)" (absolute, no suffix), description,
-      canonical, the nine Open Graph tags with the page's own image.
-- [ ] JSON-LD `WebSite` and `Organization`. No `FAQPage`.
-- [ ] `robots.ts`, `sitemap.ts`, a real 404.
+- [ ] Every number in the meta description appears on the page (checklist 6): "4x6" and "24x36"
+      are not on the placeholder page yet.
 - [ ] Each question is an `h3` (the design system's FAQ renders a bare `summary`).
 - [ ] Alts for the six-sizes drawing and the frame anatomy drawing, by the guide's formulas, no
       two alike. The widget's alts already follow the guide.

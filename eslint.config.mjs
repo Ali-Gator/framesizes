@@ -6,7 +6,14 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["**/.next/", "**/node_modules/", ".claude/", "playwright-report/", "test-results/"],
+    ignores: [
+      "**/.next/",
+      "**/.next-analytics/",
+      "**/node_modules/",
+      ".claude/",
+      "playwright-report/",
+      "test-results/",
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
