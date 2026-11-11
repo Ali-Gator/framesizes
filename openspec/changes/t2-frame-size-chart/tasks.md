@@ -24,18 +24,18 @@ Starts after `t1-site-shell` is merged. Order inside every group: tests first (e
 
 ## 4. Widgets (`apps/web/src/components/ui/`)
 
-- [ ] 4.1 Port `WidgetCard`, `Button` and `ToolCard`; verify with a markup test that the card title is an `h2` and a `Button` with `href` renders an `a`.
-- [ ] 4.2 Write the markup test for `SizeTable` (caption, `th scope="row"`, one radio per row in one group, the checked row, `hidden` rows), then implement it with the row styling of design decision 8; verify the test passes.
-- [ ] 4.3 Write the markup test for `ScalePreview` (accessible name for sofa / person / door, dimension labels in both units, the ghost and its legend, no ghost when none is passed), then port it on top of `wallScene`; verify the test passes and compare the default drawing with the design system's preview by eye.
-- [ ] 4.4 Write the markup test for `SizeCompare` (accessible name, the selected outline, one label per `major` size, no overlapping labels for the catalog's lists), then port it; verify the test passes.
-- [ ] 4.5 Port `FAQ` with the question as an `h3` inside `summary`; verify with a markup test that only the first `details` is open.
+- [x] 4.1 Port `WidgetCard`, `Button` and `ToolCard`; verify with a markup test that the card title is an `h2` and a `Button` with `href` renders an `a`.
+- [x] 4.2 Write the markup test for `SizeTable` (caption, `th scope="row"`, one radio per row in one group, the checked row, `hidden` rows), then implement it with the row styling of design decision 8; verify the test passes.
+- [x] 4.3 Write the markup test for `ScalePreview` (accessible name for sofa / person / door, dimension labels in both units, the ghost and its legend, no ghost when none is passed), then port it on top of `wallScene`; verify the test passes and compare the default drawing with the design system's preview by eye.
+- [x] 4.4 Write the markup test for `SizeCompare` (accessible name, the selected outline, one label per `major` size, no overlapping labels for the catalog's lists), then port it; verify the test passes.
+- [x] 4.5 Port `FAQ` with the question as an `h3` inside `summary`; verify with a markup test that only the first `details` is open.
 
 ## 5. The chart widget
 
-- [ ] 5.1 Write `state.test.ts` for `parseChartState` / `chartSearch` (defaults, `size=10x8&view=all`, unknown values, default values left out, fixed parameter order), then implement `components/frame-chart/state.ts`; verify the tests pass.
-- [ ] 5.2 Implement `apps/web/src/lib/url-state.ts` (design decision 7); verify with a jsdom test that a `replaceState` write reaches a subscriber and that the server snapshot is the empty string.
-- [ ] 5.3 Write `e2e/frame-chart.spec.ts`: default state in the raw HTML, click and keyboard selection, orientation rules, wall view (reference, next size up, largest size), all-sizes view (name, outline click, hidden "Next to"), unit switch, the four URL scenarios; verify they fail.
-- [ ] 5.4 Implement `components/frame-chart/frame-chart.tsx` and render it in `page.tsx` in place of the placeholder line; verify 5.3 passes against the production build.
+- [x] 5.1 Write `state.test.ts` for `parseChartState` / `chartSearch` (defaults, `size=10x8&view=all`, unknown values, default values left out, fixed parameter order), then implement `components/frame-chart/state.ts`; verify the tests pass.
+- [x] 5.2 Implement `apps/web/src/lib/url-state.ts` (design decision 7); verify with a jsdom test that a `replaceState` write reaches a subscriber and that the server snapshot is the empty string.
+- [x] 5.3 Write `e2e/frame-chart.spec.ts`: default state in the raw HTML, click and keyboard selection, orientation rules, wall view (reference, next size up, largest size), all-sizes view (name, outline click, hidden "Next to"), unit switch, the four URL scenarios; verify they fail.
+- [x] 5.4 Implement `components/frame-chart/frame-chart.tsx` and render it in `page.tsx` in place of the placeholder line; verify 5.3 passes against the production build.
 
 ## 6. Page content
 

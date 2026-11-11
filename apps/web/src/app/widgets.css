@@ -320,8 +320,9 @@
   font-size: 14px;
   line-height: 20px;
 }
+/* Fixed widths fit the longest size in either unit ("68.6 × 101.6 cm"), so a unit switch moves nothing. */
 .fs-table col.fs-col-num {
-  width: 9.5rem;
+  width: 146px;
 }
 .fs-table thead th {
   text-align: left;
@@ -331,7 +332,7 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--ink-muted);
-  padding: 12px;
+  padding: 12px 10px;
   border-bottom: 1px solid var(--line);
   background: var(--wall);
   white-space: nowrap;
@@ -340,7 +341,7 @@
 .fs-table td {
   text-align: left;
   font-weight: inherit;
-  padding: 12px;
+  padding: 12px 10px;
   border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
@@ -493,5 +494,53 @@
 @media (prefers-reduced-motion: reduce) {
   .fs-btn {
     transition: none;
+  }
+}
+
+/*
+ * Frame size chart layout. Two columns from a container width of 844px, the preview and the
+ * filter row pinned; one column below that, the preview pinned only on screens tall enough.
+ */
+.fc {
+  container-type: inline-size;
+}
+.fc-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+}
+.fc-preview {
+  flex: 1 1 300px;
+  min-width: 0;
+  background: var(--paper);
+  z-index: 2;
+}
+.fc-controls {
+  flex: 2 1 440px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.fc-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+@container (min-width: 844px) {
+  .fc-preview {
+    position: sticky;
+    top: 0;
+    padding: 12px 0;
+    margin: -12px 0;
+  }
+  .fc-filters {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--paper);
+    padding: 12px 0;
+    margin: -12px 0;
   }
 }

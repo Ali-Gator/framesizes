@@ -1,3 +1,4 @@
+import { FrameChart } from "@/components/frame-chart/frame-chart";
 import { pageMetadata, siteJsonLd } from "@/lib/seo";
 import { livePage } from "@/lib/site-map";
 
@@ -11,11 +12,11 @@ export const metadata = pageMetadata(HOME);
  */
 export default function Home() {
   return (
-    <div className="mx-auto max-w-content px-4 pt-8 md:px-8 md:pt-16">
+    <div className="page">
       <h1 className="display md:display-xl">{HOME.seo.h1}</h1>
-      <p className="mt-4 body-lg max-w-prose text-ink-muted">
-        The frame size chart is coming soon.
-      </p>
+      <div className="mt-12">
+        <FrameChart footer={null} />
+      </div>
       <script
         type="application/ld+json"
         // `<` escaped so the JSON can never close the script element.
