@@ -16,9 +16,9 @@ Order inside every group: spec delta is already written, so tests first (each ci
 
 ## 3. Site map and the live-link rule
 
-- [ ] 3.1 Write `apps/web/src/lib/__tests__/site-map.test.ts` for both scenarios of "The site map is the single record of pages" (19 pages, unique ids and paths, path shape, F1 live, limits on live pages checked against a fixture that breaks each one); verify it fails.
-- [ ] 3.2 Implement `apps/web/src/lib/site-map.ts`: the 19 pages from the guide's Per-page map (id, path, hub, name, card question and ratio from the approved canvas), `live` as a discriminant that requires `seo`, F1 live with the proposal's row and today's date as `lastModified`; helpers `page`, `livePages`, `liveHubHeads` and a `checkSiteMap` function the test calls; verify 3.1 passes.
-- [ ] 3.3 Write the `PageLink` tests (live → `a[href]`, not live → text only) with `renderToStaticMarkup`, then implement `apps/web/src/components/site/page-link.tsx`; verify the tests pass.
+- [x] 3.1 Write `apps/web/src/lib/__tests__/site-map.test.ts` for both scenarios of "The site map is the single record of pages" (19 pages, unique ids and paths, path shape, F1 live, limits on live pages checked against a fixture that breaks each one); verify it fails.
+- [x] 3.2 Implement `apps/web/src/lib/site-map.ts`: the 19 pages from the guide's Per-page map (id, path, hub, name, card question and ratio from the approved canvas), `live` as a discriminant that requires `seo`, F1 live with the proposal's row and today's date as `lastModified`; helpers `page`, `livePages`, `liveHubHeads` and a `checkSiteMap` function the test calls; verify 3.1 passes.
+- [x] 3.3 Write the `PageLink` tests (live → `a[href]`, not live → text only) with `renderToStaticMarkup`, then implement `apps/web/src/components/site/page-link.tsx`; verify the tests pass.
 
 ## 4. Head tags, structured data, robots, sitemap, social image
 
