@@ -22,12 +22,12 @@ Order inside every group: spec delta is already written, so tests first (each ci
 
 ## 4. Head tags, structured data, robots, sitemap, social image
 
-- [ ] 4.1 Read `03-api-reference/04-functions/generate-metadata.md` and `03-file-conventions/01-metadata/*.md`. Write `apps/web/src/lib/__tests__/seo.test.ts`: suffix rule (fixture page "Poster Sizes: Standard Dimensions Chart"), absolute title for F1, canonical for `/poster-sizes`, Open Graph fields, `siteJsonLd` graph, sitemap entries from a live + not-live fixture; verify it fails.
-- [ ] 4.2 Implement `apps/web/src/lib/seo.ts` (`pageMetadata`, `siteJsonLd`, `sitemapEntries`) and set the layout's `title: { default, template: "%s | Frame Sizes" }`; verify 4.1 passes.
-- [ ] 4.3 Write `e2e/seo-home.spec.ts` against the raw response of `request.get("/")` and `/?size=11x14`: title, description, one canonical without the query, no robots meta, nine social tags, one `h1` "Standard Frame Sizes", JSON-LD graph, `/robots.txt`, `/sitemap.xml`, the `og:image` URL (200, `image/png`, under 300 KB), every internal `href` answers 200; verify it fails.
-- [ ] 4.4 With the approval from 1.2, change the one assertion in `e2e/home.spec.ts` to the new `h1`. Update `apps/web/src/app/page.tsx`: `export const metadata = pageMetadata("F1")`, the `h1` from the registry, the JSON-LD script (escape `<`), and keep one placeholder line under the `h1`; verify the head and `h1` tests of 4.3 pass.
-- [ ] 4.5 Add `apps/web/src/app/robots.ts` and `sitemap.ts`; verify their 4.3 tests pass and `pnpm build` lists both as static.
-- [ ] 4.6 Commit `SchibstedGrotesk-ExtraBold.ttf` (from the Google Fonts repository, with its OFL licence file) under `apps/web/src/assets/fonts/` and add `apps/web/src/app/opengraph-image.tsx` (1200 × 630, `h1` text of at least 48px inside the centre 1080 × 566, logo mark, `alt` by the guide's formula); verify the image test of 4.3 passes and open the PNG to check it by eye.
+- [x] 4.1 Read `03-api-reference/04-functions/generate-metadata.md` and `03-file-conventions/01-metadata/*.md`. Write `apps/web/src/lib/__tests__/seo.test.ts`: suffix rule (fixture page "Poster Sizes: Standard Dimensions Chart"), absolute title for F1, canonical for `/poster-sizes`, Open Graph fields, `siteJsonLd` graph, sitemap entries from a live + not-live fixture; verify it fails.
+- [x] 4.2 Implement `apps/web/src/lib/seo.ts` (`pageMetadata`, `siteJsonLd`, `sitemapEntries`) and set the layout's `title: { default, template: "%s | Frame Sizes" }`; verify 4.1 passes.
+- [x] 4.3 Write `e2e/seo-home.spec.ts` against the raw response of `request.get("/")` and `/?size=11x14`: title, description, one canonical without the query, no robots meta, nine social tags, one `h1` "Standard Frame Sizes", JSON-LD graph, `/robots.txt`, `/sitemap.xml`, the `og:image` URL (200, `image/png`, under 300 KB), every internal `href` answers 200; verify it fails.
+- [x] 4.4 With the approval from 1.2, change the one assertion in `e2e/home.spec.ts` to the new `h1`. Update `apps/web/src/app/page.tsx`: `export const metadata = pageMetadata("F1")`, the `h1` from the registry, the JSON-LD script (escape `<`), and keep one placeholder line under the `h1`; verify the head and `h1` tests of 4.3 pass.
+- [x] 4.5 Add `apps/web/src/app/robots.ts` and `sitemap.ts`; verify their 4.3 tests pass and `pnpm build` lists both as static.
+- [x] 4.6 Commit `SchibstedGrotesk-ExtraBold.ttf` (from the Google Fonts repository, with its OFL licence file) under `apps/web/src/assets/fonts/` and add `apps/web/src/app/opengraph-image.tsx` (1200 × 630, `h1` text of at least 48px inside the centre 1080 × 566, logo mark, `alt` by the guide's formula); verify the image test of 4.3 passes and open the PNG to check it by eye.
 
 ## 5. The shell
 

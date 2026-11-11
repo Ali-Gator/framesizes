@@ -4,6 +4,7 @@ import {
   checkSiteMap,
   HUBS,
   liveHubHeads,
+  livePage,
   livePages,
   page,
   PAGES,
@@ -35,6 +36,7 @@ describe("the launch pages", () => {
 
   it("have the home page live", () => {
     expect(page("F1").live).toBe(true);
+    expect(() => livePage("P1")).toThrow(/P1/);
     expect(livePages().map((p) => p.id)).toContain("F1");
   });
 

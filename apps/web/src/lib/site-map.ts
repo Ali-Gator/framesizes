@@ -210,6 +210,13 @@ export function page(id: PageId): SitePage {
   return found;
 }
 
+/** A page that must be live, such as the page being rendered. */
+export function livePage(id: PageId): LivePage {
+  const found = page(id);
+  if (!found.live) throw new Error(`${id} is not live: it has no head values`);
+  return found;
+}
+
 export const isLive = (p: SitePage): p is LivePage => p.live;
 
 export function livePages(pages: readonly SitePage[] = PAGES): LivePage[] {
