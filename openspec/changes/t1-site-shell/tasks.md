@@ -10,9 +10,9 @@ Order inside every group: spec delta is already written, so tests first (each ci
 
 ## 2. Tokens and fonts
 
-- [ ] 2.1 Write `e2e/shell-theme.spec.ts`: light background under `colorScheme: "dark"`, body font is Schibsted Grotesk, no request to `fonts.googleapis.com` / `fonts.gstatic.com`; verify the three tests fail for the right reason.
-- [ ] 2.2 Copy the light tokens from the design system's `tokens.css` into `apps/web/src/app/globals.css` (`:root`, `color-scheme: light`), map them in `@theme inline`, add the type styles (`display-xl`, `display`, `h2`, `h3`, `body-lg`, `body`, `small`, `label`, `measure`, `measure-xl`) and the 2px `focus` ring; verify `bg-wall`, `text-ink`, `font-mono` and `rounded-lg` resolve to the token values in the browser.
-- [ ] 2.3 Read `01-getting-started/` font docs, then load `Schibsted_Grotesk` and `IBM_Plex_Mono` with `next/font/google` in `layout.tsx` and wire their variables to `--font-sans` / `--font-mono`; verify 2.1 passes.
+- [x] 2.1 Write `e2e/shell-theme.spec.ts`: light background under `colorScheme: "dark"`, body font is Schibsted Grotesk, no request to `fonts.googleapis.com` / `fonts.gstatic.com`; verify the three tests fail for the right reason.
+- [x] 2.2 Copy the light tokens from the design system's `tokens.css` into `apps/web/src/app/globals.css` (`:root`, `color-scheme: light`), map them in `@theme inline`, add the type styles (`display-xl`, `display`, `h2`, `h3`, `body-lg`, `body`, `small`, `label`, `measure`, `measure-xl`) and the 2px `focus` ring; verify `bg-wall`, `text-ink`, `font-mono` and `rounded-lg` resolve to the token values in the browser.
+- [x] 2.3 Read `01-getting-started/` font docs, then load `Schibsted_Grotesk` and `IBM_Plex_Mono` with `next/font/google` in `layout.tsx` and wire their variables to `--font-sans` / `--font-mono`; verify 2.1 passes.
 
 ## 3. Site map and the live-link rule
 
