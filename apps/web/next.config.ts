@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
     return [
       {
         // {@link openspec/specs/seo-base/spec.md#requirement-a-trailing-slash-redirects-to-the-clean-path-in-one-hop}
-        source: "/:path((?!ingest(?:/|$)).+)/",
+        // `[^/]` first: "//evil.com/" must never become a protocol-relative Location.
+        source: "/:path((?!ingest(?:/|$))[^/].*)/",
         destination: "/:path",
         permanent: true,
       },

@@ -1,6 +1,6 @@
 import type { Metadata, MetadataRoute } from "next";
 
-import { BRAND, type LivePage, livePages, PAGES, type SitePage } from "./site-map";
+import { BRAND, fullTitle, type LivePage, livePages, PAGES, type SitePage } from "./site-map";
 
 export const SITE_URL = "https://framesizes.app";
 
@@ -25,7 +25,7 @@ export function pageMetadata(target: LivePage): Metadata {
   const url = absoluteUrl(target.path);
   return {
     // A title without the brand gets the layout's "%s | Frame Sizes" template.
-    title: title.includes(BRAND) ? { absolute: title } : title,
+    title: fullTitle(title) === title ? { absolute: title } : title,
     description,
     alternates: { canonical: url },
     openGraph: { title, description, url, type: "website", siteName: BRAND, locale: "en_US" },

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { type KeyboardEvent, useRef, useState } from "react";
 
 import { MenuIcon, XIcon } from "@/components/ui/icons";
 import type { HubLink } from "@/lib/site-map";
@@ -16,15 +16,24 @@ const LIST_ID = "site-hubs";
  */
 export function HubNav({ links }: { links: HubLink[] }) {
   const [open, setOpen] = useState(false);
+  const button = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
+
+  function closeOnEscape(event: KeyboardEvent) {
+    if (event.key !== "Escape" || !open) return;
+    setOpen(false);
+    button.current?.focus();
+  }
   return (
     <>
       <button
+        ref={button}
         type="button"
         aria-label="Menu"
         aria-expanded={open}
         aria-controls={LIST_ID}
         onClick={() => setOpen(!open)}
+        onKeyDown={closeOnEscape}
         className="order-3 grid size-control-md shrink-0 cursor-pointer place-items-center rounded-pill border-[1.5px] border-line-strong text-ink hover:border-ink min-[600px]:hidden"
       >
         {open ? <XIcon /> : <MenuIcon />}
@@ -32,6 +41,7 @@ export function HubNav({ links }: { links: HubLink[] }) {
       <nav
         id={LIST_ID}
         aria-label="Hubs"
+        onKeyDown={closeOnEscape}
         className={`${open ? "flex" : "hidden"} order-4 basis-full flex-col border-t border-line min-[600px]:flex min-[600px]:flex-row min-[600px]:overflow-x-auto min-[600px]:border-t-0 min-[900px]:order-2 min-[900px]:flex-1 min-[900px]:basis-auto min-[900px]:gap-1`}
       >
         {links.map((link) => {
@@ -41,6 +51,7 @@ export function HubNav({ links }: { links: HubLink[] }) {
               key={link.href}
               href={link.href}
               aria-current={current ? "page" : undefined}
+              onClick={() => setOpen(false)}
               className={`whitespace-nowrap border-b border-line px-3 py-3 text-[17px] last:border-b-0 hover:bg-stage hover:text-ink min-[600px]:border-b-0 min-[600px]:py-2.5 min-[600px]:text-[15px] min-[900px]:py-2 ${
                 current
                   ? "font-bold text-ink shadow-[inset_3px_0_0_var(--ink)] min-[600px]:rounded-none min-[600px]:shadow-[inset_0_-2px_0_var(--ink)]"

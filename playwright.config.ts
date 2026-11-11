@@ -33,7 +33,7 @@ export default defineConfig({
       port: ANALYTICS_PORT,
       reuseExistingServer: false,
       timeout: PREBUILT ? 300_000 : 60_000,
-      stdout: "ignore",
+      stdout: PREBUILT ? "pipe" : "ignore",
       env: {
         PORT: String(ANALYTICS_PORT),
         NEXT_DIST_DIR: ".next-analytics",

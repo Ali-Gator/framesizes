@@ -25,3 +25,22 @@ it("toggles aria-expanded on each press", async () => {
   expect(button.getAttribute("aria-expanded")).toBe("false");
   act(() => root.unmount());
 });
+
+it("closes when a hub is chosen or Escape is pressed", async () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  await act(() => root.render(<HubNav links={navHubs(withLive("F1", "P1"))} />));
+  const button = container.querySelector("button");
+  const link = container.querySelector("nav a");
+  if (!button || !(link instanceof HTMLElement)) throw new Error("no menu");
+  link.addEventListener("click", (event) => event.preventDefault());
+  await act(() => button.click());
+  await act(() => link.click());
+  expect(button.getAttribute("aria-expanded")).toBe("false");
+  await act(() => button.click());
+  await act(() => {
+    link.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  });
+  expect(button.getAttribute("aria-expanded")).toBe("false");
+  act(() => root.unmount());
+});
