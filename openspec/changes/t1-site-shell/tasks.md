@@ -43,10 +43,10 @@ Order inside every group: spec delta is already written, so tests first (each ci
 ## 6. Whole-page checks and hand-over
 
 - [x] 6.1 Write `e2e/shell-a11y.spec.ts`: axe (WCAG 2.2 A + AA tags) on `/` and a 404 page at 390 × 844 and 1280 × 800, and no horizontal overflow at 320 × 568; verify it passes, fixing the shell (not the test) on any violation.
-- [ ] 6.2 Run `pnpm fix`, then `pnpm test`; verify both are green and that `pnpm build` reports `/`, `/robots.txt`, `/sitemap.xml` and the social image as static.
-- [ ] 6.3 Walk the guide's pre-publish checklist on the built HTML of `/` for the checks this change owns (2–7, 14–15 where they apply to the shell); record the result per check in the PR description and log anything open as a `BL-nn` item.
-- [ ] 6.4 Update `docs/home-page-design.md`: delete the "Open: shell (T1)" items and the SEO items this change closed (title/description/canonical/social tags, JSON-LD, `robots.ts`/`sitemap.ts`/404); verify only T2 items remain.
-- [ ] 6.5 Add backlog items for what is deliberately left out: dark theme (deferred — a reviewed dark design), `www`/`http` one-hop redirect check (gated — DNS live; or route to T22 if the Tracker row already covers it); verify `_Next id:_` is bumped.
+- [x] 6.2 Run `pnpm fix`, then `pnpm test`; verify both are green and that `pnpm build` reports `/`, `/robots.txt`, `/sitemap.xml` and the social image as static.
+- [x] 6.3 Walk the guide's pre-publish checklist on the built HTML of `/` for the checks this change owns (2–7, 14–15 where they apply to the shell); record the result per check in the PR description and log anything open as a `BL-nn` item.
+- [x] 6.4 Update `docs/home-page-design.md`: delete the "Open: shell (T1)" items and the SEO items this change closed (title/description/canonical/social tags, JSON-LD, `robots.ts`/`sitemap.ts`/404); verify only T2 items remain.
+- [x] 6.5 Add backlog items for what is deliberately left out: dark theme (deferred — a reviewed dark design), `www`/`http` one-hop redirect check (gated — DNS live; or route to T22 if the Tracker row already covers it); verify `_Next id:_` is bumped.
 - [ ] 6.6 After the PR's preview deploy, check with `curl -I` that the preview URL carries `X-Robots-Tag: noindex` from the host, and that a visit to the preview appears in PostHog's Web Analytics; record both in the PR.
 
 ## Workflow follow-up
