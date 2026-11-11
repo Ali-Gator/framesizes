@@ -36,7 +36,7 @@ The HTML the server returns SHALL hold one table, captioned "Standard picture fr
 #### Scenario: The table in the server HTML
 
 - **WHEN** `/` is requested
-- **THEN** the response HTML holds a table with 17 body rows, the row for 8x10 reads "8 × 10 in", "20.3 × 25.4 cm", "5 × 7 in" and its common use, the row for 4x6 reads "No mat", and the five square rows carry the `hidden` attribute
+- **THEN** the response HTML holds a table with 19 body rows, the row for 8x10 reads "8 × 10 in", "20.3 × 25.4 cm", "5 × 7 in" and its common use, the row for 4x6 reads "No mat", and the five square rows carry the `hidden` attribute
 
 ### Requirement: The widget opens on 16x20 above a sofa
 
@@ -73,7 +73,7 @@ The widget SHALL offer Portrait, Landscape and Square. Landscape SHALL show the 
 #### Scenario: Into and out of square
 
 - **WHEN** the visitor chooses Square, and then Landscape
-- **THEN** 12x12 is selected with five rows visible, and afterwards 20x16 is selected with twelve rows visible
+- **THEN** 12x12 is selected with five rows visible, and afterwards 20x16 is selected with fourteen rows visible
 
 ### Requirement: The wall view shows the size beside a reference with the next size up
 

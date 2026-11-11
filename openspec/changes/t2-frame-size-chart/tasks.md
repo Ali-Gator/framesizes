@@ -4,16 +4,16 @@ Starts after `t1-site-shell` is merged. Order inside every group: tests first (e
 
 ## 1. Set-up
 
-- [ ] 1.1 Create branch `t2-frame-size-chart` from an up-to-date `main`; verify T1's rows are in `openspec/specs/README.md` and `pnpm test` is green.
+- [x] 1.1 Create branch `t2-frame-size-chart` from an up-to-date `main`; verify T1's rows are in `openspec/specs/README.md` and `pnpm test` is green.
 - [ ] 1.2 Read the backlog and fold in any item in this change's area; verify each folded item is named in the PR description.
 - [ ] 1.3 Scaffold `packages/sizes` (`package.json` named `@framesizes/sizes` with `exports` to `./src/index.ts` and a `typecheck` script, `tsconfig.json`, an `index.ts` exporting one constant); add it to `apps/web` as `workspace:*` and to `transpilePackages` (read `03-api-reference/05-config/01-next-config-js/transpilePackages.md`); verify `pnpm build` succeeds with `page.tsx` importing the constant, then remove the import.
 
 ## 2. Verify the data before pinning it
 
-- [ ] 2.1 Check the 12 rectangular and 5 square sizes against the ready-made frame ranges of three US retailers; record each source URL. Verify the result is a table (size × retailer) in the PR description. If a draft size is missing from two of the three, or a size all three sell is missing from the draft, ask the user before changing the list, then correct the delta spec.
-- [ ] 2.2 Check the mat pairings against pre-cut mat listings for each frame size, and the anatomy constants (1 in moulding as the example, ¼ in overlap); verify every pairing in the delta spec has a source or is corrected the same way as 2.1.
-- [ ] 2.3 Check the scene constants (8 ft wall, sofa 84 × 34 in, 8 in above the back, person 5 ft 9 in, door 80 × 30 in, 57 in centre line) and the prose facts (large and square size lists, A4 / A3 / 30 × 40 / 50 × 70 / 70 × 100 cm, "two-thirds as wide as the furniture", "a custom frame costs more", "the lip covers the print's edge"); verify each has a source URL or its sentence is reworded to what the source supports.
-- [ ] 2.4 Correct the F1 description in the On-page SEO guide (docs tools) to the catalog's range, and the "Assumptions to confirm" note beside it; verify the guide and this change's proposal row read the same.
+- [x] 2.1 Check the 12 rectangular and 5 square sizes against the ready-made frame ranges of three US retailers; record each source URL. Verify the result is a table (size × retailer) in the PR description. If a draft size is missing from two of the three, or a size all three sell is missing from the draft, ask the user before changing the list, then correct the delta spec.
+- [x] 2.2 Check the mat pairings against pre-cut mat listings for each frame size, and the anatomy constants (1 in moulding as the example, ¼ in overlap); verify every pairing in the delta spec has a source or is corrected the same way as 2.1.
+- [x] 2.3 Check the scene constants (8 ft wall, sofa 84 × 34 in, 8 in above the back, person 5 ft 9 in, door 80 × 30 in, 57 in centre line) and the prose facts (large and square size lists, A4 / A3 / 30 × 40 / 50 × 70 / 70 × 100 cm, "two-thirds as wide as the furniture", "a custom frame costs more", "the lip covers the print's edge"); verify each has a source URL or its sentence is reworded to what the source supports.
+- [x] 2.4 Correct the F1 description in the On-page SEO guide (docs tools) to the catalog's range, and the "Assumptions to confirm" note beside it; verify the guide and this change's proposal row read the same.
 
 ## 3. Size engine
 
@@ -39,7 +39,7 @@ Starts after `t1-site-shell` is merged. Order inside every group: tests first (e
 
 ## 6. Page content
 
-- [ ] 6.1 Write `e2e/frame-chart-content.spec.ts` on the raw response: heading outline, the answer paragraph's six sizes, the 17-row table, the six-sizes labels, the four anatomy measurements, five questions with one open, the proof line, no "Related tools" heading and no `href="#…"`; and the unit test that the description's sizes are catalog sizes; verify they fail.
+- [ ] 6.1 Write `e2e/frame-chart-content.spec.ts` on the raw response: heading outline, the answer paragraph's six sizes, the 19-row table, the six-sizes labels, the four anatomy measurements, five questions with one open, the proof line, no "Related tools" heading and no `href="#…"`; and the unit test that the description's sizes are catalog sizes; verify they fail.
 - [ ] 6.2 Implement the answer paragraph, `common-sizes.tsx`, `frame-anatomy.tsx` and the three prose sections from the approved canvas's copy as corrected in group 2, sizes in the search form in sentences; add `IfLive` beside `PageLink` with its markup test; verify the matching 6.1 tests pass.
 - [ ] 6.3 Implement `questions.tsx` and the widget footer (wall height, source line, "last checked" from the engine); verify the matching 6.1 tests pass.
 - [ ] 6.4 Write the markup test for `related-tools.tsx` with a fixture where P1 is live, then implement it and render it last in `page.tsx`; verify the test and the "no other page is live" test pass.

@@ -71,7 +71,7 @@ The orientation control is a transform on that id: Portrait ↔ Landscape swaps 
 
 The first cell of each row is a `th scope="row"` holding a visually hidden `input type="radio" name="frame-size"` and its `label` (the size). The label's hit area is stretched over the row, and the selected row is styled with `tr:has(input:checked)` plus the ink bar the design system requires. This gives one tab stop, arrow-key selection and correct announcements with no script and no ARIA. The canvas's `tr tabindex="0" aria-selected` is not used: `aria-selected` is not allowed on a row outside a grid, and twelve tab stops is poor keyboard use.
 
-All 17 rows are always rendered; rows of the other shape get the `hidden` attribute. Landscape re-labels the twelve rectangular rows.
+All 19 rows are always rendered; rows of the other shape get the `hidden` attribute. Landscape re-labels the fourteen rectangular rows.
 
 ### 9. Pinning is CSS only
 
