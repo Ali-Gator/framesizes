@@ -224,10 +224,46 @@ export function livePages(pages: readonly SitePage[] = PAGES): LivePage[] {
 }
 
 /** Hubs whose head page is live, in header order. */
-export function liveHubHeads(): (Hub & { path: string })[] {
+export function liveHubHeads(pages: readonly SitePage[] = PAGES): (Hub & { path: string })[] {
   return HUBS.flatMap((hub) => {
-    const head = page(hub.head);
-    return head.live ? [{ ...hub, path: head.path }] : [];
+    const head = pages.find((p) => p.id === hub.head);
+    return head?.live ? [{ ...hub, path: head.path }] : [];
+  });
+}
+
+/** A header link: the hub head, and every live page path that makes it the current hub. */
+export interface HubLink {
+  href: string;
+  label: string;
+  paths: string[];
+}
+
+/**
+ * {@link openspec/specs/site-shell/spec.md#requirement-the-header-lists-the-live-hubs}
+ */
+export function navHubs(pages: readonly SitePage[] = PAGES): HubLink[] {
+  const live = livePages(pages);
+  return liveHubHeads(pages).map((hub) => ({
+    href: hub.path,
+    label: hub.name,
+    paths: live.filter((p) => p.hub === hub.id).map((p) => p.path),
+  }));
+}
+
+export interface FooterGroup {
+  name: string;
+  links: { href: string; name: string }[];
+}
+
+/**
+ * Live pages by hub, in header order; hubs with no live page are left out.
+ * {@link openspec/specs/site-shell/spec.md#requirement-the-footer-lists-the-live-pages-by-hub}
+ */
+export function footerGroups(pages: readonly SitePage[] = PAGES): FooterGroup[] {
+  const live = livePages(pages);
+  return HUBS.flatMap((hub) => {
+    const links = live.filter((p) => p.hub === hub.id).map((p) => ({ href: p.path, name: p.name }));
+    return links.length ? [{ name: hub.name, links }] : [];
   });
 }
 
