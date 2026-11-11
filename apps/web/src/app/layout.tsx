@@ -1,7 +1,21 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Mono, Schibsted_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 
 import "./globals.css";
+
+/** {@link openspec/specs/site-shell/spec.md#requirement-fonts-are-served-from-the-sites-own-origin} */
+const sans = Schibsted_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-schibsted",
+});
+const mono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+  variable: "--font-plex-mono",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://framesizes.app"),
@@ -11,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>{children}</body>
     </html>
   );

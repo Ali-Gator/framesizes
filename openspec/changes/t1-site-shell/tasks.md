@@ -4,9 +4,9 @@ Order inside every group: spec delta is already written, so tests first (each ci
 
 ## 1. Set-up
 
-- [ ] 1.1 Create branch `t1-site-shell` from `main`; verify `git status` is clean and `pnpm test:unit` passes before any edit.
-- [ ] 1.2 Ask the user to approve the edit to `e2e/home.spec.ts` (the `h1` assertion changes from "Frame Sizes" to "Standard Frame Sizes"). Do not start 4.4 without the yes; verify the answer is recorded in the PR description.
-- [ ] 1.3 Add dev dependencies `jsdom` and `@axe-core/playwright` at the workspace root, and set the JSX transform to `automatic` in `vitest.config.ts`; verify with a throwaway `.test.tsx` that renders `<p>ok</p>` through `renderToStaticMarkup` (delete it after).
+- [x] 1.1 Create branch `t1-site-shell` from `main`; verify `git status` is clean and `pnpm test:unit` passes before any edit.
+- [x] 1.2 Ask the user to approve the edit to `e2e/home.spec.ts` (the `h1` assertion changes from "Frame Sizes" to "Standard Frame Sizes"). Do not start 4.4 without the yes; verify the answer is recorded in the PR description.
+- [x] 1.3 Add dev dependencies `jsdom` and `@axe-core/playwright` at the workspace root, and set the JSX transform to `automatic` in `vitest.config.ts`; verify with a throwaway `.test.tsx` that renders `<p>ok</p>` through `renderToStaticMarkup` (delete it after).
 
 ## 2. Tokens and fonts
 
