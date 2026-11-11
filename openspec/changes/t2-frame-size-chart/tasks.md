@@ -39,12 +39,12 @@ Starts after `t1-site-shell` is merged. Order inside every group: tests first (e
 
 ## 6. Page content
 
-- [ ] 6.1 Write `e2e/frame-chart-content.spec.ts` on the raw response: heading outline, the answer paragraph's six sizes, the 19-row table, the six-sizes labels, the four anatomy measurements, five questions with one open, the proof line, no "Related tools" heading and no `href="#…"`; and the unit test that the description's sizes are catalog sizes; verify they fail.
-- [ ] 6.2 Implement the answer paragraph, `common-sizes.tsx`, `frame-anatomy.tsx` and the three prose sections from the approved canvas's copy as corrected in group 2, sizes in the search form in sentences; add `IfLive` beside `PageLink` with its markup test; verify the matching 6.1 tests pass.
-- [ ] 6.3 Implement `questions.tsx` and the widget footer (wall height, source line, "last checked" from the engine); verify the matching 6.1 tests pass.
-- [ ] 6.4 Write the markup test for `related-tools.tsx` with a fixture where P1 is live, then implement it and render it last in `page.tsx`; verify the test and the "no other page is live" test pass.
-- [ ] 6.5 Update F1's description and `lastModified` in `apps/web/src/lib/site-map.ts`; verify T1's head tests still pass unedited.
-- [ ] 6.6 Add the nested size diagram to `apps/web/src/app/opengraph-image.tsx`; verify T1's image test still passes and check the PNG by eye.
+- [x] 6.1 Write `e2e/frame-chart-content.spec.ts` on the raw response: heading outline, the answer paragraph's six sizes, the 19-row table, the six-sizes labels, the four anatomy measurements, five questions with one open, the proof line, no "Related tools" heading and no `href="#…"`; and the unit test that the description's sizes are catalog sizes; verify they fail.
+- [x] 6.2 Implement the answer paragraph, `common-sizes.tsx`, `frame-anatomy.tsx` and the three prose sections from the approved canvas's copy as corrected in group 2, sizes in the search form in sentences; add `IfLive` beside `PageLink` with its markup test; verify the matching 6.1 tests pass.
+- [x] 6.3 Implement `questions.tsx` and the widget footer (wall height, source line, "last checked" from the engine); verify the matching 6.1 tests pass.
+- [x] 6.4 Write the markup test for `related-tools.tsx` with a fixture where P1 is live, then implement it and render it last in `page.tsx`; verify the test and the "no other page is live" test pass.
+- [x] 6.5 Update F1's description and `lastModified` in `apps/web/src/lib/site-map.ts`; verify T1's head tests still pass unedited.
+- [x] 6.6 Add the nested size diagram to `apps/web/src/app/opengraph-image.tsx`; verify T1's image test still passes and check the PNG by eye.
 
 ## 7. Layout behaviour
 

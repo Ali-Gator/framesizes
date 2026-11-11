@@ -40,7 +40,7 @@ export const PAGES = [
       title: "Standard Picture Frame Sizes Chart (Inches & cm)",
       h1: "Standard Frame Sizes",
       description:
-        "Every standard picture frame size in inches and cm, from 4x6 to 24x36. Click a size to see it at true scale next to a sofa, a door or a person.",
+        "Every standard picture frame size in inches and cm, from 4x6 to 27x40. Click a size to see it at true scale next to a sofa, a door or a person.",
       lastModified: "2026-11-11",
     },
   },

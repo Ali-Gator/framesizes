@@ -11,3 +11,11 @@ export function PageLink({ id, children }: { id: PageId; children: ReactNode }) 
   const target = page(id);
   return target.live ? <Link href={target.path}>{children}</Link> : <>{children}</>;
 }
+
+/**
+ * Text that exists only to send the visitor to another page: rendered only while that page is live.
+ * {@link openspec/specs/frame-size-chart/spec.md#requirement-the-page-links-only-to-live-pages}
+ */
+export function IfLive({ page: id, children }: { page: PageId; children: ReactNode }) {
+  return page(id).live ? <>{children}</> : null;
+}
