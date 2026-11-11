@@ -10,7 +10,7 @@ test("an unknown path answers 404 inside the shell", async ({ page }) => {
     "/",
   );
   await expect(
-    page.getByRole("banner").getByRole("link", { name: "Frame Sizes home" }),
+    page.getByRole("banner").getByRole("link", { name: "framesizes.app home" }),
   ).toBeVisible();
   await expect(page.getByRole("contentinfo")).toHaveCount(1);
 });

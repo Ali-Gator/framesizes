@@ -44,7 +44,7 @@ describe("SiteHeader", () => {
 
   /** {@link openspec/specs/site-shell/spec.md#scenario-the-home-page-is-opened} */
   it("links the logo to the home page", () => {
-    const home = render("F1").querySelector('header a[aria-label="Frame Sizes home"]');
+    const home = render("F1").querySelector('header a[aria-label="framesizes.app home"]');
     expect(home?.getAttribute("href")).toBe("/");
   });
 });

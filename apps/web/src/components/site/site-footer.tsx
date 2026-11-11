@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { FooterGroup } from "@/lib/site-map";
 
-import { Lockup } from "./site-header";
+import { HOME_LINK_NAME, Lockup } from "./site-header";
 
 /** {@link openspec/specs/site-shell/spec.md#requirement-the-footer-lists-the-live-pages-by-hub} */
 export function SiteFooter({ groups }: { groups: FooterGroup[] }) {
@@ -12,7 +12,7 @@ export function SiteFooter({ groups }: { groups: FooterGroup[] }) {
         <div className="flex min-w-0 flex-[1_1_280px] flex-col gap-3">
           <Link
             href="/"
-            aria-label="Frame Sizes home"
+            aria-label={HOME_LINK_NAME}
             className="inline-flex items-center gap-2 self-start text-ink"
           >
             <Lockup />

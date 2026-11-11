@@ -1,5 +1,6 @@
 node_modules
 .next
+.next-analytics
 pnpm-lock.yaml
 .claude/commands
 .claude/skills/openspec-*

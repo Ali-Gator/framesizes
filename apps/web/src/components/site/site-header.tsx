@@ -6,6 +6,9 @@ import { HubNav } from "./hub-nav";
 import { LogoMark } from "./logo-mark";
 import { UnitToggle } from "./unit-toggle";
 
+/** Contains the visible wordmark, so voice users can say what they see (WCAG 2.5.3). */
+export const HOME_LINK_NAME = "framesizes.app home";
+
 /** The lockup: nested-frames mark and the type wordmark; `.app` drops below 390px. */
 export function Lockup() {
   return (
@@ -31,7 +34,7 @@ export function SiteHeader({ hubs }: { hubs: HubLink[] }) {
       <div className="mx-auto flex max-w-content flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 min-[600px]:gap-x-4 min-[900px]:h-16 min-[900px]:flex-nowrap min-[900px]:gap-6 min-[900px]:py-0">
         <Link
           href="/"
-          aria-label="Frame Sizes home"
+          aria-label={HOME_LINK_NAME}
           className="order-1 inline-flex shrink-0 items-center gap-2 text-ink"
         >
           <Lockup />

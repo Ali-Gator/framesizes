@@ -8,12 +8,12 @@ The frame every page renders in: header, hub navigation, footer and the 404 page
 
 ### Requirement: Every page renders inside one shell
 
-Every page, including the 404 page, SHALL render a header with a link to the home page, exactly one `main` region and a footer. The header's home link SHALL have the accessible name "Frame Sizes home".
+Every page, including the 404 page, SHALL render a header with a link to the home page, exactly one `main` region and a footer. The header's home link SHALL have the accessible name "framesizes.app home", which contains the wordmark the link shows, so a voice user can name it by what they see (WCAG 2.5.3).
 
 #### Scenario: The home page is opened
 
 - **WHEN** a visitor opens `/`
-- **THEN** the page has one banner containing a link named "Frame Sizes home" that points to `/`, one `main` region and one footer
+- **THEN** the page has one banner containing a link named "framesizes.app home" that points to `/`, one `main` region and one footer
 
 ### Requirement: The header lists the live hubs
 
