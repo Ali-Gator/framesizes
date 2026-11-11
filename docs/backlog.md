@@ -55,15 +55,6 @@ when to add and when to fold items in.
 - **[BL-5] PostHog authorized URLs** — the project shows "No authorized URLs configured"; add
   `https://framesizes.app` so URL-based filters and the toolbar work.
   _Refs:_ PostHog project 344498, Settings › Project · _Status:_ gated — DNS live
-- **[BL-7] Unit snapshot reads storage on every call** — `useUnit`'s snapshot reads (and, when
-  blocked, throws and catches on) `localStorage` each render; cache it in the module and refresh
-  it in `setUnit` and the `storage` listener. Correct today, only wasteful (T1 phase review).
-  _Refs:_ `apps/web/src/lib/unit.ts` · _Status:_ open
-- **[BL-8] Shared page wrapper and link styles** — the page container and underlined-link class
-  strings are repeated in `page.tsx`, `not-found.tsx` and the footer; extract them before more
-  pages copy them (T1 phase review).
-  _Refs:_ `apps/web/src/app/page.tsx`, `apps/web/src/app/not-found.tsx`,
-  `apps/web/src/components/site/site-footer.tsx` · _Status:_ open
 - **[BL-9] Social-image font path from `process.cwd()`** — works because the image is prerendered
   from `apps/web` (the Next docs' own pattern); if the route ever renders at request time from
   another directory, `readFile` fails and every `og:image` answers 500. Resolve it from the module

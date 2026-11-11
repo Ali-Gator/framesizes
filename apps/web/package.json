@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@framesizes/sizes": "workspace:*",
     "next": "^16.3.8",
     "posthog-js": "^1.447.7",
     "react": "^19.3.0",

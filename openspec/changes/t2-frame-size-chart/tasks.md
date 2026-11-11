@@ -5,8 +5,8 @@ Starts after `t1-site-shell` is merged. Order inside every group: tests first (e
 ## 1. Set-up
 
 - [x] 1.1 Create branch `t2-frame-size-chart` from an up-to-date `main`; verify T1's rows are in `openspec/specs/README.md` and `pnpm test` is green.
-- [ ] 1.2 Read the backlog and fold in any item in this change's area; verify each folded item is named in the PR description.
-- [ ] 1.3 Scaffold `packages/sizes` (`package.json` named `@framesizes/sizes` with `exports` to `./src/index.ts` and a `typecheck` script, `tsconfig.json`, an `index.ts` exporting one constant); add it to `apps/web` as `workspace:*` and to `transpilePackages` (read `03-api-reference/05-config/01-next-config-js/transpilePackages.md`); verify `pnpm build` succeeds with `page.tsx` importing the constant, then remove the import.
+- [x] 1.2 Read the backlog and fold in any item in this change's area; verify each folded item is named in the PR description.
+- [x] 1.3 Scaffold `packages/sizes` (`package.json` named `@framesizes/sizes` with `exports` to `./src/index.ts` and a `typecheck` script, `tsconfig.json`, an `index.ts` exporting one constant); add it to `apps/web` as `workspace:*` and to `transpilePackages` (read `03-api-reference/05-config/01-next-config-js/transpilePackages.md`); verify `pnpm build` succeeds with `page.tsx` importing the constant, then remove the import.
 
 ## 2. Verify the data before pinning it
 

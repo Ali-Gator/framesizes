@@ -31,10 +31,7 @@ export function SiteFooter({ groups }: { groups: FooterGroup[] }) {
               <ul>
                 {group.links.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="block text-sm leading-8 text-ink underline decoration-line-strong underline-offset-[3px] hover:decoration-tape hover:decoration-2"
-                    >
+                    <Link href={link.href} className="block text-sm leading-8 link">
                       {link.name}
                     </Link>
                   </li>

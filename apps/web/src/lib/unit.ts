@@ -6,6 +6,8 @@ const KEY = "unit";
 const listeners = new Set<() => void>();
 /** The choice made in this page view; it outlives a storage that throws. */
 let chosen: Unit | null = null;
+/** The stored choice, read once and again after another tab writes it. */
+let cached: Unit | null | undefined;
 
 function stored(): Unit | null {
   try {
@@ -16,11 +18,13 @@ function stored(): Unit | null {
   }
 }
 
-const snapshot = (): Unit => chosen ?? stored() ?? "in";
+const snapshot = (): Unit =>
+  chosen ?? (cached === undefined ? (cached = stored()) : cached) ?? "in";
 
 function onStorage(event: StorageEvent) {
   if (event.key !== KEY) return;
   chosen = null; // another tab chose: storage is the truth again
+  cached = undefined;
   listeners.forEach((notify) => notify());
 }
 
