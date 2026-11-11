@@ -47,7 +47,7 @@ Order inside every group: spec delta is already written, so tests first (each ci
 - [x] 6.3 Walk the guide's pre-publish checklist on the built HTML of `/` for the checks this change owns (2–7, 14–15 where they apply to the shell); record the result per check in the PR description and log anything open as a `BL-nn` item.
 - [x] 6.4 Update `docs/home-page-design.md`: delete the "Open: shell (T1)" items and the SEO items this change closed (title/description/canonical/social tags, JSON-LD, `robots.ts`/`sitemap.ts`/404); verify only T2 items remain.
 - [x] 6.5 Add backlog items for what is deliberately left out: dark theme (deferred — a reviewed dark design), `www`/`http` one-hop redirect check (gated — DNS live; or route to T22 if the Tracker row already covers it); verify `_Next id:_` is bumped.
-- [ ] 6.6 After the PR's preview deploy, check with `curl -I` that the preview URL carries `X-Robots-Tag: noindex` from the host, and that a visit to the preview appears in PostHog's Web Analytics; record both in the PR.
+- [x] 6.6 After the PR's preview deploy, check with `curl -I` that the preview URL carries `X-Robots-Tag: noindex` from the host, and that a visit to the preview appears in PostHog's Web Analytics; record both in the PR.
 
 ## Workflow follow-up
 
