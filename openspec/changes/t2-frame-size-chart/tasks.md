@@ -17,10 +17,10 @@ Starts after `t1-site-shell` is merged. Order inside every group: tests first (e
 
 ## 3. Size engine
 
-- [ ] 3.1 Write `packages/sizes/src/__tests__/units.test.ts` (cm conversion, the three written forms, a turned size); implement `units.ts`; verify the tests pass.
-- [ ] 3.2 Write `frames.test.ts` for the catalog, orientation listing and lookup, next size up, mat image, anatomy and the check record; implement `frames.ts` with the verified data and today's check date; verify the tests pass.
-- [ ] 3.3 Write `scene.test.ts` (16x20 above the sofa and beside a person, every size / orientation / reference inside the wall and clear of the reference, the reference sentences in both units); implement `scene.ts`; verify the tests pass.
-- [ ] 3.4 Export the public API from `index.ts` with a JSDoc citation on each export; verify `pnpm typecheck` and `pnpm test:unit` (the citation gate) pass.
+- [x] 3.1 Write `packages/sizes/src/__tests__/units.test.ts` (cm conversion, the three written forms, a turned size); implement `units.ts`; verify the tests pass.
+- [x] 3.2 Write `frames.test.ts` for the catalog, orientation listing and lookup, next size up, mat image, anatomy and the check record; implement `frames.ts` with the verified data and today's check date; verify the tests pass.
+- [x] 3.3 Write `scene.test.ts` (16x20 above the sofa and beside a person, every size / orientation / reference inside the wall and clear of the reference, the reference sentences in both units); implement `scene.ts`; verify the tests pass.
+- [x] 3.4 Export the public API from `index.ts` with a JSDoc citation on each export; verify `pnpm typecheck` and `pnpm test:unit` (the citation gate) pass.
 
 ## 4. Widgets (`apps/web/src/components/ui/`)
 
