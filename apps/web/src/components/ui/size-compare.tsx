@@ -5,7 +5,8 @@ import { STAGE } from "./scale-preview";
 type CompareSize = Pick<Frame, "id" | "w" | "h" | "major">;
 
 /** Label boxes closer than this (stage units) count as overlapping. */
-export const LABEL_GAP = { x: 54, y: 18 } as const;
+// Labels are digits (no descenders): 18 units apart vertically clear 22-unit type; 70 across clear "11×17".
+export const LABEL_GAP = { x: 70, y: 18 } as const;
 
 interface Layout {
   scale: number;

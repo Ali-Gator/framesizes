@@ -48,9 +48,9 @@ Starts after `t1-site-shell` is merged. Order inside every group: tests first (e
 
 ## 7. Layout behaviour
 
-- [ ] 7.1 Write `e2e/frame-chart-layout.spec.ts`: first screen at 390 × 664, pinning at 1280 × 800, 390 × 664 and 375 × 548, keyboard focus under the pinned preview, the two layout-shift scenarios, the six frames' proportions, three differently named drawings; verify they fail or pass for the right reason.
-- [ ] 7.2 Implement the pinning and reserved-space CSS (design decisions 9 and 10); verify 7.1 passes and the drawing's labels are at least 12px on screen at 390 × 664.
-- [ ] 7.3 Check the page in the iOS Simulator's Safari (portrait, bars showing): first screen, pinned preview while scrolling the table, table scrolling sideways inside its box at this width; verify with screenshots in the PR, or state in the PR that only emulation was available.
+- [x] 7.1 Write `e2e/frame-chart-layout.spec.ts`: first screen at 390 × 664, pinning at 1280 × 800, 390 × 664 and 375 × 548, keyboard focus under the pinned preview, the two layout-shift scenarios, the six frames' proportions, three differently named drawings; verify they fail or pass for the right reason.
+- [x] 7.2 Implement the pinning and reserved-space CSS (design decisions 9 and 10); verify 7.1 passes and the drawing's labels are at least 12px on screen at 390 × 664.
+- [x] 7.3 Check the page in the iOS Simulator's Safari (portrait, bars showing): first screen, pinned preview while scrolling the table, table scrolling sideways inside its box at this width; verify with screenshots in the PR, or state in the PR that only emulation was available.
 
 ## 8. Whole-page checks and hand-over
 

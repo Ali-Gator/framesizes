@@ -243,7 +243,7 @@
     font-size: 22px;
   }
   .fs-scale .cmp-label {
-    font-size: 18px;
+    font-size: 22px;
   }
 }
 .fs-scale-legend {
@@ -542,5 +542,38 @@
     background: var(--paper);
     padding: 12px 0;
     margin: -12px 0;
+  }
+}
+/* Rows the keyboard moves to stay below the pinned filter row. */
+@container (min-width: 844px) {
+  .fs-table input {
+    scroll-margin-top: 160px;
+    scroll-margin-bottom: 72px;
+  }
+}
+/*
+ * One column on a screen tall enough: the preview is pinned, its stage capped so the pinned block
+ * stays within the upper half of the small viewport, and focused rows stop below it. Shorter
+ * screens scroll it away with the page.
+ */
+@container (max-width: 843.98px) {
+  @media (min-height: 600px) {
+    .fc-preview {
+      position: sticky;
+      top: 0;
+      padding-top: 8px;
+      margin-top: -8px;
+    }
+    .fc-preview .fs-scale-stage {
+      max-height: calc(50svh - 112px);
+    }
+    .fc-preview .fs-scale-legend {
+      padding: 8px 12px 10px;
+      gap: 4px 16px;
+    }
+    .fs-table input {
+      scroll-margin-top: calc(50svh + 8px);
+      scroll-margin-bottom: 72px;
+    }
   }
 }
