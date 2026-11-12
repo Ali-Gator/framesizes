@@ -13,7 +13,7 @@ The engine SHALL hold one catalog of frame sizes in inches, each stored upright 
 #### Scenario: The rectangular sizes
 
 - **WHEN** the rectangular sizes are listed
-- **THEN** they are 4x6, 5x7, 8x10, 8.5x11, 11x14, 12x16, 16x20, 18x24, 20x24, 20x30, 24x36, 27x40, in that order
+- **THEN** they are 4x6, 5x7, 8x10, 8.5x11, 11x14, 11x17, 12x16, 12x18, 16x20, 18x24, 20x24, 20x30, 24x36, 27x40, in that order
 
 #### Scenario: The square sizes
 
@@ -51,12 +51,22 @@ The engine SHALL list sizes for an orientation: portrait gives the rectangular s
 
 ### Requirement: The next size up follows the list
 
-For a size in an orientation, the engine SHALL give the next size up as the entry that follows it in that orientation's list, and none for the last entry.
+For a size in an orientation, the engine SHALL give the next size up as the first later entry in that orientation's list that is at least as wide and at least as tall, and none when there is no such entry.
 
 #### Scenario: A size in the middle of the list
 
 - **WHEN** the next size up from 16x20 is asked for
 - **THEN** it is 18x24
+
+#### Scenario: A later size that is not larger
+
+- **WHEN** the next size up from 11x17 is asked for
+- **THEN** it is 12x18, not the shorter 12x16 that follows it in the list
+
+#### Scenario: Every next size up holds the size
+
+- **WHEN** the next size up is asked for every size in every orientation
+- **THEN** it is never narrower or shorter than the size asked about
 
 #### Scenario: The largest size
 
@@ -88,21 +98,21 @@ The engine SHALL write a size, width first, in exactly these forms: the search f
 
 ### Requirement: A frame size names the image usually framed in it with a mat
 
-For each catalog size the engine SHALL give either the image size of the pre-cut mat most commonly sold for that frame, or none when ready-made frames of that size are usually sold without a mat. A mat image SHALL be smaller than its frame in both dimensions and SHALL turn with the frame.
+For each catalog size the engine SHALL give either the image size of the pre-cut mat most often sold for that frame, or none when no mat pairing is common for that size. A mat image SHALL be smaller than its frame in both dimensions and SHALL turn with the frame.
 
 #### Scenario: Frames with a common mat
 
-- **WHEN** the mat image is asked for 5x7, 8x10, 11x14, 12x16, 16x20, 18x24, 20x24 and 24x36
-- **THEN** it is 3.5x5, 5x7, 8x10, 9x12, 11x14, 12x18, 16x20 and 20x30
+- **WHEN** the mat image is asked for 5x7, 8x10, 11x14, 11x17, 12x16, 12x18, 16x20, 18x24, 20x24 and 24x36
+- **THEN** it is 4x6, 5x7, 8x10, 8x12, 8.5x11, 11x17, 11x14, 16x20, 16x20 and 20x30
 
 #### Scenario: Square frames with a common mat
 
-- **WHEN** the mat image is asked for 10x10, 12x12, 16x16 and 20x20
-- **THEN** it is 8x8, 8x8, 12x12 and 16x16
+- **WHEN** the mat image is asked for 8x8, 10x10, 12x12, 16x16 and 20x20
+- **THEN** it is 4x4, 8x8, 8x8, 12x12 and 16x16
 
 #### Scenario: Frames usually sold without a mat
 
-- **WHEN** the mat image is asked for 4x6, 8.5x11, 20x30, 27x40 and 8x8
+- **WHEN** the mat image is asked for 4x6, 8.5x11, 20x30 and 27x40
 - **THEN** there is none
 
 #### Scenario: A turned frame

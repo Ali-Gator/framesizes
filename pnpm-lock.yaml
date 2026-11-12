@@ -211,6 +211,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@framesizes/sizes':
+        specifier: workspace:*
+        version: link:../../packages/sizes
       next:
         specifier: ^16.3.8
         version: 16.4.5(@babel/core@7.29.13)(@playwright/test@1.65.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -236,6 +239,8 @@ importers:
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.5
+
+  packages/sizes: {}
 
 packages:
 

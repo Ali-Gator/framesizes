@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./widgets.css";
 
 /*
  * Design tokens, light theme only (design system `tokens.css`, version 1794338676-9717).
@@ -140,6 +141,26 @@
   font-size: 14px;
   line-height: 20px;
   font-weight: 500;
+}
+
+/* The page column and the underlined in-text link, shared by every page (BL-8). */
+@utility page {
+  margin-inline: auto;
+  max-width: var(--container-content);
+  padding: 32px 16px 0;
+  @media (width >= 48rem) {
+    padding: 64px 32px 0;
+  }
+}
+@utility link {
+  color: var(--ink);
+  text-decoration-line: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+  &:hover {
+    text-decoration-color: var(--tape);
+    text-decoration-thickness: 2px;
+  }
 }
 
 @layer base {

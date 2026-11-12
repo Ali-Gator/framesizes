@@ -6,6 +6,8 @@ const POSTHOG_ASSETS = "https://eu-assets.i.posthog.com";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // The size engine ships TypeScript source (packages/sizes).
+  transpilePackages: ["@framesizes/sizes"],
   // The e2e analytics server builds with a dummy token into its own folder (playwright.config.ts).
   distDir: process.env.NEXT_DIST_DIR || ".next",
   // posthog-js calls paths ending in a slash; the redirect below restores the 308 everywhere else.

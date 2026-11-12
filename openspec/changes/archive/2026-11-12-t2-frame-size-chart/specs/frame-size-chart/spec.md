@@ -36,7 +36,7 @@ The HTML the server returns SHALL hold one table, captioned "Standard picture fr
 #### Scenario: The table in the server HTML
 
 - **WHEN** `/` is requested
-- **THEN** the response HTML holds a table with 17 body rows, the row for 8x10 reads "8 × 10 in", "20.3 × 25.4 cm", "5 × 7 in" and its common use, the row for 4x6 reads "No mat", and the five square rows carry the `hidden` attribute
+- **THEN** the response HTML holds a table with 19 body rows, the row for 8x10 reads "8 × 10 in", "20.3 × 25.4 cm", "5 × 7 in" and its common use, the row for 4x6 reads "No mat", and the five square rows carry the `hidden` attribute
 
 ### Requirement: The widget opens on 16x20 above a sofa
 
@@ -73,7 +73,7 @@ The widget SHALL offer Portrait, Landscape and Square. Landscape SHALL show the 
 #### Scenario: Into and out of square
 
 - **WHEN** the visitor chooses Square, and then Landscape
-- **THEN** 12x12 is selected with five rows visible, and afterwards 20x16 is selected with twelve rows visible
+- **THEN** 12x12 is selected with five rows visible, and afterwards 20x16 is selected with fourteen rows visible
 
 ### Requirement: The wall view shows the size beside a reference with the next size up
 
@@ -110,7 +110,7 @@ In the "All sizes" view the widget SHALL draw every size of the current list as 
 
 ### Requirement: The widget follows the site's unit
 
-When the visitor's unit is centimetres, the table's first column SHALL give centimetres and its second column, headed "Inches", the inch form; the mat column, the drawing's labels and the reference sentence SHALL be in centimetres. With inches selected the second column is headed "Centimetres".
+When the visitor's unit is centimetres, the table's first column SHALL give centimetres and its second column, headed "Inches", the inch form; the mat column, the wall drawing's dimension labels and the reference sentence SHALL be in centimetres. The all-sizes drawing labels each outline with its size's name (`11×14`), which stays in inches. With inches selected the second column is headed "Centimetres".
 
 #### Scenario: The visitor switches to centimetres
 
@@ -213,7 +213,7 @@ Every drawing on the page SHALL have an accessible name, and no two SHALL have t
 
 ### Requirement: The questions are answered in the server HTML
 
-The page SHALL show five questions, each an `h3` inside a disclosure whose answer is in the server HTML, with the first one open. An answer SHALL lead with its number, and sizes in centimetres SHALL come from the size engine.
+The page SHALL show five questions, each an `h3` inside a disclosure whose answer is in the server HTML, with the first one open. An answer SHALL lead with the answer itself, a number first when the answer is a size, and sizes in centimetres SHALL come from the size engine.
 
 #### Scenario: The questions in the server HTML
 

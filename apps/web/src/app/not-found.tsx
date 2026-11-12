@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Page not found" };
  */
 export default function NotFound() {
   return (
-    <div className="mx-auto max-w-content px-4 pt-8 md:px-8 md:pt-16">
+    <div className="page">
       <h1 className="display">Page not found</h1>
       <p className="mt-4 body-lg max-w-prose text-ink-muted">
         This page does not exist. Start from one of these:
@@ -19,10 +19,7 @@ export default function NotFound() {
       <ul className="mt-4 flex flex-col gap-2">
         {liveHubHeads().map((hub) => (
           <li key={hub.id}>
-            <Link
-              href={hub.path}
-              className="body-lg text-ink underline decoration-line-strong underline-offset-[3px] hover:decoration-tape hover:decoration-2"
-            >
+            <Link href={hub.path} className="body-lg link">
               {hub.name}
             </Link>
           </li>
