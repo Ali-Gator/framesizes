@@ -505,19 +505,17 @@
   container-type: inline-size;
 }
 .fc-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
-  align-items: flex-start;
+  align-items: start;
 }
 .fc-preview {
-  flex: 1 1 300px;
   min-width: 0;
   background: var(--paper);
   z-index: 2;
 }
 .fc-controls {
-  flex: 2 1 440px;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -528,7 +526,11 @@
   flex-wrap: wrap;
   gap: 16px 24px;
 }
+/* The two columns and their pinning start at the same width. */
 @container (min-width: 844px) {
+  .fc-grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 8fr);
+  }
   .fc-preview {
     position: sticky;
     top: 0;
@@ -547,7 +549,8 @@
 /* Rows the keyboard moves to stay below the pinned filter row. */
 @container (min-width: 844px) {
   .fs-table input {
-    scroll-margin-top: 160px;
+    /* The pinned filter row wraps to two lines (about 176px). */
+    scroll-margin-top: 210px;
     scroll-margin-bottom: 72px;
   }
 }
@@ -564,12 +567,25 @@
       padding-top: 8px;
       margin-top: -8px;
     }
+    /* Room for the longest legend: the size line and three lines of reference text. */
     .fc-preview .fs-scale-stage {
       max-height: calc(50svh - 112px);
     }
     .fc-preview .fs-scale-legend {
-      padding: 8px 12px 10px;
-      gap: 4px 16px;
+      padding: 6px 12px 8px;
+      gap: 2px 12px;
+    }
+    .fc-preview .fs-scale-size {
+      font-size: 16px;
+      line-height: 22px;
+    }
+    .fc-preview .fs-scale-size span {
+      font-size: 13px;
+      margin-left: 10px;
+    }
+    .fc-preview .fs-scale-ref {
+      font-size: 13px;
+      line-height: 18px;
     }
     .fs-table input {
       scroll-margin-top: calc(50svh + 8px);

@@ -15,7 +15,7 @@ import { SizeCompare } from "@/components/ui/size-compare";
 import { SizeTable } from "@/components/ui/size-table";
 import { WidgetCard } from "@/components/ui/widget-card";
 import { useUnit } from "@/lib/unit";
-import { replaceSearch, useSearch } from "@/lib/url-state";
+import { currentSearch, replaceSearch, useSearch } from "@/lib/url-state";
 
 import {
   type ChartState,
@@ -73,7 +73,9 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
   const state = parseChartState(useSearch());
   const frame = selectedFrame(state);
   const other = unit === "cm" ? "in" : "cm";
-  const set = (next: Partial<ChartState>) => replaceSearch(chartSearch({ ...state, ...next }));
+  // Built from the live URL at the moment of the write, never from a stale render.
+  const set = (next: Partial<ChartState>) =>
+    replaceSearch(chartSearch({ ...parseChartState(currentSearch()), ...next }));
 
   // Marks the widget as interactive (the e2e tests wait for it before clicking).
   useEffect(() => {

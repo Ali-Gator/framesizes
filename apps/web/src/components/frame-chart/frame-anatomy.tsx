@@ -1,6 +1,9 @@
 import { frameAnatomy, MAT_OVERLAP, writeSize } from "@framesizes/sizes";
 
-const EXAMPLE = frameAnatomy({ frame: { w: 11, h: 14 }, image: { w: 8, h: 10 } });
+/** The example: an 8x10 photo with a mat in an 11x14 frame (a catalog pairing). */
+export const EXAMPLE_FRAME = { w: 11, h: 14 };
+export const EXAMPLE_IMAGE = { w: 8, h: 10 };
+const EXAMPLE = frameAnatomy({ frame: EXAMPLE_FRAME, image: EXAMPLE_IMAGE });
 /** Drawing units per inch. */
 const SCALE = 16;
 const overlap = MAT_OVERLAP === 0.25 ? "¼" : String(MAT_OVERLAP);
@@ -47,7 +50,7 @@ export function FrameAnatomy() {
           width={outside.w * SCALE}
           height={outside.h * SCALE}
           role="img"
-          aria-label="8x10 photo with a mat in an 11x14 frame: moulding, mat, mat opening and photo"
+          aria-label={`${writeSize(EXAMPLE_IMAGE, "search")} photo with a mat in an ${writeSize(EXAMPLE_FRAME, "search")} frame: moulding, mat, mat opening and photo`}
           className="h-auto max-w-full"
         >
           <rect width={outside.w * SCALE} height={outside.h * SCALE} fill="var(--oak)" />

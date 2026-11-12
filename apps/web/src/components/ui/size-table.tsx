@@ -51,7 +51,17 @@ export function SizeTable({
           {rows.map((row) => {
             const id = `${name}-${row.id}`;
             return (
-              <tr key={row.id} hidden={row.hidden} onClick={onSelect && (() => onSelect(row.id))}>
+              <tr
+                key={row.id}
+                hidden={row.hidden}
+                onClick={
+                  onSelect &&
+                  ((event) => {
+                    // The label and the radio already select through onChange.
+                    if (!(event.target as Element).closest("label, input")) onSelect(row.id);
+                  })
+                }
+              >
                 <th scope="row" className={columns[0]?.num ? "fs-num" : undefined}>
                   <input
                     type="radio"

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { ChartFooter } from "@/components/frame-chart/chart-footer";
 import { CommonSizes } from "@/components/frame-chart/common-sizes";
-import { FrameAnatomy } from "@/components/frame-chart/frame-anatomy";
+import { EXAMPLE_FRAME, EXAMPLE_IMAGE, FrameAnatomy } from "@/components/frame-chart/frame-anatomy";
 import { FrameChart } from "@/components/frame-chart/frame-chart";
 import { Questions } from "@/components/frame-chart/questions";
 import { RelatedTools } from "@/components/frame-chart/related-tools";
@@ -49,7 +49,14 @@ function Column({ title, children }: { title: string; children: ReactNode }) {
 }
 
 const ids = (frames: readonly { id: string }[]) => frames.map((f) => f.id);
-const LARGE = ["20x24", "20x30", "24x36", "27x40"];
+const RECTANGULAR = framesFor("portrait");
+/** The large sizes: 20 in wide and up. */
+const LARGE = ids(RECTANGULAR.filter((f) => f.w >= 20));
+const LARGEST = RECTANGULAR.at(-1)?.id ?? "";
+const POSTER = RECTANGULAR.find((f) => f.use === "Large posters")?.id ?? "";
+const IMAGE = writeSize(EXAMPLE_IMAGE, "search");
+const FRAME = writeSize(EXAMPLE_FRAME, "search");
+const TURNED = writeSize({ w: EXAMPLE_IMAGE.h, h: EXAMPLE_IMAGE.w }, "search");
 
 /**
  * The home page: the standard frame size chart.
@@ -81,17 +88,18 @@ export default function Home() {
       <Section title="Frame size by image size">
         <div className="-mt-4 flex max-w-prose flex-col gap-2">
           <p>
-            Without a mat, the frame size is the image size: an <Size>8x10</Size> photo fits an{" "}
-            <Size>8x10</Size> frame. With a mat (a mount in the UK), take a frame one or two sizes
-            larger. The chart&apos;s &ldquo;Image with a mat&rdquo; column gives the usual pairing.
+            Without a mat, the frame size is the image size: an <Size>{IMAGE}</Size> photo fits an{" "}
+            <Size>{IMAGE}</Size> frame. With a mat (a mount in the UK), take a frame one or two
+            sizes larger. The chart&apos;s &ldquo;Image with a mat&rdquo; column gives the usual
+            pairing.
             <IfLive page="F5">
               {" "}
               The <PageLink id="F5">frame and mat size calculator</PageLink> works out any other.
             </IfLive>
           </p>
           <p>
-            A framed photo has four measurements. This example is an <Size>8x10</Size> photo with a
-            mat in an <Size>11x14</Size> frame.
+            A framed photo has four measurements. This example is an <Size>{IMAGE}</Size> photo with
+            a mat in an <Size>{FRAME}</Size> frame.
           </p>
         </div>
         <FrameAnatomy />
@@ -100,8 +108,8 @@ export default function Home() {
       <Section title="Large, square and horizontal frame sizes">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-8">
           <Column title="Large frame sizes">
-            The common large frames are <SizeList ids={LARGE} /> inches. <Size>24x36</Size> is the
-            standard large poster, <Size>27x40</Size> the movie poster.
+            The common large frames are <SizeList ids={LARGE} /> inches. <Size>{POSTER}</Size> is
+            the standard large poster, <Size>{LARGEST}</Size> the movie poster.
             <IfLive page="P1">
               {" "}
               See all <PageLink id="P1">poster sizes</PageLink>.
@@ -113,8 +121,8 @@ export default function Home() {
           </Column>
           <Column title="Horizontal frame sizes">
             A horizontal, or landscape, frame is the same frame turned on its side: an{" "}
-            <Size>8x10</Size> becomes a <Size>{writeSize({ w: 10, h: 8 }, "search")}</Size>. Check
-            that the hanger on the back works both ways.
+            <Size>{IMAGE}</Size> becomes a <Size>{TURNED}</Size>. Check that the hanger on the back
+            works both ways.
           </Column>
         </div>
       </Section>

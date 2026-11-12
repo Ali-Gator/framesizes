@@ -186,3 +186,38 @@ test("returning every choice to its default clears the query string", async ({ p
   await pick(page, "16 × 20 in");
   await expect(page).toHaveURL(/\/$/);
 });
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-choice-is-written-to-the-url} */
+test("one selection writes the URL once, by click and by arrow key", async ({ page }) => {
+  await open(page);
+  await page.evaluate(() => {
+    const w = window as unknown as { __writes: number };
+    w.__writes = 0;
+    const replace = history.replaceState;
+    history.replaceState = function (this: History, ...args: Parameters<History["replaceState"]>) {
+      if (args[0] === null) w.__writes++; // the widget's own writes carry no state
+      return replace.apply(this, args);
+    };
+  });
+  const writes = () => page.evaluate(() => (window as unknown as { __writes: number }).__writes);
+  await pick(page, "11 × 14 in");
+  await expect(page).toHaveURL(/size=11x14/);
+  expect(await writes()).toBe(1);
+  await page.keyboard.press("ArrowDown");
+  await expect(page).toHaveURL(/size=11x17/);
+  expect(await writes()).toBe(2);
+});
+
+/** {@link openspec/specs/frame-size-chart/spec.md#requirement-the-widgets-state-lives-in-the-url} */
+test("following the logo link back to the home page restores the defaults", async ({ page }) => {
+  await open(page, "/?size=11x14&ref=door");
+  await expect(sizeRadio(page, "11 × 14 in")).toBeChecked();
+  await page.getByRole("link", { name: "framesizes.app home" }).first().click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(sizeRadio(page, "16 × 20 in")).toBeChecked();
+  await expect(
+    preview(page, "16x20 picture frame at true scale next to a three-seat sofa"),
+  ).toBeVisible();
+  await pick(page, "8 × 10 in");
+  await expect(page).toHaveURL(/\/\?size=8x10$/);
+});

@@ -92,6 +92,61 @@ test("a row focused by keyboard is never under the pinned preview", async ({ pag
   }
 });
 
+/** Phone and desktop, the longest legend (cm, person) included, moving up and down. */
+for (const { viewport, path, unit } of [
+  { viewport: PHONE, path: "/?ref=person&size=24x36", unit: "cm" },
+  { viewport: { width: 360, height: 640 }, path: "/?ref=door&size=24x36", unit: "cm" },
+  { viewport: DESKTOP, path: "/", unit: "in" },
+  { viewport: { width: 960, height: 800 }, path: "/", unit: "in" },
+] as const) {
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-keyboard-focus-under-a-pinned-preview} */
+  test(`focused rows stay clear of the pinned block at ${viewport.width}×${viewport.height}, ${path}, ${unit}`, async ({
+    page,
+  }) => {
+    await page.addInitScript((stored) => localStorage.setItem("unit", stored), unit);
+    await page.setViewportSize(viewport);
+    await open(page, path);
+    const pinned = viewport.width >= 844 ? ".fc-filters" : ".fc-preview";
+    if (viewport.width < 844) {
+      await scrollToLastRow(page);
+      expect((await rect(page, ".fc-preview figure")).bottom).toBeLessThanOrEqual(
+        viewport.height / 2,
+      );
+    }
+    await page.locator("tbody input:checked").focus();
+    for (const key of ["ArrowUp", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown"]) {
+      await page.keyboard.press(key);
+      await page.waitForTimeout(150);
+      const row = await page.locator("tbody tr:has(input:focus)").evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom };
+      });
+      const cover = await rect(page, pinned);
+      expect(row.top, key).toBeGreaterThanOrEqual(Math.max(cover.bottom, 0) - 1);
+      expect(row.bottom, key).toBeLessThanOrEqual(viewport.height + 1);
+    }
+  });
+}
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-desktop-screen} */
+test("the two columns and their pinning start together", async ({ page }) => {
+  // Container 844px = viewport 948px (page and card padding): one column at 900, two at 960.
+  await page.setViewportSize({ width: 900, height: 800 });
+  await open(page);
+  expect((await rect(page, ".fc-preview")).bottom).toBeLessThanOrEqual(
+    (await rect(page, ".fc-controls")).top,
+  );
+  await page.setViewportSize({ width: 960, height: 800 });
+  await scrollToLastRow(page);
+  const [filters, preview] = await Promise.all([
+    rect(page, ".fc-filters"),
+    rect(page, ".fc-preview"),
+  ]);
+  expect(preview.right).toBeLessThanOrEqual(filters.left);
+  expect(filters.top).toBeGreaterThanOrEqual(0);
+  expect(preview.top).toBeGreaterThanOrEqual(0);
+});
+
 /** Cumulative layout shift from navigation, without input, once the widget is interactive. */
 async function layoutShift(page: Page, path: string, unit?: "cm") {
   await page.addInitScript((stored) => {

@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-18**
+_Next id:_ **BL-19**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -92,3 +92,8 @@ when to add and when to fold items in.
   in seven pairs them with a 16x24 / 24x36 mat (t2 `verification.md`); look again at the next data
   check.
   _Refs:_ `packages/sizes/src/frames.ts` · _Status:_ deferred — the next size data check
+- **[BL-18] Small outlines are hard to click in the all-sizes view** — outlines have transparent
+  fills and smaller ones sit on top, so 8.5x11 is clickable on a strip about 2px wide on a phone
+  (12x16 and 12x18 about 4px). The table radios do the same job; select by the nearest edge
+  instead (t2 phase review).
+  _Refs:_ `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open

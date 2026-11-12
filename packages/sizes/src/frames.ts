@@ -133,13 +133,15 @@ export function commonFrames(): readonly Frame[] {
 }
 
 /**
- * The entry after `frame` in its orientation's list; `undefined` for the last.
+ * The first later entry of `frame`'s list that is at least as wide and as tall (11x17 skips the
+ * shorter 12x16); `undefined` when there is none.
  * {@link openspec/specs/size-engine/spec.md#requirement-the-next-size-up-follows-the-list}
  */
 export function nextSizeUp(frame: Frame): Frame | undefined {
   const list = LISTS[frame.orientation];
   const index = list.findIndex((f) => f.id === frame.id);
-  return index < 0 ? undefined : list[index + 1];
+  if (index < 0) return undefined;
+  return list.slice(index + 1).find((f) => f.w >= frame.w && f.h >= frame.h);
 }
 
 /** The example moulding width and the mat's overlap on each side of the image, in inches. */

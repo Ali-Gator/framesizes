@@ -36,8 +36,8 @@ const ITEMS = [
     q: "What are the standard photo frame sizes?",
     a: (
       <p>
-        Photo frames use the same sizes as other picture frames. The usual ones for photos are{" "}
-        {photoSizes} inches, because they match the standard photo print sizes.
+        {photoSizes} inches are the usual photo frame sizes, because they match the standard photo
+        print sizes. Photo frames use the same sizes as other picture frames.
       </p>
     ),
   },

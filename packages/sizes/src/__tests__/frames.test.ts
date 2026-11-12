@@ -97,6 +97,24 @@ describe("next size up", () => {
     expect(nextSizeUp(frame("20x16"))?.id).toBe("24x18");
   });
 
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-later-size-that-is-not-larger} */
+  it("skips a later entry that is shorter", () => {
+    expect(nextSizeUp(frame("11x17"))?.id).toBe("12x18");
+    expect(nextSizeUp(frame("17x11"))?.id).toBe("18x12");
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-every-next-size-up-holds-the-size} */
+  it("is never smaller in either dimension", () => {
+    for (const orientation of ["portrait", "landscape", "square"] as const) {
+      for (const f of framesFor(orientation)) {
+        const next = nextSizeUp(f);
+        if (!next) continue;
+        expect(next.w, f.id).toBeGreaterThanOrEqual(f.w);
+        expect(next.h, f.id).toBeGreaterThanOrEqual(f.h);
+      }
+    }
+  });
+
   /** {@link openspec/specs/size-engine/spec.md#scenario-the-largest-size} */
   it("is none for the last entry", () => {
     expect(nextSizeUp(frame("27x40"))).toBeUndefined();
