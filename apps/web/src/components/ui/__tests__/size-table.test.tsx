@@ -49,3 +49,48 @@ it("checks the selected row's radio only", () => {
 it("hides rows of the other shape instead of removing them", () => {
   expect(rows.map((r) => r.hasAttribute("hidden"))).toEqual([false, false, true]);
 });
+
+/** The phone rows restyle the table, so its semantics are explicit and the mat cell is marked. */
+const phoneDoc = new DOMParser().parseFromString(
+  renderToStaticMarkup(
+    <SizeTable
+      caption="Sizes"
+      name="frame-size"
+      columns={[
+        { label: "Frame size", num: true },
+        { label: "Image with a mat", num: true, mat: true },
+        { label: "Common use" },
+      ]}
+      value="8x10"
+      rows={[
+        { id: "8x10", label: "8 × 10 in", cells: ["5 × 7 in", "Portraits"], mat: true },
+        { id: "20x30", label: "20 × 30 in", cells: ["No mat", "Large photo prints"] },
+      ]}
+    />,
+  ),
+  "text/html",
+);
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-rows-on-a-phone} */
+it("keeps table semantics through explicit roles", () => {
+  expect(phoneDoc.querySelector("table")?.getAttribute("role")).toBe("table");
+  const rows = [...phoneDoc.querySelectorAll("tr")];
+  expect(rows).toHaveLength(3);
+  for (const row of rows) expect(row.getAttribute("role")).toBe("row");
+  for (const th of phoneDoc.querySelectorAll("thead th")) {
+    expect(th.getAttribute("role")).toBe("columnheader");
+  }
+  for (const th of phoneDoc.querySelectorAll("tbody th")) {
+    expect(th.getAttribute("role")).toBe("rowheader");
+  }
+  const cells = [...phoneDoc.querySelectorAll("td")];
+  expect(cells).toHaveLength(4);
+  for (const td of cells) expect(td.getAttribute("role")).toBe("cell");
+});
+
+/** {@link openspec/specs/frame-size-chart/spec.md#requirement-the-table-is-the-size-chooser} */
+it("marks only the cells that hold a mat", () => {
+  expect([...phoneDoc.querySelectorAll("[data-mat]")].map((el) => el.textContent)).toEqual([
+    "5 × 7 in",
+  ]);
+});

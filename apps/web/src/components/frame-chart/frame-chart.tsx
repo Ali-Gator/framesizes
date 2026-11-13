@@ -89,6 +89,7 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
     label: writeSize(f, unit),
     cells: [writeSize(f, other), f.mat ? writeSize(f.mat, unit) : "No mat", f.use],
     hidden: (f.orientation === "square") !== square,
+    mat: !!f.mat,
   }));
 
   return (
@@ -146,7 +147,7 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
               columns={[
                 { label: "Frame size", num: true },
                 { label: unit === "cm" ? "Inches" : "Centimetres", num: true },
-                { label: "Image with a mat", num: true },
+                { label: "Image with a mat", num: true, mat: true },
                 { label: "Common use" },
               ]}
               rows={rows}

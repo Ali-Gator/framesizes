@@ -32,3 +32,134 @@ test("a click near the 8.5x11 corner selects it", async ({ page }) => {
   await page.mouse.click(point.x, point.y);
   await expect(sizeRadio(page, "8.5 × 11 in")).toBeChecked();
 });
+
+const visibleRows = (page: Page) => page.locator("tbody tr:not([hidden])");
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-rows-on-a-phone} */
+test("the rows on a phone are full-width blocks of one height in both units", async ({ page }) => {
+  await open(page);
+  await expect(visibleRows(page)).toHaveCount(14);
+  const measure = () =>
+    page.evaluate(() => {
+      const wrap = document.querySelector(".fs-table-wrap") as HTMLElement;
+      const rows = [...document.querySelectorAll("tbody tr:not([hidden])")].map((tr) => {
+        const r = tr.getBoundingClientRect();
+        return { id: tr.querySelector("input")?.value, width: r.width, height: r.height };
+      });
+      return {
+        wrap: wrap.getBoundingClientRect().width,
+        scrolls: wrap.scrollWidth > wrap.clientWidth,
+        rows,
+      };
+    });
+  const check = async () => {
+    const found = await measure();
+    expect(found.scrolls).toBe(false);
+    for (const row of found.rows) {
+      expect(row.height, row.id).toBeGreaterThanOrEqual(44);
+      expect(Math.abs(row.width - found.wrap), row.id).toBeLessThanOrEqual(1);
+    }
+    return found;
+  };
+  const inches = await check();
+  await page
+    .getByRole("radiogroup", { name: "Orientation" })
+    .getByRole("radio", { name: "Square" })
+    .click();
+  await expect(visibleRows(page)).toHaveCount(5);
+  await check();
+
+  await page.addInitScript(() => localStorage.setItem("unit", "cm"));
+  await open(page);
+  await expect(sizeRadio(page, "68.6 × 101.6 cm")).toBeAttached();
+  const cm = await check();
+  const height = (found: typeof cm) => found.rows.find((r) => r.id === "27x40")?.height;
+  expect(height(cm)).toBe(height(inches));
+});
+
+test.describe("on a touch screen", () => {
+  test.use({ hasTouch: true });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-row-is-tapped-on-a-phone} */
+  test("a tap on the 11x14 mat line selects it", async ({ page }) => {
+    await open(page);
+    const mat = page
+      .locator('tbody tr:has(input[value="11x14"])')
+      .getByRole("cell", { name: "8 × 10 in" });
+    await mat.scrollIntoViewIfNeeded();
+    // The row's label is stretched over the row on purpose: tap the cell's centre regardless.
+    await mat.tap({ force: true });
+    await expect(sizeRadio(page, "11 × 14 in")).toBeChecked();
+  });
+});
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-filters-on-a-phone} */
+test("the filters on a phone are thumb-sized and full-width", async ({ page }) => {
+  await open(page);
+  const found = await page.evaluate(() => {
+    const filters = document.querySelector(".fc-filters") as HTMLElement;
+    const style = getComputedStyle(filters);
+    const content =
+      filters.getBoundingClientRect().width -
+      parseFloat(style.paddingLeft) -
+      parseFloat(style.paddingRight);
+    const group = (name: string) =>
+      document.querySelector(`[role="radiogroup"][aria-label="${name}"]`) as HTMLElement;
+    const box = (el: Element) => el.getBoundingClientRect();
+    const nextTo = group("Next to");
+    return {
+      content,
+      orientation: box(group("Orientation")),
+      preview: box(group("Preview")),
+      nextTo: box(nextTo),
+      nextToRow: box(nextTo.closest(".fs-field") as Element),
+    };
+  });
+  for (const name of ["orientation", "preview", "nextTo"] as const) {
+    expect(found[name].height, name).toBeGreaterThanOrEqual(44);
+  }
+  for (const name of ["orientation", "preview", "nextToRow"] as const) {
+    expect(Math.abs(found[name].width - found.content), name).toBeLessThanOrEqual(1);
+  }
+});
+
+test.describe("at 360 × 640", () => {
+  test.use({ viewport: { width: 360, height: 640 } });
+
+  for (const unit of ["in", "cm"]) {
+    /** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-narrowest-phone} */
+    test(`nothing scrolls sideways, ${unit}`, async ({ page }) => {
+      await page.addInitScript((stored) => localStorage.setItem("unit", stored), unit);
+      await open(page);
+      const found = await page.evaluate(() => ({
+        document: document.documentElement.scrollWidth,
+        viewport: window.innerWidth,
+        scrolling: [...document.querySelectorAll(".fc *")]
+          .filter((el) => {
+            const overflow = getComputedStyle(el).overflowX;
+            return (
+              (overflow === "auto" || overflow === "scroll") && el.scrollWidth > el.clientWidth
+            );
+          })
+          .map((el) => el.getAttribute("class")),
+      }));
+      expect(found.document).toBeLessThanOrEqual(found.viewport);
+      expect(found.scrolling).toEqual([]);
+    });
+  }
+});
+
+/** {@link openspec/specs/frame-size-chart/spec.md#requirement-the-preview-stays-in-view-while-the-table-scrolls} */
+test("moving up the list keeps each focused row below the pinned preview", async ({ page }) => {
+  await open(page, "/?size=27x40");
+  await sizeRadio(page, "27 × 40 in").focus();
+  for (let i = 0; i < 13; i++) {
+    await page.keyboard.press("ArrowUp");
+    const { rowTop, previewBottom } = await page.evaluate(() => ({
+      rowTop: (document.activeElement?.closest("tr") as Element).getBoundingClientRect().top,
+      previewBottom: (document.querySelector(".fc-preview") as Element).getBoundingClientRect()
+        .bottom,
+    }));
+    expect(rowTop).toBeGreaterThanOrEqual(previewBottom - 1);
+  }
+});
