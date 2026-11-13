@@ -51,4 +51,4 @@ Every task below adds new tests only. No existing test is edited (design.md, Dec
 - [x] 3.4 Before archiving, update the permanent spec's prose that the requirements do not carry (`openspec/specs/frame-size-chart/spec.md`):
   - Behavior: fixed column widths apply from a widget width of 600px; below it the rows are stacked; the label overlay; the `50svh − 112px` stage cap applies only from 600px, with a 184px stage below it.
   - Public Interface: add `nearestSize`.
-- [ ] 3.5 Archive (`/opsx:archive` flow, no Tracker), preflight, push, PR to `main` (state in the PR: finger precision on a real iPhone not checked; the owner checks it on their phone), auto-merge with a merge commit
+- [x] 3.5 Archive (`/opsx:archive` flow, no Tracker), preflight, push, PR to `main` (state in the PR: finger precision on a real iPhone not checked; the owner checks it on their phone), auto-merge with a merge commit
