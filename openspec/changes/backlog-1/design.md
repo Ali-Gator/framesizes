@@ -22,20 +22,20 @@ The frame chart widget (`frame-size-chart`, route `/`) was designed and tested a
 
 ## Members
 
-**BL-19 + BL-11: phone size picker.** Under `@container (max-width: 599.98px)` on `.fc`, `widgets.css` restyles the existing table into the board's rows. The table loses its `min-width` and border, and the `thead` is visually hidden. Each `tr` becomes a two-column grid (text, then a 22px radio), `68px` tall, with padding `0 16px 0 20px` and a top border. Inside it:
+**BL-19 + BL-11: phone size picker.** Under `@container (max-width: 599.98px)` on `.fc`, `widgets.css` restyles the existing table into the board's rows. The rows are full-bleed, as on the boards: the widget body's side padding goes to 0 for the chart's card, and the pinned block, the filters and the hint line carry their own 16px. The body is an ancestor of `.fc`, so the container query cannot reach it; use a `.fs-widget-body:has(> .fc)` rule under `@media (max-width: 599.98px)`. Without this, the widget is about 294px wide at 360 and "68.6 × 101.6 cm" next to "27 × 40 in" does not fit on line 1. The table loses its `min-width` and border, and the `thead` is visually hidden. Each visible `tr` (the rule is scoped to `tr:not([hidden])`) becomes a grid of three lines, `68px` tall, with padding `0 16px 0 20px` and a top border. Inside it:
 
 - the `th` label shows the size at 17px mono;
 - the other-unit cell sits beside it at 13px muted;
 - the mat cell is line 2 at 13px muted, prefixed "With a mat: " by CSS `::before` on cells that hold a mat;
 - the use cell is line 3 at 13px.
 
-Lines do not wrap; they end in an ellipsis. The radio becomes visible: `appearance: none`, a 22px circle, and a 5px ink dot when checked. A selected row gets the tape fill and a 4px ink bar; a pressed row (`:active`) gets the stage fill; keyboard focus gets a 2px focus outline inset 4px. The filters stack with an 8px gap, and each segmented track is 44px tall and full width with equal options. Orientation and Preview keep only their accessible names. "Next to" keeps its visible label beside the control on one row, hidden with `visibility` in the all-sizes view.
+Lines do not wrap; they clip with an ellipsis (`overflow: hidden` on each line), so no width under 600px can make the table's box scroll. The `th` stays the line-1 grid item; never `display: contents` on it or on any cell, because WebKit drops such cells from the accessibility tree whatever their `role`. The radio, which lives inside the `th`, becomes visible and is positioned absolutely against the `tr` (already `position: relative`), vertically centred, 16px from the right edge, with the text lines leaving room for it: `appearance: none`, a 22px circle, and a 5px ink dot when checked. A selected row gets the tape fill and a 4px ink bar; a pressed row (`:active`) gets the stage fill; keyboard focus gets a 2px focus outline inset 4px. The filters stack with an 8px gap, and each segmented track is 44px tall and full width with equal options. Orientation and Preview keep only their accessible names. "Next to" keeps its visible label beside the control on one row, hidden with `visibility` in the all-sizes view.
 
 The pinned block (preview stage plus legend) uses padding `12px 16px 8px`, a fixed `184px` stage height and a 52px legend of two lines. Line 1 is the size and the other unit. Line 2 is the next-size line, or the "N sizes from one corner" line in the all-sizes view. The reference sentence is kept for screen readers only (Decision 6). Radios get `scroll-margin-top: 264px`. The short-phone rule (pinned only from 600px of viewport height) is unchanged.
 
 In `size-table.tsx`, the `table`, `tr`, `th` and `td` elements get explicit `role` attributes (`table`, `row`, `rowheader`, `cell`, `columnheader`), because WebKit drops table semantics once `display` changes. The mat cell is marked (for example `data-mat`) so CSS can tell a mat size from "No mat". Files: `apps/web/src/app/widgets.css`, `apps/web/src/components/ui/size-table.tsx`, `apps/web/src/components/frame-chart/frame-chart.tsx` (mat cell marker, if passed per cell).
 
-**BL-12: six common sizes in two rows.** `common-sizes.tsx` draws two SVGs: 4x6, 5x7 and 8x10 in one, and 11x14, 16x20 and 24x36 in the other. Both use `SCALE` and a viewBox `3 × COLUMN` wide, so the two rows share one scale by construction. Each viewBox is trimmed to its own tallest frame, and each SVG draws its own baseline. Each SVG sits in a row element followed by an `ol` of its three labels, so labels sit under their frames, which also fixes today's 10px label drift. Both rows are inside one `figure`. Below 640px the rows stack. From 640px they sit side by side on one baseline (a two-row grid with `subgrid`, SVGs aligned to the end of the first track). The sideways scroll box, its `tabIndex` and the 720px minimum go. Files: `apps/web/src/components/frame-chart/common-sizes.tsx`.
+**BL-12: six common sizes in two rows.** `common-sizes.tsx` draws two SVGs: 4x6, 5x7 and 8x10 in one, and 11x14, 16x20 and 24x36 in the other. Both use `SCALE` and a viewBox `3 × COLUMN` wide, so the two rows share one scale by construction. Each viewBox is trimmed to its own tallest frame, and each SVG draws its own baseline. Each SVG sits in a row element followed by an `ol` of its three labels, so labels sit under their frames, which also fixes today's 10px label drift. Both rows are inside one `figure`. Below 640px the rows stack. The cm label may wrap below about 360px (Decision 8); at 320 three columns are about 88px wide and "27.9 × 35.6 cm" is about 101px on one line. From 640px they sit side by side on one baseline (a two-row grid with `subgrid`, SVGs aligned to the end of the first track). The sideways scroll box, its `tabIndex` and the 720px minimum go. Files: `apps/web/src/components/frame-chart/common-sizes.tsx`.
 
 **BL-18: nearest corner.** A pure `nearestSize(layout, x, y)` next to `compareLayout` in `size-compare.tsx` returns the id of the size whose top-right corner `(x0 + w·scale, base − h·scale)` is nearest to a point in stage units. It returns `undefined` when that distance is more than `3 · scale`. One `onClick` on the svg converts the client point with `getScreenCTM().inverse()`; the per-rect `onClick` goes. `cursor: pointer` moves from `.cmp` to the svg, and `.cmp:hover` is dropped, because it would light the topmost rect while the click picks another. The rects keep `data-size`. Files: `apps/web/src/components/ui/size-compare.tsx`, `apps/web/src/app/widgets.css`.
 
@@ -63,6 +63,8 @@ In `size-table.tsx`, the `table`, `tr`, `th` and `td` elements get explicit `rol
 
 7. **Pinned shadow (agent, technical).** The board shows a bottom border and a shadow on the pinned block only while it is stuck. CSS cannot tell "stuck" in every browser without script. The phone block always draws the 1px bottom border and no shadow.
 
+8. **Six sizes: the cm label wraps on the narrowest phones (agent, technical).** The board sets the cm label to `nowrap`. Without the scroll box, that overflows the page at 320px, which the existing `e2e/shell-a11y.spec.ts` check of the document's `scrollWidth` at 320 forbids. The cm label wraps instead.
+
 ## Approved boards
 
 Canvas: Frame Sizes — Main Page, https://claude.ai/artifact/FA2okr9myNhQiZsaGdeuMD, version `1794568306-f1d0`. Boards:
@@ -76,7 +78,7 @@ Canvas: Frame Sizes — Main Page, https://claude.ai/artifact/FA2okr9myNhQiZsaGd
 - `CommonSizes.dc.html` "Phone 375 — six common sizes"
 - `PickerShort.dc.html` "Phone 375×548 — short phone, preview scrolls away"
 
-**Approved:** the owner (user), 2026-11-13, recorded by the designer in CLAUDE.md "Design source". Decisions 4–7 are where the build deliberately differs from the boards.
+**Approved:** the owner (user), 2026-11-13, recorded by the designer in CLAUDE.md "Design source". Decisions 4–8 are where the build deliberately differs from the boards. **Departures approved:** the owner accepted Decisions 4–8 as documented (user, 2026-11-13).
 
 ## Corrections to the bullets
 
