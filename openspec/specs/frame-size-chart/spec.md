@@ -37,7 +37,7 @@ function RelatedTools(props: { pages?: readonly SitePage[] }): JSX.Element | nul
 function IfLive(props: { page: PageId; children: ReactNode }): JSX.Element | null;
 ```
 
-Props-in widgets under `apps/web/src/components/ui/` (ported from the design system, styles in `apps/web/src/app/widgets.css`): `WidgetCard`, `Button`, `ToolCard`, `FAQ`, `SizeTable`, `ScalePreview`, `SizeCompare` (with the pure `compareLayout`, and `nearestSize(layout, x, y)`: the id of the size whose top-right corner is nearest a point in stage units, `undefined` beyond `3 · scale`).
+Props-in widgets under `apps/web/src/components/ui/` (ported from the design system, styles in `apps/web/src/app/widgets.css`): `WidgetCard`, `Button`, `ToolCard`, `FAQ`, `SizeTable`, `ScalePreview`, `SizeCompare` (with the pure `compareLayout(sizes, value, unit = "in")`, whose labels carry a box sized for `LABEL_FONT` (26 stage units) with an `INSET` of 6 and an `end` or `start` anchor, and `nearestSize(layout, x, y)`: the id of the size whose top-right corner is nearest a point in stage units, `undefined` beyond `3 · scale`).
 
 ## Behavior
 
@@ -47,9 +47,9 @@ The store also wraps `history.pushState` once, so a soft navigation (the logo li
 
 The table is the chooser: each row's first cell is a `th scope="row"` holding a visually hidden radio and its label, one radio group, the label stretched over the row by an `::after` overlay. The table elements carry explicit ARIA roles, which survive a `display` change in WebKit, and a mat cell carries `data-mat`. All 19 rows are always in the HTML; rows of the other shape carry `hidden`. Orientation is read from the selected id; Portrait and Landscape turn it, Square selects 12x12, leaving Square selects 16x20 turned as chosen.
 
-From a container width of 844px the widget is two grid columns (5fr / 8fr) and the preview and the filter row are `position: sticky`; focused radios keep a 210px `scroll-margin-top` clear of the wrapped filter row. Below that, the preview is sticky only from 600px of viewport height, its stage capped at `50svh − 112px` from a widget width of 600px and its legend set smaller so the longest legend (cm, person or door) still ends in the upper half; radios get a `scroll-margin-top` so a focused row stops below the pinned block.
+From a container width of 844px the widget is two grid columns (5fr / 8fr) and the preview and the filter row are `position: sticky`; focused radios keep a 210px `scroll-margin-top` clear of the wrapped filter row. Below that, the preview is sticky only from 600px of viewport height, its stage capped at `50svh − 112px` and centred (the svg unclipped so the wall drawing's floor, drawn three stage widths wide, reaches the card's edges) and its legend set smaller so the longest legend (cm, person or door) still ends in the upper half. These one-column rules query the named `fc` container, so they never reach the two-column preview; radios get a `scroll-margin-top` so a focused row stops below the pinned block.
 
-When the chart's card is under 640px wide inside (a widget under 600px), the phone layout applies: the body's side padding goes to 0, each visible row is a 68px grid of three clipped lines (size and other unit, mat, use) with a visible 22px radio on the right, the filters stack as full-width 44px tracks, and the pinned preview has a 184px stage and a two-line 52px legend, the reference sentence visually hidden. Focused radios keep a 287px `scroll-margin-top` while the preview is pinned. In the all-sizes view one click handler on the svg maps the pointer into stage units and selects `nearestSize`. Below a viewport width of 640px the six common sizes are two row drawings of three at one scale.
+When the chart's card is under 640px wide inside (a widget under 600px), the phone layout applies: the body's side padding goes to 0, each visible row is a 68px grid of three clipped lines (size and other unit, mat, use) with a visible 22px radio on the right, the filters stack as full-width 44px tracks, and the pinned preview has a 184px stage and a two-line 52px legend, the reference sentence visually hidden; its svg stays clipped, and both drawings' labels are 26 stage units. Focused radios keep a 287px `scroll-margin-top` while the preview is pinned. In the all-sizes view one click handler on the svg maps the pointer into stage units and selects `nearestSize`. Below a viewport width of 640px the six common sizes are two row drawings of three at one scale.
 
 Text that only sends the visitor elsewhere is wrapped in `IfLive`; `RelatedTools` lists live Frames pages plus P1, PH1, C1 and G1, and renders nothing while none is live.
 
@@ -165,6 +165,8 @@ In the "On a wall" view the widget SHALL draw the selected size at true scale be
 
 In the "All sizes" view the widget SHALL draw every size of the current list as nested outlines from one corner at one scale, highlight the selected size, hide the reference choice, and, when the drawing is clicked, select the size whose top-right corner is nearest the click; a click more than 3 in (drawn scale) from every top-right corner SHALL select nothing. The drawing SHALL be named "Standard frame sizes chart from <smallest> to <largest> inches, <selected> highlighted".
 
+Each outline's label SHALL sit under the outline's top edge, ending near its top-right corner; a label too wide for the room left of that corner SHALL start at the outlines' shared left edge instead, so no label starts outside the drawing. No two labels SHALL overlap, measured as text boxes at the largest label size the widget draws. The selected size SHALL always carry its label, and with no size selected every major size SHALL carry one.
+
 #### Scenario: The view is switched
 
 - **WHEN** the visitor chooses "All sizes"
@@ -185,14 +187,29 @@ In the "All sizes" view the widget SHALL draw every size of the current list as 
 - **WHEN** the visitor clicks more than 3 in (drawn scale) from every outline's top-right corner
 - **THEN** the selection does not change
 
+#### Scenario: Labels stay inside the drawing and apart
+
+- **WHEN** the drawing is laid out for any size of the portrait, landscape or square list, in inches and in centimetres
+- **THEN** the selected size's label comes first, every label starts at or right of the outlines' left edge, and no two labels' text boxes overlap
+
+#### Scenario: A label wider than its outline on a phone
+
+- **WHEN** `/?view=all&size=8.5x11` is opened at 390 × 664
+- **THEN** the "8.5×11" label's left edge is at or right of the 4x6 outline's left edge
+
 ### Requirement: The widget follows the site's unit
 
-When the visitor's unit is centimetres, the table's first column SHALL give centimetres and its second column, headed "Inches", the inch form; the mat column, the wall drawing's dimension labels and the reference sentence SHALL be in centimetres. The all-sizes drawing labels each outline with its size's name (`11×14`), which stays in inches. With inches selected the second column is headed "Centimetres".
+When the visitor's unit is centimetres, the table's first column SHALL give centimetres and its second column, headed "Inches", the inch form; the mat column, the wall drawing's dimension labels and the reference sentence SHALL be in centimetres. The all-sizes drawing SHALL label each outline in the visitor's unit: by its size's name in inches (`11×14`), or in whole centimetres (`28×36`); its accessible name stays in inches. With inches selected the second column is headed "Centimetres".
 
 #### Scenario: The visitor switches to centimetres
 
 - **WHEN** the visitor selects "cm" in the header
 - **THEN** the selected row's first cell reads "40.6 × 50.8 cm", the second column is headed "Inches", and the sentence under the drawing reads "Hung 20 cm above a sofa 213 cm wide"
+
+#### Scenario: All sizes in centimetres
+
+- **WHEN** the visitor's unit is centimetres and the "All sizes" view shows 16x20 selected
+- **THEN** the 16x20 outline is labelled "41×51", the 5x7 outline "13×18", and the drawing is still named "Standard frame sizes chart from 4x6 to 27x40 inches, 16x20 highlighted"
 
 ### Requirement: The widget's state lives in the URL
 
@@ -220,12 +237,22 @@ The widget SHALL write the selected size (as its oriented id), the view and the 
 
 ### Requirement: The preview stays in view while the table scrolls
 
-In the two-column layout the preview and the filter row SHALL stay pinned while the visitor scrolls the table. In the one-column layout the preview SHALL stay pinned only when the table keeps at least half of the viewport's height beside it; on a shorter screen it SHALL scroll away with the page. A pinned preview SHALL NOT cover the row that has keyboard focus.
+In the two-column layout the preview and the filter row SHALL stay pinned while the visitor scrolls the table, and the preview's drawing SHALL keep its full aspect height whatever the viewport's height. In the one-column layout the preview SHALL stay pinned only when the table keeps at least half of the viewport's height beside it; on a shorter screen it SHALL scroll away with the page. Where a pinned drawing is capped by the viewport's height it SHALL be centred in the preview, the wall drawing's floor reaching both sides of the preview. A pinned preview SHALL NOT cover the row that has keyboard focus.
 
 #### Scenario: A desktop screen
 
 - **WHEN** `/` is opened at 1280 × 800 and the last table row is scrolled into view
 - **THEN** the whole preview and the filter row are inside the viewport
+
+#### Scenario: A short desktop screen
+
+- **WHEN** `/` is opened at 1280 × 640
+- **THEN** the preview's drawing is as tall as its width at its aspect ratio, within 1 px
+
+#### Scenario: A one-column screen
+
+- **WHEN** `/` is opened at 768 × 900 and at 900 × 800
+- **THEN** the drawing's left and right gaps inside the preview are equal within 1 px, and the floor reaches both sides of the preview
 
 #### Scenario: A phone
 
@@ -356,3 +383,12 @@ When the widget is narrower than 600px, the Orientation, Preview and Next to con
 
 - **WHEN** `/` is opened at 360 × 640
 - **THEN** the document does not scroll sideways and no element inside the widget scrolls sideways
+
+### Requirement: The drawings' labels are legible on a phone
+
+In the phone layout the wall drawing's dimension labels and the all-sizes outline labels SHALL be drawn at least 12px tall on screen.
+
+#### Scenario: Labels at 390px
+
+- **WHEN** `/` is opened at 390 × 664, in the wall view and then in the "All sizes" view
+- **THEN** each dimension label and each outline label renders at a font size of at least 12 px
