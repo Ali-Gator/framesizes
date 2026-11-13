@@ -147,14 +147,21 @@ export function ScalePreview({
           role="img"
           aria-label={name}
         >
+          {/* Past the viewBox both sides: the capped one-column preview shows it to the card's edges. */}
           <rect
             className="floor"
-            x={0}
+            x={-STAGE.width}
             y={STAGE.floor}
-            width={STAGE.width}
+            width={3 * STAGE.width}
             height={STAGE.height - STAGE.floor}
           />
-          <line className="wall-line" x1={0} x2={STAGE.width} y1={STAGE.floor} y2={STAGE.floor} />
+          <line
+            className="wall-line"
+            x1={-STAGE.width}
+            x2={2 * STAGE.width}
+            y1={STAGE.floor}
+            y2={STAGE.floor}
+          />
           {scene.centreLine !== null ? (
             <line
               className="guide"

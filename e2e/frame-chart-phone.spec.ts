@@ -202,3 +202,37 @@ test.describe("at 640 × 800", () => {
     for (const w of rows) expect(Math.abs(w - card)).toBeLessThanOrEqual(1);
   });
 });
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-label-wider-than-its-outline-on-a-phone} */
+test("the 8.5x11 label starts inside the drawing on a phone", async ({ page }) => {
+  await open(page, "/?view=all&size=8.5x11");
+  const { label, outline } = await page.evaluate(() => {
+    const text = [...document.querySelectorAll("text.cmp-label")].find(
+      (t) => t.textContent === "8.5×11",
+    );
+    return {
+      label: text?.getBoundingClientRect().left ?? null,
+      outline: (document.querySelector('rect[data-size="4x6"]') as Element).getBoundingClientRect()
+        .left,
+    };
+  });
+  expect(label).not.toBeNull();
+  expect(label as number).toBeGreaterThanOrEqual(outline);
+});
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-labels-at-390px} */
+test("the drawings' labels render at 12px or more on a phone", async ({ page }) => {
+  for (const path of ["/", "/?view=all"]) {
+    await open(page, path);
+    const sizes = await page.evaluate(() =>
+      [...document.querySelectorAll("main .dim-text, main .cmp-label")].map((el) => ({
+        text: el.textContent,
+        px:
+          parseFloat(getComputedStyle(el).fontSize) *
+          ((el as SVGGraphicsElement).ownerSVGElement?.getScreenCTM()?.a ?? 0),
+      })),
+    );
+    expect(sizes.length, path).toBeGreaterThan(0);
+    for (const { text, px } of sizes) expect(px, `${path} ${text}`).toBeGreaterThanOrEqual(12);
+  }
+});

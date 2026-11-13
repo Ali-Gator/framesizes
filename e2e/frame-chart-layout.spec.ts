@@ -233,3 +233,37 @@ test("three drawings, each with its own name, in every view", async ({ page }) =
     for (const name of names) expect(name, path).not.toBe("");
   }
 });
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-one-column-screen} */
+for (const viewport of [
+  { width: 768, height: 900 },
+  { width: 900, height: 800 },
+]) {
+  test(`the capped drawing is centred and the floor reaches both sides at ${viewport.width}×${viewport.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    const gaps = () =>
+      page.locator(".fc-preview figure").evaluate((figure) => {
+        const f = figure.getBoundingClientRect();
+        const s = (figure.querySelector(".fs-scale-stage") as Element).getBoundingClientRect();
+        return { left: s.left - f.left, right: f.right - s.right };
+      });
+    await open(page);
+    const wall = await gaps();
+    expect(Math.abs(wall.left - wall.right), JSON.stringify(wall)).toBeLessThanOrEqual(1);
+    // Hit-testing respects the svg's clipping: the floor answers only where it is drawn.
+    const hits = await page.locator(".fc-preview figure").evaluate((figure) => {
+      const f = figure.getBoundingClientRect();
+      const floor = (figure.querySelector(".floor") as Element).getBoundingClientRect();
+      const y = (floor.top + floor.bottom) / 2;
+      return [f.left + 2, f.right - 2].map(
+        (x) => document.elementFromPoint(x, y)?.getAttribute("class") ?? null,
+      );
+    });
+    expect(hits).toEqual(["floor", "floor"]);
+    await open(page, "/?view=all");
+    const all = await gaps();
+    expect(Math.abs(all.left - all.right), JSON.stringify(all)).toBeLessThanOrEqual(1);
+  });
+}

@@ -16,22 +16,22 @@ Only task 2.4 edits an existing test, as approved in design.md Decision 3. Every
 - [x] 2.2 BL-21: in `apps/web/src/app/widgets.css`, change the one-column block to `@container fc (max-width: 843.98px)`. Done when:
   - 2.1 passes;
   - every existing test in `e2e/frame-chart-layout.spec.ts` passes unchanged.
-- [ ] 2.3 BL-26: new e2e test in `e2e/frame-chart-layout.spec.ts`. At 768 × 900 and at 900 × 800, in the wall view:
+- [x] 2.3 BL-26: new e2e test in `e2e/frame-chart-layout.spec.ts`. At 768 × 900 and at 900 × 800, in the wall view:
   - the stage's left and right gaps inside `.fc-preview figure` are equal within 1 px;
   - `document.elementFromPoint` 2 px inside the figure's left edge and 2 px inside its right edge, at the floor's vertical middle, returns the `.floor` rect (hit-testing respects the svg's clipping, so this fails if `overflow: visible` is missing);
   - repeat the gap check with `?view=all`.
 
   Cite {@link openspec/specs/frame-size-chart/spec.md#scenario-a-one-column-screen}.
 
-- [ ] 2.4 BL-22, BL-27: unit tests in `apps/web/src/components/ui/__tests__/scale-preview.test.tsx`.
+- [x] 2.4 BL-22, BL-27: unit tests in `apps/web/src/components/ui/__tests__/scale-preview.test.tsx`.
   - Edit "labels the selected size and every major size without overlap" (approved, Decision 3). The pair check uses label boxes instead of `LABEL_GAP`. Every label box's left edge (`x`) is at or right of the layout's `x0`, and a label anchored at `end` has its box's right edge `INSET` left of its outline's corner. The orientation × selection loop runs for `"in"` and `"cm"`. All other assertions are unchanged.
   - New `it`: with `compareLayout(framesFor("portrait"), "16x20", "cm")`, 16x20's label text is `41×51` and 5x7's is `13×18`. Cite {@link openspec/specs/frame-size-chart/spec.md#scenario-all-sizes-in-centimetres}.
   - New `it`: render `SizeCompare` with `unit="cm"`. Its `aria-label` is still "Standard frame sizes chart from 4x6 to 27x40 inches, 16x20 highlighted", and a `text.cmp-label` reads `41×51`.
   - The edited test cites {@link openspec/specs/frame-size-chart/spec.md#scenario-labels-stay-inside-the-drawing-and-apart}.
-- [ ] 2.5 BL-22, BL-23: new e2e tests in `e2e/frame-chart-phone.spec.ts`. At 390 × 664:
+- [x] 2.5 BL-22, BL-23: new e2e tests in `e2e/frame-chart-phone.spec.ts`. At 390 × 664:
   - With `/?view=all&size=8.5x11`, the bounding box of the text reading `8.5×11` starts at or right of `rect[data-size="4x6"]`'s left edge ({@link openspec/specs/frame-size-chart/spec.md#scenario-a-label-wider-than-its-outline-on-a-phone}).
   - In the wall view and then the all-sizes view, each `.dim-text` and `.cmp-label` has a rendered font size of at least 12 px: computed `font-size` × the svg's `getScreenCTM().a` ({@link openspec/specs/frame-size-chart/spec.md#scenario-labels-at-390px}).
-- [ ] 2.6 BL-22, BL-23, BL-27, BL-26: the code.
+- [x] 2.6 BL-22, BL-23, BL-27, BL-26: the code.
   - In `size-compare.tsx`:
     - `compareLayout(sizes, value, unit = "in")` with the unit-aware text through `toWholeCm`;
     - `LABEL_FONT = 26` replaces `LABEL_GAP`;

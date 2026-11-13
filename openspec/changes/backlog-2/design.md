@@ -41,6 +41,7 @@ Label size is set in CSS: 14 units by default, 22 units under `@container (max-w
   - The bracket text ends before about 570.
   - The door's left edge is at about 134.
 - `SizeCompare` draws no floor, so centring is enough there.
+- The capped block also matches the phone layout, where the 184px stage is not the viewBox's ratio and the slice does crop. The phone block puts `overflow: hidden` back on the svg (and `margin-inline: 0` on the stage), so a cropped frame top never paints over the caption.
 - Files: `apps/web/src/app/widgets.css`, `apps/web/src/components/ui/scale-preview.tsx`.
 
 **BL-22, BL-23, BL-27: labels.**

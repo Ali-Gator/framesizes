@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-28**
+_Next id:_ **BL-29**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -114,3 +114,8 @@ when to add and when to fold items in.
   inches (`11×14`); with centimetres selected label them in whole centimetres (`28×36`), the
   spec's "stays in inches" sentence changing with it.
   _Refs:_ `apps/web/src/components/ui/size-compare.tsx`, `openspec/specs/frame-size-chart/spec.md` · _Status:_ open — owner's request, 2026-11-13
+- **[BL-28] Phone stage crops tall frames on wide phones** — in the phone layout the stage is a
+  fixed 184px tall, so on a card 560–640px wide the slice crops the top of the drawing: at 620 × 800
+  the 27x40 frame's top sits about 67px above the stage and is cut off. Size the phone stage by
+  width there, or clamp its ratio.
+  _Refs:_ `apps/web/src/app/widgets.css` (phone block) · _Status:_ open — found in backlog-2, 2026-11-13

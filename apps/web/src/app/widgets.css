@@ -235,7 +235,10 @@
 .fs-scale .cmp-label-in {
   fill: var(--on-tape);
 }
-/* The narrow stage draws at about 0.65 scale: larger type keeps labels near 14px on screen. */
+/*
+ * The narrow 4:3 stage draws at its width / 512, about 0.65 at a 333px stage and 1 at 520px, so
+ * 22-unit type renders about 14–22px. The chart's phone layout sets 26 units (`@container card`).
+ */
 @container (max-width: 520px) {
   .fs-scale .dim-text {
     font-size: 22px;
@@ -569,6 +572,11 @@
     /* Room for the longest legend: the size line and three lines of reference text. */
     .fc-preview .fs-scale-stage {
       max-height: calc(50svh - 112px);
+      margin-inline: auto;
+    }
+    /* The narrowed stage is centred; the wall drawing's floor runs past it to the card's edges. */
+    .fc-preview .fs-scale-stage svg {
+      overflow: visible;
     }
     .fc-preview .fs-scale-legend {
       padding: 6px 12px 8px;
@@ -615,6 +623,16 @@
     height: 184px;
     max-height: none;
     aspect-ratio: auto;
+    margin-inline: 0;
+  }
+  /* The fixed 184px stage is not the viewBox's ratio: the slice crops, so keep the svg clipped. */
+  .fc-preview .fs-scale-stage svg {
+    overflow: hidden;
+  }
+  /* 26 stage units, about 12.5px at 390px: LABEL_FONT in size-compare.tsx lays labels out for it. */
+  .fs-scale .dim-text,
+  .fs-scale .cmp-label {
+    font-size: 26px;
   }
   /* Two lines: the size and the other unit, then the next size (or the all-sizes line). */
   .fc-preview .fs-scale-legend {
