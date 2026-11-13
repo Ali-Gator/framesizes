@@ -12,8 +12,8 @@
 
 Only task 2.4 edits an existing test, as approved in design.md Decision 3. Every other task adds new tests only.
 
-- [ ] 2.1 BL-21: new e2e test in `e2e/frame-chart-layout.spec.ts`. At 1280 × 640, the `.fc-preview .fs-scale-stage` height equals its width divided by its computed `aspect-ratio`, within 1 px. Cite {@link openspec/specs/frame-size-chart/spec.md#scenario-a-short-desktop-screen}.
-- [ ] 2.2 BL-21: in `apps/web/src/app/widgets.css`, change the one-column block to `@container fc (max-width: 843.98px)`. Done when:
+- [x] 2.1 BL-21: new e2e test in `e2e/frame-chart-layout.spec.ts`. At 1280 × 640, the `.fc-preview .fs-scale-stage` height equals its width divided by its computed `aspect-ratio`, within 1 px. Cite {@link openspec/specs/frame-size-chart/spec.md#scenario-a-short-desktop-screen}.
+- [x] 2.2 BL-21: in `apps/web/src/app/widgets.css`, change the one-column block to `@container fc (max-width: 843.98px)`. Done when:
   - 2.1 passes;
   - every existing test in `e2e/frame-chart-layout.spec.ts` passes unchanged.
 - [ ] 2.3 BL-26: new e2e test in `e2e/frame-chart-layout.spec.ts`. At 768 × 900 and at 900 × 800, in the wall view:

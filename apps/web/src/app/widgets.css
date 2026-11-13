@@ -558,7 +558,7 @@
  * stays within the upper half of the small viewport, and focused rows stop below it. Shorter
  * screens scroll it away with the page.
  */
-@container (max-width: 843.98px) {
+@container fc (max-width: 843.98px) {
   @media (min-height: 600px) {
     .fc-preview {
       position: sticky;

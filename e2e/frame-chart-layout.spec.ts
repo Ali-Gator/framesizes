@@ -49,6 +49,26 @@ test("on a desktop screen the preview and the filters stay pinned", async ({ pag
   }
 });
 
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-short-desktop-screen} */
+test("on a short desktop screen the drawing keeps its full aspect height", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 640 });
+  await open(page);
+  const stage = await page
+    .locator(".fc-preview .fs-scale-stage")
+    .first()
+    .evaluate((el) => {
+      // Computed `aspect-ratio` reads like "1.5", "600 / 400" or "auto 600 / 400".
+      const nums = (getComputedStyle(el).aspectRatio.match(/[\d.]+/g) ?? []).map(Number);
+      const [a = 0, b = 1] = nums.slice(-2);
+      const ratio = a / b;
+      // A capped height also narrows the stage through its ratio, so measure the figure around it.
+      const width = el.parentElement?.clientWidth ?? 0;
+      return { width, height: el.getBoundingClientRect().height, ratio };
+    });
+  expect(stage.ratio).toBeGreaterThan(0);
+  expect(Math.abs(stage.height - stage.width / stage.ratio)).toBeLessThanOrEqual(1);
+});
+
 /** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-phone} */
 test("on a phone the preview stays pinned in the upper half", async ({ page }) => {
   await page.setViewportSize(PHONE);
