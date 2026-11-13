@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-26**
+_Next id:_ **BL-28**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -106,3 +106,11 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
+- **[BL-26] Centre the capped preview stage** — in the one-column layout (e.g. 768px wide) the
+  `50svh − 112px` cap on `.fc-preview .fs-scale-stage` also narrows the stage through its aspect
+  ratio, so the drawing sits left with a bare band on the right; centre it.
+  _Refs:_ `apps/web/src/app/widgets.css` · _Status:_ open — owner's report, 2026-11-13
+- **[BL-27] All-sizes labels follow the unit** — the all-sizes outlines are always labelled in
+  inches (`11×14`); with centimetres selected label them in whole centimetres (`28×36`), the
+  spec's "stays in inches" sentence changing with it.
+  _Refs:_ `apps/web/src/components/ui/size-compare.tsx`, `openspec/specs/frame-size-chart/spec.md` · _Status:_ open — owner's request, 2026-11-13
