@@ -186,3 +186,19 @@ test("the six sizes stand in two rows of three on a phone", async ({ page }) => 
   expect(Math.abs(found.large - 6 * found.small)).toBeLessThanOrEqual(1);
   expect(found.scrolls).toBe(false);
 });
+
+test.describe("at 640 × 800", () => {
+  test.use({ viewport: { width: 640, height: 800 } });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#requirement-the-table-is-the-size-chooser} */
+  test("the phone rows reach the card's edges", async ({ page }) => {
+    await open(page);
+    const { card, rows } = await page.evaluate(() => ({
+      card: (document.querySelector(".fs-widget:has(.fc)") as HTMLElement).clientWidth,
+      rows: [...document.querySelectorAll("tbody tr:not([hidden])")].map(
+        (r) => r.getBoundingClientRect().width,
+      ),
+    }));
+    for (const w of rows) expect(Math.abs(w - card)).toBeLessThanOrEqual(1);
+  });
+});

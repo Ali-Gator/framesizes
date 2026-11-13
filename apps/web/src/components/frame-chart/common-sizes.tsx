@@ -17,7 +17,7 @@ export function CommonSizes() {
   const name = `Six common picture frame sizes from ${first?.id} to ${last?.id} inches compared at the same scale`;
   return (
     <figure
-      className="m-0 grid gap-x-6 gap-y-8 sm:grid-cols-2 sm:grid-rows-[auto_auto] sm:gap-y-3"
+      className="m-0 grid gap-y-8 sm:grid-cols-2 sm:grid-rows-[auto_auto] sm:gap-y-3"
       aria-label="The six most common frame sizes"
     >
       {rows.map((row, r) => {

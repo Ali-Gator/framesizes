@@ -47,14 +47,20 @@ export const TABLE_CAPTION = "Standard picture frame sizes in inches and centime
 function Filter({
   label,
   hidden,
+  inline,
   children,
 }: {
   label: string;
   hidden?: boolean;
+  /** On a phone, keep the visible label beside the control. */
+  inline?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div className="fs-field" style={hidden ? { visibility: "hidden" } : undefined}>
+    <div
+      className={inline ? "fs-field fs-field-inline" : "fs-field"}
+      style={hidden ? { visibility: "hidden" } : undefined}
+    >
       <span className="label text-ink-muted" aria-hidden="true">
         {label}
       </span>
@@ -131,7 +137,7 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
                   onChange={(view) => set({ view })}
                 />
               </Filter>
-              <Filter label="Next to" hidden={state.view !== "wall"}>
+              <Filter label="Next to" hidden={state.view !== "wall"} inline>
                 <SegmentedControl
                   label="Next to"
                   options={REFERENCES}
