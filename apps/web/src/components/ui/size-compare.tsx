@@ -77,12 +77,8 @@ export function compareLayout(
       y - height < l.y + 3 &&
       l.y - l.height < y + 3;
     if (labels.some(near)) continue;
-    const inside =
-      !!selected &&
-      x >= x0 &&
-      x + width <= x0 + selected.w * scale &&
-      y - height >= base - selected.h * scale &&
-      y <= base;
+    // On the selected fill, even partly: `--on-tape` reads on both the fill and the stage.
+    const inside = !!selected && x < x0 + selected.w * scale && y > base - selected.h * scale;
     labels.push({ id: z.id, x, y, width, height, anchor: shift ? "start" : "end", text, inside });
   }
   return { scale, x0, base, small, selected, labels };

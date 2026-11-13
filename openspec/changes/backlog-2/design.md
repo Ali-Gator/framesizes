@@ -57,7 +57,7 @@ Label size is set in CSS: 14 units by default, 22 units under `@container (max-w
   - Each label carries its box (`x` = left edge, `y` = baseline, `width`, `height`) and a text anchor. A normally placed label renders `textAnchor="end"` at the box's right edge, so its text ends at the corner whatever size CSS draws it at (14, 22 or 26 units). A shifted label renders `textAnchor="start"` at `x0 + INSET`. The box, sized for 26 units, is what overlap and the tests check.
 - The placement order is unchanged: the selected size, then major sizes from small to large, then the rest.
 - A label whose box comes within 6 units horizontally and 3 units vertically of an earlier label's box is dropped.
-- `inside` is true only when the label's box lies entirely within the selected fill.
+- `inside` is true when the label's box touches the selected fill. `--on-tape` reads on both the fill and the stage, and a shifted selected label must keep the on-fill colour (the review found the fully-inside rule dropped it to the muted colour, about 4.1:1 on the fill).
 - CSS: the phone block (`@container card (max-width: 639.98px)`) sets `.cmp-label` and `.dim-text` to 26 units.
   - This also covers the 587–674px viewport band, where the 520px rule is off.
 - Triage simulated this on the real catalog, with every selection plus none, in all three orientations and both units:

@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { findFrame, framesFor, type Frame, type Orientation } from "@framesizes/sizes";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { ScalePreview } from "../scale-preview";
-import { compareLayout, INSET, SizeCompare } from "../size-compare";
+import { compareLayout, INSET, LABEL_FONT, SizeCompare } from "../size-compare";
 import { nearestSize } from "../size-compare";
 
 const parse = (html: string) => new DOMParser().parseFromString(html, "text/html");
@@ -142,6 +145,24 @@ describe("SizeCompare", () => {
     );
     const texts = [...doc.querySelectorAll("text.cmp-label")].map((t) => t.textContent);
     expect(texts).toContain("41×51");
+  });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-labels-stay-inside-the-drawing-and-apart} */
+  it("draws the selected size's label in the on-fill colour, shifted or not", () => {
+    for (const orientation of ["portrait", "landscape", "square"] as Orientation[]) {
+      for (const selected of framesFor(orientation)) {
+        const label = compareLayout(framesFor(orientation), selected.id).labels[0];
+        expect(label?.inside, `${orientation} ${selected.id}`).toBe(true);
+      }
+    }
+  });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-labels-at-390px} */
+  it("lays labels out for the phone rule's label size", () => {
+    const css = readFileSync(join(__dirname, "../../../app/widgets.css"), "utf8");
+    const phone = css.slice(css.indexOf("@container card (max-width: 639.98px)"));
+    const size = /\.fs-scale \.cmp-label[^{]*\{[^}]*font-size:\s*(\d+)px/.exec(phone)?.[1];
+    expect(Number(size)).toBe(LABEL_FONT);
   });
 });
 
