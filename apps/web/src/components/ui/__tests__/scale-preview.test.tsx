@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { findFrame, framesFor, type Frame, type Orientation } from "@framesizes/sizes";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { ScalePreview } from "../scale-preview";
-import { compareLayout, LABEL_GAP, SizeCompare } from "../size-compare";
+import { compareLayout, INSET, LABEL_FONT, SizeCompare } from "../size-compare";
 import { nearestSize } from "../size-compare";
 
 const parse = (html: string) => new DOMParser().parseFromString(html, "text/html");
@@ -84,28 +87,82 @@ describe("SizeCompare", () => {
     expect(doc.querySelectorAll("rect[data-size]")).toHaveLength(portrait.length);
   });
 
-  /** {@link openspec/specs/frame-size-chart/spec.md#requirement-the-all-sizes-view-compares-every-listed-size} */
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-labels-stay-inside-the-drawing-and-apart} */
   it("labels the selected size and every major size without overlap", () => {
-    for (const orientation of ["portrait", "landscape", "square"] as Orientation[]) {
-      const sizes = framesFor(orientation);
-      for (const selected of sizes) {
-        const { labels } = compareLayout(sizes, selected.id);
-        const labelled = labels.map((l) => l.id);
-        expect(labelled[0]).toBe(selected.id);
-        expect(new Set(labelled).size).toBe(labelled.length);
-        for (const [i, a] of labels.entries()) {
-          for (const b of labels.slice(i + 1)) {
-            const apart = Math.abs(a.x - b.x) >= LABEL_GAP.x || Math.abs(a.y - b.y) >= LABEL_GAP.y;
-            expect(apart, `${orientation} ${selected.id}: ${a.id} / ${b.id}`).toBe(true);
+    for (const unit of ["in", "cm"] as const) {
+      for (const orientation of ["portrait", "landscape", "square"] as Orientation[]) {
+        const sizes = framesFor(orientation);
+        for (const selected of sizes) {
+          const { labels, x0, scale } = compareLayout(sizes, selected.id, unit);
+          const labelled = labels.map((l) => l.id);
+          const at = `${unit} ${orientation} ${selected.id}`;
+          expect(labelled[0]).toBe(selected.id);
+          expect(new Set(labelled).size).toBe(labelled.length);
+          for (const l of labels) {
+            expect(l.x, `${at}: ${l.id} starts inside`).toBeGreaterThanOrEqual(x0);
+            if (l.anchor === "end") {
+              const z = frame(l.id);
+              expect(l.x + l.width, `${at}: ${l.id} ends at its corner`).toBeCloseTo(
+                x0 + z.w * scale - INSET,
+              );
+            }
+          }
+          for (const [i, a] of labels.entries()) {
+            for (const b of labels.slice(i + 1)) {
+              const apart =
+                a.x + a.width <= b.x ||
+                b.x + b.width <= a.x ||
+                a.y <= b.y - b.height ||
+                b.y <= a.y - a.height;
+              expect(apart, `${at}: ${a.id} / ${b.id}`).toBe(true);
+            }
           }
         }
-      }
-      // With nothing selected, every major size gets its label.
-      const { labels } = compareLayout(sizes, "");
-      for (const major of sizes.filter((z) => z.major)) {
-        expect(labels.map((l) => l.id)).toContain(major.id);
+        // With nothing selected, every major size gets its label.
+        const { labels } = compareLayout(sizes, "", unit);
+        for (const major of sizes.filter((z) => z.major)) {
+          expect(labels.map((l) => l.id)).toContain(major.id);
+        }
       }
     }
+  });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-all-sizes-in-centimetres} */
+  it("labels the outlines in whole centimetres", () => {
+    const text = (id: string) =>
+      compareLayout(portrait, "16x20", "cm").labels.find((l) => l.id === id)?.text;
+    expect(text("16x20")).toBe("41×51");
+    expect(text("5x7")).toBe("13×18");
+  });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-all-sizes-in-centimetres} */
+  it("keeps the inch name when the labels are in centimetres", () => {
+    const doc = parse(
+      renderToStaticMarkup(<SizeCompare sizes={portrait} value="16x20" unit="cm" />),
+    );
+    expect(doc.querySelector('[role="img"]')?.getAttribute("aria-label")).toBe(
+      "Standard frame sizes chart from 4x6 to 27x40 inches, 16x20 highlighted",
+    );
+    const texts = [...doc.querySelectorAll("text.cmp-label")].map((t) => t.textContent);
+    expect(texts).toContain("41×51");
+  });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-labels-stay-inside-the-drawing-and-apart} */
+  it("draws the selected size's label in the on-fill colour, shifted or not", () => {
+    for (const orientation of ["portrait", "landscape", "square"] as Orientation[]) {
+      for (const selected of framesFor(orientation)) {
+        const label = compareLayout(framesFor(orientation), selected.id).labels[0];
+        expect(label?.inside, `${orientation} ${selected.id}`).toBe(true);
+      }
+    }
+  });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-labels-at-390px} */
+  it("lays labels out for the phone rule's label size", () => {
+    const css = readFileSync(join(__dirname, "../../../app/widgets.css"), "utf8");
+    const phone = css.slice(css.indexOf("@container card (max-width: 639.98px)"));
+    const size = /\.fs-scale \.cmp-label[^{]*\{[^}]*font-size:\s*(\d+)px/.exec(phone)?.[1];
+    expect(Number(size)).toBe(LABEL_FONT);
   });
 });
 

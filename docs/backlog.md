@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-26**
+_Next id:_ **BL-30**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -86,18 +86,6 @@ when to add and when to fold items in.
   bundle; add the same variant to the design system's `SizeTable` and `SegmentedControl` so the
   port and its source agree again.
   _Refs:_ `apps/web/src/app/widgets.css`, https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5 · _Status:_ open — found in backlog-1, 2026-11-13
-- **[BL-21] Preview stage cap reaches desktop** — the `@container (max-width: 843.98px)` rule that caps
-  `.fc-preview .fs-scale-stage` at `50svh − 112px` queries `.fs-scale`, the nearest container, not
-  `.fc`, so the cap also applies in the two-column desktop layout; query the named `fc` container.
-  _Refs:_ `apps/web/src/app/widgets.css` · _Status:_ open — found in backlog-1, 2026-11-13
-- **[BL-22] All-sizes label spills past a narrow outline** — at 390px in "All sizes" the selected
-  8.5x11 label ("8.5×11") starts left of its outline's left edge, over the 5x7 label; place labels
-  so each stays inside the drawing and clear of its neighbours.
-  _Refs:_ `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open — seen in the iOS Safari check, backlog-1, 2026-11-13
-- **[BL-23] Preview labels shrink on phones** — the 184px phone stage renders the 22-unit all-sizes
-  and dimension labels at about 10.5px (12.6px before backlog-1); raise them in the phone block and
-  grow `LABEL_GAP` in `size-compare.tsx` with them, so the labels stay legible and apart.
-  _Refs:_ `apps/web/src/app/widgets.css`, `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open — backlog-1 review, 2026-11-13
 - **[BL-24] Selected size in forced-colors mode** — the selected row is marked by a fill and an inset
   shadow, and the phone radio's dot is a gradient; forced colors drop all three, leaving bold text.
   Add a `forced-colors: active` rule (dot and row outline) and check it in Windows High Contrast.
@@ -106,3 +94,14 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
+- **[BL-28] Phone stage crops tall frames on wide phones** — in the phone layout the stage is a
+  fixed 184px tall, so on a card 560–640px wide the slice crops the top of the drawing: at 620 × 800
+  the 27x40 frame's top sits about 67px above the stage and is cut off; at 430 × 932 the 26-unit
+  "27 in" width label starts 5px above it, clipping the digit tops. Size the phone stage by width
+  there, or clamp its ratio.
+  _Refs:_ `apps/web/src/app/widgets.css` (phone block) · _Status:_ open — found in backlog-2, 2026-11-13
+- **[BL-29] Small labels on a capped one-column stage** — the 520px label rule keys off the
+  figure's width, not the narrower capped stage, so at about 800 × 600 the stage is about 352px
+  wide and `.cmp-label` renders about 6.9px, `.dim-text` about 8.3px; key the label size off the
+  stage's own width.
+  _Refs:_ `apps/web/src/app/widgets.css` · _Status:_ open — backlog-2 review, 2026-11-13
