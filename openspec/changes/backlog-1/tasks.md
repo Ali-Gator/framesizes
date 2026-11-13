@@ -45,8 +45,8 @@ Every task below adds new tests only. No existing test is edited (design.md, Dec
 
 ## 3. Verify, delete, review, archive, ship
 
-- [ ] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e` (the full e2e suite, so the unchanged layout and a11y tests run against the phone block)
-- [ ] 3.2 Delete the shipped bullets BL-10, BL-11, BL-12, BL-18 and BL-19 from `docs/backlog.md` (BL-10 only if 2.8 ran)
+- [x] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e` (the full e2e suite, so the unchanged layout and a11y tests run against the phone block)
+- [x] 3.2 Delete the shipped bullets BL-10, BL-11, BL-12, BL-18 and BL-19 from `docs/backlog.md` (BL-10 only if 2.8 ran)
 - [ ] 3.3 `/code-review high` in a fresh subagent; fix the findings, and log the rest as new BL items
 - [ ] 3.4 Before archiving, update the permanent spec's prose that the requirements do not carry (`openspec/specs/frame-size-chart/spec.md`):
   - Behavior: fixed column widths apply from a widget width of 600px; below it the rows are stacked; the label overlay; the `50svh − 112px` stage cap applies only from 600px, with a 184px stage below it.

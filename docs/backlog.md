@@ -70,17 +70,6 @@ when to add and when to fold items in.
 
 ## Widgets
 
-- **[BL-10] Check the chart in iOS Safari** — the pinned preview, a tap anywhere on a table row
-  (the label is stretched over the row; WebKit's positioning inside a `tr` is the risk) and the
-  table's sideways scroll were checked only in Chromium emulation: this Mac has no full Xcode.
-  _Refs:_ `apps/web/src/app/widgets.css`, `apps/web/src/components/ui/size-table.tsx` · _Status:_ open
-- **[BL-11] The size table on a 360px phone** — the table keeps a 600px minimum and scrolls
-  sideways inside its box on phones; consider dropping the second unit column under ~480px.
-  _Refs:_ `apps/web/src/app/widgets.css` (`.fs-table`) · _Status:_ open — trigger met: owner's iPhone report (BL-19), 2026-11-13
-- **[BL-12] Six common sizes scroll sideways on phones** — the one-SVG drawing keeps a 720px
-  minimum so its labels line up; on phones it scrolls in its own box. A phone layout (two rows)
-  would need two drawings at one scale.
-  _Refs:_ `apps/web/src/components/frame-chart/common-sizes.tsx`, design: Home canvas board "Phone 375 — six common sizes" (approved 2026-11-13) · _Status:_ open
 - **[BL-15] Widget analytics events** — the chart sends no events (size picked, view, reference,
   unit); add them once a metrics plan names what to measure.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ deferred — a metrics plan
@@ -92,15 +81,6 @@ when to add and when to fold items in.
   in seven pairs them with a 16x24 / 24x36 mat (t2 `verification.md`); look again at the next data
   check.
   _Refs:_ `packages/sizes/src/frames.ts` · _Status:_ deferred — the next size data check
-- **[BL-18] Small outlines are hard to click in the all-sizes view** — outlines have transparent
-  fills and smaller ones sit on top, so 8.5x11 is clickable on a strip about 2px wide on a phone
-  (12x16 and 12x18 about 4px). The table radios do the same job; select by the nearest edge
-  instead (t2 phase review).
-  _Refs:_ `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open
-- **[BL-19] Size picks are too small to tap on a phone** — on an iPhone the owner finds picking a
-  size in the chart awkward: the targets are too small. Redesign the widget's size picker for
-  phones so every size is an easy thumb tap.
-  _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx`, `apps/web/src/components/ui/size-table.tsx`, design: Home canvas boards a–f "Phone 375 — frame chart picker" and the short-phone board (approved 2026-11-13; also covers BL-11) · _Status:_ open — owner report, 2026-11-13
 - **[BL-20] Phone picker in the design system** — backlog-1 added a phone block (stacked size
   rows, 44px filters, compact legend) to `widgets.css`, a diffable port of the design-system
   bundle; add the same variant to the design system's `SizeTable` and `SegmentedControl` so the
