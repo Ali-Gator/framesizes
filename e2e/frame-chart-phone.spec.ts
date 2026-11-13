@@ -163,3 +163,26 @@ test("moving up the list keeps each focused row below the pinned preview", async
     expect(rowTop).toBeGreaterThanOrEqual(previewBottom - 1);
   }
 });
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-six-sizes-on-a-phone} */
+test("the six sizes stand in two rows of three on a phone", async ({ page }) => {
+  await open(page);
+  const found = await page.evaluate(() => {
+    const box = (id: string) =>
+      (document.querySelector(`[data-frame="${id}"]`) as Element).getBoundingClientRect();
+    const figure = document.querySelector("[data-frame]")?.closest("figure") as HTMLElement;
+    return {
+      top: ["4x6", "5x7", "8x10"].map((id) => box(id).bottom),
+      bottom: ["11x14", "16x20", "24x36"].map((id) => box(id).bottom),
+      small: box("4x6").width,
+      large: box("24x36").width,
+      scrolls: figure.scrollWidth > figure.clientWidth,
+    };
+  });
+  const spread = (values: number[]) => Math.max(...values) - Math.min(...values);
+  expect(spread(found.top)).toBeLessThanOrEqual(1);
+  expect(spread(found.bottom)).toBeLessThanOrEqual(1);
+  expect(Math.min(...found.bottom)).toBeGreaterThan(Math.max(...found.top) + 1);
+  expect(Math.abs(found.large - 6 * found.small)).toBeLessThanOrEqual(1);
+  expect(found.scrolls).toBe(false);
+});
