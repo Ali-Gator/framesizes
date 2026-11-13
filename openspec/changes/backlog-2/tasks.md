@@ -47,8 +47,8 @@ Only task 2.4 edits an existing test, as approved in design.md Decision 3. Every
 
 ## 3. Verify, delete, review, archive, ship
 
-- [ ] 3.1 Run `pnpm fix`, then `pnpm test`, which includes the full e2e suite. Screenshot 768 × 900 (wall and all sizes, inches and cm) and 390 × 664 (all sizes, cm) for the PR.
-- [ ] 3.2 Delete the shipped bullets BL-21, BL-22, BL-23, BL-26 and BL-27 from `docs/backlog.md`.
+- [x] 3.1 Run `pnpm fix`, then `pnpm test`, which includes the full e2e suite. Screenshot 768 × 900 (wall and all sizes, inches and cm) and 390 × 664 (all sizes, cm) for the PR.
+- [x] 3.2 Delete the shipped bullets BL-21, BL-22, BL-23, BL-26 and BL-27 from `docs/backlog.md`.
 - [ ] 3.3 Run `/code-review high` in a fresh subagent. Fix the findings, and log the rest as new BL items.
 - [ ] 3.4 Archive with the `/opsx:archive` flow (no Tracker). Then:
   - in `openspec/specs/frame-size-chart/spec.md`'s Public Interface, update the `compareLayout` signature (`unit`, `LABEL_FONT`);
