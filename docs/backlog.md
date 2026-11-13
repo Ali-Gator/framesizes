@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-19**
+_Next id:_ **BL-21**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -76,11 +76,11 @@ when to add and when to fold items in.
   _Refs:_ `apps/web/src/app/widgets.css`, `apps/web/src/components/ui/size-table.tsx` · _Status:_ open
 - **[BL-11] The size table on a 360px phone** — the table keeps a 600px minimum and scrolls
   sideways inside its box on phones; consider dropping the second unit column under ~480px.
-  _Refs:_ `apps/web/src/app/widgets.css` (`.fs-table`) · _Status:_ deferred — phone usage data
+  _Refs:_ `apps/web/src/app/widgets.css` (`.fs-table`) · _Status:_ open — trigger met: owner's iPhone report (BL-19), 2026-11-13
 - **[BL-12] Six common sizes scroll sideways on phones** — the one-SVG drawing keeps a 720px
   minimum so its labels line up; on phones it scrolls in its own box. A phone layout (two rows)
   would need two drawings at one scale.
-  _Refs:_ `apps/web/src/components/frame-chart/common-sizes.tsx` · _Status:_ open
+  _Refs:_ `apps/web/src/components/frame-chart/common-sizes.tsx`, design: Home canvas board "Phone 375 — six common sizes" (approved 2026-11-13) · _Status:_ open
 - **[BL-15] Widget analytics events** — the chart sends no events (size picked, view, reference,
   unit); add them once a metrics plan names what to measure.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ deferred — a metrics plan
@@ -97,3 +97,12 @@ when to add and when to fold items in.
   (12x16 and 12x18 about 4px). The table radios do the same job; select by the nearest edge
   instead (t2 phase review).
   _Refs:_ `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open
+- **[BL-19] Size picks are too small to tap on a phone** — on an iPhone the owner finds picking a
+  size in the chart awkward: the targets are too small. Redesign the widget's size picker for
+  phones so every size is an easy thumb tap.
+  _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx`, `apps/web/src/components/ui/size-table.tsx`, design: Home canvas boards a–f "Phone 375 — frame chart picker" and the short-phone board (approved 2026-11-13; also covers BL-11) · _Status:_ open — owner report, 2026-11-13
+- **[BL-20] Phone picker in the design system** — backlog-1 added a phone block (stacked size
+  rows, 44px filters, compact legend) to `widgets.css`, a diffable port of the design-system
+  bundle; add the same variant to the design system's `SizeTable` and `SegmentedControl` so the
+  port and its source agree again.
+  _Refs:_ `apps/web/src/app/widgets.css`, https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5 · _Status:_ open — found in backlog-1, 2026-11-13

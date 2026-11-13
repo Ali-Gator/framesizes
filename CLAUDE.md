@@ -61,6 +61,7 @@ Read by the global `backlog-batch`, `backlog-fix` and `phase-review` skills (`~/
 - **Paid scripts (never run without the user's yes):** none yet. Anything that calls a paid API (AI, email, image generation) goes here when added.
 - **Design source:** Lane-C designs are drawn as a canvas artifact the user approves; record each link here.
   - Home page (F1, `/`): https://claude.ai/artifact/FA2okr9myNhQiZsaGdeuMD, approved 2026-11-10.
+  - Phone 375 picker and six common sizes (BL-11, BL-12, BL-19): same canvas, boards a–f, "Phone 375 — six common sizes" and "Phone 375×548 — short phone", approved 2026-11-13.
   - Design system: https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5
 - **Importance order (backlog-batch pass 1):** a wrong size or broken widget a visitor sees; then SEO defects on a live page (indexing, titles, canonical, Core Web Vitals); then ads/affiliate revenue leaks; then anything the next hub launch needs; then internal correctness and test gaps; polish last.
 - **Required checks on `main`:** `check`, `e2e`, `validate`.
