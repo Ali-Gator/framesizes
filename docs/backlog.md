@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-19**
+_Next id:_ **BL-26**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -70,17 +70,6 @@ when to add and when to fold items in.
 
 ## Widgets
 
-- **[BL-10] Check the chart in iOS Safari** — the pinned preview, a tap anywhere on a table row
-  (the label is stretched over the row; WebKit's positioning inside a `tr` is the risk) and the
-  table's sideways scroll were checked only in Chromium emulation: this Mac has no full Xcode.
-  _Refs:_ `apps/web/src/app/widgets.css`, `apps/web/src/components/ui/size-table.tsx` · _Status:_ open
-- **[BL-11] The size table on a 360px phone** — the table keeps a 600px minimum and scrolls
-  sideways inside its box on phones; consider dropping the second unit column under ~480px.
-  _Refs:_ `apps/web/src/app/widgets.css` (`.fs-table`) · _Status:_ deferred — phone usage data
-- **[BL-12] Six common sizes scroll sideways on phones** — the one-SVG drawing keeps a 720px
-  minimum so its labels line up; on phones it scrolls in its own box. A phone layout (two rows)
-  would need two drawings at one scale.
-  _Refs:_ `apps/web/src/components/frame-chart/common-sizes.tsx` · _Status:_ open
 - **[BL-15] Widget analytics events** — the chart sends no events (size picked, view, reference,
   unit); add them once a metrics plan names what to measure.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ deferred — a metrics plan
@@ -92,8 +81,28 @@ when to add and when to fold items in.
   in seven pairs them with a 16x24 / 24x36 mat (t2 `verification.md`); look again at the next data
   check.
   _Refs:_ `packages/sizes/src/frames.ts` · _Status:_ deferred — the next size data check
-- **[BL-18] Small outlines are hard to click in the all-sizes view** — outlines have transparent
-  fills and smaller ones sit on top, so 8.5x11 is clickable on a strip about 2px wide on a phone
-  (12x16 and 12x18 about 4px). The table radios do the same job; select by the nearest edge
-  instead (t2 phase review).
-  _Refs:_ `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open
+- **[BL-20] Phone picker in the design system** — backlog-1 added a phone block (stacked size
+  rows, 44px filters, compact legend) to `widgets.css`, a diffable port of the design-system
+  bundle; add the same variant to the design system's `SizeTable` and `SegmentedControl` so the
+  port and its source agree again.
+  _Refs:_ `apps/web/src/app/widgets.css`, https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5 · _Status:_ open — found in backlog-1, 2026-11-13
+- **[BL-21] Preview stage cap reaches desktop** — the `@container (max-width: 843.98px)` rule that caps
+  `.fc-preview .fs-scale-stage` at `50svh − 112px` queries `.fs-scale`, the nearest container, not
+  `.fc`, so the cap also applies in the two-column desktop layout; query the named `fc` container.
+  _Refs:_ `apps/web/src/app/widgets.css` · _Status:_ open — found in backlog-1, 2026-11-13
+- **[BL-22] All-sizes label spills past a narrow outline** — at 390px in "All sizes" the selected
+  8.5x11 label ("8.5×11") starts left of its outline's left edge, over the 5x7 label; place labels
+  so each stays inside the drawing and clear of its neighbours.
+  _Refs:_ `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open — seen in the iOS Safari check, backlog-1, 2026-11-13
+- **[BL-23] Preview labels shrink on phones** — the 184px phone stage renders the 22-unit all-sizes
+  and dimension labels at about 10.5px (12.6px before backlog-1); raise them in the phone block and
+  grow `LABEL_GAP` in `size-compare.tsx` with them, so the labels stay legible and apart.
+  _Refs:_ `apps/web/src/app/widgets.css`, `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open — backlog-1 review, 2026-11-13
+- **[BL-24] Selected size in forced-colors mode** — the selected row is marked by a fill and an inset
+  shadow, and the phone radio's dot is a gradient; forced colors drop all three, leaving bold text.
+  Add a `forced-colors: active` rule (dot and row outline) and check it in Windows High Contrast.
+  _Refs:_ `apps/web/src/app/widgets.css` · _Status:_ open — backlog-1 review, 2026-11-13
+- **[BL-25] Blank band where "Next to" hides on a phone** — in "All sizes" the hidden "Next to" row
+  keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
+  makes the table jump when the view changes.
+  _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off

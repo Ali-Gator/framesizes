@@ -50,6 +50,21 @@ export function compareLayout(sizes: readonly CompareSize[], value: string): Lay
 }
 
 /**
+ * The size whose top-right corner is nearest a point in stage units, or `undefined` when every
+ * corner is more than 3 in (drawn scale) away.
+ * {@link openspec/specs/frame-size-chart/spec.md#scenario-a-click-near-a-small-outlines-corner}
+ */
+export function nearestSize(layout: Layout, x: number, y: number): string | undefined {
+  let best: string | undefined;
+  let min = 3 * layout.scale;
+  for (const z of layout.small) {
+    const d = Math.hypot(layout.x0 + z.w * layout.scale - x, layout.base - z.h * layout.scale - y);
+    if (d <= min) [best, min] = [z.id, d];
+  }
+  return best;
+}
+
+/**
  * Design system SizeCompare: nested outlines at one scale, the selected size filled.
  * {@link openspec/specs/frame-size-chart/spec.md#requirement-the-all-sizes-view-compares-every-listed-size}
  */
@@ -64,7 +79,8 @@ export function SizeCompare({
   unit: Unit;
   onSelect?: (id: string) => void;
 }) {
-  const { scale, x0, base, small, selected, labels } = compareLayout(sizes, value);
+  const layout = compareLayout(sizes, value);
+  const { scale, x0, base, small, selected, labels } = layout;
   const box = (z: CompareSize) => ({
     x: x0,
     y: base - z.h * scale,
@@ -84,6 +100,17 @@ export function SizeCompare({
           preserveAspectRatio="xMidYMid slice"
           role="img"
           aria-label={name}
+          className="cmp-stage"
+          onClick={
+            onSelect &&
+            ((e) => {
+              const m = e.currentTarget.getScreenCTM()?.inverse();
+              if (!m) return;
+              const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m);
+              const id = nearestSize(layout, p.x, p.y);
+              if (id) onSelect(id);
+            })
+          }
         >
           {selected ? <rect className="cmp-fill" {...box(selected)} /> : null}
           {[...small].reverse().map((z) => (
@@ -91,7 +118,6 @@ export function SizeCompare({
               key={z.id}
               data-size={z.id}
               className={selected && z.w <= selected.w && z.h <= selected.h ? "cmp cmp-in" : "cmp"}
-              onClick={onSelect && (() => onSelect(z.id))}
               {...box(z)}
             />
           ))}

@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { ScalePreview } from "../scale-preview";
 import { compareLayout, LABEL_GAP, SizeCompare } from "../size-compare";
+import { nearestSize } from "../size-compare";
 
 const parse = (html: string) => new DOMParser().parseFromString(html, "text/html");
 const frame = (id: string): Frame => {
@@ -105,5 +106,32 @@ describe("SizeCompare", () => {
         expect(labels.map((l) => l.id)).toContain(major.id);
       }
     }
+  });
+});
+
+describe("nearestSize", () => {
+  const layout = compareLayout(framesFor("portrait"), "16x20");
+  const corner = (id: string) => {
+    const z = frame(id);
+    return { x: layout.x0 + z.w * layout.scale, y: layout.base - z.h * layout.scale };
+  };
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-click-near-a-small-outlines-corner} */
+  it("picks 8.5x11 for a point 0.2 in up and right of its corner", () => {
+    const { x, y } = corner("8.5x11");
+    const d = 0.2 * layout.scale;
+    expect(nearestSize(layout, x + d, y - d)).toBe("8.5x11");
+  });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-an-outline-is-clicked} */
+  it("picks 24x36 for a point 3 px inside its corner", () => {
+    const { x, y } = corner("24x36");
+    expect(nearestSize(layout, x - 3, y + 3)).toBe("24x36");
+  });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-click-far-from-every-corner} */
+  it("picks nothing more than 3 in from every corner", () => {
+    // The shared bottom-left corner: the nearest top-right corner (4x6) is over 7 in away.
+    expect(nearestSize(layout, layout.x0, layout.base)).toBeUndefined();
   });
 });

@@ -37,17 +37,19 @@ function RelatedTools(props: { pages?: readonly SitePage[] }): JSX.Element | nul
 function IfLive(props: { page: PageId; children: ReactNode }): JSX.Element | null;
 ```
 
-Props-in widgets under `apps/web/src/components/ui/` (ported from the design system, styles in `apps/web/src/app/widgets.css`): `WidgetCard`, `Button`, `ToolCard`, `FAQ`, `SizeTable`, `ScalePreview`, `SizeCompare` (with the pure `compareLayout`).
+Props-in widgets under `apps/web/src/components/ui/` (ported from the design system, styles in `apps/web/src/app/widgets.css`): `WidgetCard`, `Button`, `ToolCard`, `FAQ`, `SizeTable`, `ScalePreview`, `SizeCompare` (with the pure `compareLayout`, and `nearestSize(layout, x, y)`: the id of the size whose top-right corner is nearest a point in stage units, `undefined` beyond `3 · scale`).
 
 ## Behavior
 
-`page.tsx` is a server component: the `h1` and answer paragraph, the `FrameChart` island, then the static sections, all reading the size engine. Next prerenders the island with its default state, so the server HTML holds the whole table and the default drawing. On the client, `useSearch` and `useUnit` (both `useSyncExternalStore`) hydrate with the server values and re-render once with the query string and the stored unit; fixed table column widths and a fixed-ratio stage keep that re-render from moving the page.
+`page.tsx` is a server component: the `h1` and answer paragraph, the `FrameChart` island, then the static sections, all reading the size engine. Next prerenders the island with its default state, so the server HTML holds the whole table and the default drawing. On the client, `useSearch` and `useUnit` (both `useSyncExternalStore`) hydrate with the server values and re-render once with the query string and the stored unit; fixed table column widths (from a widget width of 600px; below it, rows of a fixed 68px) and a fixed-ratio stage keep that re-render from moving the page.
 
 The store also wraps `history.pushState` once, so a soft navigation (the logo link back to `/`) resets the widget, and it keeps its last write in memory until the address bar shows it, so a `replaceState` call the browser drops (Chrome throttles, Safari throws) cannot desync the widget. Each selection writes the URL once: the row's own click handler ignores clicks that start on its label or radio.
 
-The table is the chooser: each row's first cell is a `th scope="row"` holding a visually hidden radio and its label, one radio group, the label stretched over the row. All 19 rows are always in the HTML; rows of the other shape carry `hidden`. Orientation is read from the selected id; Portrait and Landscape turn it, Square selects 12x12, leaving Square selects 16x20 turned as chosen.
+The table is the chooser: each row's first cell is a `th scope="row"` holding a visually hidden radio and its label, one radio group, the label stretched over the row by an `::after` overlay. The table elements carry explicit ARIA roles, which survive a `display` change in WebKit, and a mat cell carries `data-mat`. All 19 rows are always in the HTML; rows of the other shape carry `hidden`. Orientation is read from the selected id; Portrait and Landscape turn it, Square selects 12x12, leaving Square selects 16x20 turned as chosen.
 
-From a container width of 844px the widget is two grid columns (5fr / 8fr) and the preview and the filter row are `position: sticky`; focused radios keep a 210px `scroll-margin-top` clear of the wrapped filter row. Below that, the preview is sticky only from 600px of viewport height, its stage capped at `50svh − 112px` and its legend set smaller so the longest legend (cm, person or door) still ends in the upper half; radios get a `scroll-margin-top` so a focused row stops below the pinned block.
+From a container width of 844px the widget is two grid columns (5fr / 8fr) and the preview and the filter row are `position: sticky`; focused radios keep a 210px `scroll-margin-top` clear of the wrapped filter row. Below that, the preview is sticky only from 600px of viewport height, its stage capped at `50svh − 112px` from a widget width of 600px and its legend set smaller so the longest legend (cm, person or door) still ends in the upper half; radios get a `scroll-margin-top` so a focused row stops below the pinned block.
+
+When the chart's card is under 640px wide inside (a widget under 600px), the phone layout applies: the body's side padding goes to 0, each visible row is a 68px grid of three clipped lines (size and other unit, mat, use) with a visible 22px radio on the right, the filters stack as full-width 44px tracks, and the pinned preview has a 184px stage and a two-line 52px legend, the reference sentence visually hidden. Focused radios keep a 287px `scroll-margin-top` while the preview is pinned. In the all-sizes view one click handler on the svg maps the pointer into stage units and selects `nearestSize`. Below a viewport width of 640px the six common sizes are two row drawings of three at one scale.
 
 Text that only sends the visitor elsewhere is wrapped in `IfLive`; `RelatedTools` lists live Frames pages plus P1, PH1, C1 and G1, and renders nothing while none is live.
 
@@ -104,7 +106,7 @@ Without state in the URL the widget SHALL show the portrait sizes with 16x20 sel
 
 ### Requirement: The table is the size chooser
 
-Each visible row SHALL hold a radio button named by its size, all in one group, so that the group is one tab stop and the arrow keys move the selection. Selecting a row, by pointer anywhere on the row or by keyboard, SHALL update the preview at once.
+Each visible row SHALL hold a radio button named by its size, all in one group, so that the group is one tab stop and the arrow keys move the selection. Selecting a row, by pointer anywhere on the row or by keyboard, SHALL update the preview at once. When the widget is narrower than 600px, the table SHALL show each row as one block as wide as the table's box, at least 44px tall and of the same height in inches and in centimetres, giving the size, the size in the other unit, the image with a mat (or "No mat") and the common use, with a visible radio mark; the table SHALL NOT scroll sideways.
 
 #### Scenario: A row is clicked
 
@@ -115,6 +117,16 @@ Each visible row SHALL hold a radio button named by its size, all in one group, 
 
 - **WHEN** the selected radio has focus and the visitor presses the down arrow
 - **THEN** the next row's radio is checked and focused, and the drawing shows that size
+
+#### Scenario: The rows on a phone
+
+- **WHEN** `/` is opened at 390 × 664
+- **THEN** every visible row is at least 44 px tall and as wide as the table's box, the table's box does not scroll sideways, and the 27x40 row is as tall with centimetres selected as with inches
+
+#### Scenario: A row is tapped on a phone
+
+- **WHEN** at 390 × 664 the visitor taps the mat line of the 11x14 row
+- **THEN** the 11x14 radio is checked
 
 ### Requirement: Orientation turns or swaps the list
 
@@ -151,7 +163,7 @@ In the "On a wall" view the widget SHALL draw the selected size at true scale be
 
 ### Requirement: The all-sizes view compares every listed size
 
-In the "All sizes" view the widget SHALL draw every size of the current list as nested outlines from one corner at one scale, highlight the selected size, hide the reference choice, and select a size when its outline is clicked. The drawing SHALL be named "Standard frame sizes chart from <smallest> to <largest> inches, <selected> highlighted".
+In the "All sizes" view the widget SHALL draw every size of the current list as nested outlines from one corner at one scale, highlight the selected size, hide the reference choice, and, when the drawing is clicked, select the size whose top-right corner is nearest the click; a click more than 3 in (drawn scale) from every top-right corner SHALL select nothing. The drawing SHALL be named "Standard frame sizes chart from <smallest> to <largest> inches, <selected> highlighted".
 
 #### Scenario: The view is switched
 
@@ -162,6 +174,16 @@ In the "All sizes" view the widget SHALL draw every size of the current list as 
 
 - **WHEN** the visitor clicks the 24x36 outline
 - **THEN** the 24x36 radio in the table is checked
+
+#### Scenario: A click near a small outline's corner
+
+- **WHEN** the visitor clicks 0.2 in (drawn scale) above and to the right of the 8.5x11 outline's top-right corner
+- **THEN** the 8.5x11 radio is checked
+
+#### Scenario: A click far from every corner
+
+- **WHEN** the visitor clicks more than 3 in (drawn scale) from every outline's top-right corner
+- **THEN** the selection does not change
 
 ### Requirement: The widget follows the site's unit
 
@@ -236,7 +258,7 @@ The page's cumulative layout shift from first paint until it is interactive SHAL
 
 ### Requirement: The six most common sizes are drawn at one scale
 
-The page SHALL show the six most common sizes as six frames standing on one baseline, drawn at one scale from the size engine, each labelled with its size in inches, in centimetres and its common use. The drawing's accessible name SHALL be "Six common picture frame sizes from 4x6 to 24x36 inches compared at the same scale".
+The page SHALL show the six most common sizes as six frames drawn at one scale from the size engine, each labelled with its size in inches, in centimetres and its common use. From a viewport width of 640px the six frames SHALL stand on one baseline; below it they SHALL stand in two rows of three (4x6, 5x7, 8x10, then 11x14, 16x20, 24x36), each row on its own baseline with its labels under it, and the block SHALL NOT scroll sideways. The drawing's accessible name SHALL be "Six common picture frame sizes from 4x6 to 24x36 inches compared at the same scale".
 
 #### Scenario: The frames are in proportion
 
@@ -247,6 +269,11 @@ The page SHALL show the six most common sizes as six frames standing on one base
 
 - **WHEN** `/` is requested
 - **THEN** the response HTML labels the fourth frame "11×14" and "27.9 × 35.6 cm"
+
+#### Scenario: The six sizes on a phone
+
+- **WHEN** `/` is opened at 390 × 664
+- **THEN** the 4x6, 5x7 and 8x10 frames share one baseline, the 11x14, 16x20 and 24x36 frames share a lower one, the 24x36 frame is six times as wide as the 4x6 frame within one pixel, and the block does not scroll sideways
 
 ### Requirement: The frame anatomy example is computed
 
@@ -315,3 +342,17 @@ The page SHALL pass an automated WCAG 2.2 A and AA check with no violations in t
 
 - **WHEN** an automated accessibility check runs on `/` in those three states at 390 × 664 and at 1280 × 800
 - **THEN** it reports no violations
+
+### Requirement: The widget's controls are thumb-sized on a phone
+
+When the widget is narrower than 600px, the Orientation, Preview and Next to controls SHALL each be at least 44px tall and each SHALL fill a row as wide as the widget's content (Next to sharing its row with its visible label), and at a viewport width of 360px neither the widget nor the page SHALL scroll sideways.
+
+#### Scenario: The filters on a phone
+
+- **WHEN** `/` is opened at 390 × 664
+- **THEN** the Orientation, Preview and Next to controls are each at least 44 px tall, and the Orientation and Preview controls, and the Next to row, are each as wide as the widget's content
+
+#### Scenario: The narrowest phone
+
+- **WHEN** `/` is opened at 360 × 640
+- **THEN** the document does not scroll sideways and no element inside the widget scrolls sideways

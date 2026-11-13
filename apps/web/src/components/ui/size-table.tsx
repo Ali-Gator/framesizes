@@ -6,6 +6,8 @@ export interface SizeTableRow {
   label: string;
   cells: readonly ReactNode[];
   hidden?: boolean;
+  /** The row has a mat: its cell in the `mat` column gets `data-mat` (CSS prefixes "With a mat"). */
+  mat?: boolean;
 }
 
 /**
@@ -13,6 +15,7 @@ export interface SizeTableRow {
  * visually hidden radio and its label, all radios in one group (one tab stop, arrow keys select).
  * The label's hit area covers the row (widgets.css); `onClick` on the row backs it up where a
  * browser does not position inside a table row. Rows of another shape stay in the HTML, `hidden`.
+ * Explicit roles keep the table semantics where the phone layout changes `display` (WebKit).
  */
 export function SizeTable({
   caption,
@@ -24,14 +27,14 @@ export function SizeTable({
 }: {
   caption: string;
   name: string;
-  columns: readonly { label: string; num?: boolean }[];
+  columns: readonly { label: string; num?: boolean; mat?: boolean }[];
   rows: readonly SizeTableRow[];
   value: string;
   onSelect?: (id: string) => void;
 }) {
   return (
     <div className="fs-table-wrap">
-      <table className="fs-table">
+      <table className="fs-table" role="table">
         <caption className="fs-sr">{caption}</caption>
         <colgroup>
           {columns.map((column) => (
@@ -39,9 +42,9 @@ export function SizeTable({
           ))}
         </colgroup>
         <thead>
-          <tr>
+          <tr role="row">
             {columns.map((column) => (
-              <th key={column.label} scope="col">
+              <th key={column.label} scope="col" role="columnheader">
                 {column.label}
               </th>
             ))}
@@ -53,6 +56,7 @@ export function SizeTable({
             return (
               <tr
                 key={row.id}
+                role="row"
                 hidden={row.hidden}
                 onClick={
                   onSelect &&
@@ -62,7 +66,7 @@ export function SizeTable({
                   })
                 }
               >
-                <th scope="row" className={columns[0]?.num ? "fs-num" : undefined}>
+                <th scope="row" role="rowheader" className={columns[0]?.num ? "fs-num" : undefined}>
                   <input
                     type="radio"
                     className="fs-sr"
@@ -76,7 +80,12 @@ export function SizeTable({
                   <label htmlFor={id}>{row.label}</label>
                 </th>
                 {row.cells.map((cell, index) => (
-                  <td key={index} className={columns[index + 1]?.num ? "fs-num" : undefined}>
+                  <td
+                    key={index}
+                    role="cell"
+                    className={columns[index + 1]?.num ? "fs-num" : undefined}
+                    data-mat={row.mat && columns[index + 1]?.mat ? "" : undefined}
+                  >
                     {cell}
                   </td>
                 ))}

@@ -187,7 +187,7 @@ export function ScalePreview({
       <div className="fs-scale-legend">
         <SizeLegend size={frame} unit={unit} />
         <span className="fs-scale-ref">
-          {referenceSentence(reference, unit)}.
+          <span className="fs-scale-sentence">{referenceSentence(reference, unit)}.</span>
           {ghost ? (
             <span className="fs-scale-ghost">Next size up: {writeSize(ghost, unit)}</span>
           ) : null}

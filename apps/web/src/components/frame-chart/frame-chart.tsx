@@ -47,14 +47,20 @@ export const TABLE_CAPTION = "Standard picture frame sizes in inches and centime
 function Filter({
   label,
   hidden,
+  inline,
   children,
 }: {
   label: string;
   hidden?: boolean;
+  /** On a phone, keep the visible label beside the control. */
+  inline?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div className="fs-field" style={hidden ? { visibility: "hidden" } : undefined}>
+    <div
+      className={inline ? "fs-field fs-field-inline" : "fs-field"}
+      style={hidden ? { visibility: "hidden" } : undefined}
+    >
       <span className="label text-ink-muted" aria-hidden="true">
         {label}
       </span>
@@ -89,6 +95,7 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
     label: writeSize(f, unit),
     cells: [writeSize(f, other), f.mat ? writeSize(f.mat, unit) : "No mat", f.use],
     hidden: (f.orientation === "square") !== square,
+    mat: !!f.mat,
   }));
 
   return (
@@ -130,7 +137,7 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
                   onChange={(view) => set({ view })}
                 />
               </Filter>
-              <Filter label="Next to" hidden={state.view !== "wall"}>
+              <Filter label="Next to" hidden={state.view !== "wall"} inline>
                 <SegmentedControl
                   label="Next to"
                   options={REFERENCES}
@@ -146,7 +153,7 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
               columns={[
                 { label: "Frame size", num: true },
                 { label: unit === "cm" ? "Inches" : "Centimetres", num: true },
-                { label: "Image with a mat", num: true },
+                { label: "Image with a mat", num: true, mat: true },
                 { label: "Common use" },
               ]}
               rows={rows}
