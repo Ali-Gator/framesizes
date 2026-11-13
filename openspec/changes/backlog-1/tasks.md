@@ -32,7 +32,7 @@ Every task below adds new tests only. No existing test is edited (design.md, Dec
   - the figure has `scrollWidth <= clientWidth`.
     Cite {@link openspec/specs/frame-size-chart/spec.md#scenario-the-six-sizes-on-a-phone}.
 - [x] 2.7 BL-12: two row SVGs in one figure: the same `SCALE`, viewBox width `3 × COLUMN`, each trimmed to its tallest frame with its own baseline, each followed by an `ol` of its three labels. The first SVG is named; the second is `aria-hidden`. Rows stack below 640 px and sit side by side on one baseline from 640 px, using `subgrid`. Remove the scroll box, its `tabIndex` and the 720 px minimum. The cm label may wrap (Decision 8), so `e2e/shell-a11y.spec.ts`'s 320 px check passes unchanged. File: `apps/web/src/components/frame-chart/common-sizes.tsx`. Done when 2.6 passes and these pass unchanged: "six frames are drawn at one scale", "three drawings, each with its own name", and the content test's six `li` items and 11×14 label.
-- [ ] 2.8 BL-10: iOS Safari check.
+- [x] 2.8 BL-10: iOS Safari check.
   - Start the dev server (`.claude/launch.json` "web").
   - Boot an iPhone simulator by name (`xcrun simctl list devices`, then pick an iPhone, not the iPad), open `http://localhost:3000/` in Safari, and check:
     - a tap on each of the three lines of a row selects that row;

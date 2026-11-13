@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-22**
+_Next id:_ **BL-23**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -110,3 +110,7 @@ when to add and when to fold items in.
   `.fc-preview .fs-scale-stage` at `50svh − 112px` queries `.fs-scale`, the nearest container, not
   `.fc`, so the cap also applies in the two-column desktop layout; query the named `fc` container.
   _Refs:_ `apps/web/src/app/widgets.css` · _Status:_ open — found in backlog-1, 2026-11-13
+- **[BL-22] All-sizes label spills past a narrow outline** — at 390px in "All sizes" the selected
+  8.5x11 label ("8.5×11") starts left of its outline's left edge, over the 5x7 label; place labels
+  so each stays inside the drawing and clear of its neighbours.
+  _Refs:_ `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open — seen in the iOS Safari check, backlog-1, 2026-11-13

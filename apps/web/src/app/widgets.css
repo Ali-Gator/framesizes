@@ -781,6 +781,10 @@
     background: var(--tape-soft);
     box-shadow: inset 4px 0 0 var(--ink);
   }
+  /* The row draws the ink bar; the desktop bar on the `th` would cover the size's first glyph. */
+  .fs-table tbody tr:has(input:checked) > th {
+    box-shadow: none;
+  }
   .fs-table tbody tr:not([hidden]):active {
     background: var(--stage);
   }
