@@ -8,13 +8,13 @@
 
 Every task below adds new tests only. No existing test is edited (design.md, Decisions 4 and 5).
 
-- [ ] 2.1 BL-18: unit tests for a pure `nearestSize` in `apps/web/src/components/ui/__tests__/scale-preview.test.tsx`, as new `it` blocks in a new `describe`:
+- [x] 2.1 BL-18: unit tests for a pure `nearestSize` in `apps/web/src/components/ui/__tests__/scale-preview.test.tsx`, as new `it` blocks in a new `describe`:
   - a point 0.2 in up and right of the 8.5x11 corner returns 8.5x11;
   - a point 3 px inside the 24x36 corner returns 24x36;
   - a point more than 3 in from every corner returns `undefined`.
     Cite {@link openspec/specs/frame-size-chart/spec.md#scenario-a-click-near-a-small-outlines-corner} and {@link openspec/specs/frame-size-chart/spec.md#scenario-a-click-far-from-every-corner}.
-- [ ] 2.2 BL-18: new e2e test in a new file `e2e/frame-chart-phone.spec.ts`. At 390 × 664, with `?view=all`, click 0.2 in (drawn scale, from `getScreenCTM`) up and right of the 8.5x11 rect's top-right corner, then expect the 8.5x11 radio checked ({@link openspec/specs/frame-size-chart/spec.md#scenario-a-click-near-a-small-outlines-corner}).
-- [ ] 2.3 BL-18: `nearestSize` next to `compareLayout`, one svg `onClick` through `getScreenCTM().inverse()`, and remove the per-rect `onClick`. In `widgets.css`, move `cursor: pointer` from `.cmp` to the svg and drop `.cmp:hover`. Files: `apps/web/src/components/ui/size-compare.tsx`, `apps/web/src/app/widgets.css`. Done when 2.1, 2.2 and the existing `e2e/frame-chart.spec.ts` outline-click test pass.
+- [x] 2.2 BL-18: new e2e test in a new file `e2e/frame-chart-phone.spec.ts`. At 390 × 664, with `?view=all`, click 0.2 in (drawn scale, from `getScreenCTM`) up and right of the 8.5x11 rect's top-right corner, then expect the 8.5x11 radio checked ({@link openspec/specs/frame-size-chart/spec.md#scenario-a-click-near-a-small-outlines-corner}).
+- [x] 2.3 BL-18: `nearestSize` next to `compareLayout`, one svg `onClick` through `getScreenCTM().inverse()`, and remove the per-rect `onClick`. In `widgets.css`, move `cursor: pointer` from `.cmp` to the svg and drop `.cmp:hover`. Files: `apps/web/src/components/ui/size-compare.tsx`, `apps/web/src/app/widgets.css`. Done when 2.1, 2.2 and the existing `e2e/frame-chart.spec.ts` outline-click test pass.
 - [ ] 2.4 BL-19, BL-11: new e2e tests in `e2e/frame-chart-phone.spec.ts`:
   - at 390 × 664, 14 visible rows in the portrait list and 5 after choosing Square; every visible `tbody tr` is at least 44 px tall and as wide as `.fs-table-wrap` within 1 px, and `.fs-table-wrap` has `scrollWidth <= clientWidth`; the 27x40 row's height matches with cm stored ({@link openspec/specs/frame-size-chart/spec.md#scenario-the-rows-on-a-phone});
   - a tap (`hasTouch`, `locator.tap()`) on the 11x14 mat cell checks 11x14 ({@link openspec/specs/frame-size-chart/spec.md#scenario-a-row-is-tapped-on-a-phone});

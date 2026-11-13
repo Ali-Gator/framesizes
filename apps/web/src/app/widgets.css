@@ -210,11 +210,9 @@
   fill: transparent;
   stroke: var(--line-strong);
   stroke-width: 1.25;
-  cursor: pointer;
 }
-.fs-scale .cmp:hover {
-  stroke: var(--ink);
-  stroke-width: 2;
+.fs-scale .cmp-stage {
+  cursor: pointer;
 }
 .fs-scale .cmp-in {
   stroke: var(--on-tape);
