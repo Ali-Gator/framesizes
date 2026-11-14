@@ -79,8 +79,8 @@ export default function Home() {
 
       <Section title="The six most common frame sizes">
         <p className="-mt-4 max-w-prose">
-          Most ready-made picture and photo frames come in these six sizes. They are drawn here at
-          one scale.
+          Most ready-made picture and photo frames come in these six sizes, shown here to the same
+          scale.
         </p>
         <CommonSizes />
       </Section>
@@ -130,7 +130,7 @@ export default function Home() {
       <Section title="How to choose a frame size">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-8">
           <Column title="Start from the image">
-            Measure the photo or print first. No mat: buy the frame in the same size. With a mat: go
+            Measure the photo or print first. Without a mat, buy a frame the same size; with one, go
             one or two sizes up.
           </Column>
           <Column title="Check it against the wall">

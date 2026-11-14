@@ -51,6 +51,7 @@ Do these without being asked, in every phase:
 - pnpm only. Everything written to the repo is English; chat replies are English unless asked otherwise.
 - Every page targets one search intent and carries its own widget variant (research artifact, Plan tab). SEO basics per page: unique title, description, canonical, one `h1`, static HTML for the content.
 - A change that adds or edits a page takes its URL, title, `h1`, description, keywords, alts, Open Graph and JSON-LD from the On-page SEO guide (a Claude Doc: read it with the docs tools, copy the page's row from its Per-page map into the proposal) and passes the guide's pre-publish checklist before archive. If the guide and the research disagree on a keyword, the research wins and the guide gets fixed.
+- A change that adds or edits visitor-facing text (page copy, headings, FAQ answers, labels, title and description, alt and `aria-label` text) runs the `humanizer:humanizer` skill over the new or changed text before commit. It keeps every fact, size and SEO-guide keyword as it was.
 
 ## Workflow config
 
