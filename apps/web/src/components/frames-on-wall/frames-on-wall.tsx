@@ -102,7 +102,7 @@ function announcement(state: WallState, unit: Unit): string {
     const one = d[side];
     return one ? [`${writeDistance(one.value, unit)} ${side} to ${toWhat(one)}`] : [];
   });
-  return `${frame.size} frame: ${parts.join(", ") || "no distances known"}.`;
+  return `${frame.size} frame: ${parts.join(", ") || "nothing marked around it"}.`;
 }
 
 /**
@@ -145,7 +145,7 @@ export function FramesOnWall() {
       dispatch({ type: "photo", photo });
     } catch {
       URL.revokeObjectURL(url);
-      setFileError("This photo could not be opened here. Try a JPEG or a PNG.");
+      setFileError("Your browser cannot open this photo. Try a JPEG or a PNG.");
     }
   }
 
