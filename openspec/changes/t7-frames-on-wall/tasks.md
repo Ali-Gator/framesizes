@@ -11,7 +11,7 @@ Branch `t7-frames-on-wall`, cut from `main` after `t7-wall-engine` is merged. Or
 ## 2. One unit at a time (`site-shell`)
 
 - [x] 2.1 Write unit tests for `<U>`: both spans, and the classes. Write tests that `setUnit` sets `document.documentElement.dataset.unit`. Then implement `<U>`, the `globals.css` rules, the pre-paint script in `layout.tsx` (read `01-app/03-api-reference/03-file-conventions/layout.md` and the `Script`/inline-script docs) and the `setUnit` change. Verify the tests pass.
-- [ ] 2.2 Add e2e tests to a new `e2e/shell-unit-text.spec.ts` (existing specs unedited):
+- [x] 2.2 Add e2e tests to a new `e2e/shell-unit-text.spec.ts` (existing specs unedited):
   - dual-unit text follows the choice;
   - a stored "cm" shows no inch text at first paint, checked by reading `.u-in` visibility in a `DOMContentLoaded` listener added with `page.addInitScript`.
 
