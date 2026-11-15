@@ -137,13 +137,15 @@ test("robots.txt allows everything and names the sitemap", async ({ request }) =
   expect(body).toContain("Sitemap: https://framesizes.app/sitemap.xml");
 });
 
-/** {@link openspec/specs/seo-base/spec.md#scenario-only-the-home-page-is-live} */
-test("sitemap.xml lists the home page only", async ({ request }) => {
+/** {@link openspec/specs/seo-base/spec.md#scenario-the-home-page-and-f2-are-live} */
+test("sitemap.xml lists the home page and F2", async ({ request }) => {
   const response = await request.get("/sitemap.xml");
   expect(response.status()).toBe(200);
   const body = await response.text();
-  expect(body.match(/<url>/g)).toHaveLength(1);
+  expect(body.match(/<url>/g)).toHaveLength(2);
   expect(body).toContain(`<loc>${CANONICAL}</loc>`);
   expect(body).toContain(`<lastmod>${HOME.seo.lastModified}</lastmod>`);
+  expect(body).toContain(`<loc>${CANONICAL}/frame-sizes-on-wall</loc>`);
+  expect(body).toContain(`<lastmod>${livePage("F2").seo.lastModified}</lastmod>`);
   expect(body).not.toMatch(/<priority>|<changefreq>/);
 });

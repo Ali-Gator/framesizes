@@ -125,4 +125,11 @@ describe("a titled table that is not a chooser", () => {
     expect(titled.querySelector("tbody th")?.textContent).toBe("16 × 20 in");
     expect(titled.querySelector("table")?.classList.contains("fs-table-static")).toBe(true);
   });
+
+  /** {@link openspec/specs/frames-on-wall/spec.md#scenario-320-px-wide} */
+  it("lets the keyboard reach its box, which may scroll sideways", () => {
+    const wrap = titled.querySelector(".fs-table-wrap");
+    expect(wrap?.getAttribute("tabindex")).toBe("0");
+    expect(wrap?.getAttribute("aria-label")).toBe("Wall art frame sizes and the space they take");
+  });
 });

@@ -43,7 +43,11 @@ export function SizeTable({
 }) {
   const select = selectable ? onSelect : undefined;
   return (
-    <div className="fs-table-wrap">
+    // A plain table may scroll sideways in its box on a phone, so the box takes focus for the keyboard.
+    <div
+      className="fs-table-wrap"
+      {...(selectable ? {} : { tabIndex: 0, role: "region", "aria-label": title ?? caption })}
+    >
       <table className={selectable ? "fs-table" : "fs-table fs-table-static"} role="table">
         {title ? (
           <caption className="fs-table-cap">

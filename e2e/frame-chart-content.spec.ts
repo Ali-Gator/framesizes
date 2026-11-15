@@ -46,11 +46,17 @@ async function serverHtml(page: Page) {
       widgetFooter: text(doc.querySelector(".fs-widget-foot")),
       hrefs: [...doc.querySelectorAll("a[href]")].map((a) => a.getAttribute("href") ?? ""),
       links: [...doc.querySelectorAll("a")].map(text),
+      related: [
+        ...([...(main?.querySelectorAll("h2") ?? [])]
+          .find((h) => text(h) === "Related tools")
+          ?.closest("section")
+          ?.querySelectorAll("a[href]") ?? []),
+      ].map((a) => a.getAttribute("href")),
     };
   }, source);
 }
 
-/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-heading-outline-of-the-server-html} */
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-outline-with-f2-live} */
 test("the server HTML follows the approved outline", async ({ page }) => {
   const { headings, details } = await serverHtml(page);
   expect(headings.filter((h) => h.startsWith("h1") || h.startsWith("h2"))).toEqual([
@@ -61,6 +67,7 @@ test("the server HTML follows the approved outline", async ({ page }) => {
     "h2 Large, square and horizontal frame sizes",
     "h2 How to choose a frame size",
     "h2 Frame size questions",
+    "h2 Related tools",
   ]);
   const h3s = headings.filter((h) => h.startsWith("h3")).map((h) => h.slice(3));
   expect(h3s.slice(0, 3)).toEqual([
@@ -68,8 +75,9 @@ test("the server HTML follows the approved outline", async ({ page }) => {
     "Square frame sizes",
     "Horizontal frame sizes",
   ]);
-  expect(h3s).toHaveLength(3 + 3 + details.length);
-  expect(h3s.slice(6)).toEqual(details.map((d) => d.question));
+  expect(h3s).toHaveLength(3 + 3 + details.length + 1);
+  expect(h3s.slice(6, -1)).toEqual(details.map((d) => d.question));
+  expect(h3s.at(-1)).toBe("Frames");
 });
 
 /** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-answer-in-the-server-html} */
@@ -135,10 +143,12 @@ test("the widget footer says where the sizes come from", async ({ page }) => {
   expect(widgetFooter).toContain(`last checked ${checked}`);
 });
 
-/** {@link openspec/specs/frame-size-chart/spec.md#scenario-no-other-page-is-live} */
-test("no link to a page that is not live", async ({ page }) => {
-  const { headings, hrefs, links } = await serverHtml(page);
-  expect(headings).not.toContain("h2 Related tools");
-  expect(links).not.toContain("See it on my wall");
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-only-f2-is-live-besides-the-home-page} */
+test("links to F2 and to no page that is not live", async ({ page }) => {
+  const { headings, hrefs, links, related } = await serverHtml(page);
+  expect(headings).toContain("h2 Related tools");
+  expect(links).toContain("See it on my wall");
+  expect(links).toContain("frame sizes on your wall");
+  expect(related).toEqual(["/frame-sizes-on-wall"]);
   expect(hrefs.filter((h) => h.startsWith("#"))).toEqual([]);
 });

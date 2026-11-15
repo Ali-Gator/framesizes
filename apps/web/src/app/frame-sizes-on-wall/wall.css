@@ -841,3 +841,16 @@ input:focus-visible + .wf-drop,
     transition: none !important;
   }
 }
+
+/* The picker's Orientation control fills its row at 44 px, as F1's filters do on a phone. */
+.wf-picker [role="radiogroup"] {
+  display: flex;
+  width: 100%;
+  height: 44px;
+}
+.wf-picker [role="radio"] {
+  flex: 1 1 0;
+  min-width: 0;
+  height: auto;
+  padding: 0 4px;
+}
