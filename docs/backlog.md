@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-30**
+_Next id:_ **BL-31**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -38,6 +38,13 @@ when to add and when to fold items in.
   _Refs:_ `playwright.config.ts` · _Status:_ open
 
 ## Site
+
+- **[BL-30] Home page shows one unit at a time** — the in/cm toggle should drive every number on `/`:
+  the six common-size cards drop their cm line in inches, and the frame-measurement example and the
+  widget's wall note follow the toggle. Render both units in the server HTML and hide the other with
+  CSS on a `data-unit` attribute, so cm stays crawlable. The chart table keeps both columns.
+  _Refs:_ F1 canvas https://claude.ai/artifact/FA2okr9myNhQiZsaGdeuMD (note "UNITS", 2026-11-15), On-page SEO
+  guide Wording › Units, design system Content fundamentals · _Status:_ open
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once
