@@ -5,7 +5,7 @@
 
 ## 2. Fixes — one subagent at a time, serially
 
-- [ ] 2.1 BL-6 — set `NEXT_DIST_DIR: ".next-e2e"` on the port-3100 server in `playwright.config.ts`; add `.next-e2e` to `.gitignore`, `.prettierignore`, `eslint.config.mjs`, `vitest.config.ts`, `apps/web/tsconfig.json` (include types, exclude dev); fix comments in `playwright.config.ts` and `apps/web/next.config.ts`. Check: `pnpm test:e2e` passes while `pnpm dev` runs.
+- [x] 2.1 BL-6 — set `NEXT_DIST_DIR: ".next-e2e"` on the port-3100 server in `playwright.config.ts`; add `.next-e2e` to `.gitignore`, `.prettierignore`, `eslint.config.mjs`, `vitest.config.ts`, `apps/web/tsconfig.json` (include types, exclude dev); fix comments in `playwright.config.ts` and `apps/web/next.config.ts`. Check: `pnpm test:e2e` passes while `pnpm dev` runs.
 - [ ] 2.2 BL-30 — failing e2e tests:
   - `data-unit` from storage before bundles run ({@link openspec/specs/site-shell/spec.md#scenario-a-stored-choice-at-load}); block `/_next/static/**/*.js` with `page.route`, seed storage with `addInitScript`
   - nothing stored gives `in` ({@link openspec/specs/site-shell/spec.md#scenario-nothing-is-stored})

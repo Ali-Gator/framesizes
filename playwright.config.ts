@@ -2,7 +2,8 @@ import { defineConfig } from "@playwright/test";
 
 // CI builds and serves the app (`pnpm build && pnpm start`); locally, `pnpm dev` compiles on demand.
 const PREBUILT = !!process.env.CI;
-// Its own ports, never a developer's live server.
+// Own ports and own build folders (NEXT_DIST_DIR), so e2e runs beside a developer's `pnpm dev`:
+// a shared `.next` would collide with its Next 16 dev lock.
 const PORT = 3100;
 // The same app built with a dummy analytics token, for e2e/analytics.spec.ts; `/ingest` is stubbed there.
 const ANALYTICS_PORT = 3101;
@@ -26,7 +27,11 @@ export default defineConfig({
       timeout: PREBUILT ? 300_000 : 60_000,
       stdout: PREBUILT ? "pipe" : "ignore",
       // Empty, not unset: an empty value wins over apps/web/.env.local, so tests never send real events.
-      env: { PORT: String(PORT), NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: "" },
+      env: {
+        PORT: String(PORT),
+        NEXT_DIST_DIR: ".next-e2e",
+        NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: "",
+      },
     },
     {
       command: PREBUILT ? "pnpm build && pnpm start" : "pnpm dev",

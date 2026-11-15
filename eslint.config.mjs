@@ -9,6 +9,7 @@ export default tseslint.config(
     ignores: [
       "**/.next/",
       "**/.next-analytics/",
+      "**/.next-e2e/",
       "**/node_modules/",
       ".claude/",
       "playwright-report/",

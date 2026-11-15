@@ -17,6 +17,6 @@ export default defineConfig({
       "packages/*/src/**/*.test.ts",
       "apps/*/src/**/*.test.{ts,tsx}",
     ],
-    exclude: ["**/node_modules/**", "**/.next/**", "**/.next-analytics/**"],
+    exclude: ["**/node_modules/**", "**/.next/**", "**/.next-analytics/**", "**/.next-e2e/**"],
   },
 });
