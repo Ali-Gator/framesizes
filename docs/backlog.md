@@ -32,19 +32,8 @@ when to add and when to fold items in.
   `@typescript/native`, so `tsc`, Next.js and eslint use one compiler.
   _Refs:_ `package.json`, https://github.com/typescript-eslint/typescript-eslint/issues/10940 · _Status:_ deferred — a
   typescript-eslint release that supports TS 7.1
-- **[BL-6] Local e2e fails while a dev server runs** — `next dev` holds a lock on `apps/web/.next`,
-  so `pnpm test:e2e` cannot start its own dev server on port 3100 while `pnpm dev` is up. Give the
-  e2e servers their own `NEXT_DIST_DIR`, or say so in the README.
-  _Refs:_ `playwright.config.ts` · _Status:_ open
 
 ## Site
-
-- **[BL-30] Home page shows one unit at a time** — the in/cm toggle should drive every number on `/`:
-  the six common-size cards drop their cm line in inches, and the frame-measurement example and the
-  widget's wall note follow the toggle. Render both units in the server HTML and hide the other with
-  CSS on a `data-unit` attribute, so cm stays crawlable. The chart table keeps both columns.
-  _Refs:_ F1 canvas https://claude.ai/artifact/FA2okr9myNhQiZsaGdeuMD (note "UNITS", 2026-11-15), On-page SEO
-  guide Wording › Units, design system Content fundamentals · _Status:_ open
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once
@@ -96,24 +85,10 @@ when to add and when to fold items in.
 - **[BL-20] Phone picker in the design system** — backlog-1 added a phone block (stacked size
   rows, 44px filters, compact legend) to `widgets.css`, a diffable port of the design-system
   bundle; add the same variant to the design system's `SizeTable` and `SegmentedControl` so the
-  port and its source agree again.
+  port and its source agree again. backlog-3 widened the drift: forced-colors marks on the selected
+  row, the radio dot and the checked `SegmentedControl` option, which the bundle lacks.
   _Refs:_ `apps/web/src/app/widgets.css`, https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5 · _Status:_ open — found in backlog-1, 2026-11-13
-- **[BL-24] Selected size in forced-colors mode** — the selected row is marked by a fill and an inset
-  shadow, and the phone radio's dot is a gradient; forced colors drop all three, leaving bold text.
-  Add a `forced-colors: active` rule (dot and row outline) and check it in Windows High Contrast.
-  _Refs:_ `apps/web/src/app/widgets.css` · _Status:_ open — backlog-1 review, 2026-11-13
 - **[BL-25] Blank band where "Next to" hides on a phone** — in "All sizes" the hidden "Next to" row
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
-- **[BL-28] Phone stage crops tall frames on wide phones** — in the phone layout the stage is a
-  fixed 184px tall, so on a card 560–640px wide the slice crops the top of the drawing: at 620 × 800
-  the 27x40 frame's top sits about 67px above the stage and is cut off; at 430 × 932 the 26-unit
-  "27 in" width label starts 5px above it, clipping the digit tops. Size the phone stage by width
-  there, or clamp its ratio.
-  _Refs:_ `apps/web/src/app/widgets.css` (phone block) · _Status:_ open — found in backlog-2, 2026-11-13
-- **[BL-29] Small labels on a capped one-column stage** — the 520px label rule keys off the
-  figure's width, not the narrower capped stage, so at about 800 × 600 the stage is about 352px
-  wide and `.cmp-label` renders about 6.9px, `.dim-text` about 8.3px; key the label size off the
-  stage's own width.
-  _Refs:_ `apps/web/src/app/widgets.css` · _Status:_ open — backlog-2 review, 2026-11-13
