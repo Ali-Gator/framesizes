@@ -127,8 +127,10 @@
   container-type: inline-size;
   margin: 0;
 }
+/* A container too, so the label rules below follow a stage the one-column cap narrows. */
 .fs-scale-stage {
   aspect-ratio: 720 / 384;
+  container-type: inline-size;
 }
 @container (max-width: 520px) {
   .fs-scale-stage {
@@ -236,8 +238,9 @@
   fill: var(--on-tape);
 }
 /*
- * The narrow 4:3 stage draws at its width / 512, about 0.65 at a 333px stage and 1 at 520px, so
- * 22-unit type renders about 14–22px. The chart's phone layout sets 26 units (`@container card`).
+ * Queries the stage. A 4:3 stage draws at its width / 512, so 22-unit type renders about 14–22px
+ * from a 333px to a 520px stage; a 720:384 stage draws at its width / 720, smaller. The chart's
+ * capped one-column stage and its phone layout set 26 units.
  */
 @container (max-width: 520px) {
   .fs-scale .dim-text {
@@ -597,6 +600,13 @@
     .fs-table input {
       scroll-margin-top: calc(50svh + 8px);
       scroll-margin-bottom: 72px;
+    }
+    /* A capped stage draws at its width / 720: 26 units (LABEL_FONT) is about 12.7px at 800 × 600. */
+    @container (max-width: 520px) {
+      .fs-scale .dim-text,
+      .fs-scale .cmp-label {
+        font-size: 26px;
+      }
     }
   }
 }
