@@ -64,10 +64,10 @@ export function SegmentedControl<T extends string>({
             tabIndex={checked ? 0 : -1}
             onClick={() => onChange(option.value)}
             onKeyDown={(event) => onKeyDown(event, index)}
-            className={`${SIZES[size]} cursor-pointer rounded-pill font-semibold ${
+            className={`${SIZES[size]} cursor-pointer rounded-pill font-semibold forced-colors:border-2 ${
               checked
-                ? "bg-tape text-on-tape shadow-[inset_0_0_0_1.5px_var(--ink)]"
-                : "text-ink-muted hover:text-ink"
+                ? "bg-tape text-on-tape shadow-[inset_0_0_0_1.5px_var(--ink)] forced-colors:border-[Highlight]"
+                : "text-ink-muted hover:text-ink forced-colors:border-[Canvas]"
             }`}
           >
             {option.label}

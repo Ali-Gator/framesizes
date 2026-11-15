@@ -41,15 +41,15 @@ Props-in widgets under `apps/web/src/components/ui/` (ported from the design sys
 
 ## Behavior
 
-`page.tsx` is a server component: the `h1` and answer paragraph, the `FrameChart` island, then the static sections, all reading the size engine. Next prerenders the island with its default state, so the server HTML holds the whole table and the default drawing. On the client, `useSearch` and `useUnit` (both `useSyncExternalStore`) hydrate with the server values and re-render once with the query string and the stored unit; fixed table column widths (from a widget width of 600px; below it, rows of a fixed 68px) and a fixed-ratio stage keep that re-render from moving the page.
+`page.tsx` is a server component: the `h1` and answer paragraph, the `FrameChart` island, then the static sections, all reading the size engine. The static sections and the widget footer hold both units in the HTML as `u-in` / `u-cm` spans; CSS on `<html data-unit>` shows the visitor's unit and hides the other, so cm stays crawlable. Next prerenders the island with its default state, so the server HTML holds the whole table and the default drawing. On the client, `useSearch` and `useUnit` (both `useSyncExternalStore`) hydrate with the server values and re-render once with the query string and the stored unit; fixed table column widths (from a widget width of 600px; below it, rows of a fixed 68px) and a fixed-ratio stage keep that re-render from moving the page.
 
 The store also wraps `history.pushState` once, so a soft navigation (the logo link back to `/`) resets the widget, and it keeps its last write in memory until the address bar shows it, so a `replaceState` call the browser drops (Chrome throttles, Safari throws) cannot desync the widget. Each selection writes the URL once: the row's own click handler ignores clicks that start on its label or radio.
 
 The table is the chooser: each row's first cell is a `th scope="row"` holding a visually hidden radio and its label, one radio group, the label stretched over the row by an `::after` overlay. The table elements carry explicit ARIA roles, which survive a `display` change in WebKit, and a mat cell carries `data-mat`. All 19 rows are always in the HTML; rows of the other shape carry `hidden`. Orientation is read from the selected id; Portrait and Landscape turn it, Square selects 12x12, leaving Square selects 16x20 turned as chosen.
 
-From a container width of 844px the widget is two grid columns (5fr / 8fr) and the preview and the filter row are `position: sticky`; focused radios keep a 210px `scroll-margin-top` clear of the wrapped filter row. Below that, the preview is sticky only from 600px of viewport height, its stage capped at `50svh − 112px` and centred (the svg unclipped so the wall drawing's floor, drawn three stage widths wide, reaches the card's edges) and its legend set smaller so the longest legend (cm, person or door) still ends in the upper half. These one-column rules query the named `fc` container, so they never reach the two-column preview; radios get a `scroll-margin-top` so a focused row stops below the pinned block.
+From a container width of 844px the widget is two grid columns (5fr / 8fr) and the preview and the filter row are `position: sticky`; focused radios keep a 210px `scroll-margin-top` clear of the wrapped filter row. Below that, the preview is sticky only from 600px of viewport height, its stage capped at `50svh − 112px` and centred (the svg unclipped so the wall drawing's floor, drawn three stage widths wide, reaches the card's edges) and its legend set smaller so the longest legend (cm, person or door) still ends in the upper half. These one-column rules query the named `fc` container, so they never reach the two-column preview; radios get a `scroll-margin-top` so a focused row stops below the pinned block. `.fs-scale-stage` is an inline-size container, so the label rules follow the stage, not the figure: a capped stage up to 520px wide draws both label classes at 26 stage units (`LABEL_FONT`), about 12.7px at 800 × 600.
 
-When the chart's card is under 640px wide inside (a widget under 600px), the phone layout applies: the body's side padding goes to 0, each visible row is a 68px grid of three clipped lines (size and other unit, mat, use) with a visible 22px radio on the right, the filters stack as full-width 44px tracks, and the pinned preview has a 184px stage and a two-line 52px legend, the reference sentence visually hidden; its svg stays clipped, and both drawings' labels are 26 stage units. Focused radios keep a 287px `scroll-margin-top` while the preview is pinned. In the all-sizes view one click handler on the svg maps the pointer into stage units and selects `nearestSize`. Below a viewport width of 640px the six common sizes are two row drawings of three at one scale.
+When the chart's card is under 640px wide inside (a widget under 600px), the phone layout applies: the body's side padding goes to 0, each visible row is a 68px grid of three clipped lines (size and other unit, mat, use) with a visible 22px radio on the right, the filters stack as full-width 44px tracks, and the pinned preview has a two-line 52px legend, the reference sentence visually hidden, and both drawings' labels are 26 stage units. The phone stage is 184px tall up to a 345px stage width, its svg clipped at the sides by `slice`; wider, it takes the drawing's own 720:384 ratio so the whole drawing shows, and while pinned (viewport height ≥ 600px) it is capped at `50svh − 73px`, narrowing and centring so the pinned block ends in the upper half. Focused radios keep a `scroll-margin-top` of 103px plus that stage height while the preview is pinned (287px at 360 and 390). In the all-sizes view one click handler on the svg maps the pointer into stage units and selects `nearestSize`. Below a viewport width of 640px the six common sizes are two row drawings of three at one scale.
 
 Text that only sends the visitor elsewhere is wrapped in `IfLive`; `RelatedTools` lists live Frames pages plus P1, PH1, C1 and G1, and renders nothing while none is live.
 
@@ -285,7 +285,7 @@ The page's cumulative layout shift from first paint until it is interactive SHAL
 
 ### Requirement: The six most common sizes are drawn at one scale
 
-The page SHALL show the six most common sizes as six frames drawn at one scale from the size engine, each labelled with its size in inches, in centimetres and its common use. From a viewport width of 640px the six frames SHALL stand on one baseline; below it they SHALL stand in two rows of three (4x6, 5x7, 8x10, then 11x14, 16x20, 24x36), each row on its own baseline with its labels under it, and the block SHALL NOT scroll sideways. The drawing's accessible name SHALL be "Six common picture frame sizes from 4x6 to 24x36 inches compared at the same scale".
+The page SHALL show the six most common sizes as six frames drawn at one scale from the size engine, each labelled with its size in inches and its common use, and, when the visitor's unit is centimetres, with its size in centimetres. The response HTML SHALL hold the centimetre label of every frame whatever the unit. From a viewport width of 640px the six frames SHALL stand on one baseline; below it they SHALL stand in two rows of three (4x6, 5x7, 8x10, then 11x14, 16x20, 24x36), each row on its own baseline with its labels under it, and the block SHALL NOT scroll sideways. The drawing's accessible name SHALL be "Six common picture frame sizes from 4x6 to 24x36 inches compared at the same scale".
 
 #### Scenario: The frames are in proportion
 
@@ -302,14 +302,24 @@ The page SHALL show the six most common sizes as six frames drawn at one scale f
 - **WHEN** `/` is opened at 390 × 664
 - **THEN** the 4x6, 5x7 and 8x10 frames share one baseline, the 11x14, 16x20 and 24x36 frames share a lower one, the 24x36 frame is six times as wide as the 4x6 frame within one pixel, and the block does not scroll sideways
 
+#### Scenario: The cm line follows the unit
+
+- **WHEN** `/` is opened with inches selected, and then the visitor selects "cm"
+- **THEN** with inches the fourth frame shows "11×14" and no visible "27.9 × 35.6 cm", and with centimetres it shows "27.9 × 35.6 cm"
+
 ### Requirement: The frame anatomy example is computed
 
-The page SHALL explain the four measurements of a framed photo with an 8x10 image in an 11x14 frame, taking the outside size and the mat opening from the size engine, beside a drawing named "8x10 photo with a mat in an 11x14 frame: moulding, mat, mat opening and photo".
+The page SHALL explain the four measurements of a framed photo with an 8x10 image in an 11x14 frame, taking the outside size, the mat opening and the mat's overlap from the size engine, beside a drawing named "8x10 photo with a mat in an 11x14 frame: moulding, mat, mat opening and photo". Each measurement and the overlap SHALL be shown in the visitor's unit, and the response HTML SHALL hold both units.
 
 #### Scenario: The four measurements
 
 - **WHEN** `/` is requested
 - **THEN** the response HTML lists Outside size "13 × 16 in", Frame size "11 × 14 in", Mat opening "7.5 × 9.5 in" and Image size "8 × 10 in"
+
+#### Scenario: The four measurements in centimetres
+
+- **WHEN** `/` is opened and the visitor selects "cm"
+- **THEN** the visible measurements read "33 × 40.6 cm", "27.9 × 35.6 cm", "19.1 × 24.1 cm" and "20.3 × 25.4 cm", the overlap reads "0.6 cm smaller", and no inch measurement is visible in the example
 
 ### Requirement: No two drawings share a name
 
@@ -331,12 +341,17 @@ The page SHALL show five questions, each an `h3` inside a disclosure whose answe
 
 ### Requirement: The page says where its sizes come from
 
-Under the widget the page SHALL state the height of the drawn wall, name the source of the sizes, and show the month and year the size data was last checked, taken from the size engine's check record.
+Under the widget the page SHALL state the height of the drawn wall in the visitor's unit ("8 ft" in inches, "244 cm" in centimetres), name the source of the sizes, and show the month and year the size data was last checked, taken from the size engine's check record. The response HTML SHALL hold both forms of the wall height.
 
 #### Scenario: The proof line
 
 - **WHEN** `/` is requested
-- **THEN** the widget's footer in the response HTML contains "8 ft (244 cm)" and "last checked" followed by the month and year of the engine's check date
+- **THEN** the widget's footer in the response HTML contains "8 ft", "244 cm" and "last checked" followed by the month and year of the engine's check date
+
+#### Scenario: The wall height follows the unit
+
+- **WHEN** `/` is opened with inches selected, and then the visitor selects "cm"
+- **THEN** the footer shows "8 ft" and not "244 cm" with inches, and "244 cm" and not "8 ft" with centimetres
 
 ### Requirement: The page links only to live pages
 
@@ -392,3 +407,64 @@ In the phone layout the wall drawing's dimension labels and the all-sizes outlin
 
 - **WHEN** `/` is opened at 390 × 664, in the wall view and then in the "All sizes" view
 - **THEN** each dimension label and each outline label renders at a font size of at least 12 px
+
+### Requirement: The page's static numbers show the stored unit from first paint
+
+A visitor whose stored unit is centimetres SHALL see the six common sizes, the anatomy example and the wall height in centimetres from the first paint, without an inch form showing first.
+
+#### Scenario: A stored unit at load
+
+- **WHEN** a visitor whose stored unit is centimetres opens `/` with JavaScript bundles not yet run
+- **THEN** the anatomy example shows "33 × 40.6 cm" and the footer shows "244 cm", and no inch measurement of the example is visible
+
+### Requirement: The phone preview shows the whole drawing
+
+In the phone layout, when the preview's stage is wider than 345px, the stage SHALL grow to the drawing's own aspect ratio so that no part of the drawing is cut off at the top or bottom, as far as a pinned preview's bottom edge stays in the upper half of the viewport. Up to a stage width of 345px the stage SHALL stay 184px tall. A pinned preview SHALL NOT cover the row that has keyboard focus at any phone width.
+
+#### Scenario: A tall frame on a wide phone
+
+- **WHEN** `/?size=27x40` is opened at 430 × 932 and at 620 × 800
+- **THEN** the drawn 27x40 frame and each dimension label lie inside the preview's stage
+
+#### Scenario: The smallest outline on a wide phone
+
+- **WHEN** `/?view=all` is opened at 620 × 800
+- **THEN** the 4x6 outline lies inside the preview's stage
+
+#### Scenario: A wide phone keeps the preview in the upper half
+
+- **WHEN** `/` is opened at 620 × 800 and the last table row is scrolled into view
+- **THEN** the preview is inside the viewport and its bottom edge is in the upper half
+
+#### Scenario: Keyboard focus on a wide phone
+
+- **WHEN** at 620 × 800 the visitor moves the selection down the table with the arrow keys to the last row
+- **THEN** each focused row is fully visible below the preview
+
+#### Scenario: A narrow phone is unchanged
+
+- **WHEN** `/` is opened at 390 × 664
+- **THEN** the preview's stage is 184 px tall
+
+### Requirement: The drawings' labels are legible on a capped one-column stage
+
+In the one-column layout, where the preview's stage is capped by the viewport's height to 520px wide or less, the wall drawing's dimension labels and the all-sizes outline labels SHALL be drawn at least 12px tall on screen.
+
+#### Scenario: Labels at 800 × 600
+
+- **WHEN** `/` is opened at 800 × 600, in the wall view and then in the "All sizes" view
+- **THEN** each dimension label and each outline label renders at a font size of at least 12 px
+
+### Requirement: The selected size stays marked in forced colors
+
+When the browser forces its own colours, the selected row of the size table SHALL carry a visible outline or border that unselected rows do not, and in the phone layout the selected row's radio SHALL look different from the others.
+
+#### Scenario: The table in forced colors
+
+- **WHEN** `/` is opened with forced colors active at 1280 × 800
+- **THEN** the selected row has an outline or border and an unselected row has none
+
+#### Scenario: The phone rows in forced colors
+
+- **WHEN** `/` is opened with forced colors active at 390 × 664
+- **THEN** the checked radio's computed fill differs from an unchecked radio's, and the selected row has an outline or border that an unselected row does not

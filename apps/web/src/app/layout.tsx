@@ -28,10 +28,25 @@ export const metadata: Metadata = {
   description: "Standard frame sizes, shown at true scale on a real wall.",
 };
 
+/**
+ * Runs before the first paint: the stored unit (the "unit" key of lib/unit.ts) onto `<html data-unit>`.
+ * The server renders "in", so crawlers, a blocked storage and a no-JS load all get inches.
+ * {@link openspec/specs/site-shell/spec.md#requirement-the-page-knows-the-unit-before-it-paints}
+ */
+const UNIT_SCRIPT = `try{if(localStorage.getItem("unit")==="cm")document.documentElement.dataset.unit="cm"}catch(e){}`;
+
 /** {@link openspec/specs/site-shell/spec.md#requirement-every-page-renders-inside-one-shell} */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+    <html
+      lang="en"
+      data-unit="in"
+      className={`${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: UNIT_SCRIPT }} />
+      </head>
       <body>
         <SiteHeader hubs={navHubs()} />
         <main>{children}</main>

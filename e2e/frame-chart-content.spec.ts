@@ -130,7 +130,8 @@ test("the widget footer says where the sizes come from", async ({ page }) => {
     year: "numeric",
     timeZone: "UTC",
   });
-  expect(widgetFooter).toContain("8 ft (244 cm)");
+  expect(widgetFooter).toContain("8 ft");
+  expect(widgetFooter).toContain("244 cm");
   expect(widgetFooter).toContain(`last checked ${checked}`);
 });
 

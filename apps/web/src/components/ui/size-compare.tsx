@@ -5,8 +5,9 @@ import { STAGE } from "./scale-preview";
 type CompareSize = Pick<Frame, "id" | "w" | "h" | "major">;
 
 /**
- * Labels are laid out for their largest size in stage units: the phone rule in widgets.css
- * (`@container card`) draws `.cmp-label` at 26; the base and 520px rules draw 14 and 22.
+ * Labels are laid out for their largest size in stage units: the phone rule (`@container card`)
+ * and the capped one-column rule in widgets.css draw `.cmp-label` at 26; the base and 520px rules
+ * draw 14 and 22.
  */
 export const LABEL_FONT = 26;
 /** Stage units between a label's box and its outline's top edge and right corner. */

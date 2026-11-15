@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // The size engine ships TypeScript source (packages/sizes).
   transpilePackages: ["@framesizes/sizes"],
-  // The e2e analytics server builds with a dummy token into its own folder (playwright.config.ts).
+  // e2e builds into its own folders (.next-e2e, .next-analytics; see playwright.config.ts)
+  // so it runs beside `pnpm dev`; the analytics one also uses a dummy token.
   distDir: process.env.NEXT_DIST_DIR || ".next",
   // posthog-js calls paths ending in a slash; the redirect below restores the 308 everywhere else.
   skipTrailingSlashRedirect: true,

@@ -1,4 +1,4 @@
-import { frameAnatomy, MAT_OVERLAP, writeSize } from "@framesizes/sizes";
+import { frameAnatomy, MAT_OVERLAP, toCm, writeSize } from "@framesizes/sizes";
 
 /** The example: an 8x10 photo with a mat in an 11x14 frame (a catalog pairing). */
 export const EXAMPLE_FRAME = { w: 11, h: 14 };
@@ -25,7 +25,13 @@ const MEASURES = [
     name: "Mat opening",
     size: EXAMPLE.matOpening,
     swatch: "bg-tape border-4 border-paper outline-[1.5px] outline-line-strong",
-    text: `The window in the mat. It is cut ${overlap} in smaller on each side, so the mat holds the photo's edges.`,
+    text: (
+      <>
+        The window in the mat. It is cut <span className="u-in">{overlap} in</span>{" "}
+        <span className="u-cm">{toCm(MAT_OVERLAP)} cm</span> smaller on each side, so the mat holds
+        the photo&apos;s edges.
+      </>
+    ),
   },
   {
     name: "Image size",
@@ -77,9 +83,10 @@ export function FrameAnatomy() {
             <div className="flex flex-col gap-0.5">
               <div className="flex flex-wrap items-baseline gap-x-3">
                 <span className="font-bold">{m.name}</span>
-                <span data-value className="font-mono font-medium">
+                <span data-value className="u-in font-mono font-medium">
                   {writeSize(m.size, "in")}
-                </span>
+                </span>{" "}
+                <span className="u-cm font-mono font-medium">{writeSize(m.size, "cm")}</span>
               </div>
               <span className="small text-ink-muted">{m.text}</span>
             </div>
