@@ -143,6 +143,15 @@
   font-weight: 500;
 }
 
+/*
+ * One unit at a time in server-rendered sections: both forms are in the HTML, `<html data-unit>`
+ * (set before paint by layout.tsx) hides the other. Unlayered, so it beats any display utility.
+ */
+[data-unit="in"] .u-cm,
+[data-unit="cm"] .u-in {
+  display: none;
+}
+
 /* The page column and the underlined in-text link, shared by every page (BL-8). */
 @utility page {
   margin-inline: auto;

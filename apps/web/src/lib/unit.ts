@@ -25,6 +25,7 @@ function onStorage(event: StorageEvent) {
   if (event.key !== KEY) return;
   chosen = null; // another tab chose: storage is the truth again
   cached = undefined;
+  document.documentElement.dataset.unit = snapshot();
   listeners.forEach((notify) => notify());
 }
 
@@ -46,8 +47,14 @@ export function useUnit(): Unit {
   return useSyncExternalStore(subscribe, snapshot, () => "in");
 }
 
+/**
+ * Every change also lands on `<html data-unit>`, which layout.tsx's head script sets at load, so CSS
+ * shows the server-rendered sections in the visitor's unit.
+ * {@link openspec/specs/site-shell/spec.md#requirement-the-page-knows-the-unit-before-it-paints}
+ */
 export function setUnit(unit: Unit) {
   chosen = unit;
+  document.documentElement.dataset.unit = unit;
   try {
     window.localStorage.setItem(KEY, unit);
   } catch {

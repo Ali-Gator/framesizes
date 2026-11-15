@@ -50,7 +50,7 @@ export function CommonSizes() {
               {row.map((f) => (
                 <li key={f.id} className="flex flex-col gap-0.5 pr-2 pl-[8%]">
                   <span className="font-mono text-xl leading-7 font-medium">{`${f.w}×${f.h}`}</span>
-                  <span className="measure text-ink-muted max-sm:text-xs">
+                  <span className="u-cm measure text-ink-muted max-sm:text-xs">
                     {writeSize(f, "cm")}
                   </span>
                   <span className="small">{f.use}</span>
