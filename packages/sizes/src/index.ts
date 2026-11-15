@@ -34,3 +34,26 @@ export {
 } from "./scene";
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-reference-is-described-in-the-visitors-unit} */
 export { referenceSentence } from "./scene";
+
+/** {@link openspec/specs/size-engine/spec.md#requirement-the-wall-tool-offers-seven-known-things-to-set-the-scale} */
+export { KNOWN_IDS, KNOWN_THINGS, type KnownId, type KnownLength, type KnownThing } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-known-things-default-length-follows-the-visitors-unit} */
+export { defaultLength } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-two-marked-points-and-a-real-length-give-the-photos-scale} */
+export { scaleFromMark, type Point } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-photos-size-and-a-frames-place-convert-between-inches-and-pixels} */
+export { photoPointToWall, photoSize, rectToPhoto, type Photo } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-the-demo-room-needs-no-marking} */
+export { DEMO_ROOM, type Edges, type Wall } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-frames-distances-run-to-the-nearest-thing-in-line-with-it} */
+export { frameDistances, type Distances, type Side } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-setting-a-distance-moves-only-that-frame} */
+export { setDistance } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-photos-known-edges-come-from-what-the-visitor-marks} */
+export { photoEdges, type PhotoMarks } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-marked-sofa-or-bed-becomes-furniture-on-the-photo} */
+export { markedFurniture } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-dragged-frame-snaps-to-the-edges-and-centres-around-it} */
+export { SNAP, snapFrame, type SnapLines } from "./wall";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-new-frame-is-placed-beside-the-selected-one} */
+export { PLACE_GAP, placeBeside } from "./wall";
