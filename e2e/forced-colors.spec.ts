@@ -65,6 +65,10 @@ test("the phone rows mark the selected radio and row in forced colors", async ({
 test("the checked unit carries a border or outline in forced colors", async ({ page }) => {
   await open(page);
   const units = page.getByRole("radiogroup", { name: "Units" });
-  expect(await marks(units.getByRole("radio", { checked: true }))).not.toEqual([]);
-  expect(await marks(units.getByRole("radio", { checked: false }))).toEqual([]);
+  const checked = units.getByRole("radio", { checked: true });
+  const unchecked = units.getByRole("radio", { checked: false });
+  expect(await marks(checked)).not.toEqual([]);
+  // Every option keeps the same border width, so toggling never shifts the labels; only its colour marks the choice.
+  const color = (el: Locator) => el.evaluate((node) => getComputedStyle(node).borderTopColor);
+  expect(await color(checked)).not.toBe(await color(unchecked));
 });

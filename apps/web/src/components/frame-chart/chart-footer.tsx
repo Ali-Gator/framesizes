@@ -20,7 +20,7 @@ export function ChartFooter() {
   return (
     <>
       <span>
-        The wall is drawn <span className="u-in">{feetAndInches(WALL_HEIGHT)}</span>
+        The wall is drawn <span className="u-in">{feetAndInches(WALL_HEIGHT)}</span>{" "}
         <span className="u-cm">{toWholeCm(WALL_HEIGHT)} cm</span> high. Sizes are the common US
         ready-made frame sizes at {sourceList}, last checked {checked}.
       </span>

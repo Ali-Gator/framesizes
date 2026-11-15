@@ -2,6 +2,7 @@ import { useSyncExternalStore } from "react";
 
 export type Unit = "in" | "cm";
 
+/** layout.tsx's head script reads this key too; e2e/unit-display.spec.ts fails if they drift. */
 const KEY = "unit";
 const listeners = new Set<() => void>();
 /** The choice made in this page view; it outlives a storage that throws. */
@@ -22,7 +23,7 @@ const snapshot = (): Unit =>
   chosen ?? (cached === undefined ? (cached = stored()) : cached) ?? "in";
 
 function onStorage(event: StorageEvent) {
-  if (event.key !== KEY) return;
+  if (event.key !== null && event.key !== KEY) return; // null: another tab cleared storage
   chosen = null; // another tab chose: storage is the truth again
   cached = undefined;
   document.documentElement.dataset.unit = snapshot();

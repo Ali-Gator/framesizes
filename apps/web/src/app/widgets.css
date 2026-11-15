@@ -127,7 +127,10 @@
   container-type: inline-size;
   margin: 0;
 }
-/* A container too, so the label rules below follow a stage the one-column cap narrows. */
+/*
+ * A container too, so the label rules below follow a stage the one-column cap narrows. This holds
+ * for every stage (ScalePreview and SizeCompare on any page); uncapped, stage and figure widths match.
+ */
 .fs-scale-stage {
   aspect-ratio: 720 / 384;
   container-type: inline-size;

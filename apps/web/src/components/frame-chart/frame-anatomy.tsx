@@ -27,7 +27,7 @@ const MEASURES = [
     swatch: "bg-tape border-4 border-paper outline-[1.5px] outline-line-strong",
     text: (
       <>
-        The window in the mat. It is cut <span className="u-in">{overlap} in</span>
+        The window in the mat. It is cut <span className="u-in">{overlap} in</span>{" "}
         <span className="u-cm">{toCm(MAT_OVERLAP)} cm</span> smaller on each side, so the mat holds
         the photo&apos;s edges.
       </>
@@ -85,7 +85,7 @@ export function FrameAnatomy() {
                 <span className="font-bold">{m.name}</span>
                 <span data-value className="u-in font-mono font-medium">
                   {writeSize(m.size, "in")}
-                </span>
+                </span>{" "}
                 <span className="u-cm font-mono font-medium">{writeSize(m.size, "cm")}</span>
               </div>
               <span className="small text-ink-muted">{m.text}</span>

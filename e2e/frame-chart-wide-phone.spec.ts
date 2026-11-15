@@ -81,9 +81,18 @@ test.describe("at 620 × 800", () => {
     expect(preview.top).toBeGreaterThanOrEqual(0);
     expect(preview.bottom).toBeLessThanOrEqual(viewport.height / 2);
   });
+});
 
+// 620 × 600 caps the stage, so the clamp's cap term sets `scroll-margin-top` there.
+for (const viewport of [
+  { width: 620, height: 800 },
+  { width: 620, height: 600 },
+]) {
   /** {@link openspec/specs/frame-size-chart/spec.md#scenario-keyboard-focus-on-a-wide-phone} */
-  test("each row the arrow keys reach is fully visible below the preview", async ({ page }) => {
+  test(`each row the arrow keys reach is fully visible below the preview at ${viewport.width}×${viewport.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
     await open(page);
     // Start with the selected row hidden under the pinned preview, so focusing it must scroll.
     await page
@@ -108,7 +117,7 @@ test.describe("at 620 × 800", () => {
       expect(row.bottom, `row ${i}`).toBeLessThanOrEqual(viewport.height + 1);
     }
   });
-});
+}
 
 /** {@link openspec/specs/frame-size-chart/spec.md#scenario-a-narrow-phone-is-unchanged} */
 test("the stage stays 184px tall at 390 × 664", async ({ page }) => {

@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-32**
+_Next id:_ **BL-36**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -32,8 +32,19 @@ when to add and when to fold items in.
   `@typescript/native`, so `tsc`, Next.js and eslint use one compiler.
   _Refs:_ `package.json`, https://github.com/typescript-eslint/typescript-eslint/issues/10940 · _Status:_ deferred — a
   typescript-eslint release that supports TS 7.1
+- **[BL-35] Citation walker walks the e2e build folders** — `scripts/__tests__/spec-citations.test.ts`
+  skips only `node_modules` and `.next`, so after a local e2e run it walks `apps/web/.next-e2e` and
+  `.next-analytics` on every `pnpm test:unit` and pre-commit; skip any folder starting `.next`. Edits an
+  existing test, so it needs the owner's approval.
+  _Refs:_ `scripts/__tests__/spec-citations.test.ts` · _Status:_ open — backlog-3 review, 2026-11-15
 
 ## Site
+
+- **[BL-33] Units toggle and table say inches until hydration** — with cm stored, the head script
+  shows the static sections in cm before paint, but the Units toggle and the chart table render the
+  server's "in" until React hydrates; on a slow load the page mixes units. Drive the toggle's checked
+  look from `[data-unit]` too, or accept it.
+  _Refs:_ `apps/web/src/components/site/unit-toggle.tsx`, `apps/web/src/lib/unit.ts` · _Status:_ open — backlog-3 review, 2026-11-15
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once
@@ -92,3 +103,13 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
+- **[BL-32] Selected row grows in forced colors** — the forced-colors `Highlight` border sits on the
+  selected row only: on desktop it beats the cells' 1px collapsed borders and the rows below jump 1–2px
+  on every ArrowDown; on a phone it squeezes the 68px row and moves the radio 2px left. Needs a mark
+  that takes no layout space and still clears the focus ring.
+  _Refs:_ `apps/web/src/app/widgets.css` (forced-colors block) · _Status:_ open — backlog-3 review, 2026-11-15
+- **[BL-34] Phone `scroll-margin-top` rebuilds the stage height** — the radio's margin repeats the
+  184px floor, the 720:384 ratio, the `50svh - 73px` cap and the 16px preview sides by hand; a change to
+  any of them lets focused rows slide under the pinned preview again. Define the height once as a
+  custom property both rules use.
+  _Refs:_ `apps/web/src/app/widgets.css` (phone block) · _Status:_ open — backlog-3 review, 2026-11-15
