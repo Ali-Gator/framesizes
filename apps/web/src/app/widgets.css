@@ -619,15 +619,28 @@
     padding: 12px 16px 8px;
     border-bottom: 1px solid var(--line);
   }
+  /* The drawing's own ratio, so wide phones see its top and bottom. */
   .fc-preview .fs-scale-stage {
-    height: 184px;
+    aspect-ratio: 720 / 384;
     max-height: none;
-    aspect-ratio: auto;
     margin-inline: 0;
   }
-  /* The fixed 184px stage is not the viewBox's ratio: the slice crops, so keep the svg clipped. */
-  .fc-preview .fs-scale-stage svg {
-    overflow: hidden;
+  /* Up to a 345px stage (184 · 720/384) it stays 184px tall: the slice crops the sides, kept clipped. */
+  @container (max-width: 345px) {
+    .fc-preview .fs-scale-stage {
+      height: 184px;
+      aspect-ratio: auto;
+    }
+    .fc-preview .fs-scale-stage svg {
+      overflow: hidden;
+    }
+  }
+  /* Pinned: the stage plus the preview's 73px ends in the upper half; at the cap it narrows and centres. */
+  @media (min-height: 600px) {
+    .fc-preview .fs-scale-stage {
+      max-height: calc(50svh - 73px);
+      margin-inline: auto;
+    }
   }
   /* 26 stage units, about 12.5px at 390px: LABEL_FONT in size-compare.tsx lays labels out for it. */
   .fs-scale .dim-text,
@@ -786,10 +799,13 @@
     background: var(--paper);
     outline: none; /* the row draws the focus ring */
   }
-  /* Only while the preview is pinned: 264px row top + 23px from the row's top to the radio's. */
+  /*
+   * Only while the preview is pinned: the row top (80px plus the stage) + 23px to the radio's top.
+   * The stage's height again, here through `.fc`: its width less the preview's 16px sides.
+   */
   @media (min-height: 600px) {
     .fs-table tbody tr:not([hidden]) input {
-      scroll-margin-top: 287px;
+      scroll-margin-top: calc(103px + clamp(184px, (100cqi - 32px) * 384 / 720, 50svh - 73px));
     }
   }
   .fs-table tbody tr:not([hidden]) input:checked {
