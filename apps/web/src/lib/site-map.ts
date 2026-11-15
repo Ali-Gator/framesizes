@@ -35,13 +35,14 @@ export const PAGES = [
     path: "/",
     hub: "frames",
     name: "Frame size chart",
+    card: { question: "What standard frame sizes exist?", ratio: [4, 5] },
     live: true,
     seo: {
       title: "Standard Picture Frame Sizes Chart (Inches & cm)",
       h1: "Standard Frame Sizes",
       description:
         "Every standard picture frame size in inches and cm, from 4x6 to 27x40. Click a size to see it at true scale next to a sofa, a door or a person.",
-      lastModified: "2026-11-11",
+      lastModified: "2026-11-15",
     },
   },
   {
@@ -50,7 +51,14 @@ export const PAGES = [
     hub: "frames",
     name: "Frame sizes on your wall",
     card: { question: "How big will a frame look on my wall?", ratio: [4, 5] },
-    live: false,
+    live: true,
+    seo: {
+      title: "Frame Sizes on Your Wall: Photo Visualizer",
+      h1: "Frame Sizes on Your Wall",
+      description:
+        "See all 19 standard frame sizes, 4x6 to 27x40, on your wall at true size: upload a photo and set the scale with a door, a sofa, a bed or a sheet of paper.",
+      lastModified: "2026-11-15",
+    },
   },
   {
     id: "F3",

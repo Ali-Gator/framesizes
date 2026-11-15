@@ -58,3 +58,27 @@ export function sitemapEntries(pages: readonly SitePage[] = PAGES): MetadataRout
     lastModified: p.seo.lastModified,
   }));
 }
+
+/**
+ * Home › the page, for a live page below the home page.
+ * {@link openspec/specs/seo-base/spec.md#requirement-pages-below-the-home-page-carry-breadcrumbs}
+ */
+export function breadcrumbJsonLd(target: LivePage) {
+  const items = [
+    { name: "Home", url: absoluteUrl("/") },
+    { name: target.name, url: absoluteUrl(target.path) },
+  ];
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
+/** JSON for a `<script type="application/ld+json">`, `<` escaped so it can never close the element. */
+export const jsonLdScript = (data: unknown) => JSON.stringify(data).replace(/</g, "\\u003c");

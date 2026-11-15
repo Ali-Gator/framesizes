@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { SizeTable } from "../size-table";
 
@@ -93,4 +93,36 @@ it("marks only the cells that hold a mat", () => {
   expect([...phoneDoc.querySelectorAll("[data-mat]")].map((el) => el.textContent)).toEqual([
     "5 × 7 in",
   ]);
+});
+
+describe("a titled table that is not a chooser", () => {
+  const titled = new DOMParser().parseFromString(
+    renderToStaticMarkup(
+      <SizeTable
+        title="Wall art frame sizes and the space they take"
+        meta="With a 1 in moulding"
+        selectable={false}
+        columns={[{ label: "Frame size", num: true }, { label: "Where it works" }]}
+        rows={[{ id: "16x20", label: "16 × 20 in", cells: ["Above a small table, or in a pair"] }]}
+      />,
+    ),
+    "text/html",
+  );
+
+  /** {@link openspec/specs/frames-on-wall/spec.md#scenario-the-table-in-the-server-html} */
+  it("shows the title and meta as its caption", () => {
+    const caption = titled.querySelector("caption");
+    expect(caption?.classList.contains("fs-sr")).toBe(false);
+    expect(caption?.querySelector(".fs-table-title")?.textContent).toBe(
+      "Wall art frame sizes and the space they take",
+    );
+    expect(caption?.querySelector(".fs-table-meta")?.textContent).toBe("With a 1 in moulding");
+  });
+
+  /** {@link openspec/specs/frames-on-wall/spec.md#requirement-the-wall-table-lists-the-space-six-sizes-take} */
+  it("holds no radio or checkbox", () => {
+    expect(titled.querySelectorAll("input")).toHaveLength(0);
+    expect(titled.querySelector("tbody th")?.textContent).toBe("16 × 20 in");
+    expect(titled.querySelector("table")?.classList.contains("fs-table-static")).toBe(true);
+  });
 });

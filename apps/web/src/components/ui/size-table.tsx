@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 export interface SizeTableRow {
   id: string;
   /** The first cell: the size as the visitor reads it. Also the radio's name. */
-  label: string;
+  label: ReactNode;
   cells: readonly ReactNode[];
   hidden?: boolean;
   /** The row has a mat: its cell in the `mat` column gets `data-mat` (CSS prefixes "With a mat"). */
@@ -16,26 +16,45 @@ export interface SizeTableRow {
  * The label's hit area covers the row (widgets.css); `onClick` on the row backs it up where a
  * browser does not position inside a table row. Rows of another shape stay in the HTML, `hidden`.
  * Explicit roles keep the table semantics where the phone layout changes `display` (WebKit).
+ * With `title` the caption is a visible card head (plus `meta`); `selectable={false}` is a plain
+ * table: no radios, no row clicks.
  */
 export function SizeTable({
   caption,
-  name,
+  title,
+  meta,
+  selectable = true,
+  name = "size",
   columns,
   rows,
   value,
   onSelect,
 }: {
-  caption: string;
-  name: string;
+  /** The visually hidden caption, when there is no `title`. */
+  caption?: string;
+  title?: string;
+  meta?: ReactNode;
+  selectable?: boolean;
+  name?: string;
   columns: readonly { label: string; num?: boolean; mat?: boolean }[];
   rows: readonly SizeTableRow[];
-  value: string;
+  value?: string;
   onSelect?: (id: string) => void;
 }) {
+  const select = selectable ? onSelect : undefined;
   return (
     <div className="fs-table-wrap">
-      <table className="fs-table" role="table">
-        <caption className="fs-sr">{caption}</caption>
+      <table className={selectable ? "fs-table" : "fs-table fs-table-static"} role="table">
+        {title ? (
+          <caption className="fs-table-cap">
+            <span className="fs-table-cap-in">
+              <span className="fs-table-title">{title}</span>
+              {meta ? <span className="fs-table-meta">{meta}</span> : null}
+            </span>
+          </caption>
+        ) : (
+          <caption className="fs-sr">{caption}</caption>
+        )}
         <colgroup>
           {columns.map((column) => (
             <col key={column.label} className={column.num ? "fs-col-num" : undefined} />
@@ -59,25 +78,31 @@ export function SizeTable({
                 role="row"
                 hidden={row.hidden}
                 onClick={
-                  onSelect &&
+                  select &&
                   ((event) => {
                     // The label and the radio already select through onChange.
-                    if (!(event.target as Element).closest("label, input")) onSelect(row.id);
+                    if (!(event.target as Element).closest("label, input")) select(row.id);
                   })
                 }
               >
                 <th scope="row" role="rowheader" className={columns[0]?.num ? "fs-num" : undefined}>
-                  <input
-                    type="radio"
-                    className="fs-sr"
-                    name={name}
-                    id={id}
-                    value={row.id}
-                    checked={row.id === value}
-                    onChange={() => onSelect?.(row.id)}
-                    readOnly={!onSelect}
-                  />
-                  <label htmlFor={id}>{row.label}</label>
+                  {selectable ? (
+                    <>
+                      <input
+                        type="radio"
+                        className="fs-sr"
+                        name={name}
+                        id={id}
+                        value={row.id}
+                        checked={row.id === value}
+                        onChange={() => select?.(row.id)}
+                        readOnly={!select}
+                      />
+                      <label htmlFor={id}>{row.label}</label>
+                    </>
+                  ) : (
+                    row.label
+                  )}
                 </th>
                 {row.cells.map((cell, index) => (
                   <td
