@@ -65,12 +65,17 @@ Text that only sends the visitor elsewhere is wrapped in `IfLive`; `RelatedTools
 
 ### Requirement: The page follows the approved outline
 
-The HTML the server returns for `/` SHALL hold the page's sections in this order, under these headings: the `h1`, the answer paragraph, the widget titled "Frame size chart" (`h2`), "The six most common frame sizes" (`h2`), "Frame size by image size" (`h2`), "Large, square and horizontal frame sizes" (`h2`, with one `h3` per group), "How to choose a frame size" (`h2`, three `h3`), "Frame size questions" (`h2`, one `h3` per question).
+The HTML the server returns for `/` SHALL hold the page's sections in this order, under these headings: the `h1`, the answer paragraph, the widget titled "Frame size chart" (`h2`), "The six most common frame sizes" (`h2`), "Frame size by image size" (`h2`), "Large, square and horizontal frame sizes" (`h2`, with one `h3` per group), "How to choose a frame size" (`h2`, three `h3`), "Frame size questions" (`h2`, one `h3` per question), then "Related tools" (`h2`, one `h3` per hub group) while a related page is live.
 
 #### Scenario: The heading outline of the server HTML
 
 - **WHEN** `/` is requested
 - **THEN** the response HTML holds those six `h2` headings in that order after the single `h1`, the `h3` headings "Large frame sizes", "Square frame sizes" and "Horizontal frame sizes", and one `h3` per question
+
+#### Scenario: The outline with F2 live
+
+- **WHEN** `/` is requested while only the home page and F2 are live
+- **THEN** the six `h2` headings are followed by "Related tools", whose one `h3` is "Frames"
 
 ### Requirement: The first paragraph answers with the six common sizes
 
@@ -361,6 +366,11 @@ The related tools section SHALL list the live pages of the page's own hub and th
 
 - **WHEN** `/` is requested while only the home page is live
 - **THEN** the response HTML has no "Related tools" heading, no "See it on my wall" link, and no `href` that starts with `#`
+
+#### Scenario: Only F2 is live besides the home page
+
+- **WHEN** `/` is requested while only the home page and F2 are live
+- **THEN** the response HTML has a "See it on my wall" link and a "frame sizes on your wall" link to `/frame-sizes-on-wall`, a "Related tools" heading with one card linking there, and no `href` that starts with `#`
 
 #### Scenario: A related page goes live
 
