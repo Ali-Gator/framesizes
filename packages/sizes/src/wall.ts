@@ -7,15 +7,6 @@ import { CM_PER_INCH, toWholeCm, type Size, type Unit } from "./units";
  */
 
 export type KnownId = "wall" | "door" | "sofa" | "bed" | "letter" | "a4" | "card";
-export const KNOWN_IDS: readonly KnownId[] = [
-  "wall",
-  "door",
-  "sofa",
-  "bed",
-  "letter",
-  "a4",
-  "card",
-];
 
 /** A fixed length in inches; an editable default per unit; or none (the visitor types it). */
 export type KnownLength =
@@ -78,6 +69,8 @@ export const KNOWN_THINGS: readonly KnownThing[] = [
   },
 ];
 
+export const KNOWN_IDS: readonly KnownId[] = KNOWN_THINGS.map((k) => k.id);
+
 /**
  * A known thing's starting length in the visitor's unit, or `null` for the wall.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-known-things-default-length-follows-the-visitors-unit}
@@ -86,7 +79,7 @@ export function defaultLength(id: KnownId, unit: Unit): number | null {
   const length = KNOWN_THINGS.find((k) => k.id === id)?.length;
   if (!length || length.kind === "none") return null;
   if (length.kind === "default") return length[unit];
-  return unit === "in" ? length.inches : length.inches * CM_PER_INCH;
+  return unit === "in" ? length.inches : Math.round(length.inches * CM_PER_INCH * 100) / 100;
 }
 
 /** A point on the photo in pixels, from its top-left corner. */
@@ -107,7 +100,9 @@ export interface Photo {
  */
 export function scaleFromMark(a: Point, b: Point, inches: number): number | null {
   const pixels = Math.hypot(b.x - a.x, b.y - a.y);
-  if (pixels === 0 || !Number.isFinite(inches) || inches <= 0) return null;
+  if (!Number.isFinite(pixels) || pixels === 0 || !Number.isFinite(inches) || inches <= 0) {
+    return null;
+  }
   return pixels / inches;
 }
 
@@ -220,18 +215,18 @@ const EDGE: Record<Side, keyof Edges> = {
 };
 
 /**
- * The room on one side: to the nearest in-line obstacle, else the known edge, else (when
- * `toBorder`) the bounds, else `null`. O(n) over `others`.
+ * The room on one side: to the known edge or the nearest in-line obstacle, whichever comes
+ * first, else (when `toBorder`) the bounds, else `null`. Negative for a frame past the edge.
+ * O(n) over `others`.
  */
 function reach(frame: Rect, side: Side, others: readonly Rect[], wall: Wall, toBorder: boolean) {
-  let nearest: number | null = null;
+  const edge = wall.edges[EDGE[side]];
+  let nearest = edge === null ? null : gapToEdge(frame, edge, side);
   for (const o of others) {
     const gap = gapTo(frame, o, side);
     if (gap !== null && (nearest === null || gap < nearest)) nearest = gap;
   }
   if (nearest !== null) return nearest;
-  const edge = wall.edges[EDGE[side]];
-  if (edge !== null) return gapToEdge(frame, edge, side);
   return toBorder ? gapToEdge(frame, bound(wall, side), side) : null;
 }
 
@@ -259,11 +254,12 @@ export function setDistance(
   wall: Wall,
 ): Rect {
   const current = reach(frame, side, others, wall, false);
-  if (current === null) return frame;
+  if (current === null || !Number.isFinite(value)) return frame;
   const grow = Math.max(0, value) - current;
   // Growing the gap moves the frame away from `side`, as far as the room on the other side allows.
-  const away = Math.min(grow, reach(frame, OPPOSITE[side], others, wall, true) ?? 0);
-  const step = grow > 0 ? away : grow;
+  // A frame already past the far edge has no room that way, not negative room.
+  const room = Math.max(0, reach(frame, OPPOSITE[side], others, wall, true) ?? 0);
+  const step = grow > 0 ? Math.min(grow, room) : grow;
   if (side === "left") return { ...frame, x: frame.x + step };
   if (side === "right") return { ...frame, x: frame.x - step };
   if (side === "below") return { ...frame, y: frame.y + step };
@@ -282,7 +278,8 @@ export interface PhotoMarks {
  */
 export function photoEdges(photo: Photo, scale: number, marks: PhotoMarks): Edges {
   const edges: Edges = { left: null, right: null, top: null, bottom: null };
-  if (marks.floor != null) edges.bottom = (photo.height - marks.floor) / scale;
+  if (marks.floor != null)
+    edges.bottom = photoPointToWall({ x: 0, y: marks.floor }, photo, scale).y;
   if (marks.wall) {
     const [a, b] = marks.wall.map((p) => photoPointToWall(p, photo, scale)) as [Point, Point];
     edges.left = Math.min(a.x, b.x);
@@ -399,5 +396,8 @@ export function placeBeside(
   const b = wall.bounds;
   const floor = wall.edges.bottom;
   const centreY = floor === null ? b.y + b.h / 2 : floor + CENTRE_LINE;
-  return { x: b.x + b.w / 2 - w / 2, y: centreY - h / 2, w, h };
+  // Kept inside the bounds: a close-up photo can sit lower than the centre line.
+  const fit = (at: number, lo: number, size: number, span: number) =>
+    Math.max(lo, Math.min(at, lo + span - size));
+  return { x: fit(b.x + b.w / 2 - w / 2, b.x, w, b.w), y: fit(centreY - h / 2, b.y, h, b.h), w, h };
 }

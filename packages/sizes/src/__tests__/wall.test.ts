@@ -89,6 +89,12 @@ describe("known things", () => {
     expect(defaultLength("bed", "cm")).toBe(160);
     expect(defaultLength("wall", "cm")).toBeNull();
   });
+
+  it("gives fixed lengths in centimetres without float noise", () => {
+    expect(defaultLength("a4", "cm")).toBe(29.7);
+    expect(defaultLength("card", "cm")).toBe(8.56);
+    expect(defaultLength("letter", "in")).toBe(11);
+  });
 });
 
 describe("scale from a mark", () => {
@@ -110,6 +116,7 @@ describe("scale from a mark", () => {
     for (const len of [0, -5, Number.NaN, Number.POSITIVE_INFINITY]) {
       expect(scaleFromMark(a, b, len), String(len)).toBeNull();
     }
+    expect(scaleFromMark(a, { x: Number.NaN, y: 0 }, 80)).toBeNull();
   });
 });
 
@@ -173,6 +180,25 @@ describe("frame distances", () => {
   });
 });
 
+describe("distances past a marked edge", () => {
+  const marked = photoWall({ ...NO_EDGES, left: 20, right: 220 });
+
+  it("ignores an obstacle that overlaps the frame", () => {
+    expect(frameDistances(frameAt(40, 42), [frameAt(45, 50)], WALL).right).toBe(86);
+  });
+
+  it("stops at the marked edge before a frame beyond it", () => {
+    const a = frameAt(100, 40);
+    const outside = frameAt(230, 40);
+    expect(frameDistances(a, [outside], marked).right).toBe(102);
+    expect(setDistance(a, "left", 200, [outside], marked).x).toBe(202);
+  });
+
+  it("does not move a frame past the far edge the wrong way", () => {
+    expect(setDistance(frameAt(225, 40), "left", 210, [], marked)).toEqual(frameAt(225, 40));
+  });
+});
+
 describe("setting a distance", () => {
   const a = frameAt(40, 42);
   const b = frameAt(60, 42);
@@ -212,6 +238,10 @@ describe("setting a distance", () => {
     const photoB = frameAt(130, 40);
     expect(setDistance(frameAt(100, 40), "right", 200, [photoB], photoWall(NO_EDGES)).x).toBe(0);
     expect(photoB).toEqual(frameAt(130, 40));
+  });
+
+  it("ignores a value that is not a number", () => {
+    expect(setDistance(a, "left", Number.NaN, [b], WALL)).toEqual(a);
   });
 
   /** {@link openspec/specs/size-engine/spec.md#scenario-a-side-with-no-distance} */
@@ -312,6 +342,24 @@ describe("placing a new frame", () => {
   it("goes left when the right is full", () => {
     const selected = frameAt(120, 42);
     expect(placeBeside({ w: 18, h: 22 }, selected, [selected], WALL)).toEqual(frameAt(99, 42));
+  });
+
+  it("goes left when another frame takes the right", () => {
+    const selected = frameAt(60, 42);
+    const taken = frameAt(82, 42);
+    expect(placeBeside({ w: 18, h: 22 }, selected, [selected, taken], WALL)).toEqual(
+      frameAt(39, 42),
+    );
+    const both = [selected, taken, frameAt(40, 42)];
+    expect(placeBeside({ w: 18, h: 22 }, selected, both, WALL)).toEqual(frameAt(63, 46));
+  });
+
+  it("keeps a centred frame inside a close-up photo", () => {
+    const closeUp: Wall = {
+      bounds: { x: 0, y: 0, w: 34, h: 25 },
+      edges: { ...NO_EDGES, bottom: 2 },
+    };
+    expect(placeBeside({ w: 18, h: 22 }, null, [], closeUp)).toEqual(frameAt(8, 3));
   });
 
   it("centres on the 57 in line, or in the photo's middle without a floor", () => {
