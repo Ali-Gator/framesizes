@@ -1,10 +1,8 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-
 import { framesFor } from "@framesizes/sizes";
 import { ImageResponse } from "next/og";
 
 import { LogoMark } from "@/components/site/logo-mark";
+import { ogFonts } from "@/lib/og-font";
 import { livePage } from "@/lib/site-map";
 
 const HOME = livePage("F1");
@@ -19,11 +17,6 @@ const DIAGRAM_SCALE = 12;
 export const alt = `Standard frame sizes chart from ${SMALLEST?.id} to ${LARGEST?.id} inches`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-
-// next/font cannot feed ImageResponse, which needs a static TTF (licence: OFL.txt beside it).
-const extraBold = await readFile(
-  join(process.cwd(), "src/assets/fonts/SchibstedGrotesk-ExtraBold.ttf"),
-);
 
 /** {@link openspec/specs/seo-base/spec.md#requirement-each-page-sends-the-nine-social-tags-with-its-own-image} */
 export default function Image() {
@@ -78,9 +71,6 @@ export default function Image() {
         ))}
       </div>
     </div>,
-    {
-      ...size,
-      fonts: [{ name: "Schibsted Grotesk", data: extraBold, weight: 800, style: "normal" }],
-    },
+    { ...size, fonts: ogFonts },
   );
 }

@@ -855,3 +855,58 @@
     background: Highlight;
   }
 }
+
+/* Size table with a visible title (design system "Option C"), and a plain, not selectable table. */
+.fs-table-cap {
+  caption-side: top;
+  text-align: left;
+  padding: 14px 16px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.fs-table-cap-in {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 16px;
+}
+.fs-table-title {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.fs-table-meta {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ink-muted);
+}
+.fs-table-static tbody tr {
+  cursor: default;
+}
+.fs-table-static tbody tr:hover > * {
+  background: transparent;
+}
+
+/* Breadcrumbs */
+.fs-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.fs-crumbs li {
+  display: flex;
+  gap: 8px;
+}
+.fs-crumbs li + li::before {
+  content: "/";
+  color: var(--line-strong);
+}

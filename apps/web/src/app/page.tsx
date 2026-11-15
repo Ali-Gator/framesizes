@@ -8,7 +8,7 @@ import { FrameChart } from "@/components/frame-chart/frame-chart";
 import { Questions } from "@/components/frame-chart/questions";
 import { RelatedTools } from "@/components/frame-chart/related-tools";
 import { IfLive, PageLink } from "@/components/site/page-link";
-import { pageMetadata, siteJsonLd } from "@/lib/seo";
+import { jsonLdScript, pageMetadata, siteJsonLd } from "@/lib/seo";
 import { livePage } from "@/lib/site-map";
 
 const HOME = livePage("F1");
@@ -160,8 +160,7 @@ export default function Home() {
 
       <script
         type="application/ld+json"
-        // `<` escaped so the JSON can never close the script element.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd()).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(siteJsonLd()) }}
       />
     </div>
   );

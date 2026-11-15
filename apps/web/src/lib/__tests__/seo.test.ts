@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { absoluteUrl, pageMetadata, siteJsonLd, sitemapEntries } from "../seo";
+import { withLive } from "@/components/site/__tests__/fixtures";
+
+import {
+  absoluteUrl,
+  breadcrumbJsonLd,
+  jsonLdScript,
+  pageMetadata,
+  siteJsonLd,
+  sitemapEntries,
+} from "../seo";
 import { type LivePage, livePage, type SitePage } from "../site-map";
 
 const POSTERS: LivePage = {
@@ -78,5 +87,45 @@ describe("sitemapEntries", () => {
     expect(sitemapEntries([POSTERS, draft])).toEqual([
       { url: "https://framesizes.app/poster-sizes", lastModified: "2026-12-01" },
     ]);
+  });
+});
+
+describe("sitemapEntries over the launch pages", () => {
+  /** {@link openspec/specs/seo-base/spec.md#scenario-only-the-home-page-is-live} */
+  it("holds the home page alone while only it is live", () => {
+    expect(sitemapEntries(withLive("F1"))).toEqual([
+      { url: "https://framesizes.app", lastModified: "2026-11-11" },
+    ]);
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-the-home-page-and-f2-are-live} */
+  it("holds the home page and F2, each with its own date", () => {
+    expect(sitemapEntries(withLive("F1", "F2")).map((e) => e.url)).toEqual([
+      "https://framesizes.app",
+      "https://framesizes.app/frame-sizes-on-wall",
+    ]);
+  });
+});
+
+describe("breadcrumbJsonLd", () => {
+  /** {@link openspec/specs/seo-base/spec.md#scenario-f2s-breadcrumbs} */
+  it("lists Home and the page with absolute URLs", () => {
+    expect(breadcrumbJsonLd(livePage("F2"))).toEqual({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://framesizes.app" },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Frame sizes on your wall",
+          item: "https://framesizes.app/frame-sizes-on-wall",
+        },
+      ],
+    });
+  });
+
+  it("escapes < so the JSON cannot close its script", () => {
+    expect(jsonLdScript({ name: "</script>" })).toBe('{"name":"\\u003c/script>"}');
   });
 });

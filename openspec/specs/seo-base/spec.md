@@ -29,6 +29,14 @@ function absoluteUrl(path: string): string; // "/" is the bare origin
 function pageMetadata(page: LivePage): Metadata;
 function siteJsonLd(): { "@context"; "@graph": [WebSite, Organization] };
 function sitemapEntries(pages?): MetadataRoute.Sitemap;
+function breadcrumbJsonLd(page: LivePage): BreadcrumbList; // Home › the page, absolute URLs
+function jsonLdScript(data: unknown): string; // JSON with `<` escaped, for a ld+json script
+
+// apps/web/src/lib/og-font.ts
+const ogFonts: ImageResponseOptions["fonts"]; // Schibsted Grotesk ExtraBold, read at prerender
+
+// apps/web/src/components/ui/breadcrumbs.tsx
+function Breadcrumbs(props: { items: readonly { href?: string; label: string }[] }): JSX.Element;
 
 // apps/web/src/components/site/page-link.tsx
 function PageLink(props: { id: PageId; children: ReactNode }): JSX.Element;
@@ -184,7 +192,26 @@ The HTML the server returns for the home page SHALL hold one JSON-LD script whos
 - **WHEN** `/sitemap.xml` is requested while only the home page is live
 - **THEN** it holds one `url` entry, the home page's canonical URL, whose `lastmod` is the home page's content date, and no `priority` or `changefreq` element
 
+#### Scenario: The home page and F2 are live
+
+- **WHEN** `/sitemap.xml` is requested while only the home page and F2 are live
+- **THEN** it holds two `url` entries, the home page's canonical URL and `https://framesizes.app/frame-sizes-on-wall`, each with its own content date as `lastmod`, and no `priority` or `changefreq` element
+
 #### Scenario: A page that is not live
 
 - **WHEN** the sitemap entries are built from a site map with one live and one not-live page
 - **THEN** only the live page's URL is in the result
+
+### Requirement: Pages below the home page carry breadcrumbs
+
+A live page other than the home page SHALL show a breadcrumb trail above its `h1`, as a `nav` named "Breadcrumb". The trail SHALL start with "Home" linking to `/` and end with the page's short name, marked as the current page and not linked. The page's server HTML SHALL hold one JSON-LD script with a `BreadcrumbList` that lists the same items, with absolute URLs on `https://framesizes.app`. The home page SHALL carry neither.
+
+#### Scenario: F2's breadcrumbs
+
+- **WHEN** `/frame-sizes-on-wall` is requested
+- **THEN** the response HTML holds a `nav` named "Breadcrumb" reading "Home" then "Frame sizes on your wall", the second marked `aria-current="page"`, and one `application/ld+json` script whose `BreadcrumbList` has two items, the first `https://framesizes.app` and the second `https://framesizes.app/frame-sizes-on-wall`
+
+#### Scenario: No breadcrumbs on the home page
+
+- **WHEN** `/` is requested
+- **THEN** the response HTML holds no breadcrumb `nav` and no `BreadcrumbList`

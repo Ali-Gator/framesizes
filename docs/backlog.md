@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-39**
+_Next id:_ **BL-43**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -45,6 +45,15 @@ when to add and when to fold items in.
   server's "in" until React hydrates; on a slow load the page mixes units. Drive the toggle's checked
   look from `[data-unit]` too, or accept it.
   _Refs:_ `apps/web/src/components/site/unit-toggle.tsx`, `apps/web/src/lib/unit.ts` · _Status:_ open — backlog-3 review, 2026-11-15
+- **[BL-41] F2 distance fields show inch digits until hydration** — the visualizer's field values
+  (8, 32, 63) come from `useUnit`, "in" on the server, so a cm visitor sees them flip to 20, 81, 160
+  when React hydrates; the unit suffix already uses `<U>`. Design decision 2 accepted this; fix with
+  BL-33 if the same approach covers inputs.
+  _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` · _Status:_ open — t7-frames-on-wall review, 2026-11-15
+- **[BL-42] F2 decodes the whole photo to read its size** — `createImageBitmap` decodes the full
+  image (about 190 MB for 48 MP) just for its width and height, which can kill an iOS tab; read the
+  size from an `<img>` and `decode()`, which also applies EXIF orientation.
+  _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` (`pickFile`) · _Status:_ open — t7-frames-on-wall review, 2026-11-15
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once
@@ -74,6 +83,12 @@ when to add and when to fold items in.
 - **[BL-14] Rich Results Test for the home page** — run the live URL through the Rich Results Test
   and confirm `WebSite` and `Organization` validate (guide checklist 15).
   _Refs:_ `apps/web/src/lib/seo.ts`, pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-39] F2 preview card in a chat app** — paste `https://framesizes.app/frame-sizes-on-wall` into a
+  chat app or a preview tool and check the card shows the 16x20-above-a-sofa image (guide checklist 7).
+  _Refs:_ `apps/web/src/app/frame-sizes-on-wall/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+- **[BL-40] Rich Results Test for F2** — run the live F2 URL through the Rich Results Test and confirm
+  its `BreadcrumbList` validates (guide checklist 15).
+  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
 
 - **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a

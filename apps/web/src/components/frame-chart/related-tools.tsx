@@ -5,13 +5,24 @@ import { HUBS, livePages, PAGES, type PageId, type SitePage } from "@/lib/site-m
 const CROSS_HUB: readonly PageId[] = ["P1", "PH1", "C1", "G1"];
 
 /**
- * The live pages of the Frames hub and the required cross-hub pages, grouped by hub; nothing,
- * heading included, while none is live.
+ * The live pages of the current page's hub and the out-of-hub pages it must link to, grouped by
+ * hub; nothing, heading included, while none is live.
  * {@link openspec/specs/frame-size-chart/spec.md#requirement-the-page-links-only-to-live-pages}
+ * {@link openspec/specs/frames-on-wall/spec.md#requirement-the-page-links-only-to-live-pages}
  */
-export function RelatedTools({ pages = PAGES }: { pages?: readonly SitePage[] }) {
+export function RelatedTools({
+  pages = PAGES,
+  current = "F1",
+  outside = CROSS_HUB,
+}: {
+  pages?: readonly SitePage[];
+  /** The page it sits on, left out of the list. */
+  current?: PageId;
+  outside?: readonly PageId[];
+}) {
+  const hub = pages.find((p) => p.id === current)?.hub;
   const related = livePages(pages).filter(
-    (p) => p.id !== "F1" && (p.hub === "frames" || CROSS_HUB.includes(p.id as PageId)),
+    (p) => p.id !== current && (p.hub === hub || outside.includes(p.id as PageId)),
   );
   const groups = HUBS.map((hub) => ({
     hub,
