@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-30**
+_Next id:_ **BL-32**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -38,6 +38,13 @@ when to add and when to fold items in.
   _Refs:_ `playwright.config.ts` · _Status:_ open
 
 ## Site
+
+- **[BL-30] Home page shows one unit at a time** — the in/cm toggle should drive every number on `/`:
+  the six common-size cards drop their cm line in inches, and the frame-measurement example and the
+  widget's wall note follow the toggle. Render both units in the server HTML and hide the other with
+  CSS on a `data-unit` attribute, so cm stays crawlable. The chart table keeps both columns.
+  _Refs:_ F1 canvas https://claude.ai/artifact/FA2okr9myNhQiZsaGdeuMD (note "UNITS", 2026-11-15), On-page SEO
+  guide Wording › Units, design system Content fundamentals · _Status:_ open
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once
@@ -67,6 +74,11 @@ when to add and when to fold items in.
 - **[BL-14] Rich Results Test for the home page** — run the live URL through the Rich Results Test
   and confirm `WebSite` and `Organization` validate (guide checklist 15).
   _Refs:_ `apps/web/src/lib/seo.ts`, pre-publish checklist 15 · _Status:_ gated — DNS live
+
+- **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
+  shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
+  system colour once a second hub makes the nav visible.
+  _Refs:_ `apps/web/src/components/site/hub-nav.tsx` · _Status:_ gated — a second live hub (backlog-3 triage, 2026-11-15)
 
 ## Widgets
 
