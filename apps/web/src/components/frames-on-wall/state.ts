@@ -294,6 +294,7 @@ export type Action =
   | { type: "add" }
   | { type: "closeAdd" }
   | { type: "upload" }
+  | { type: "resume" }
   | { type: "photo"; photo: PhotoInfo }
   | { type: "known"; known: KnownId }
   | { type: "toPlace" }
@@ -429,6 +430,10 @@ export function reducer(state: WallState, action: Action): WallState {
 
     case "upload":
       return { ...state, mode: "upload", adding: null, confirmReset: false };
+
+    case "resume":
+      // Back from "Change photo" to the photo whose scale is set.
+      return state.photo && state.scale ? { ...state, mode: "photo" } : state;
 
     case "photo":
       return { ...state, ...photoStart(state), photo: action.photo };

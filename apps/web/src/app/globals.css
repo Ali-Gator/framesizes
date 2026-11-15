@@ -152,6 +152,18 @@
   display: none;
 }
 
+/* In-text links in page copy (PageLink renders a bare <a>): the `link` look. */
+.page :is(p, li) a:not([class]) {
+  color: var(--ink);
+  text-decoration-line: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+.page :is(p, li) a:not([class]):hover {
+  text-decoration-color: var(--tape);
+  text-decoration-thickness: 2px;
+}
+
 /* The page column and the underlined in-text link, shared by every page (BL-8). */
 @utility page {
   margin-inline: auto;

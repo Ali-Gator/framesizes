@@ -4,13 +4,13 @@ Branch `t7-frames-on-wall`, cut from `main` after `t7-wall-engine` is merged. Or
 
 ## 1. Set-up
 
-- [ ] 1.1 Verify `t7-wall-engine` is merged: `snapFrame`, `placeBeside`, `frameDistances` and `DEMO_ROOM` are exported from `@framesizes/sizes`. Verify `pnpm test` is green.
+- [x] 1.1 Verify `t7-wall-engine` is merged: `snapFrame`, `placeBeside`, `frameDistances` and `DEMO_ROOM` are exported from `@framesizes/sizes`. Verify `pnpm test` is green.
 - [x] 1.2 The user approved rewriting the three existing e2e tests named in the proposal's Impact on 2026-11-15 ("Yes, approve them"). Only those three may change.
 - [ ] 1.3 Add a 1200 × 900 straight-on test photo (drawn, not real) at `e2e/fixtures/wall-1200x900.png`. Verify it is under 100 KB.
 
 ## 2. One unit at a time (`site-shell`)
 
-- [ ] 2.1 Write unit tests for `<U>`: both spans, and the classes. Write tests that `setUnit` sets `document.documentElement.dataset.unit`. Then implement `<U>`, the `globals.css` rules, the pre-paint script in `layout.tsx` (read `01-app/03-api-reference/03-file-conventions/layout.md` and the `Script`/inline-script docs) and the `setUnit` change. Verify the tests pass.
+- [x] 2.1 Write unit tests for `<U>`: both spans, and the classes. Write tests that `setUnit` sets `document.documentElement.dataset.unit`. Then implement `<U>`, the `globals.css` rules, the pre-paint script in `layout.tsx` (read `01-app/03-api-reference/03-file-conventions/layout.md` and the `Script`/inline-script docs) and the `setUnit` change. Verify the tests pass.
 - [ ] 2.2 Add e2e tests to a new `e2e/shell-unit-text.spec.ts` (existing specs unedited):
   - dual-unit text follows the choice;
   - a stored "cm" shows no inch text at first paint, checked by reading `.u-in` visibility in a `DOMContentLoaded` listener added with `page.addInitScript`.
@@ -19,20 +19,20 @@ Branch `t7-frames-on-wall`, cut from `main` after `t7-wall-engine` is merged. Or
 
 ## 3. Breadcrumbs, JSON-LD and the social-image font (`seo-base`)
 
-- [ ] 3.1 Port `Breadcrumbs` to `components/ui/breadcrumbs.tsx` with a markup test. Write `seo.test.ts` cases for `breadcrumbJsonLd` (two items, absolute URLs) in a new describe block, leaving the existing cases untouched. Implement them. Verify the tests pass.
+- [x] 3.1 Port `Breadcrumbs` to `components/ui/breadcrumbs.tsx` with a markup test. Write `seo.test.ts` cases for `breadcrumbJsonLd` (two items, absolute URLs) in a new describe block, leaving the existing cases untouched. Implement them. Verify the tests pass.
 - [ ] 3.2 Move the home image's font loading into `lib/og-font.ts` (design decision 8). Verify `pnpm build` still prerenders `/opengraph-image` unchanged.
-- [ ] 3.3 Add `sitemapEntries(withLive("F1"))` and `RelatedTools pages={withLive("F1")}` unit tests citing the kept scenarios "Only the home page is live" and "No other page is live" in new test cases, if no unit test cites them yet. Verify they pass.
+- [x] 3.3 Add `sitemapEntries(withLive("F1"))` and `RelatedTools pages={withLive("F1")}` unit tests citing the kept scenarios "Only the home page is live" and "No other page is live" in new test cases, if no unit test cites them yet. Verify they pass.
 
 ## 4. Display rules and state (`components/frames-on-wall/`)
 
-- [ ] 4.1 Write `display.test.ts`:
+- [x] 4.1 Write `display.test.ts`:
   - `roundDistance` and `writeDistance` in both units: 8 → "8 in" / "20 cm", 32 → "81 cm", 63 → "160 cm", 8.25 → "8¼ in";
   - `parseLength`: "8.25", "8 1/4", "8¼", "abc" → null, cm input;
   - `SHORT_MARK_PX` and `markError(27)` ≈ 15 %.
 
   Implement `display.ts` (design decision 4). Verify the tests pass.
 
-- [ ] 4.2 Write `state.test.ts` for the reducer:
+- [x] 4.2 Write `state.test.ts` for the reducer:
   - opening in the sample room with the 16x20 selected;
   - set distance (typed, more, less, invalid text);
   - add a frame by `placeBeside`, up to 6;
@@ -64,7 +64,7 @@ Branch `t7-frames-on-wall`, cut from `main` after `t7-wall-engine` is merged. Or
 
   Follow design decision 7 (object URL, revoke, `createImageBitmap`). Verify by hand with the fixture photo.
 
-- [ ] 5.4 Port `SizeTable`'s `title`, `meta` and `selectable={false}`. Add new markup test cases (existing ones unedited): the visible title is the caption, no radio when not selectable. Verify the tests pass.
+- [x] 5.4 Port `SizeTable`'s `title`, `meta` and `selectable={false}`. Add new markup test cases (existing ones unedited): the visible title is the caption, no radio when not selectable. Verify the tests pass.
 
 ## 6. The page
 
