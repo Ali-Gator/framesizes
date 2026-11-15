@@ -14,6 +14,7 @@ import {
 import type { ReactNode } from "react";
 
 import { RelatedTools } from "@/components/frame-chart/related-tools";
+import { outsideSize } from "@/components/frames-on-wall/display";
 import { FramesOnWall } from "@/components/frames-on-wall/frames-on-wall";
 import { IfLive, PageLink } from "@/components/site/page-link";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
@@ -102,7 +103,7 @@ const RECTANGULAR = framesFor("portrait");
 const SMALLEST = RECTANGULAR[0]?.id ?? "";
 const LARGEST = RECTANGULAR.at(-1)?.id ?? "";
 const EXAMPLE = { w: 16, h: 20 };
-const EXAMPLE_OUT = { w: EXAMPLE.w + 2 * MOULDING, h: EXAMPLE.h + 2 * MOULDING };
+const EXAMPLE_OUT = outsideSize(EXAMPLE);
 
 const QUESTIONS = [
   {
@@ -285,7 +286,7 @@ export default function FrameSizesOnWall() {
                 {
                   id,
                   label: <Size w={f.w} h={f.h} />,
-                  cells: [<Size key="out" w={f.w + 2 * MOULDING} h={f.h + 2 * MOULDING} />, where],
+                  cells: [<Size key="out" {...outsideSize(f)} />, where],
                 },
               ];
             })}

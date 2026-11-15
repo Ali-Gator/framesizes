@@ -290,3 +290,34 @@ describe("start over", () => {
     expect(values(sample)).toEqual(values(initialState()));
   });
 });
+
+describe("the photo's wall", () => {
+  /** {@link openspec/specs/frames-on-wall/spec.md#requirement-frames-are-dragged-and-snap} */
+  it("keeps frames between the marked wall corners", () => {
+    const state = run([
+      { type: "photo", photo: PHOTO },
+      { type: "known", known: "wall" },
+      { type: "toPlace" },
+      { type: "handle", end: 0, point: { x: 100, y: 300 } },
+      { type: "handle", end: 1, point: { x: 1100, y: 300 } },
+      { type: "placeNext" },
+      { type: "lengthText", text: "125" },
+      { type: "setScale", unit: "in" },
+    ]);
+    expect(state.scale).toBe(8);
+    const id = state.selected ?? "";
+    const moved = run([{ type: "nudge", id, dx: -500, dy: 0 }], state);
+    expect(selectedFrame(moved)?.rect.x).toBe(12.5);
+    expect(values(moved).left).toBe(0);
+    const from = selectedFrame(state)?.rect ?? { x: 0, y: 0, w: 0, h: 0 };
+    expect(dragFrame(state, id, from, 500, 0).rect.x).toBe(137.5 - from.w);
+  });
+
+  /** {@link openspec/specs/frames-on-wall/spec.md#requirement-the-floor-line-is-optional} */
+  it("lifts a frame the floor line passes", () => {
+    const state = run([{ type: "markFloor" }, { type: "floor", y: 400 }], scaled());
+    const frame = selectedFrame(state);
+    expect(frame?.rect.y).toBeCloseTo((900 - 400) / 8);
+    expect(values(state).below).toBe(0);
+  });
+});

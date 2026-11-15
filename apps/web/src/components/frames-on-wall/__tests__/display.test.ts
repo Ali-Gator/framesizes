@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   markError,
+  outsideSize,
   MAX_FRAMES,
   parseLength,
   roundDistance,
@@ -73,5 +74,19 @@ describe("the short-mark rule", () => {
   /** {@link openspec/specs/frames-on-wall/spec.md#scenario-the-seventh-frame} */
   it("holds six frames", () => {
     expect(MAX_FRAMES).toBe(6);
+  });
+});
+
+describe("signed and outside sizes", () => {
+  /** {@link openspec/specs/frames-on-wall/spec.md#requirement-every-number-shows-in-the-visitors-unit} */
+  it("writes a negative distance with its sign in front", () => {
+    expect(writeNumber(-0.25, "in")).toBe("-¼");
+    expect(writeNumber(-2.5, "in")).toBe("-2½");
+    expect(writeNumber(-0.05, "in")).toBe("0");
+  });
+
+  /** {@link openspec/specs/frames-on-wall/spec.md#scenario-the-table-in-the-server-html} */
+  it("takes the outside size from the engine", () => {
+    expect(outsideSize({ w: 16, h: 20 })).toEqual({ w: 18, h: 22 });
   });
 });

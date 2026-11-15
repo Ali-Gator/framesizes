@@ -8,7 +8,6 @@ import {
   KNOWN_THINGS,
   type KnownId,
   markedFurniture,
-  MOULDING,
   type Orientation,
   type Photo,
   photoEdges,
@@ -25,7 +24,7 @@ import {
   type Wall,
 } from "@framesizes/sizes";
 
-import { MAX_FRAMES, parseLength, SHORT_MARK_PX, stepDistance } from "./display";
+import { MAX_FRAMES, outsideSize, parseLength, SHORT_MARK_PX, stepDistance } from "./display";
 
 /*
  * The frame visualizer's state: a pure reducer over the size engine. Lengths are wall inches
@@ -77,7 +76,7 @@ export interface WallState {
 }
 
 export const FIRST_SIZE = "16x20";
-const OUTSIDE = (frame: Frame) => ({ w: frame.w + 2 * MOULDING, h: frame.h + 2 * MOULDING });
+const OUTSIDE = (frame: Frame) => outsideSize(frame);
 
 export const initialState = (): WallState => ({
   mode: "sample",
@@ -136,10 +135,21 @@ export function wallOf(state: WallState): { wall: Wall; furniture: Rect[] } {
     wall: state.known === "wall" ? mark : null,
   });
   const area = photoSize(photo, scale);
+  // Frames stay on the wall: between the marked corners and above the floor, when marked.
   const bottom = Math.max(0, edges.bottom ?? 0);
+  const left = Math.max(0, edges.left ?? 0);
+  const right = Math.min(area.w, edges.right ?? area.w);
   const furniture = markedFurniture(state.known, mark, scale, photo, edges);
   return {
-    wall: { bounds: { x: 0, y: bottom, w: area.w, h: Math.max(0, area.h - bottom) }, edges },
+    wall: {
+      bounds: {
+        x: left,
+        y: bottom,
+        w: Math.max(0, right - left),
+        h: Math.max(0, area.h - bottom),
+      },
+      edges,
+    },
     furniture: furniture ? [furniture] : [],
   };
 }
@@ -319,6 +329,12 @@ const changed = (state: WallState, next: Partial<WallState>): WallState => ({
 
 const withRect = (state: WallState, id: string, rect: Rect) =>
   state.frames.map((f) => (f.id === id ? { ...f, rect } : f));
+
+/** Every frame moved back inside the wall's bounds, after the bounds change. */
+function keepOnWall(state: WallState): WallState {
+  const { bounds } = wallOf(state).wall;
+  return { ...state, frames: state.frames.map((f) => ({ ...f, rect: clampTo(f.rect, bounds) })) };
+}
 
 /** The photo mode's empty start: no frames, no scale, no floor. */
 const photoStart = (state: WallState): Partial<WallState> => ({
@@ -507,14 +523,16 @@ export function reducer(state: WallState, action: Action): WallState {
         state.known === "door"
           ? Math.max(mark[0].y, mark[1].y)
           : Math.round(state.photo.height * 0.9);
-      return changed(state, { floor: y });
+      return keepOnWall(changed(state, { floor: y }));
     }
 
     case "floor":
       if (!state.photo || state.floor === null) return state;
-      return changed(state, {
-        floor: Math.round(Math.min(state.photo.height, Math.max(0, action.y))),
-      });
+      return keepOnWall(
+        changed(state, {
+          floor: Math.round(Math.min(state.photo.height, Math.max(0, action.y))),
+        }),
+      );
 
     case "openReset":
       return { ...state, confirmReset: true, adding: null };

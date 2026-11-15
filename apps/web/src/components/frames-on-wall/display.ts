@@ -1,4 +1,4 @@
-import { CM_PER_INCH, type Unit } from "@framesizes/sizes";
+import { CM_PER_INCH, frameAnatomy, type Size, type Unit } from "@framesizes/sizes";
 
 /*
  * The frame visualizer's page-only display rules: how a distance rounds, reads and writes in the
@@ -29,14 +29,22 @@ export function roundDistance(inches: number, unit: Unit): number {
   return unit === "cm" ? Math.round(inches * CM_PER_INCH) : Math.round(inches * 4) / 4;
 }
 
-/** The rounded number alone, as a field shows it: "8¼", "½", "20". */
+/** The rounded number alone, as a field shows it: "8¼", "½", "20", "-2½". */
 export function writeNumber(inches: number, unit: Unit): string {
   const value = roundDistance(inches, unit);
   if (unit === "cm") return String(value);
-  const whole = Math.floor(value);
-  const quarter = QUARTERS[Math.round((value - whole) * 4)] ?? "";
-  return whole === 0 && quarter ? quarter : `${whole}${quarter}`;
+  const size = Math.abs(value);
+  const whole = Math.floor(size);
+  const quarter = QUARTERS[Math.round((size - whole) * 4)] ?? "";
+  const text = whole === 0 && quarter ? quarter : `${whole}${quarter}`;
+  return value < 0 ? `-${text}` : text;
 }
+
+/**
+ * The wall a frame covers: its outside size, moulding included, from the size engine.
+ * {@link openspec/specs/frames-on-wall/spec.md#requirement-the-wall-table-lists-the-space-six-sizes-take}
+ */
+export const outsideSize = (frame: Size): Size => frameAnatomy({ frame, image: frame }).outside;
 
 /** A distance with its unit: "8¼ in", "20 cm". */
 export function writeDistance(inches: number, unit: Unit): string {

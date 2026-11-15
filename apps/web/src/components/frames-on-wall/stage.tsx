@@ -40,7 +40,7 @@ export interface Dimension {
   value: number;
 }
 
-/** The sample room's sofa and floor, drawn on a 144 × 96 in wall (top-left origin). */
+/** The sample room's sofa and floor, drawn on DEMO_ROOM's 144 × 96 in wall (top-left origin). */
 function SampleRoom() {
   return (
     <svg className="wf-scene" viewBox="0 0 144 96" preserveAspectRatio="none" aria-hidden="true">
@@ -275,6 +275,12 @@ export function WallStage({
             onPointerUp={() => {
               floorPress.current = false;
             }}
+            onPointerCancel={() => {
+              floorPress.current = false;
+            }}
+            onLostPointerCapture={() => {
+              floorPress.current = false;
+            }}
             onKeyDown={floorKey}
           >
             <span className="wf-dot" />
@@ -373,6 +379,12 @@ export function MarkStage({
                 if (p) onMove(end, p);
               }}
               onPointerUp={() => {
+                pressed.current = null;
+              }}
+              onPointerCancel={() => {
+                pressed.current = null;
+              }}
+              onLostPointerCapture={() => {
                 pressed.current = null;
               }}
               onFocus={() => setActive(end)}

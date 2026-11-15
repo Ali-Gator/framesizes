@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-41**
+_Next id:_ **BL-43**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -45,6 +45,15 @@ when to add and when to fold items in.
   server's "in" until React hydrates; on a slow load the page mixes units. Drive the toggle's checked
   look from `[data-unit]` too, or accept it.
   _Refs:_ `apps/web/src/components/site/unit-toggle.tsx`, `apps/web/src/lib/unit.ts` · _Status:_ open — backlog-3 review, 2026-11-15
+- **[BL-41] F2 distance fields show inch digits until hydration** — the visualizer's field values
+  (8, 32, 63) come from `useUnit`, "in" on the server, so a cm visitor sees them flip to 20, 81, 160
+  when React hydrates; the unit suffix already uses `<U>`. Design decision 2 accepted this; fix with
+  BL-33 if the same approach covers inputs.
+  _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` · _Status:_ open — t7-frames-on-wall review, 2026-11-15
+- **[BL-42] F2 decodes the whole photo to read its size** — `createImageBitmap` decodes the full
+  image (about 190 MB for 48 MP) just for its width and height, which can kill an iOS tab; read the
+  size from an `<img>` and `decode()`, which also applies EXIF orientation.
+  _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` (`pickFile`) · _Status:_ open — t7-frames-on-wall review, 2026-11-15
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once

@@ -88,7 +88,6 @@
   border-radius: var(--radius-md);
   background: var(--stage);
   container-type: inline-size;
-  touch-action: none;
   user-select: none;
 }
 .wf-drawing,

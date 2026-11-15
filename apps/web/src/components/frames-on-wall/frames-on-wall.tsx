@@ -2,15 +2,16 @@
 
 import {
   CM_PER_INCH,
+  DEMO_ROOM,
   findFrame,
   framesFor,
   KNOWN_THINGS,
   type KnownId,
-  MOULDING,
   type Orientation,
   photoSize,
   type Side,
   type SnapLines,
+  toWholeCm,
   type Unit,
   writeSize,
 } from "@framesizes/sizes";
@@ -33,7 +34,7 @@ import { WidgetCard } from "@/components/ui/widget-card";
 import { useUnit } from "@/lib/unit";
 
 import { FIXED_LENGTH, KNOWN_COPY, withArticle } from "./copy";
-import { markError, MAX_FRAMES, writeDistance, writeNumber } from "./display";
+import { markError, MAX_FRAMES, outsideSize, writeDistance, writeNumber } from "./display";
 import { MarkStage, type StageFrame, WallStage } from "./stage";
 import {
   centreHeight,
@@ -72,8 +73,10 @@ const Both = ({ w, h }: { w: number; h: number }) => (
 );
 const outside = (size: string) => {
   const f = findFrame(size);
-  return f ? { w: f.w + 2 * MOULDING, h: f.h + 2 * MOULDING } : { w: 0, h: 0 };
+  return f ? outsideSize(f) : { w: 0, h: 0 };
 };
+/** The sample wall, from the engine's demo room. */
+const ROOM = DEMO_ROOM.wall.bounds;
 
 function toWhat(d: Distance): string {
   if (d.to.kind === "frame") return `the ${d.to.name} frame`;
@@ -84,7 +87,10 @@ function toWhat(d: Distance): string {
 function sceneLabel(state: WallState, unit: Unit): string {
   const frames = state.frames.map((f) => `${withArticle(f.size)} picture frame`).join(" and ");
   if (state.mode === "sample") {
-    const wall = unit === "cm" ? "366 by 244 cm" : "144 by 96 in";
+    const wall =
+      unit === "cm"
+        ? `${toWholeCm(ROOM.w)} by ${toWholeCm(ROOM.h)} cm`
+        : `${ROOM.w} by ${ROOM.h} in`;
     return `Sample room: a wall ${wall} with a sofa${frames ? ` and ${frames}` : ""}`;
   }
   return `Your wall photo${frames ? ` with ${frames}` : ""}`;
@@ -133,6 +139,12 @@ export function FramesOnWall() {
   const photoUrl = state.photo?.url;
   useEffect(() => () => (photoUrl ? URL.revokeObjectURL(photoUrl) : undefined), [photoUrl]);
 
+  // The step now, for a decode that finishes after the visitor has left the upload step.
+  const modeRef = useRef(state.mode);
+  useEffect(() => {
+    modeRef.current = state.mode;
+  }, [state.mode]);
+
   async function pickFile(file: File | undefined) {
     if (!file) return;
     setFileError(null);
@@ -142,6 +154,10 @@ export function FramesOnWall() {
       const bitmap = await createImageBitmap(file);
       const photo = { url, width: bitmap.width, height: bitmap.height };
       bitmap.close();
+      if (modeRef.current !== "upload") {
+        URL.revokeObjectURL(url);
+        return;
+      }
       dispatch({ type: "photo", photo });
     } catch {
       URL.revokeObjectURL(url);
@@ -185,9 +201,11 @@ type Dispatch = (action: Parameters<typeof reducer>[1]) => void;
 function WallView({ state, unit, dispatch }: { state: WallState; unit: Unit; dispatch: Dispatch }) {
   const [drag, setDrag] = useState<{ id: string; rect: StageFrame["rect"] } | null>(null);
   const dragFromRef = useRef<StageFrame["rect"] | null>(null);
+  /** The latest dragged rect: a fast release may come before its render. */
+  const dragRectRef = useRef<StageFrame["rect"] | null>(null);
   const sample = state.mode === "sample";
   const { photo, scale } = state;
-  const area = !sample && photo && scale ? photoSize(photo, scale) : { w: 144, h: 96 };
+  const area = !sample && photo && scale ? photoSize(photo, scale) : { w: ROOM.w, h: ROOM.h };
   const selected = selectedFrame(state);
   const distances = selected ? distancesOf(state, selected.id) : null;
   const floorInches = wallOf(state).wall.edges.bottom;
@@ -211,12 +229,15 @@ function WallView({ state, unit, dispatch }: { state: WallState; unit: Unit; dis
     if (!frame) return { vertical: [], horizontal: [] };
     dragFromRef.current ??= frame.rect;
     const moved = dragFrame(state, id, dragFromRef.current, dx, dy);
+    dragRectRef.current = moved.rect;
     setDrag({ id, rect: moved.rect });
     return moved.lines;
   }
   function onDrop(id: string) {
-    if (drag?.id === id) dispatch({ type: "place", id, rect: drag.rect });
+    const rect = dragRectRef.current;
+    if (rect) dispatch({ type: "place", id, rect });
     dragFromRef.current = null;
+    dragRectRef.current = null;
     setDrag(null);
   }
   function onKey(id: string, event: KeyboardEvent) {
@@ -252,7 +273,7 @@ function WallView({ state, unit, dispatch }: { state: WallState; unit: Unit; dis
           photo={sample ? null : photo}
           label={sceneLabel(state, unit)}
           frames={frames}
-          dims={dims}
+          dims={drag ? [] : dims}
           preview={state.adding ? previewRect(state) : null}
           floor={floor}
           onSelect={(id) => dispatch({ type: "select", id })}
@@ -264,7 +285,12 @@ function WallView({ state, unit, dispatch }: { state: WallState; unit: Unit; dis
         <p className="wf-caption">
           {sample ? (
             <>
-              Sample room: a <U in="12 × 8 ft" cm="366 × 244 cm" /> wall
+              Sample room: a{" "}
+              <U
+                in={`${ROOM.w / 12} × ${ROOM.h / 12} ft`}
+                cm={`${toWholeCm(ROOM.w)} × ${toWholeCm(ROOM.h)} cm`}
+              />{" "}
+              wall
             </>
           ) : (
             `Your photo, scaled from ${KNOWN_COPY[state.known].short.toLowerCase()}`
@@ -485,7 +511,7 @@ function Selected({
                       }}
                     />
                     <span className="wf-u" aria-hidden="true">
-                      {unit}
+                      <U in="in" cm="cm" />
                     </span>
                   </span>
                   <button
@@ -556,7 +582,7 @@ function Picker({ state, dispatch }: { state: WallState; dispatch: Dispatch }) {
           >
             <span>{f.id}</span>
             <span className="wf-chip-sub">
-              <Both w={f.w + 2 * MOULDING} h={f.h + 2 * MOULDING} />
+              <Both {...outsideSize(f)} />
             </span>
           </button>
         ))}
@@ -862,7 +888,7 @@ function ConfirmStep({
               }}
             />
             <span className="wf-u" aria-hidden="true">
-              {unit}
+              <U in="in" cm="cm" />
             </span>
           </span>
           {state.lengthError ? (
