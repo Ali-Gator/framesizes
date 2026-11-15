@@ -28,7 +28,7 @@
 - [x] 3.1 `pnpm fix`, `pnpm test`
 - [x] 3.2 Delete shipped bullets BL-30, BL-28, BL-29, BL-24 and BL-6 from `docs/backlog.md`
 - [x] 3.3 `/code-review high` in a fresh subagent; fix the findings and log the rest as new BL items
-- [ ] 3.4 At archive, rewrite the permanent specs' non-requirement sections, which the deltas do not touch:
+- [x] 3.4 At archive, rewrite the permanent specs' non-requirement sections, which the deltas do not touch:
   - frame-size-chart Behavior: the 184px stage and the 287px `scroll-margin-top` become the grown stage; the one-column label wording; the static sections follow `data-unit`
   - site-shell Public Interface and Behavior: `data-unit` and the head script
-- [ ] 3.5 Archive (`/opsx:archive` flow, no Tracker), On-page SEO guide pre-publish checklist for `/`, preflight, push, PR, auto-merge
+- [x] 3.5 Archive (`/opsx:archive` flow, no Tracker), On-page SEO guide pre-publish checklist for `/`, preflight, push, PR, auto-merge

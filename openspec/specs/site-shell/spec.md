@@ -17,7 +17,11 @@ const HOME_LINK_NAME = "framesizes.app home";
 // apps/web/src/lib/unit.ts
 type Unit = "in" | "cm";
 function useUnit(): Unit; // "in" on the server and for a first visit
-function setUnit(unit: Unit): void;
+function setUnit(unit: Unit): void; // also sets <html data-unit>
+
+// apps/web/src/app/layout.tsx
+// <html data-unit="in" suppressHydrationWarning>, plus a blocking inline <head> script
+// that sets data-unit="cm" when localStorage.unit is "cm"
 
 // apps/web/src/components/ui/segmented-control.tsx
 function SegmentedControl<T extends string>(props: {
@@ -36,6 +40,8 @@ function SegmentedControl<T extends string>(props: {
 The root layout renders `SiteHeader`, `main` and `SiteFooter` around every page, the 404 page included. Header hub links and footer groups come from the site map (`seo-base`): `navHubs()` and `footerGroups()`. `HubNav` marks the hub whose live pages include the current path. Below 600px the link list is hidden until the menu button opens it; choosing a hub or pressing Escape closes it.
 
 The unit is kept in `localStorage` under the key `unit` and read through `useSyncExternalStore`, so the server HTML and hydration use "in" and the stored choice follows. A choice made while storage throws lives in memory for the page view. A `storage` event from another tab replaces it.
+
+The unit is also on `<html data-unit>`, for CSS. The server renders "in"; a blocking inline script in the layout's `<head>` sets "cm" from storage before first paint, and `setUnit` and the `storage` listener (including a cleared storage) keep it current. `globals.css` hides `.u-cm` under `[data-unit="in"]` and `.u-in` under `[data-unit="cm"]`. In forced colors every `SegmentedControl` option has a 2px border, `Highlight` on the checked one and `Canvas` on the rest, so the choice stays visible and toggling shifts nothing.
 
 Colours, radii, shadows and type styles come from the design system's light tokens in `globals.css`; fonts load through `next/font/google` and are served from the site's origin.
 
@@ -178,3 +184,31 @@ Page views and Core Web Vitals field data SHALL be reported to the site's analyt
 
 - **WHEN** the site is built without an analytics token and a visitor opens `/`
 - **THEN** the page works, no analytics request is sent and no error is logged to the console
+
+### Requirement: The page knows the unit before it paints
+
+The root element of every page SHALL carry the visitor's unit as `data-unit`, set from the stored choice before the first paint, "in" when nothing is stored or storage is unavailable. Each change of unit, by the toggle, by another tab or while storage is blocked, SHALL update the attribute.
+
+#### Scenario: A stored choice at load
+
+- **WHEN** a visitor whose stored unit is centimetres opens a page
+- **THEN** the root element has `data-unit="cm"` before any of the page's script bundles have run
+
+#### Scenario: Nothing is stored
+
+- **WHEN** a visitor with no stored preference opens a page
+- **THEN** the root element has `data-unit="in"`
+
+#### Scenario: The toggle with storage blocked
+
+- **WHEN** the browser blocks storage and the visitor selects "cm"
+- **THEN** the root element has `data-unit="cm"`
+
+### Requirement: The selected option of a toggle stays marked in forced colors
+
+When the browser forces its own colours, the checked option of every segmented control, the header's Units toggle included, SHALL carry a visible outline or border that its other options do not.
+
+#### Scenario: The Units toggle in forced colors
+
+- **WHEN** a page is opened with forced colors active
+- **THEN** the checked option of the Units group has an outline or border and the other option has none
