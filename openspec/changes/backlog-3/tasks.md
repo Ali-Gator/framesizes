@@ -20,8 +20,8 @@
 - [x] 2.6 BL-28 — grow the phone stage in `apps/web/src/app/widgets.css`: ratio height above 345px, upper-half cap with centring, `scroll-margin-top` follows. Keep the `@container card (max-width: 639.98px)` header literal. Iterate until 2.5 passes.
 - [x] 2.7 BL-29 — failing e2e test at 800 × 600, both views ({@link openspec/specs/frame-size-chart/spec.md#scenario-labels-at-800--600})
 - [x] 2.8 BL-29 — `container-type: inline-size` on `.fs-scale-stage`, 26-unit labels on capped stages up to 520px, and corrected comments in `widgets.css` and `size-compare.tsx`. Iterate until 2.7 passes.
-- [ ] 2.9 BL-24 — failing e2e tests with `forcedColors: "active"`, each asserting the media query matches first ({@link openspec/specs/frame-size-chart/spec.md#scenario-the-table-in-forced-colors}, {@link openspec/specs/frame-size-chart/spec.md#scenario-the-phone-rows-in-forced-colors}, {@link openspec/specs/site-shell/spec.md#scenario-the-units-toggle-in-forced-colors})
-- [ ] 2.10 BL-24 — forced-colors rules in `widgets.css` (row outline that does not collide with the focus ring, system-colour radio dot) and on the checked option in `segmented-control.tsx`. Iterate until 2.9 passes.
+- [x] 2.9 BL-24 — failing e2e tests with `forcedColors: "active"`, each asserting the media query matches first ({@link openspec/specs/frame-size-chart/spec.md#scenario-the-table-in-forced-colors}, {@link openspec/specs/frame-size-chart/spec.md#scenario-the-phone-rows-in-forced-colors}, {@link openspec/specs/site-shell/spec.md#scenario-the-units-toggle-in-forced-colors})
+- [x] 2.10 BL-24 — forced-colors rules in `widgets.css` (row outline that does not collide with the focus ring, system-colour radio dot) and on the checked option in `segmented-control.tsx`. Iterate until 2.9 passes.
 
 ## 3. Verify, delete, review, archive, ship
 

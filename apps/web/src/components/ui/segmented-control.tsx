@@ -66,7 +66,7 @@ export function SegmentedControl<T extends string>({
             onKeyDown={(event) => onKeyDown(event, index)}
             className={`${SIZES[size]} cursor-pointer rounded-pill font-semibold ${
               checked
-                ? "bg-tape text-on-tape shadow-[inset_0_0_0_1.5px_var(--ink)]"
+                ? "bg-tape text-on-tape shadow-[inset_0_0_0_1.5px_var(--ink)] forced-colors:border-2 forced-colors:border-[Highlight]"
                 : "text-ink-muted hover:text-ink"
             }`}
           >

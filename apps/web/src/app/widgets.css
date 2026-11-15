@@ -836,3 +836,19 @@
     outline-offset: -4px;
   }
 }
+
+/*
+ * Forced colors reset the tape fill, the ink bar and the radio's dot, so the selection gets a
+ * system-colour border instead. The focus ring moves 4px in so it never sits on that border.
+ */
+@media (forced-colors: active) {
+  .fs-table tbody tr:has(input:checked) {
+    border: 2px solid Highlight;
+  }
+  .fs-table tbody tr:has(input:focus-visible) {
+    outline-offset: -4px;
+  }
+  .fs-table tbody tr:not([hidden]) input:checked {
+    background: Highlight;
+  }
+}
