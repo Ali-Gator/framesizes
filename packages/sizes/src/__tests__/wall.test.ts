@@ -324,6 +324,23 @@ describe("snapping", () => {
       lines: { vertical: [], horizontal: [] },
     });
   });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-snap-that-would-leave-the-wall} */
+  it("makes no snap that would leave the wall", () => {
+    const { frame, lines } = snapFrame(frameAt(125.5, 10), [frameAt(117.4, 42)], [], WALL);
+    expect(frame.x).toBeCloseTo(125.5);
+    expect(frame.y).toBeCloseTo(10);
+    expect(lines).toEqual({ vertical: [], horizontal: [] });
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-tie-between-two-frames} */
+  it("gives an exact tie to the dragged frame's left edge", () => {
+    const others = [frameAt(40, 42), frameAt(77, 42)];
+    expect(snapFrame(frameAt(58.5, 70), others, [], WALL)).toEqual({
+      frame: frameAt(58, 70),
+      lines: { vertical: [58], horizontal: [] },
+    });
+  });
 });
 
 describe("placing a new frame", () => {
@@ -352,6 +369,33 @@ describe("placing a new frame", () => {
     );
     const both = [selected, taken, frameAt(40, 42)];
     expect(placeBeside({ w: 18, h: 22 }, selected, both, WALL)).toEqual(frameAt(63, 46));
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-marked-wall-edge-on-the-right} */
+  it("goes left when the right crosses a marked wall edge", () => {
+    const photo: Wall = {
+      bounds: { x: 0, y: 0, w: 200, h: 100 },
+      edges: { ...NO_EDGES, right: 130 },
+    };
+    const selected = frameAt(105, 42);
+    expect(placeBeside({ w: 18, h: 22 }, selected, [selected], photo)).toEqual(frameAt(84, 42));
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-centred-between-the-marked-side-edges} */
+  it("centres between the marked side edges", () => {
+    const photo: Wall = {
+      bounds: { x: 0, y: 0, w: 200, h: 100 },
+      edges: { ...NO_EDGES, left: 20, right: 130 },
+    };
+    expect(placeBeside({ w: 18, h: 22 }, null, [], photo)).toEqual(frameAt(66, 39));
+  });
+
+  it("keeps a frame wider than the marked wall centred on it, inside the photo", () => {
+    const photo: Wall = {
+      bounds: { x: 0, y: 0, w: 200, h: 100 },
+      edges: { ...NO_EDGES, left: 150, right: 190 },
+    };
+    expect(placeBeside({ w: 60, h: 22 }, null, [], photo)).toMatchObject({ x: 140, y: 39 });
   });
 
   it("keeps a centred frame inside a close-up photo", () => {

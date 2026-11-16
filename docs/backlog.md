@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-45**
+_Next id:_ **BL-48**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -105,19 +105,22 @@ when to add and when to fold items in.
 
 ## Widgets
 
-- **[BL-36] New frame beside the selected one ignores marked wall edges** — `placeBeside` checks the
-  right and left spots against the photo's bounds only, so on a photo with the wall's width marked a
-  new frame can land past the wall's edge. Decide whether known edges should limit it too.
-  _Refs:_ `packages/sizes/src/wall.ts` (`placeBeside`), size-engine spec · _Status:_ gated — product
-  decision, t7-wall-engine review, 2026-11-15
-- **[BL-37] Snapping can push a frame up to 1 in out of bounds** — `snapFrame` takes no wall, so a
-  frame dragged against a bound can snap past it; clamp in the engine or in the F2 drag handler.
-  _Refs:_ `packages/sizes/src/wall.ts` (`snapFrame`), `t7-frames-on-wall` · _Status:_ open —
-  t7-wall-engine review, 2026-11-15
-- **[BL-38] Snap tie order is not specified** — an exact tie between two snap targets goes to the
-  first pair checked (bottom or left edge, then centre, then far edge); pin the order in the spec and a
-  test if a visitor can see the difference.
-  _Refs:_ `packages/sizes/src/wall.ts` (`snapAxis`) · _Status:_ open — t7-wall-engine review, 2026-11-15
+- **[BL-45] F2 drag should pass the wall to `snapFrame`** — F2's drag handler still snaps without
+  the wall and clamps afterwards, so a snap that would leave the bounds is dropped instead of the
+  nearest in-bounds one winning. Pass the wall when the F2 drag code is next touched.
+  _Refs:_ `apps/web/src/components/frames-on-wall/state.ts` (`dragFrame`), size-engine spec ·
+  _Status:_ deferred — next F2 drag change (t11-gallery-wall-engine review, 2026-11-16)
+- **[BL-47] Gallery engine re-measures and re-validates** — `place()` measures every subtree again
+  at each level, and `measureGroup` checks each hanger twice (once itself, once in `nailMarks`).
+  Harmless at 12 frames; pass the measured sizes down if the cap grows.
+  _Refs:_ `packages/sizes/src/gallery.ts` · _Status:_ deferred — a frame cap above 12
+  (t11-gallery-wall-engine review, 2026-11-16)
+- **[BL-46] Centring with only one side edge marked** — `usableArea` centres between a lone
+  marked side edge and the far photo bound; the spec only says "between the marked side edges,
+  else across the bounds". `photoEdges` always sets both today, so pin the rule once a one-sided
+  mark is possible.
+  _Refs:_ `packages/sizes/src/wall.ts` (`usableArea`), size-engine spec · _Status:_ gated — a
+  one-sided wall mark (t11-gallery-wall-engine review, 2026-11-16)
 
 - **[BL-15] Widget analytics events** — the chart sends no events (size picked, view, reference,
   unit); add them once a metrics plan names what to measure.
