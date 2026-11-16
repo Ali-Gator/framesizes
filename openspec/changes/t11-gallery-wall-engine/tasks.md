@@ -13,17 +13,17 @@ Branch `t11-gallery-wall-engine`, cut from `main` after PR 16. Order inside ever
 
 ## 3. Gallery engine (`packages/sizes/src/gallery.ts`)
 
-- [ ] 3.1 Write `packages/sizes/src/__tests__/gallery.test.ts` for "The five templates" and "Every template frame is in the catalog". Add the `Stack` and `Template` types and the `TEMPLATES` array (design decision 2). The names are visitor-facing text, so run the `humanizer:humanizer` skill over them before commit. Verify the tests pass.
-- [ ] 3.2 Add tests for every scenario of "A template is laid out with one gap between neighbours" and "A gallery group hangs above furniture or on the centre line". Implement `GALLERY_GAP` and `layoutTemplate`, using measure then place, with the group placed by furniture, the centre line or the middle (design decision 3). Verify the tests pass.
-- [ ] 3.3 Add tests for "Nail marks come from the frame's hanger" and "A frame with no nail says why" (every scenario, one assertion per reason). Implement the `Hanger` and `NoNail` types, `hangerProblem` and `nailMarks` (design decision 4). Verify the tests pass.
-- [ ] 3.4 Add tests for every scenario of "A gallery group is measured for hanging", "Each nail names its frame and is measured from the group's corner" and "Nails are listed in rows". Implement `measureGroup` with `toCeiling`, `missing` and the 4 in row band (design decision 4). Verify the tests pass.
-- [ ] 3.5 Add tests for every scenario of "A whole group moves as one" and "A group is centred on the wall". Implement `groupDistances`, `setGroupDistance` and `centreGroup` on top of `frameDistances`, `setDistance` and `usableArea` (design decision 8). Verify the tests pass.
-- [ ] 3.6 Export the new API from `packages/sizes/src/index.ts` with a requirement citation on each export. Keep `usableArea` internal. Verify that `pnpm typecheck` and `pnpm test:unit` (including the citation gate) pass, and that every new requirement is cited by at least one test.
+- [x] 3.1 Write `packages/sizes/src/__tests__/gallery.test.ts` for "The five templates" and "Every template frame is in the catalog". Add the `Stack` and `Template` types and the `TEMPLATES` array (design decision 2). The names are visitor-facing text, so run the `humanizer:humanizer` skill over them before commit. Verify the tests pass.
+- [x] 3.2 Add tests for every scenario of "A template is laid out with one gap between neighbours" and "A gallery group hangs above furniture or on the centre line". Implement `GALLERY_GAP` and `layoutTemplate`, using measure then place, with the group placed by furniture, the centre line or the middle (design decision 3). Verify the tests pass.
+- [x] 3.3 Add tests for "Nail marks come from the frame's hanger" and "A frame with no nail says why" (every scenario, one assertion per reason). Implement the `Hanger` and `NoNail` types, `hangerProblem` and `nailMarks` (design decision 4). Verify the tests pass.
+- [x] 3.4 Add tests for every scenario of "A gallery group is measured for hanging", "Each nail names its frame and is measured from the group's corner" and "Nails are listed in rows". Implement `measureGroup` with `toCeiling`, `missing` and the 4 in row band (design decision 4). Verify the tests pass.
+- [x] 3.5 Add tests for every scenario of "A whole group moves as one" and "A group is centred on the wall". Implement `groupDistances`, `setGroupDistance` and `centreGroup` on top of `frameDistances`, `setDistance` and `usableArea` (design decision 8). Verify the tests pass.
+- [x] 3.6 Export the new API from `packages/sizes/src/index.ts` with a requirement citation on each export. Keep `usableArea` internal. Verify that `pnpm typecheck` and `pnpm test:unit` (including the citation gate) pass, and that every new requirement is cited by at least one test.
 
 ## 4. Backlog and gate
 
-- [ ] 4.1 Delete BL-36, BL-37 and BL-38 from `docs/backlog.md`. Leave the `_Next id:_` line as it is. Verify with `grep -c "BL-3[678]" docs/backlog.md`, which should print 0.
-- [ ] 4.2 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green, and that `git diff --stat main` touches nothing under `apps/web`.
+- [x] 4.1 Delete BL-36, BL-37 and BL-38 from `docs/backlog.md`. Leave the `_Next id:_` line as it is. Verify with `grep -c "BL-3[678]" docs/backlog.md`, which should print 0.
+- [x] 4.2 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green, and that `git diff --stat main` touches nothing under `apps/web`.
 
 ## Workflow follow-up
 

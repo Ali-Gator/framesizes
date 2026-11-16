@@ -57,3 +57,18 @@ export { markedFurniture } from "./wall";
 export { SNAP, snapFrame, type SnapLines } from "./wall";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-new-frame-is-placed-beside-the-selected-one} */
 export { PLACE_GAP, placeBeside } from "./wall";
+
+/** {@link openspec/specs/size-engine/spec.md#requirement-the-gallery-wall-planner-offers-five-templates} */
+export { TEMPLATES, type Stack, type Template } from "./gallery";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-template-is-laid-out-with-one-gap-between-neighbours} */
+export { GALLERY_GAP, layoutTemplate, type Layout } from "./gallery";
+/** {@link openspec/specs/size-engine/spec.md#requirement-nail-marks-come-from-the-frames-hanger} */
+export { nailMarks, type Hanger } from "./gallery";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-frame-with-no-nail-says-why} */
+export { type NoNail } from "./gallery";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-gallery-group-is-measured-for-hanging} */
+export { measureGroup, type GroupMeasure, type Nail } from "./gallery";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-whole-group-moves-as-one} */
+export { groupDistances, setGroupDistance } from "./gallery";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-group-is-centred-on-the-wall} */
+export { centreGroup } from "./gallery";

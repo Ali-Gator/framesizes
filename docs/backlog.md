@@ -105,20 +105,6 @@ when to add and when to fold items in.
 
 ## Widgets
 
-- **[BL-36] New frame beside the selected one ignores marked wall edges** — `placeBeside` checks the
-  right and left spots against the photo's bounds only, so on a photo with the wall's width marked a
-  new frame can land past the wall's edge. Decide whether known edges should limit it too.
-  _Refs:_ `packages/sizes/src/wall.ts` (`placeBeside`), size-engine spec · _Status:_ gated — product
-  decision, t7-wall-engine review, 2026-11-15
-- **[BL-37] Snapping can push a frame up to 1 in out of bounds** — `snapFrame` takes no wall, so a
-  frame dragged against a bound can snap past it; clamp in the engine or in the F2 drag handler.
-  _Refs:_ `packages/sizes/src/wall.ts` (`snapFrame`), `t7-frames-on-wall` · _Status:_ open —
-  t7-wall-engine review, 2026-11-15
-- **[BL-38] Snap tie order is not specified** — an exact tie between two snap targets goes to the
-  first pair checked (bottom or left edge, then centre, then far edge); pin the order in the spec and a
-  test if a visitor can see the difference.
-  _Refs:_ `packages/sizes/src/wall.ts` (`snapAxis`) · _Status:_ open — t7-wall-engine review, 2026-11-15
-
 - **[BL-15] Widget analytics events** — the chart sends no events (size picked, view, reference,
   unit); add them once a metrics plan names what to measure.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ deferred — a metrics plan
