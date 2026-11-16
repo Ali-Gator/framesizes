@@ -145,13 +145,14 @@ A frame whose own hanger gives no nail SHALL show the reason on its field and as
 
 ### Requirement: The hanger type carries over to the next frame
 
-Once the visitor picks One nail or Two D-rings for a frame, every frame the visitor has not given a hanger of its own SHALL start on that type when it is opened in "Hanger for", and so SHALL frames added later. The drop and the inset SHALL NOT carry over.
+Once the visitor picks One nail or Two D-rings, a frame with no hanger of its own SHALL open in "Hanger for" on that type, and so SHALL frames added later. The drop and the inset SHALL NOT carry over, and the frame SHALL keep All frames' hanger until its own drop is typed.
 
 #### Scenario: The next frame starts on D-rings
 
-- **GIVEN** frame C set to Two D-rings with a 3 in drop and a 4 in inset
+- **GIVEN** All frames on one nail with a 2 in drop, and frame C set to Two D-rings with a 3 in drop and a 4 in inset
 - **WHEN** frame D is picked in "Hanger for"
 - **THEN** its type reads Two D-rings and its drop and inset are empty
+- **AND** frame D's nail in the table is unchanged
 
 ### Requirement: The planner shows every number in the visitor's unit
 

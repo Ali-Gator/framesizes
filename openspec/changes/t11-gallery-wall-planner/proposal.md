@@ -42,7 +42,7 @@ It starts after `t11-gallery-wall-engine` is merged.
   - **Adding:** "Add a frame", up to 12.
   - **Warnings:** a group past a wall edge names the side and the amount, with "Centre it on the wall" when it fits, or "It is N in too wide" when it does not. The sample room also warns past the ceiling; a photo with no marked edge warns past the photo's border.
   - **Nail marks:** "Hanger for" (All frames, or one frame) and the type, One nail | Two D-rings. The drop and the inset start empty. Before a drop is typed, the map shows the frames and Start, with "Type the drop to number the nails." After that, numbered badges on the map match a table: Nail, Frame, Right, Down, Up from floor. Frames with no nail get one line each under the table.
-  - **The hanger type carries over** (the user's decision, 2026-11-16, not on the canvas). Once the visitor picks One nail or Two D-rings for a frame, the next frame they open in "Hanger for" starts on that type, and so do frames added later. Only the type carries over; the drop and the inset stay empty, so the page never guesses a hole.
+  - **The hanger type carries over** (the user's decision, 2026-11-16, not on the canvas). Once the visitor picks One nail or Two D-rings for a frame, the next frame they open in "Hanger for" starts on that type, and so do frames added later. Only the type carries over, and only into the form: the drop and the inset stay empty, and the frame keeps hanging on All frames' hanger until the visitor types its own drop. The page never guesses a hole.
   - **Your wall photo:** F2's upload and three-step scale flow, reused unchanged. On a photo the group hangs 8 in above a marked sofa or bed, else centred between the marked wall edges on the 57 in line, else in the middle of the photo. The photo stays on the device.
   - **Units:** the site's in/cm toggle switches every number, typed drops included.
 - **The Gallery wall hub goes live** (`G1 live: true` with its head values). G1 is the second live hub, so the header shows hub links (Frames, Gallery wall) for the first time. With G1 live:
@@ -66,15 +66,16 @@ It starts after `t11-gallery-wall-engine` is merged.
 ### Modified Capabilities
 
 - `seo-base`: the sitemap gains the scenario "the home page, F2 and G1 are live".
-- `frame-size-chart`: links-only-to-live-pages gains the scenario "F2 and G1 are live besides the home page".
+- `frame-size-chart`: links-only-to-live-pages gains the scenario "F2 and G1 are live besides the home page", and the outline gains "The outline with F2 and G1 live".
 - `frames-on-wall`: links-only-to-live-pages gains the scenario "F1, F2 and G1 are live".
 
 ## Impact
 
-- **Approved by the user on 2026-11-16: existing tests change.** G1 going live breaks three existing e2e tests, by design. Each is rewritten to a new scenario in this change's deltas; the old scenarios stay, proven by fixture unit tests (`withLive`).
+- **Approved by the user on 2026-11-16: existing tests change.** G1 going live breaks four existing e2e tests, by design. Each is rewritten to a new scenario in this change's deltas; the old scenarios stay, proven by fixture unit tests (`withLive`).
   - `e2e/seo-home.spec.ts`, "sitemap.xml lists the home page and F2": becomes three entries.
   - `e2e/frame-chart-content.spec.ts`, "links to F2 and to no page that is not live": Related tools holds F2 and G1.
   - `e2e/frames-on-wall-content.spec.ts`, "links only to live pages": Related tools holds F1 and G1, and the G1 link may appear.
+  - `e2e/frame-chart-content.spec.ts`, "the server HTML follows the approved outline": Related tools gains the "Gallery wall" `h3` after "Frames".
 
   The header, footer and related-tools unit tests use fixture page lists and are unaffected. No other existing test is edited.
 

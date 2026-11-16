@@ -52,11 +52,8 @@ None.
 
 - `size-engine`:
   - adds the gallery wall's geometry: the templates, the layout, where the group hangs, nail marks, measurements, and moving the group as one;
-  - changes two existing requirements:
-    - "A dragged frame snaps to the edges and centres around it" gains the bounds (BL-37) and the tie order (BL-38);
-    - "A new frame is placed beside the selected one" respects the marked wall edges (BL-36).
-
-  Their existing scenarios stay as they are.
+  - changes one existing requirement: "A new frame is placed beside the selected one" respects the marked wall edges (BL-36), and its existing scenarios stay as they are;
+  - adds two snapping requirements beside the existing one: the wall's bounds (BL-37) and the tie order (BL-38).
 
 ## Impact
 
@@ -68,7 +65,7 @@ None.
   - F2 sees one difference: on a photo with the wall's width marked, a new frame no longer lands past the marked edge (BL-36).
 - Dependencies: none added.
 - Tests: new tests only. No existing test is edited. If BL-36 breaks an existing F2 or engine test, apply stops and asks the user.
-- Specs: `size-engine` gains six requirements and changes two. After archive, its Public Interface, Behavior and Edge Cases are updated by hand. The README row is unchanged, since `packages/sizes/src/**` already maps to `size-engine`.
+- Specs: `size-engine` gains twelve requirements and changes one. After archive, its Public Interface, Behavior and Edge Cases are updated by hand. The README row is unchanged, since `packages/sizes/src/**` already maps to `size-engine`.
 - Backlog: BL-36, BL-37 and BL-38 are deleted in this change's PR.
 - Tracker: T11 becomes `In progress`. The page change completes it.
 - For the page change, noted here so it is not lost:

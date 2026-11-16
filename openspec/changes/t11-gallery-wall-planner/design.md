@@ -70,7 +70,7 @@ interface PlannerState {
 ```
 
 - **Rects** are derived, never stored: `layoutTemplate` for the template frames with `sizes` and `gap`, then `moved`, then `added`. A size or gap change clears `moved` (the canvas's "lines the frames up again"), and the note shows when `moved` was not empty.
-- **The hanger carry-over.** Setting a type on one frame sets `lastType`. Opening a frame with no `byFrame` entry in "Hanger for" shows `lastType` (else the All frames type) with an empty drop and inset. Frames added later start the same way. Setting "All frames" also sets `lastType`. A frame that never got its own hanger follows "All frames".
+- **The hanger carry-over.** Setting a type on one frame, or on All frames, sets `lastType`. Opening a frame with no `byFrame` entry in "Hanger for" pre-fills its form with `lastType` and an empty drop and inset; frames added later start the same way. The pre-fill is form state only: no `byFrame` entry exists until the visitor types a drop, so until then the frame keeps hanging on All frames' hanger and its nails do not change.
 - **Measuring:** `measureGroup` gets each frame's resolved hanger: its own, else All frames.
 - **Dragging** passes the wall to `snapFrame` (BL-37's argument), so a snap never leaves the wall.
 

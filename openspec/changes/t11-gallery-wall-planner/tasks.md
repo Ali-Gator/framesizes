@@ -5,7 +5,7 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 ## 1. Set-up
 
 - [ ] 1.1 Verify `t11-gallery-wall-engine` is merged: `TEMPLATES`, `layoutTemplate`, `measureGroup`, `groupDistances`, `setGroupDistance` and `centreGroup` are exported from `@framesizes/sizes`. Verify `pnpm test` is green.
-- [ ] 1.2 The user approved rewriting the three existing e2e tests named in the proposal's Impact on 2026-11-16 ("Yes, rewrite them"). Only those three may change.
+- [ ] 1.2 The user approved rewriting the three existing e2e tests named in the proposal's Impact on 2026-11-16 ("Yes, rewrite them"); the fourth, F1's outline test, needs the user's yes before task 6.4. Only those four may change.
 
 ## 2. F2's shared pieces and the backlog (`frames-on-wall`, `site-shell`)
 
@@ -56,7 +56,7 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 - [ ] 6.1 Write `e2e/gallery-wall-content.spec.ts`: outline, answer, template table, both units in the HTML, default state, links only to live pages, breadcrumbs and `BreadcrumbList`, the nine social tags and the image, the description against the widget.
 - [ ] 6.2 Write `e2e/gallery-wall.spec.ts`: template switch with and without the dialog; gap 2 in and out of range; change size; the group 10 in above the sofa; add to 12; the right-edge warning and centring; Nail marks with no drop, then a 2 in drop, then B at 13 in; the type carry-over; cm; the photo flow with the fixture, and no request carrying image data or the file name.
 - [ ] 6.3 Write `e2e/gallery-wall-phone.spec.ts`: the 360 × 740 first screen; 320 px with no sideways scroll and 44 px controls; CLS 0; axe in the default, nails and warning states.
-- [ ] 6.4 Rewrite (approved, task 1.2) the three existing e2e tests: `e2e/seo-home.spec.ts` "sitemap.xml lists the home page and F2" to "The home page, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "links to F2 and to no page that is not live" to "F2 and G1 are live besides the home page"; `e2e/frames-on-wall-content.spec.ts` "links only to live pages" to "F1, F2 and G1 are live". Add `withLive` unit tests citing the three replaced scenarios, if none cites them yet. Verify all pass.
+- [ ] 6.4 Rewrite (approved, task 1.2) the four existing e2e tests: `e2e/seo-home.spec.ts` "sitemap.xml lists the home page and F2" to "The home page, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "links to F2 and to no page that is not live" to "F2 and G1 are live besides the home page"; `e2e/frames-on-wall-content.spec.ts` "links only to live pages" to "F1, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "the server HTML follows the approved outline" to "The outline with F2 and G1 live". Add `withLive` unit tests citing the four replaced scenarios, if none cites them yet. Verify all pass.
 
 ## 7. Gate
 
