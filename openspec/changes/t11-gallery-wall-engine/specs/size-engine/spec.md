@@ -118,7 +118,7 @@ The engine SHALL place a laid-out group above a piece of furniture when one is g
 
 ### Requirement: Nail marks come from the frame's hanger
 
-The engine SHALL give a frame's nail marks on the wall from its hanger. One hanger, a wire or a sawtooth, SHALL give one nail at the frame's centre, its drop below the top edge. Two D-rings SHALL give two nails, each its inset in from a side and its drop below the top edge. The engine SHALL hold no default drop or inset. A drop that is negative or not less than the frame's height, or an inset that is not more than 0 and less than half its width, SHALL give no nail.
+The engine SHALL give a frame's nail marks on the wall from its hanger. One hanger, a wire or a sawtooth, SHALL give one nail at the frame's centre, its drop below the top edge. Two D-rings SHALL give two nails, the left ring's its inset in from the left side and the right ring's its inset in from the right side, both their drop below the top edge. The engine SHALL hold no default drop or inset.
 
 #### Scenario: One nail
 
@@ -130,28 +130,100 @@ The engine SHALL give a frame's nail marks on the wall from its hanger. One hang
 
 - **GIVEN** a frame with its outside 20 by 26 inches at (62, 42.5)
 - **WHEN** it hangs on two D-rings with a 3 inch drop and a 4 inch inset
-- **THEN** its nails are at (66, 65.5) and (78, 65.5)
+- **THEN** its left ring's nail is at (66, 65.5) and its right ring's at (78, 65.5)
+
+### Requirement: A frame with no nail says why
+
+When a frame gets no nail, the engine SHALL give the reason:
+
+- "no drop": the drop is missing or not a number;
+- "drop out of range": the drop is negative or not less than the frame's height;
+- "no inset": the D-rings' inset is missing or not a number;
+- "inset out of range": the inset is not more than 0 or not less than half the frame's width.
+
+A measured group SHALL list every frame that gets no nail, with its reason.
 
 #### Scenario: A hanger that gives no nail
 
 - **GIVEN** a frame with its outside 20 by 26 inches
-- **WHEN** its drop is -1 or 26 inches, or its D-rings' inset is 0 or 10 inches
-- **THEN** no nail is returned
+- **WHEN** its drop is missing, or it is -1 or 26 inches, or its D-rings' inset is missing, or it is 0 or 10 inches
+- **THEN** no nail is returned, and the reason is "no drop", "drop out of range", "no inset" or "inset out of range" in that order
+
+#### Scenario: A frame with no nail
+
+- **GIVEN** "One big, two on each side" laid out above the demo sofa, frame 2 with a 13 inch drop and every other frame with a 2 inch drop, all on one hanger
+- **WHEN** the group is measured
+- **THEN** it has four nails, for frames 1, 3, 4 and 5
+- **AND** frame 2 is listed with "drop out of range", because it is 12 inches tall on the wall
 
 ### Requirement: A gallery group is measured for hanging
 
-The engine SHALL measure a group of frames for hanging: its width and height; its top edge's height above the floor when the floor is known; and its gap to each known side edge of the wall, negative when it runs past. For every nail it SHALL give the distance right of the group's left edge, down from its top edge, and above the floor when the floor is known. Nails SHALL be listed top to bottom, then left to right.
+The engine SHALL measure a group of frames for hanging, each frame on its own hanger:
+
+- the group's width and height;
+- its top edge's height above the floor, when the floor is known;
+- its top edge's gap to the ceiling, when the wall's top edge is known;
+- its gap to each known side edge of the wall, negative when it runs past.
 
 #### Scenario: The row of three in the demo room
 
 - **GIVEN** "Row of three" laid out above the demo sofa, each frame on one hanger with a 2 inch drop
 - **WHEN** the group is measured
-- **THEN** it is 45 by 16 inches, its top edge 58 inches above the floor, 49.5 inches from the wall's left edge and 49.5 inches from its right edge
-- **AND** its nails are 6.5, 22.5 and 38.5 inches right of the group's left edge, each 2 inches down from its top edge and 56 inches above the floor
+- **THEN** it is 45 by 16 inches, its top edge 58 inches above the floor and 38 inches below the ceiling, 49.5 inches from the wall's left edge and 49.5 inches from its right edge
+- **AND** its nails, for frames 1, 2 and 3, are 6.5, 22.5 and 38.5 inches right of the group's left edge, each 2 inches down from its top edge and 56 inches above the floor
 
 #### Scenario: A group on a photo with no edge marked
 
 - **GIVEN** "Grid of four" laid out on a photo 120 by 80 inches with no edge marked, each frame on one hanger with a 2 inch drop
 - **WHEN** the group is measured
-- **THEN** it is 29 by 35 inches, with no height above the floor and no gap to a side edge
+- **THEN** it is 29 by 35 inches, with no height above the floor, no gap to the ceiling and no gap to a side edge
 - **AND** its nails, in order, are 6.5 and 22.5 inches across at 2 inches down, then 6.5 and 22.5 inches across at 21 inches down, with no height above the floor
+
+### Requirement: Each nail names its frame and is measured from the group's corner
+
+In a measured group, each nail SHALL name its frame (its place in the list) and, for D-rings, its ring. It SHALL be measured across from the group's left edge, down from its top edge, and up from a known floor.
+
+#### Scenario: One frame on its own D-rings
+
+- **GIVEN** "One big, two on each side" laid out above the demo sofa, frame 3 on two D-rings with a 3 inch drop and a 4 inch inset, every other frame on one hanger with a 2 inch drop
+- **WHEN** the group is measured
+- **THEN** its first row is frame 1 at 5 inches across, frame 3's left ring at 17, frame 3's right ring at 29, then frame 4 at 41; frame 3's rings are 3.5 inches down and 65.5 inches above the floor
+- **AND** its second row is frames 2 and 5
+
+### Requirement: Nails are listed in rows
+
+The engine SHALL list a group's nails in rows. The highest nail not yet listed SHALL start a row, and every nail 4 inches or less below it SHALL join that row. A row SHALL read left to right, and the next row SHALL start below it.
+
+#### Scenario: Nails a little lower join the row
+
+- **GIVEN** "One big, two on each side" laid out above the demo sofa, each frame on one hanger with a 2 inch drop
+- **WHEN** the group is measured
+- **THEN** it is 46 by 27 inches, its top edge 69 inches above the floor and 27 inches below the ceiling, 49 inches from each side edge
+- **AND** its first row of nails is frame 1 at 5 inches across, 2 down, 67 above the floor; frame 3 at 23 across, 2.5 down, 66.5 above the floor; frame 4 at 41 across, 2 down, 67 above the floor
+- **AND** its second row is frame 2 at 5 across, 17 down, 52 above the floor, then frame 5 at 41 across, 17 down, 52 above the floor
+
+### Requirement: A whole group moves as one
+
+The engine SHALL give a group of frames the four distances a single frame has, measured from the group's outside edges to the furniture and the wall's known edges, with the group's own frames left out. Setting one of them SHALL move every frame in the group by the same amount, with the same stops as a single frame.
+
+#### Scenario: The group's distances
+
+- **GIVEN** "One big, two on each side" laid out above the demo sofa
+- **WHEN** the group's distances are read
+- **THEN** it is 49 inches from the wall's left edge, 49 from its right edge, 27 from the ceiling and 8 above the sofa
+
+#### Scenario: Hanging the group higher above the sofa
+
+- **GIVEN** "One big, two on each side" laid out above the demo sofa
+- **WHEN** the group's distance above the sofa is set to 10 inches
+- **THEN** every frame moves up 2 inches: (49, 59), (49, 44), (62, 44.5), (85, 59) and (85, 44)
+
+### Requirement: A group is centred on the wall
+
+Centring a group on the wall SHALL move every frame across by the same amount, so the group is centred between the wall's known side edges, else across the bounds. Its height SHALL NOT change.
+
+#### Scenario: Centring a group that runs past the edge
+
+- **GIVEN** "One big, two on each side" in the demo room, moved so its left edge is at 101 inches and its right edge 3 inches past the wall's
+- **WHEN** the group is centred on the wall
+- **THEN** its left edge is at 49 inches and every frame keeps its height

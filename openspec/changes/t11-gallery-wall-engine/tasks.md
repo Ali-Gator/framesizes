@@ -15,9 +15,10 @@ Branch `t11-gallery-wall-engine`, cut from `main` after PR 16. Order inside ever
 
 - [ ] 3.1 Write `packages/sizes/src/__tests__/gallery.test.ts` for "The five templates" and "Every template frame is in the catalog". Add the `Stack` and `Template` types and the `TEMPLATES` array (design decision 2). The names are visitor-facing text, so run the `humanizer:humanizer` skill over them before commit. Verify the tests pass.
 - [ ] 3.2 Add tests for every scenario of "A template is laid out with one gap between neighbours" and "A gallery group hangs above furniture or on the centre line". Implement `GALLERY_GAP` and `layoutTemplate`, using measure then place, with the group placed by furniture, the centre line or the middle (design decision 3). Verify the tests pass.
-- [ ] 3.3 Add tests for "One nail", "Two D-rings" and "A hanger that gives no nail". Implement the `Hanger` type and `nailMarks` (design decision 4). Verify the tests pass.
-- [ ] 3.4 Add tests for both scenarios of "A gallery group is measured for hanging". Implement `measureGroup`, with nails sorted from highest to lowest, then left to right (design decision 4). Verify the tests pass.
-- [ ] 3.5 Export the new API from `packages/sizes/src/index.ts` with a requirement citation on each export. Keep `usableArea` internal. Verify that `pnpm typecheck` and `pnpm test:unit` (including the citation gate) pass, and that every new requirement is cited by at least one test.
+- [ ] 3.3 Add tests for "One nail", "Two D-rings" and "A hanger that gives no nail", one assertion per reason. Implement the `Hanger` and `NoNail` types, `hangerProblem` and `nailMarks` (design decision 4). Verify the tests pass.
+- [ ] 3.4 Add tests for every scenario of "A gallery group is measured for hanging", including the row band, the D-ring override and the missing nail. Implement `measureGroup` with `toCeiling`, `missing` and the 4 in row band (design decision 4). Verify the tests pass.
+- [ ] 3.5 Add tests for every scenario of "A whole group moves as one". Implement `groupDistances`, `setGroupDistance` and `centreGroup` on top of `frameDistances`, `setDistance` and `usableArea` (design decision 8). Verify the tests pass.
+- [ ] 3.6 Export the new API from `packages/sizes/src/index.ts` with a requirement citation on each export. Keep `usableArea` internal. Verify that `pnpm typecheck` and `pnpm test:unit` (including the citation gate) pass, and that every new requirement is cited by at least one test.
 
 ## 4. Backlog and gate
 
@@ -30,6 +31,6 @@ Branch `t11-gallery-wall-engine`, cut from `main` after PR 16. Order inside ever
 - `/opsx:archive`. Then update the Public Interface, Behavior and Edge Cases sections of `openspec/specs/size-engine/spec.md` by hand for `gallery.ts`, the optional `wall` argument of `snapFrame`, and the new placement rule. The README row stays as it is.
 - Tracker:
   - set T11 to `In progress`;
-  - add the Log line "gallery wall engine shipped (five templates, layout with one gap, group above furniture or on the 57 in line, nail marks, hanging measurements; BL-36..38 fixed); page change t11-gallery-wall-planner waits for the G1 canvas".
+  - add the Log line "gallery wall engine shipped (five templates, layout with one gap, group above furniture or on the 57 in line, nail marks, hanging measurements; BL-36..38 fixed); page change t11-gallery-wall-planner is next".
 - Push, open the PR to `main` naming the deleted `BL-36`..`BL-38` and any added `BL-nn`, and turn on auto-merge with a merge commit.
-- Next: the G1 design session. Once the user approves its canvas, record the link in CLAUDE.md "Design source" and propose `t11-gallery-wall-planner`.
+- Next: `/opsx:apply t11-gallery-wall-planner`, which starts after this change is merged.

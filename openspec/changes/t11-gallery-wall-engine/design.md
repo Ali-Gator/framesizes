@@ -19,7 +19,8 @@ See `proposal.md` for the motivation and the two-change split. What this change 
 
 **Non-Goals:**
 
-- Template thumbnails, swapping a size in the UI, the hanger form, rounding and labels. These come from the page change, after the G1 canvas.
+- Template thumbnails, swapping a size in the UI, the hanger form, rounding and labels. These are the page change's (`t11-gallery-wall-planner`), from the approved G1 canvas (https://claude.ai/artifact/HGW1ti5mv6Mc8BqPRepXGd).
+- Page-only canvas decisions: the default template, the Layout and Nail marks views, re-laying out after a size or gap change, the 12-frame cap, the 0–12 in gap range, the photo-border check, and the hanger type carrying over to the next frames.
 - Room presets (G2), the hanging-height calculator (G3), and a printable or PDF nail guide.
 - Keeping a group inside the wall. A group bigger than the wall is laid out anyway. Its negative margins tell the page to warn.
 
@@ -76,18 +77,44 @@ The default gap is `PLACE_GAP`, exported again as `GALLERY_GAP` with the same va
 ### 4. Hangers and measurements
 
 ```ts
-type Hanger = { kind: "one"; drop: number } | { kind: "two"; drop: number; inset: number };
+type Hanger =
+  { kind: "one"; drop: number | null } | { kind: "two"; drop: number | null; inset: number | null };
+type NoNail = "no-drop" | "drop-out-of-range" | "no-inset" | "inset-out-of-range";
+interface Nail {
+  frame: number; // index into the measured items
+  ring: "left" | "right" | null;
+  across: number;
+  down: number;
+  floor: number | null;
+}
 ```
 
-- `nailMarks(rect, hanger)` returns `Point[]` in wall inches. It returns `[]` when the drop or the inset is out of range, which is the spec's "no nail".
+- `drop` and `inset` are `null` until the visitor types them. The canvas starts both empty.
+- An internal `hangerProblem(rect, hanger)` returns a `NoNail` reason or `null`. `nailMarks(rect, hanger)` returns `{ ring, point }[]` in wall inches, or `[]` when there is a problem.
 - `measureGroup(items: { rect, hanger }[], wall)` returns:
   - the group's bounding box size;
-  - the top edge's height above the floor: `top - edges.bottom`, or `null`;
+  - `aboveFloor`: `top - edges.bottom`, or `null`;
+  - `toCeiling`: `edges.top - top`, or `null`;
   - the left and right margins against the known edges, or `null` each;
-  - the nails: across from `box.x`, down from the box's top, and above the floor, or `null`. They are sorted by height, highest first, then by `x`.
-- A frame whose hanger gives no nail adds none. The page shows its own message for it.
+  - `nails: Nail[]` in row order (below);
+  - `missing: { frame, reason }[]`, one entry for each frame with no nail.
+- Each item carries its own hanger. "All frames" plus a per-frame override is the page's state; the engine only ever sees the resolved hanger per frame.
+- `frame` is the index. The page turns it into a letter (A, B, C).
 - The measurements take any rectangles, not a template, so they stay right after the visitor drags a frame.
-- No default drop or inset. A guessed constant would put holes in the wrong place. The page's form asks for them, and the G1 canvas decides how.
+- No default drop or inset. A guessed constant would put holes in the wrong place.
+
+**Nail order: a 4 in row band.** Sort the nails by height, highest first. The highest unlisted nail starts a row, every nail 4 in or less below it joins, and the row is sorted by `x`. The band is measured from the row's first nail, not chained from nail to nail, so a slope of small steps cannot pull the whole wall into one row.
+
+- Why: with equal drops, a strict order zigzags. In "One big, two on each side" the 18x24's nail sits ½ in below the stacks' nails, so it would be numbered after both of them. In "Two rows" the 16x20's nail sits 3 in above the 11x14s'.
+- Why 4 in: the smallest step between template rows is 6 in (a landscape 4x6 at a 0 gap). Grid of nine's rows are 15 in apart.
+- Rejected alternative: number by template row. That breaks as soon as the visitor drags a frame.
+
+### 8. The group as one target
+
+- `groupDistances(rects, furniture, wall)` is `frameDistances(box, furniture ? [furniture] : [], wall)`. The group's own frames are left out, so a gap inside the group never counts.
+- `setGroupDistance(rects, side, value, furniture, wall)` calls `setDistance` on the box and moves every rect by the box's delta. It adds no new reach logic, so the stops match a single frame's.
+- `centreGroup(rects, wall)` moves every rect across so the box is centred in `usableArea(wall)`; `y` is unchanged. It backs the canvas's "Centre it on the wall" button, so that number comes from a tested function, not the page.
+- The gap to the ceiling in `measureGroup` and the group's `above` distance are the same number when no furniture sits above. Both read `edges.top`.
 
 ### 5. One "usable area" for placement (BL-36)
 
@@ -110,11 +137,11 @@ The tie order is what the loop already does. The dragged frame's features are ch
 
 ### 7. Template names are visitor-facing text
 
-The five names run through the `humanizer:humanizer` skill before commit. The G1 canvas may still reword them; the page change then edits the delta and the test together.
+The five names run through the `humanizer:humanizer` skill before commit. The approved G1 canvas kept them as they are.
 
 ## Risks / Trade-offs
 
 - **BL-36 changes F2.** On a photo with the wall's width marked, a new frame now stays inside the marked edges. An existing F2 test that adds a frame on such a photo could change its expected spot. → Task 2.1 runs the whole suite after the change. If an existing test fails, apply stops and asks the user before editing it (CLAUDE.md: the user approves any edit to an existing test).
-- **Templates may change after the canvas.** → They are plain data in one array with one test. A canvas change edits the delta's template scenario and that test in the page change.
+- **The canvas kept the five templates.** It was approved on 2026-11-16 with the names, sizes and order unchanged. A later change to them edits the template scenario and its one test together.
 - **Floating-point values in scenarios** (117.4, 126.4). → Those tests compare with `toBeCloseTo`. Layout scenarios use halves, which are exact in binary.
 - **A group wider than a photo.** → It is laid out and measured with negative margins. The page decides how to warn. The engine does not shrink or move it.
