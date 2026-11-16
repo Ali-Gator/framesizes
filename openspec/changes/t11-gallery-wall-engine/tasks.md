@@ -8,8 +8,8 @@ Branch `t11-gallery-wall-engine`, cut from `main` after PR 16. Order inside ever
 
 ## 2. Backlog fixes in `wall.ts`
 
-- [ ] 2.1 BL-36. Add two tests to `wall.test.ts`: "A marked wall edge on the right" and "Centred between the marked side edges". Add the internal `usableArea(wall)` and use it in `placeBeside`'s side check and fallback (design decision 5). Verify that the new tests pass and that `wall.test.ts` and `apps/web/src/components/frames-on-wall/__tests__/` pass unedited. If an existing test fails, stop and ask the user before editing it.
-- [ ] 2.2 BL-37 and BL-38. Add tests for "A snap that would leave the wall" (`toBeCloseTo`) and "A tie between two frames". Give `snapFrame` the optional `wall` argument and skip candidate starts outside its bounds (design decision 6). Verify that the new tests pass and that the existing snap tests pass unedited.
+- [x] 2.1 BL-36. Add two tests to `wall.test.ts`: "A marked wall edge on the right" and "Centred between the marked side edges". Add the internal `usableArea(wall)` and use it in `placeBeside`'s side check and fallback (design decision 5). Verify that the new tests pass and that `wall.test.ts` and `apps/web/src/components/frames-on-wall/__tests__/` pass unedited. If an existing test fails, stop and ask the user before editing it.
+- [x] 2.2 BL-37 and BL-38. Add tests for "A snap that would leave the wall" (`toBeCloseTo`) and "A tie between two frames". Give `snapFrame` the optional `wall` argument and skip candidate starts outside its bounds (design decision 6). Verify that the new tests pass and that the existing snap tests pass unedited.
 
 ## 3. Gallery engine (`packages/sizes/src/gallery.ts`)
 
