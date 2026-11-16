@@ -149,7 +149,7 @@ The engine SHALL measure a group of frames for hanging: its width and height; it
 - **THEN** it is 45 by 16 inches, its top edge 58 inches above the floor, 49.5 inches from the wall's left edge and 49.5 inches from its right edge
 - **AND** its nails are 6.5, 22.5 and 38.5 inches right of the group's left edge, each 2 inches down from its top edge and 56 inches above the floor
 
-#### Scenario: A photo with no edge marked
+#### Scenario: A group on a photo with no edge marked
 
 - **GIVEN** "Grid of four" laid out on a photo 120 by 80 inches with no edge marked, each frame on one hanger with a 2 inch drop
 - **WHEN** the group is measured
