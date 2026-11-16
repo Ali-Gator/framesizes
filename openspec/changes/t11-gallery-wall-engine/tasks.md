@@ -4,7 +4,7 @@ Branch `t11-gallery-wall-engine`, cut from `main` after PR 16. Order inside ever
 
 ## 1. Set-up
 
-- [ ] 1.1 Run `pnpm test` on the branch and verify it is green before any edit.
+- [x] 1.1 Run `pnpm test` on the branch and verify it is green before any edit.
 
 ## 2. Backlog fixes in `wall.ts`
 

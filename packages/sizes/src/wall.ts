@@ -324,13 +324,24 @@ export interface SnapLines {
 const features = (start: number, size: number) =>
   [0, size / 2, size].map((o) => [o, start + o] as const);
 
-/** Snap one axis: the new start and the positions it lines up on. */
-function snapAxis(start: number, size: number, targets: readonly number[]) {
+/**
+ * Snap one axis: the new start and the positions it lines up on. A start that would put the
+ * frame outside `[lo, hi]` is skipped. On an exact tie the first pair checked wins.
+ */
+function snapAxis(
+  start: number,
+  size: number,
+  targets: readonly number[],
+  lo = -Infinity,
+  hi = Infinity,
+) {
   let best: { start: number; d: number } | null = null;
   for (const [offset, at] of features(start, size)) {
     for (const t of targets) {
       const d = Math.abs(t - at);
-      if (d <= SNAP && (best === null || d < best.d)) best = { start: t - offset, d };
+      const s = t - offset;
+      const fits = s >= lo - EPSILON && s + size <= hi + EPSILON;
+      if (d <= SNAP && fits && (best === null || d < best.d)) best = { start: s, d };
     }
   }
   const snapped = best?.start ?? start;
@@ -344,21 +355,26 @@ function snapAxis(start: number, size: number, targets: readonly number[]) {
 /**
  * A dragged frame snapped, per axis, to the nearest edge or centre of another frame (or a piece
  * of furniture's centre, across) within 1 in, and every line it then lines up on. `others` must
- * not hold the dragged frame itself. O(n) per call.
+ * not hold the dragged frame itself. Given the `wall`, no snap takes the frame past its bounds.
+ * O(n) per call.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-dragged-frame-snaps-to-the-edges-and-centres-around-it}
+ * {@link openspec/specs/size-engine/spec.md#requirement-a-snap-never-takes-a-frame-past-the-walls-bounds}
+ * {@link openspec/specs/size-engine/spec.md#requirement-an-exact-snap-tie-goes-to-the-first-pair}
  */
 export function snapFrame(
   frame: Rect,
   others: readonly Rect[],
   furniture: readonly Rect[],
+  wall?: Wall,
 ): { frame: Rect; lines: SnapLines } {
   const xs = [
     ...others.flatMap((o) => features(o.x, o.w).map(([, at]) => at)),
     ...furniture.map((f) => f.x + f.w / 2),
   ];
   const ys = others.flatMap((o) => features(o.y, o.h).map(([, at]) => at));
-  const x = snapAxis(frame.x, frame.w, xs);
-  const y = snapAxis(frame.y, frame.h, ys);
+  const b = wall?.bounds;
+  const x = b ? snapAxis(frame.x, frame.w, xs, b.x, b.x + b.w) : snapAxis(frame.x, frame.w, xs);
+  const y = b ? snapAxis(frame.y, frame.h, ys, b.y, b.y + b.h) : snapAxis(frame.y, frame.h, ys);
   return {
     frame: { ...frame, x: x.start, y: y.start },
     lines: { vertical: x.lines, horizontal: y.lines },
@@ -373,10 +389,22 @@ const overlaps = (a: Rect, b: Rect) =>
 const inside = (r: Rect, b: Rect) =>
   r.x >= b.x && r.y >= b.y && r.x + r.w <= b.x + b.w && r.y + r.h <= b.y + b.h;
 
+/** The bounds clipped by every edge the visitor marked. Internal: not exported from `index`. */
+export function usableArea(wall: Wall): Rect {
+  const b = wall.bounds;
+  const { left, right, top, bottom } = wall.edges;
+  const x = Math.max(b.x, left ?? b.x);
+  const y = Math.max(b.y, bottom ?? b.y);
+  const r = Math.min(b.x + b.w, right ?? b.x + b.w);
+  const t = Math.min(b.y + b.h, top ?? b.y + b.h);
+  return { x, y, w: Math.max(0, r - x), h: Math.max(0, t - y) };
+}
+
 /**
  * Where a new frame of outside `size` goes: 3 in right of `selected` with centres level, else
- * 3 in left, else centred across the bounds at the 57 in centre line (the bounds' middle when
- * the floor is unknown). `others` holds every frame and piece of furniture on the wall.
+ * 3 in left, else centred between the marked side edges (else across the bounds) at the 57 in
+ * centre line (the bounds' middle when the floor is unknown). A side spot must stay inside the
+ * marked edges. `others` holds every frame and piece of furniture on the wall.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-new-frame-is-placed-beside-the-selected-one}
  */
 export function placeBeside(
@@ -386,18 +414,24 @@ export function placeBeside(
   wall: Wall,
 ): Rect {
   const { w, h } = size;
+  const area = usableArea(wall);
   if (selected) {
     const y = selected.y + selected.h / 2 - h / 2;
     for (const x of [selected.x + selected.w + PLACE_GAP, selected.x - PLACE_GAP - w]) {
       const r = { x, y, w, h };
-      if (inside(r, wall.bounds) && !others.some((o) => overlaps(r, o))) return r;
+      if (inside(r, area) && !others.some((o) => overlaps(r, o))) return r;
     }
   }
   const b = wall.bounds;
   const floor = wall.edges.bottom;
   const centreY = floor === null ? b.y + b.h / 2 : floor + CENTRE_LINE;
-  // Kept inside the bounds: a close-up photo can sit lower than the centre line.
+  // Kept inside: a close-up photo can sit lower than the centre line.
   const fit = (at: number, lo: number, size: number, span: number) =>
     Math.max(lo, Math.min(at, lo + span - size));
-  return { x: fit(b.x + b.w / 2 - w / 2, b.x, w, b.w), y: fit(centreY - h / 2, b.y, h, b.h), w, h };
+  return {
+    x: fit(area.x + area.w / 2 - w / 2, area.x, w, area.w),
+    y: fit(centreY - h / 2, b.y, h, b.h),
+    w,
+    h,
+  };
 }
