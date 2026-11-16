@@ -5,7 +5,7 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 ## 1. Set-up
 
 - [ ] 1.1 Verify `t11-gallery-wall-engine` is merged: `TEMPLATES`, `layoutTemplate`, `measureGroup`, `groupDistances`, `setGroupDistance` and `centreGroup` are exported from `@framesizes/sizes`. Verify `pnpm test` is green.
-- [ ] 1.2 The user approved rewriting the three existing e2e tests named in the proposal's Impact on 2026-11-16 ("Yes, rewrite them"); the fourth, F1's outline test, needs the user's yes before task 6.4. Only those four may change.
+- [ ] 1.2 The user approved rewriting the three existing e2e tests named in the proposal's Impact on 2026-11-16 ("Yes, rewrite them"), and the fourth, F1's outline test, the same day ("Yes, rewrite it"). Only those four may change.
 
 ## 2. F2's shared pieces and the backlog (`frames-on-wall`, `site-shell`)
 
