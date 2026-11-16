@@ -2,6 +2,7 @@ import { findFrame, MOULDING } from "./frames";
 import { ABOVE_SOFA, CENTRE_LINE, type Rect } from "./scene";
 import type { Size } from "./units";
 import {
+  EPSILON,
   frameDistances,
   PLACE_GAP,
   setDistance,
@@ -218,7 +219,6 @@ export interface GroupMeasure {
 
 /** Nails 4 in or less below a row's first (highest) nail join that row. */
 const ROW_BAND = 4;
-const EPSILON = 1e-9;
 
 /** The box around `rects`, or `null` when there are none. */
 function boxOf(rects: readonly Rect[]): Rect | null {

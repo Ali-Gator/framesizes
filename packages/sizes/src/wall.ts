@@ -312,7 +312,7 @@ export function markedFurniture(
 
 /** How close, in inches, an edge or centre must come to snap. */
 export const SNAP = 1;
-const EPSILON = 1e-9;
+export const EPSILON = 1e-9;
 
 /** Lines the snapped frame lines up on: vertical ones at an `x`, horizontal ones at a `y`. */
 export interface SnapLines {
@@ -373,8 +373,8 @@ export function snapFrame(
   ];
   const ys = others.flatMap((o) => features(o.y, o.h).map(([, at]) => at));
   const b = wall?.bounds;
-  const x = b ? snapAxis(frame.x, frame.w, xs, b.x, b.x + b.w) : snapAxis(frame.x, frame.w, xs);
-  const y = b ? snapAxis(frame.y, frame.h, ys, b.y, b.y + b.h) : snapAxis(frame.y, frame.h, ys);
+  const x = snapAxis(frame.x, frame.w, xs, b?.x, b && b.x + b.w);
+  const y = snapAxis(frame.y, frame.h, ys, b?.y, b && b.y + b.h);
   return {
     frame: { ...frame, x: x.start, y: y.start },
     lines: { vertical: x.lines, horizontal: y.lines },
@@ -425,11 +425,12 @@ export function placeBeside(
   const b = wall.bounds;
   const floor = wall.edges.bottom;
   const centreY = floor === null ? b.y + b.h / 2 : floor + CENTRE_LINE;
-  // Kept inside: a close-up photo can sit lower than the centre line.
+  // Kept inside the bounds: a close-up photo can sit lower than the centre line, and a frame
+  // wider than the marked wall stays centred on it rather than pinned to one edge.
   const fit = (at: number, lo: number, size: number, span: number) =>
     Math.max(lo, Math.min(at, lo + span - size));
   return {
-    x: fit(area.x + area.w / 2 - w / 2, area.x, w, area.w),
+    x: fit(area.x + area.w / 2 - w / 2, b.x, w, b.w),
     y: fit(centreY - h / 2, b.y, h, b.h),
     w,
     h,

@@ -390,6 +390,14 @@ describe("placing a new frame", () => {
     expect(placeBeside({ w: 18, h: 22 }, null, [], photo)).toEqual(frameAt(66, 39));
   });
 
+  it("keeps a frame wider than the marked wall centred on it, inside the photo", () => {
+    const photo: Wall = {
+      bounds: { x: 0, y: 0, w: 200, h: 100 },
+      edges: { ...NO_EDGES, left: 150, right: 190 },
+    };
+    expect(placeBeside({ w: 60, h: 22 }, null, [], photo)).toMatchObject({ x: 140, y: 39 });
+  });
+
   it("keeps a centred frame inside a close-up photo", () => {
     const closeUp: Wall = {
       bounds: { x: 0, y: 0, w: 34, h: 25 },

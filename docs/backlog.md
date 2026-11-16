@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-45**
+_Next id:_ **BL-47**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -104,6 +104,18 @@ when to add and when to fold items in.
   _Refs:_ `apps/web/src/components/site/hub-nav.tsx` · _Status:_ gated — a second live hub (backlog-3 triage, 2026-11-15)
 
 ## Widgets
+
+- **[BL-45] F2 drag should pass the wall to `snapFrame`** — F2's drag handler still snaps without
+  the wall and clamps afterwards, so a snap that would leave the bounds is dropped instead of the
+  nearest in-bounds one winning. Pass the wall when the F2 drag code is next touched.
+  _Refs:_ `apps/web/src/components/frames-on-wall/state.ts` (`dragFrame`), size-engine spec ·
+  _Status:_ deferred — next F2 drag change (t11-gallery-wall-engine review, 2026-11-16)
+- **[BL-46] Centring with only one side edge marked** — `usableArea` centres between a lone
+  marked side edge and the far photo bound; the spec only says "between the marked side edges,
+  else across the bounds". `photoEdges` always sets both today, so pin the rule once a one-sided
+  mark is possible.
+  _Refs:_ `packages/sizes/src/wall.ts` (`usableArea`), size-engine spec · _Status:_ gated — a
+  one-sided wall mark (t11-gallery-wall-engine review, 2026-11-16)
 
 - **[BL-15] Widget analytics events** — the chart sends no events (size picked, view, reference,
   unit); add them once a metrics plan names what to measure.
