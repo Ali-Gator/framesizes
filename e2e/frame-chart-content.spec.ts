@@ -56,7 +56,7 @@ async function serverHtml(page: Page) {
   }, source);
 }
 
-/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-outline-with-f2-live} */
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-outline-with-f2-and-g1-live} */
 test("the server HTML follows the approved outline", async ({ page }) => {
   const { headings, details } = await serverHtml(page);
   expect(headings.filter((h) => h.startsWith("h1") || h.startsWith("h2"))).toEqual([
@@ -75,9 +75,9 @@ test("the server HTML follows the approved outline", async ({ page }) => {
     "Square frame sizes",
     "Horizontal frame sizes",
   ]);
-  expect(h3s).toHaveLength(3 + 3 + details.length + 1);
-  expect(h3s.slice(6, -1)).toEqual(details.map((d) => d.question));
-  expect(h3s.at(-1)).toBe("Frames");
+  expect(h3s).toHaveLength(3 + 3 + details.length + 2);
+  expect(h3s.slice(6, -2)).toEqual(details.map((d) => d.question));
+  expect(h3s.slice(-2)).toEqual(["Frames", "Gallery wall"]);
 });
 
 /** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-answer-in-the-server-html} */
@@ -143,12 +143,12 @@ test("the widget footer says where the sizes come from", async ({ page }) => {
   expect(widgetFooter).toContain(`last checked ${checked}`);
 });
 
-/** {@link openspec/specs/frame-size-chart/spec.md#scenario-only-f2-is-live-besides-the-home-page} */
-test("links to F2 and to no page that is not live", async ({ page }) => {
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-f2-and-g1-are-live-besides-the-home-page} */
+test("links to F2 and G1 and to no page that is not live", async ({ page }) => {
   const { headings, hrefs, links, related } = await serverHtml(page);
   expect(headings).toContain("h2 Related tools");
   expect(links).toContain("See it on my wall");
   expect(links).toContain("frame sizes on your wall");
-  expect(related).toEqual(["/frame-sizes-on-wall"]);
+  expect(related).toEqual(["/frame-sizes-on-wall", "/gallery-wall-planner"]);
   expect(hrefs.filter((h) => h.startsWith("#"))).toEqual([]);
 });

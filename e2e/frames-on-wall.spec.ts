@@ -123,7 +123,7 @@ test.describe("adding and removing frames", () => {
       await widget(page)
         .locator("a[href]")
         .evaluateAll((as) => as.map((a) => a.getAttribute("href"))),
-    ).toEqual([]);
+    ).toEqual(["/gallery-wall-planner"]);
   });
 
   /** {@link openspec/specs/frames-on-wall/spec.md#scenario-nudging-with-the-keyboard} */

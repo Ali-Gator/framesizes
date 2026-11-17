@@ -14,7 +14,7 @@ export function Lockup() {
   return (
     <>
       <LogoMark />
-      <span className="text-xl font-extrabold tracking-[-0.03em]">
+      <span className="text-xl font-extrabold tracking-[-0.03em] max-[359px]:text-lg">
         framesizes
         <span className="ml-0.5 font-mono text-sm font-medium tracking-normal text-ink-muted max-[390px]:hidden">
           .app
@@ -31,15 +31,16 @@ export function Lockup() {
 export function SiteHeader({ hubs }: { hubs: HubLink[] }) {
   return (
     <header className="border-b border-line bg-wall">
-      <div className="mx-auto flex max-w-content flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 min-[600px]:gap-x-4 min-[900px]:h-16 min-[900px]:flex-nowrap min-[900px]:gap-6 min-[900px]:py-0">
+      {/* Below 360px the row tightens so the lockup, the toggle and the menu button share one row, with room for wider Linux and Android text metrics. */}
+      <div className="mx-auto flex max-w-content flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 max-[359px]:gap-x-1 min-[600px]:gap-x-4 min-[900px]:h-16 min-[900px]:flex-nowrap min-[900px]:gap-6 min-[900px]:py-0">
         <Link
           href="/"
           aria-label={HOME_LINK_NAME}
-          className="order-1 inline-flex shrink-0 items-center gap-2 text-ink"
+          className="order-1 inline-flex shrink-0 items-center gap-2 text-ink max-[359px]:gap-1.5 max-[359px]:[&_svg]:size-7"
         >
           <Lockup />
         </Link>
-        <div className="order-2 ml-auto shrink-0 min-[900px]:order-3">
+        <div className="order-2 ml-auto shrink-0 max-[359px]:[&_[role=radio]]:px-2 min-[900px]:order-3">
           <UnitToggle />
         </div>
         {hubs.length >= 2 && <HubNav links={hubs} />}

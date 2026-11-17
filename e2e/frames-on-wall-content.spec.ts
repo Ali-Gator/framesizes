@@ -146,13 +146,12 @@ test("the sample room is in the server HTML with the 16x20 selected", async ({ p
   expect(distances).toEqual(["32", "8", "63", "63"]);
 });
 
-/** {@link openspec/specs/frames-on-wall/spec.md#scenario-only-the-home-page-and-f2-are-live} */
+/** {@link openspec/specs/frames-on-wall/spec.md#scenario-f1-f2-and-g1-are-live} */
 test("links only to live pages", async ({ page }) => {
   const { related, relatedGroups, hrefs } = await serverHtml(page);
-  expect(relatedGroups).toEqual(["Frames"]);
-  expect(related).toEqual(["/"]);
+  expect(relatedGroups).toEqual(["Frames", "Gallery wall"]);
+  expect(related).toEqual(["/", "/gallery-wall-planner"]);
   expect(hrefs).not.toContain("/how-high-to-hang-pictures");
-  expect(hrefs).not.toContain("/gallery-wall-planner");
   expect(hrefs.filter((h) => h.startsWith("#"))).toEqual([]);
 });
 

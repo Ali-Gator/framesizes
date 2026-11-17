@@ -42,7 +42,7 @@ export const PAGES = [
       h1: "Standard Frame Sizes",
       description:
         "Every standard picture frame size in inches and cm, from 4x6 to 27x40. Click a size to see it at true scale next to a sofa, a door or a person.",
-      lastModified: "2026-11-15",
+      lastModified: "2026-11-17",
     },
   },
   {
@@ -57,7 +57,7 @@ export const PAGES = [
       h1: "Frame Sizes on Your Wall",
       description:
         "See all 19 standard frame sizes, 4x6 to 27x40, on your wall at true size: upload a photo and set the scale with a door, a sofa, a bed or a sheet of paper.",
-      lastModified: "2026-11-15",
+      lastModified: "2026-11-17",
     },
   },
   {
@@ -170,7 +170,14 @@ export const PAGES = [
     hub: "gallery",
     name: "Gallery wall layout planner",
     card: { question: "How do I lay out a gallery wall with real sizes?", ratio: [3, 2] },
-    live: false,
+    live: true,
+    seo: {
+      title: "Gallery Wall Layout Planner & Generator",
+      h1: "Gallery Wall Layout Planner",
+      description:
+        "Plan a gallery wall layout with real frame sizes: pick a template, set the spacing, and get exact measurements and nail positions for your wall.",
+      lastModified: "2026-11-17",
+    },
   },
   {
     id: "G2",

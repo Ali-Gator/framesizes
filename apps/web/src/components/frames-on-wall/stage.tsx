@@ -33,6 +33,10 @@ export interface StageFrame {
   size: string;
   rect: Rect;
   selected: boolean;
+  /** The planner's letter, drawn in the frame's corner. */
+  letter?: string;
+  /** The frame button's name; "16x20 frame" by default. */
+  name?: string;
 }
 
 export interface Dimension {
@@ -99,6 +103,8 @@ export function WallStage({
   onDrop,
   onKey,
   onFloor,
+  focus,
+  overlay,
 }: {
   /** The drawn area in inches: the sample wall, or the photo at its scale. */
   area: { w: number; h: number };
@@ -116,6 +122,10 @@ export function WallStage({
   onDrop: (id: string) => void;
   onKey: (id: string, event: KeyboardEvent) => void;
   onFloor?: (px: number) => void;
+  /** What the distance lines run from, when it is not the selected frame: the whole group. */
+  focus?: Rect | null;
+  /** More drawing over the frames, in the drawing's layer. */
+  overlay?: ReactNode;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const press = useRef<{ id: string; x: number; y: number; moved: boolean } | null>(null);
@@ -173,7 +183,8 @@ export function WallStage({
     onFloor(floor.px + dy);
   }
 
-  const dimEls = selected && !preview ? dimensions(selected.rect, dims, area.w, area.h) : [];
+  const from = focus ?? selected?.rect;
+  const dimEls = from && !preview ? dimensions(from, dims, area.w, area.h) : [];
 
   return (
     <div
@@ -210,8 +221,14 @@ export function WallStage({
                 bottom: pc(MOULDING, f.rect.h),
               }}
             />
+            {f.letter ? (
+              <span className="g-letter" aria-hidden="true">
+                {f.letter}
+              </span>
+            ) : null}
           </span>
         ))}
+        {overlay}
         {preview ? <span className="wf-ghost" style={place(preview, area.w, area.h)} /> : null}
         {dimEls.map((d) => (
           <span
@@ -244,7 +261,7 @@ export function WallStage({
             type="button"
             className="wf-hit"
             data-frame={f.id}
-            aria-label={`${f.size} frame`}
+            aria-label={f.name ?? `${f.size} frame`}
             aria-pressed={f.selected}
             style={{
               left: pc(f.rect.x + f.rect.w / 2, area.w),

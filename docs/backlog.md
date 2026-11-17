@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-48**
+_Next id:_ **BL-51**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -50,18 +50,17 @@ when to add and when to fold items in.
   when React hydrates; the unit suffix already uses `<U>`. Design decision 2 accepted this; fix with
   BL-33 if the same approach covers inputs.
   _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` · _Status:_ open — t7-frames-on-wall review, 2026-11-15
-- **[BL-42] F2 decodes the whole photo to read its size** — `createImageBitmap` decodes the full
-  image (about 190 MB for 48 MP) just for its width and height, which can kill an iOS tab; read the
-  size from an `<img>` and `decode()`, which also applies EXIF orientation.
-  _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` (`pickFile`) · _Status:_ open — t7-frames-on-wall review, 2026-11-15
-- **[BL-43] F2 "Start over?" dialog opens in the top-left corner** — on the live page the modal
-  sits at the viewport's top-left instead of its centre; `.wf-dialog` sets no margin, so the CSS reset's
-  `margin: 0` wins over the browser's `margin: auto` centring. Add `margin: auto` and check it on a phone.
-  _Refs:_ `apps/web/src/app/frame-sizes-on-wall/wall.css` (`.wf-dialog`) · _Status:_ open — owner, 2026-11-16
-- **[BL-44] F2 photo and scale steps hug the card's left edge** — on desktop the upload box, tips and
-  "Set the scale" steps sit in the 560px `.wf-flow` column on the left of the full-width card, leaving
-  its right half empty. Centre the column (or fit the card to it) after checking the approved canvas.
-  _Refs:_ `apps/web/src/app/frame-sizes-on-wall/wall.css` (`.wf-flow`), F2 canvas · _Status:_ open — owner, 2026-11-16
+
+- **[BL-48] G1 drops the sample layout when the visitor backs out of the upload** — "Use my wall
+  photo" then "Back to the sample room" resets moves, added and removed frames with no dialog. F2
+  does the same; keep the layout when no photo was picked.
+  _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`toSample`) · _Status:_ open — t11-gallery-wall-planner review, 2026-11-17
+- **[BL-49] G1 re-lays out the template on every drag move** — `dragFrame` calls `framesOf` per
+  pointer move; pass the frames the view already has. No visible lag at 12 frames yet.
+  _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`dragFrame`) · _Status:_ deferred — lag on a slow phone
+- **[BL-50] G1 copies small helpers from F2** — `clampTo`, `PICKER_START`, `pc`, `Dims` and the OG
+  image's `SOFA_PARTS` exist twice; export them once so F2 and G1 cannot drift.
+  _Refs:_ `apps/web/src/components/gallery-wall/`, `apps/web/src/components/frames-on-wall/` · _Status:_ open — t11-gallery-wall-planner review, 2026-11-17
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once
@@ -72,10 +71,6 @@ when to add and when to fold items in.
   `http://` answer one 308 to `https://framesizes.app` (guide checklist 1); the app cannot see it,
   the Vercel domain settings do.
   _Refs:_ On-page SEO guide, pre-publish checklist 1 · _Status:_ gated — DNS live
-- **[BL-4] Menu button row at 320px** — with two or more live hubs the header shows a menu button;
-  at 320px the lockup, unit toggle and button may wrap to two rows. Check and fix when the second
-  hub ships.
-  _Refs:_ `apps/web/src/components/site/site-header.tsx` · _Status:_ gated — a second live hub
 - **[BL-5] PostHog authorized URLs** — the project shows "No authorized URLs configured"; add
   `https://framesizes.app` so URL-based filters and the toolbar work.
   _Refs:_ PostHog project 344498, Settings › Project · _Status:_ gated — DNS live

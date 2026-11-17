@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   checkSiteMap,
+  fullTitle,
   HUBS,
   liveHubHeads,
   livePage,
@@ -49,6 +50,21 @@ describe("the launch pages", () => {
 
   it("pass every limit", () => {
     expect(checkSiteMap(PAGES)).toEqual([]);
+  });
+});
+
+/** {@link openspec/specs/seo-base/spec.md#scenario-the-launch-pages-are-declared} */
+describe("the gallery wall planner", () => {
+  it("is live with the On-page SEO guide's head values", () => {
+    const g1 = livePage("G1");
+    expect(g1.path).toBe("/gallery-wall-planner");
+    expect(g1.seo.title).toBe("Gallery Wall Layout Planner & Generator");
+    expect(g1.seo.h1).toBe("Gallery Wall Layout Planner");
+    expect(g1.seo.description).toBe(
+      "Plan a gallery wall layout with real frame sizes: pick a template, set the spacing, and get exact measurements and nail positions for your wall.",
+    );
+    expect(fullTitle(g1.seo.title)).toHaveLength(53);
+    expect(liveHubHeads().map((h) => h.id)).toEqual(["frames", "gallery"]);
   });
 });
 
