@@ -148,3 +148,15 @@ when to add and when to fold items in.
   any of them lets focused rows slide under the pinned preview again. Define the height once as a
   custom property both rules use.
   _Refs:_ `apps/web/src/app/widgets.css` (phone block) · _Status:_ open — backlog-3 review, 2026-11-15
+
+
+
+From Oleg directly (needs proposal first):
+
+1. https://framesizes.app/gallery-wall-planner
+   1. when All frames selected show button to change sizes (of all frames)
+   2. Frames within buttons for choosing templates - no paddings for some of them
+   3. Nail positions table on desktop - remove horizontal scroll
+   4. Gallery wall layout with sizes - scroll is to small. Can we remove it as well?
+2. https://walldecor.io/tools/wall-art-visualizer - wdyt about using more natural/real default room background?
+3. 
