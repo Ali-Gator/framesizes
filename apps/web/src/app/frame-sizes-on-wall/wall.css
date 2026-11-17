@@ -77,7 +77,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
   max-width: 560px;
+  margin-inline: auto;
 }
 
 /* Stage: the drawing and its sibling control layer, the same size */
@@ -809,6 +812,7 @@ input:focus-visible + .wf-drop,
 /* Start over */
 .wf-dialog {
   box-sizing: border-box;
+  margin: auto;
   width: calc(100% - 32px);
   max-width: 420px;
   padding: 20px;

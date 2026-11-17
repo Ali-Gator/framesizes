@@ -52,13 +52,12 @@ export interface PhotoInfo {
   height: number;
 }
 
-export interface WallState {
+/**
+ * The photo flow's part of the state: the upload, the three scale steps and the floor line.
+ * The gallery wall planner holds the same slice.
+ */
+export interface PhotoSlice {
   mode: Mode;
-  frames: PlacedFrame[];
-  selected: string | null;
-  nextId: number;
-  /** The size picker, while it is open. */
-  adding: { orientation: Orientation; size: string } | null;
   photo: PhotoInfo | null;
   known: KnownId;
   /** Each known thing's two ends, once the visitor moves them. */
@@ -70,20 +69,22 @@ export interface WallState {
   scale: number | null;
   /** The floor line's pixel row, once marked. */
   floor: number | null;
+}
+
+export interface WallState extends PhotoSlice {
+  frames: PlacedFrame[];
+  selected: string | null;
+  nextId: number;
+  /** The size picker, while it is open. */
+  adding: { orientation: Orientation; size: string } | null;
   confirmReset: boolean;
   /** Bumped on every change a live region reads out. */
   revision: number;
 }
 
-export const FIRST_SIZE = "16x20";
-const OUTSIDE = (frame: Frame) => outsideSize(frame);
-
-export const initialState = (): WallState => ({
+/** The sample room's photo slice: no photo, nothing marked. */
+export const sampleSlice = (): PhotoSlice => ({
   mode: "sample",
-  frames: [{ id: "f1", size: FIRST_SIZE, rect: DEMO_ROOM.frame }],
-  selected: "f1",
-  nextId: 2,
-  adding: null,
   photo: null,
   known: "door",
   marks: {},
@@ -91,6 +92,17 @@ export const initialState = (): WallState => ({
   lengthError: false,
   scale: null,
   floor: null,
+});
+
+export const FIRST_SIZE = "16x20";
+const OUTSIDE = (frame: Frame) => outsideSize(frame);
+
+export const initialState = (): WallState => ({
+  ...sampleSlice(),
+  frames: [{ id: "f1", size: FIRST_SIZE, rect: DEMO_ROOM.frame }],
+  selected: "f1",
+  nextId: 2,
+  adding: null,
   confirmReset: false,
   revision: 0,
 });
@@ -124,7 +136,7 @@ export function markOf(state: Pick<WallState, "known" | "marks">, photo: Photo):
 export const markLength = ([a, b]: Mark) => Math.hypot(b.x - a.x, b.y - a.y);
 
 /** The wall the frames hang on and the furniture on it, in inches. */
-export function wallOf(state: WallState): { wall: Wall; furniture: Rect[] } {
+export function wallOf(state: PhotoSlice): { wall: Wall; furniture: Rect[] } {
   const { photo, scale } = state;
   if (state.mode === "sample" || !photo || !scale) {
     return { wall: DEMO_ROOM.wall, furniture: [DEMO_ROOM.sofa] };
@@ -178,11 +190,7 @@ const NO_EDGES: Wall["edges"] = { left: null, right: null, top: null, bottom: nu
 export function distancesOf(state: WallState, id: string): Record<Side, Distance | null> {
   const frame = state.frames.find((f) => f.id === id);
   const { wall, furniture } = wallOf(state);
-  const out = { left: null, right: null, above: null, below: null } as Record<
-    Side,
-    Distance | null
-  >;
-  if (!frame) return out;
+  if (!frame) return { left: null, right: null, above: null, below: null };
   const named: { rect: Rect; to: Distance["to"] }[] = [
     ...state.frames
       .filter((f) => f.id !== id)
@@ -192,8 +200,28 @@ export function distancesOf(state: WallState, id: string): Record<Side, Distance
       to: { kind: "furniture" as const, name: furnitureName(state) },
     })),
   ];
+  return namedDistances(frame.rect, named, wall, (side) => ({
+    kind: "edge",
+    name: edgeName(side),
+  }));
+}
+
+/**
+ * A rectangle's four distances, each with the thing it runs to: one of `named`, else the wall's
+ * edge `edge` names. `null` where nothing is known on that side.
+ */
+export function namedDistances<T>(
+  rect: Rect,
+  named: readonly { rect: Rect; to: T }[],
+  wall: Wall,
+  edge: (side: Side) => T,
+): Record<Side, { value: number; to: T } | null> {
+  const out = { left: null, right: null, above: null, below: null } as Record<
+    Side,
+    { value: number; to: T } | null
+  >;
   const all = frameDistances(
-    frame.rect,
+    rect,
     named.map((n) => n.rect),
     wall,
   );
@@ -202,10 +230,10 @@ export function distancesOf(state: WallState, id: string): Record<Side, Distance
     if (value === null) continue;
     // The engine gives the nearest gap; the thing at exactly that gap is what it runs to.
     const hit = named.find((n) => {
-      const one: Distances = frameDistances(frame.rect, [n.rect], { ...wall, edges: NO_EDGES });
+      const one: Distances = frameDistances(rect, [n.rect], { ...wall, edges: NO_EDGES });
       return one[side] !== null && Math.abs((one[side] ?? 0) - value) < 1e-9;
     });
-    out[side] = { value, to: hit?.to ?? { kind: "edge", name: edgeName(side) } };
+    out[side] = { value, to: hit ? hit.to : edge(side) };
   }
   return out;
 }
@@ -270,7 +298,7 @@ export function previewRect(state: WallState): Rect | null {
 }
 
 /** The step 3 field's text: what was typed, else the known thing's default in the visitor's unit. */
-export function lengthField(state: WallState, unit: Unit): string {
+export function lengthField(state: PhotoSlice, unit: Unit): string {
   if (state.lengthText !== null) return state.lengthText;
   const length = KNOWN_THINGS.find((k) => k.id === state.known)?.length;
   if (length?.kind !== "default") return "";
@@ -278,7 +306,7 @@ export function lengthField(state: WallState, unit: Unit): string {
 }
 
 /** The known thing's real length in inches, or `null` when the field is empty or not a length. */
-function knownInches(state: WallState, unit: Unit): number | null {
+function knownInches(state: PhotoSlice, unit: Unit): number | null {
   const length = KNOWN_THINGS.find((k) => k.id === state.known)?.length;
   if (length?.kind === "fixed") return length.inches;
   return parseLength(lengthField(state, unit), unit);
@@ -291,18 +319,8 @@ const PICKER_START: Record<Orientation, string> = {
   square: "12x12",
 };
 
-export type Action =
-  | { type: "select"; id: string }
-  | { type: "distance"; side: Side; text: string; unit: Unit }
-  | { type: "step"; side: Side; direction: 1 | -1; unit: Unit }
-  | { type: "place"; id: string; rect: Rect }
-  | { type: "nudge"; id: string; dx: number; dy: number }
-  | { type: "remove"; id: string }
-  | { type: "openAdd" }
-  | { type: "addOrientation"; orientation: Orientation }
-  | { type: "addSize"; size: string }
-  | { type: "add" }
-  | { type: "closeAdd" }
+/** The photo flow's actions, shared with the gallery wall planner. */
+export type PhotoAction =
   | { type: "upload" }
   | { type: "resume" }
   | { type: "photo"; photo: PhotoInfo }
@@ -316,10 +334,129 @@ export type Action =
   | { type: "setScale"; unit: Unit }
   | { type: "markFloor" }
   | { type: "floor"; y: number }
-  | { type: "openReset" }
-  | { type: "cancelReset" }
   | { type: "restartPhoto" }
   | { type: "toSample" };
+
+export type Action =
+  | { type: "select"; id: string }
+  | { type: "distance"; side: Side; text: string; unit: Unit }
+  | { type: "step"; side: Side; direction: 1 | -1; unit: Unit }
+  | { type: "place"; id: string; rect: Rect }
+  | { type: "nudge"; id: string; dx: number; dy: number }
+  | { type: "remove"; id: string }
+  | { type: "openAdd" }
+  | { type: "addOrientation"; orientation: Orientation }
+  | { type: "addSize"; size: string }
+  | { type: "add" }
+  | { type: "closeAdd" }
+  | { type: "openReset" }
+  | { type: "cancelReset" }
+  | PhotoAction;
+
+/** The photo slice's empty start once a photo is picked: no marks, no scale, no floor. */
+const PHOTO_START = {
+  mode: "pick",
+  known: "door",
+  marks: {},
+  lengthText: null,
+  lengthError: false,
+  scale: null,
+  floor: null,
+} as const satisfies Partial<PhotoSlice>;
+
+/**
+ * The photo flow's steps over any state that holds the photo slice. Placing frames, revisions and
+ * dialogs are the caller's.
+ * {@link openspec/specs/frames-on-wall/spec.md#requirement-a-wall-photo-is-used-on-the-device-only}
+ */
+export function photoReducer<S extends PhotoSlice>(state: S, action: PhotoAction): S {
+  switch (action.type) {
+    case "upload":
+      return { ...state, mode: "upload" };
+
+    case "resume":
+      // Back from "Change photo" to the photo whose scale is set.
+      return state.photo && state.scale ? { ...state, mode: "photo" } : state;
+
+    case "photo":
+      return { ...state, ...PHOTO_START, photo: action.photo };
+
+    case "known":
+      return { ...state, known: action.known, lengthText: null, lengthError: false };
+
+    case "toPlace":
+      return state.photo ? { ...state, mode: "place" } : state;
+
+    case "handle": {
+      if (!state.photo) return state;
+      const { width, height } = state.photo;
+      const point = {
+        x: Math.round(Math.min(width, Math.max(0, action.point.x))),
+        y: Math.round(Math.min(height, Math.max(0, action.point.y))),
+      };
+      const mark = [...markOf(state, state.photo)] as [Point, Point];
+      mark[action.end] = point;
+      return { ...state, marks: { ...state.marks, [state.known]: mark } };
+    }
+
+    case "placeNext":
+      if (!state.photo) return state;
+      return {
+        ...state,
+        mode: markLength(markOf(state, state.photo)) < SHORT_MARK_PX ? "short" : "confirm",
+      };
+
+    case "useAnyway":
+      return { ...state, mode: "confirm" };
+
+    case "back": {
+      const previous: Partial<Record<Mode, Mode>> = {
+        pick: "upload",
+        place: "pick",
+        short: "pick",
+        confirm: "place",
+      };
+      const to = previous[state.mode];
+      return to ? { ...state, mode: to, lengthError: false } : state;
+    }
+
+    case "lengthText":
+      return { ...state, lengthText: action.text, lengthError: false };
+
+    case "setScale": {
+      if (!state.photo) return state;
+      const inches = knownInches(state, action.unit);
+      const [a, b] = markOf(state, state.photo);
+      const scale = inches === null ? null : scaleFromMark(a, b, inches);
+      if (scale === null) return { ...state, lengthError: true };
+      return { ...state, mode: "photo", scale, floor: null, lengthError: false };
+    }
+
+    case "markFloor": {
+      if (!state.photo || state.mode !== "photo") return state;
+      // Starts at the bottom of the marked sofa or bed, else near the photo's bottom.
+      const mark = markOf(state, state.photo);
+      const y =
+        state.known === "door"
+          ? Math.max(mark[0].y, mark[1].y)
+          : Math.round(state.photo.height * 0.9);
+      return { ...state, floor: y };
+    }
+
+    case "floor":
+      if (!state.photo || state.floor === null) return state;
+      return {
+        ...state,
+        floor: Math.round(Math.min(state.photo.height, Math.max(0, action.y))),
+      };
+
+    case "restartPhoto":
+      return state.photo ? { ...state, ...PHOTO_START } : state;
+
+    case "toSample":
+      return { ...state, ...sampleSlice() };
+  }
+}
 
 const changed = (state: WallState, next: Partial<WallState>): WallState => ({
   ...state,
@@ -336,21 +473,13 @@ function keepOnWall(state: WallState): WallState {
   return { ...state, frames: state.frames.map((f) => ({ ...f, rect: clampTo(f.rect, bounds) })) };
 }
 
-/** The photo mode's empty start: no frames, no scale, no floor. */
-const photoStart = (state: WallState): Partial<WallState> => ({
-  mode: "pick",
+/** F2's part of a fresh photo: no frames, nothing open. */
+const NO_FRAMES = {
   frames: [],
   selected: null,
   adding: null,
-  known: "door",
-  marks: {},
-  lengthText: null,
-  lengthError: false,
-  scale: null,
-  floor: null,
   confirmReset: false,
-  nextId: state.nextId,
-});
+} as const satisfies Partial<WallState>;
 
 /**
  * {@link openspec/specs/frames-on-wall/spec.md#requirement-setting-a-distance-moves-the-selected-frame}
@@ -445,64 +574,25 @@ export function reducer(state: WallState, action: Action): WallState {
       return { ...state, adding: null };
 
     case "upload":
-      return { ...state, mode: "upload", adding: null, confirmReset: false };
-
-    case "resume":
-      // Back from "Change photo" to the photo whose scale is set.
-      return state.photo && state.scale ? { ...state, mode: "photo" } : state;
+      return { ...photoReducer(state, action), adding: null, confirmReset: false };
 
     case "photo":
-      return { ...state, ...photoStart(state), photo: action.photo };
+      return { ...photoReducer(state, action), ...NO_FRAMES };
 
+    case "resume":
     case "known":
-      return { ...state, known: action.known, lengthText: null, lengthError: false };
-
     case "toPlace":
-      return state.photo ? { ...state, mode: "place" } : state;
-
-    case "handle": {
-      if (!state.photo) return state;
-      const { width, height } = state.photo;
-      const point = {
-        x: Math.round(Math.min(width, Math.max(0, action.point.x))),
-        y: Math.round(Math.min(height, Math.max(0, action.point.y))),
-      };
-      const mark = [...markOf(state, state.photo)] as [Point, Point];
-      mark[action.end] = point;
-      return { ...state, marks: { ...state.marks, [state.known]: mark } };
-    }
-
+    case "handle":
     case "placeNext":
-      if (!state.photo) return state;
-      return {
-        ...state,
-        mode: markLength(markOf(state, state.photo)) < SHORT_MARK_PX ? "short" : "confirm",
-      };
-
     case "useAnyway":
-      return { ...state, mode: "confirm" };
-
-    case "back": {
-      const previous: Partial<Record<Mode, Mode>> = {
-        pick: "upload",
-        place: "pick",
-        short: "pick",
-        confirm: "place",
-      };
-      const to = previous[state.mode];
-      return to ? { ...state, mode: to, lengthError: false } : state;
-    }
-
+    case "back":
     case "lengthText":
-      return { ...state, lengthText: action.text, lengthError: false };
+      return photoReducer(state, action);
 
     case "setScale": {
       if (!state.photo) return state;
-      const inches = knownInches(state, action.unit);
-      const [a, b] = markOf(state, state.photo);
-      const scale = inches === null ? null : scaleFromMark(a, b, inches);
-      if (scale === null) return { ...state, lengthError: true };
-      const set: WallState = { ...state, mode: "photo", scale, floor: null, lengthError: false };
+      const set = photoReducer(state, action);
+      if (set.lengthError) return set;
       // A first frame to start from, placed as a new frame would be.
       const first = findFrame(FIRST_SIZE);
       const { wall, furniture } = wallOf(set);
@@ -515,24 +605,11 @@ export function reducer(state: WallState, action: Action): WallState {
       });
     }
 
-    case "markFloor": {
-      if (!state.photo || state.mode !== "photo") return state;
-      // Starts at the bottom of the marked sofa or bed, else near the photo's bottom.
-      const mark = markOf(state, state.photo);
-      const y =
-        state.known === "door"
-          ? Math.max(mark[0].y, mark[1].y)
-          : Math.round(state.photo.height * 0.9);
-      return keepOnWall(changed(state, { floor: y }));
+    case "markFloor":
+    case "floor": {
+      const next = photoReducer(state, action);
+      return next === state ? state : keepOnWall(changed(next, {}));
     }
-
-    case "floor":
-      if (!state.photo || state.floor === null) return state;
-      return keepOnWall(
-        changed(state, {
-          floor: Math.round(Math.min(state.photo.height, Math.max(0, action.y))),
-        }),
-      );
 
     case "openReset":
       return { ...state, confirmReset: true, adding: null };
@@ -541,7 +618,7 @@ export function reducer(state: WallState, action: Action): WallState {
       return { ...state, confirmReset: false };
 
     case "restartPhoto":
-      return state.photo ? changed(state, { ...photoStart(state) }) : state;
+      return state.photo ? changed(photoReducer(state, action), NO_FRAMES) : state;
 
     case "toSample":
       return { ...initialState(), nextId: state.nextId, revision: state.revision + 1 };

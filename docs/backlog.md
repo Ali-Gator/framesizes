@@ -50,18 +50,6 @@ when to add and when to fold items in.
   when React hydrates; the unit suffix already uses `<U>`. Design decision 2 accepted this; fix with
   BL-33 if the same approach covers inputs.
   _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` · _Status:_ open — t7-frames-on-wall review, 2026-11-15
-- **[BL-42] F2 decodes the whole photo to read its size** — `createImageBitmap` decodes the full
-  image (about 190 MB for 48 MP) just for its width and height, which can kill an iOS tab; read the
-  size from an `<img>` and `decode()`, which also applies EXIF orientation.
-  _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` (`pickFile`) · _Status:_ open — t7-frames-on-wall review, 2026-11-15
-- **[BL-43] F2 "Start over?" dialog opens in the top-left corner** — on the live page the modal
-  sits at the viewport's top-left instead of its centre; `.wf-dialog` sets no margin, so the CSS reset's
-  `margin: 0` wins over the browser's `margin: auto` centring. Add `margin: auto` and check it on a phone.
-  _Refs:_ `apps/web/src/app/frame-sizes-on-wall/wall.css` (`.wf-dialog`) · _Status:_ open — owner, 2026-11-16
-- **[BL-44] F2 photo and scale steps hug the card's left edge** — on desktop the upload box, tips and
-  "Set the scale" steps sit in the 560px `.wf-flow` column on the left of the full-width card, leaving
-  its right half empty. Centre the column (or fit the card to it) after checking the approved canvas.
-  _Refs:_ `apps/web/src/app/frame-sizes-on-wall/wall.css` (`.wf-flow`), F2 canvas · _Status:_ open — owner, 2026-11-16
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once

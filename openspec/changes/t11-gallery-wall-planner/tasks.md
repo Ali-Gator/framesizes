@@ -4,13 +4,13 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 
 ## 1. Set-up
 
-- [ ] 1.1 Verify `t11-gallery-wall-engine` is merged: `TEMPLATES`, `layoutTemplate`, `measureGroup`, `groupDistances`, `setGroupDistance` and `centreGroup` are exported from `@framesizes/sizes`. Verify `pnpm test` is green.
-- [ ] 1.2 The user approved rewriting the three existing e2e tests named in the proposal's Impact on 2026-11-16 ("Yes, rewrite them"), and the fourth, F1's outline test, the same day ("Yes, rewrite it"). Only those four may change.
+- [x] 1.1 Verify `t11-gallery-wall-engine` is merged: `TEMPLATES`, `layoutTemplate`, `measureGroup`, `groupDistances`, `setGroupDistance` and `centreGroup` are exported from `@framesizes/sizes`. Verify `pnpm test` is green.
+- [x] 1.2 The user approved rewriting the three existing e2e tests named in the proposal's Impact on 2026-11-16 ("Yes, rewrite them"), and the fourth, F1's outline test, the same day ("Yes, rewrite it"). Only those four may change.
 
 ## 2. F2's shared pieces and the backlog (`frames-on-wall`, `site-shell`)
 
-- [ ] 2.1 Move `PhotoFlow`, `Picker`, `BackBar`, `ConfirmStep` and `ResetDialog` out of `frames-on-wall.tsx` into exported components, and the photo modes into an exported slice of `state.ts` (design decision 2). Change no behaviour. Verify the F2 unit tests and `e2e/frames-on-wall*.spec.ts` pass unedited.
-- [ ] 2.2 BL-42, BL-43, BL-44. Read the photo's size from an `<img>` and `decode()` instead of `createImageBitmap`; add `margin: auto` to `.wf-dialog`; centre `.wf-flow` on desktop after checking the F2 canvas. Verify the F2 tests pass unedited and check both dialogs and the flow at 360 and 1280 by hand.
+- [x] 2.1 Move `PhotoFlow`, `Picker`, `BackBar`, `ConfirmStep` and `ResetDialog` out of `frames-on-wall.tsx` into exported components, and the photo modes into an exported slice of `state.ts` (design decision 2). Change no behaviour. Verify the F2 unit tests and `e2e/frames-on-wall*.spec.ts` pass unedited.
+- [x] 2.2 BL-42, BL-43, BL-44. Read the photo's size from an `<img>` and `decode()` instead of `createImageBitmap`; add `margin: auto` to `.wf-dialog`; centre `.wf-flow` on desktop after checking the F2 canvas. Verify the F2 tests pass unedited and check both dialogs and the flow at 360 and 1280 by hand.
 - [ ] 2.3 BL-4. With G1 live (task 5.1 on a scratch commit, or `withLive` in a header markup test), add an e2e check that the header fits one row at 320 px with the menu button. Fix the header CSS if it wraps. Verify the existing header tests pass unedited.
 
 ## 3. Planner state (`components/gallery-wall/`)
