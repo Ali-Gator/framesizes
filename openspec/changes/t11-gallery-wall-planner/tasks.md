@@ -39,7 +39,7 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 ## 5. The page
 
 - [x] 5.1 Copy the G1 row from the On-page SEO guide into `site-map.ts`: title, h1, description and `lastModified`. Set `live: true`. Move F1's and F2's `lastModified` to today. Write `site-map.test.ts` cases for G1's head values in a new test case. Verify `checkSiteMap` passes.
-- [ ] 5.2 Build `app/gallery-wall-planner/page.tsx` in the canvas's order:
+- [x] 5.2 Build `app/gallery-wall-planner/page.tsx` in the canvas's order:
   - the breadcrumbs and JSON-LD;
   - the `h1` and answer;
   - the widget;
@@ -48,19 +48,19 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 
   Wrap every link to G2, G3 or G4 in `IfLive`. Leave out the shop section and the T24 slot. Verify `pnpm build` prerenders the page statically.
 
-- [ ] 5.3 Build `opengraph-image.tsx` for G1 (design decision 9). Verify `pnpm build` writes a 1200 × 630 PNG under 300 KB.
-- [ ] 5.4 Run the `humanizer:humanizer` skill over all new visitor-facing text (design decision 10). Verify the diff changes wording only.
+- [x] 5.3 Build `opengraph-image.tsx` for G1 (design decision 9). Verify `pnpm build` writes a 1200 × 630 PNG under 300 KB.
+- [x] 5.4 Run the `humanizer:humanizer` skill over all new visitor-facing text (design decision 10). Verify the diff changes wording only.
 
 ## 6. End-to-end
 
 - [x] 6.1 Write `e2e/gallery-wall-content.spec.ts`: outline, answer, template table, both units in the HTML, default state, links only to live pages, breadcrumbs and `BreadcrumbList`, the nine social tags and the image, the description against the widget.
 - [x] 6.2 Write `e2e/gallery-wall.spec.ts`: template switch with and without the dialog; gap 2 in and out of range; change size; the group 10 in above the sofa; add to 12; the right-edge warning and centring; Nail marks with no drop, then a 2 in drop, then B at 13 in; the type carry-over; cm; the photo flow with the fixture, and no request carrying image data or the file name.
 - [x] 6.3 Write `e2e/gallery-wall-phone.spec.ts`: the 360 × 740 first screen; 320 px with no sideways scroll and 44 px controls; CLS 0; axe in the default, nails and warning states.
-- [ ] 6.4 Rewrite (approved, task 1.2) the four existing e2e tests: `e2e/seo-home.spec.ts` "sitemap.xml lists the home page and F2" to "The home page, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "links to F2 and to no page that is not live" to "F2 and G1 are live besides the home page"; `e2e/frames-on-wall-content.spec.ts` "links only to live pages" to "F1, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "the server HTML follows the approved outline" to "The outline with F2 and G1 live". Add `withLive` unit tests citing the four replaced scenarios, if none cites them yet. Verify all pass.
+- [x] 6.4 Rewrite (approved, task 1.2) the four existing e2e tests: `e2e/seo-home.spec.ts` "sitemap.xml lists the home page and F2" to "The home page, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "links to F2 and to no page that is not live" to "F2 and G1 are live besides the home page"; `e2e/frames-on-wall-content.spec.ts` "links only to live pages" to "F1, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "the server HTML follows the approved outline" to "The outline with F2 and G1 live". Add `withLive` unit tests citing the four replaced scenarios, if none cites them yet. Verify all pass.
 
 ## 7. Gate
 
-- [ ] 7.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green.
+- [x] 7.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green.
 - [ ] 7.2 Run the On-page SEO guide's pre-publish checklist against `pnpm build && pnpm start` for `/gallery-wall-planner`, with the `seo-audit:seo-page-audit` skill loaded. The affiliate item is not applicable until T21. Verify every other item passes.
 
 ## Workflow follow-up
