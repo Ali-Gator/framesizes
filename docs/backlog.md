@@ -60,10 +60,6 @@ when to add and when to fold items in.
   `http://` answer one 308 to `https://framesizes.app` (guide checklist 1); the app cannot see it,
   the Vercel domain settings do.
   _Refs:_ On-page SEO guide, pre-publish checklist 1 · _Status:_ gated — DNS live
-- **[BL-4] Menu button row at 320px** — with two or more live hubs the header shows a menu button;
-  at 320px the lockup, unit toggle and button may wrap to two rows. Check and fix when the second
-  hub ships.
-  _Refs:_ `apps/web/src/components/site/site-header.tsx` · _Status:_ gated — a second live hub
 - **[BL-5] PostHog authorized URLs** — the project shows "No authorized URLs configured"; add
   `https://framesizes.app` so URL-based filters and the toolbar work.
   _Refs:_ PostHog project 344498, Settings › Project · _Status:_ gated — DNS live

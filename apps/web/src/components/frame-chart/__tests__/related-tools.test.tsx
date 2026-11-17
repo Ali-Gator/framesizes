@@ -76,4 +76,27 @@ describe("RelatedTools on the home page", () => {
       "/frame-sizes-on-wall",
     ]);
   });
+
+  /** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-outline-with-f2-live} */
+  it("holds one group, Frames, while only F1 and F2 are live", () => {
+    const doc = parse(renderToStaticMarkup(<RelatedTools pages={withLive("F1", "F2")} />));
+    expect(doc.querySelector("h2")?.textContent).toBe("Related tools");
+    expect([...doc.querySelectorAll("h3")].map((h) => h.textContent)).toEqual(["Frames"]);
+  });
+
+  /**
+   * {@link openspec/specs/frame-size-chart/spec.md#scenario-f2-and-g1-are-live-besides-the-home-page}
+   * {@link openspec/specs/frame-size-chart/spec.md#scenario-the-outline-with-f2-and-g1-live}
+   */
+  it("lists F2 under Frames, then G1 under Gallery wall", () => {
+    const doc = parse(renderToStaticMarkup(<RelatedTools pages={withLive("F1", "F2", "G1")} />));
+    expect([...doc.querySelectorAll("h3")].map((h) => h.textContent)).toEqual([
+      "Frames",
+      "Gallery wall",
+    ]);
+    expect([...doc.querySelectorAll("a")].map((a) => a.getAttribute("href"))).toEqual([
+      "/frame-sizes-on-wall",
+      "/gallery-wall-planner",
+    ]);
+  });
 });

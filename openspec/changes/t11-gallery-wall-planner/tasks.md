@@ -11,7 +11,7 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 
 - [x] 2.1 Move `PhotoFlow`, `Picker`, `BackBar`, `ConfirmStep` and `ResetDialog` out of `frames-on-wall.tsx` into exported components, and the photo modes into an exported slice of `state.ts` (design decision 2). Change no behaviour. Verify the F2 unit tests and `e2e/frames-on-wall*.spec.ts` pass unedited.
 - [x] 2.2 BL-42, BL-43, BL-44. Read the photo's size from an `<img>` and `decode()` instead of `createImageBitmap`; add `margin: auto` to `.wf-dialog`; centre `.wf-flow` on desktop after checking the F2 canvas. Verify the F2 tests pass unedited and check both dialogs and the flow at 360 and 1280 by hand.
-- [ ] 2.3 BL-4. With G1 live (task 5.1 on a scratch commit, or `withLive` in a header markup test), add an e2e check that the header fits one row at 320 px with the menu button. Fix the header CSS if it wraps. Verify the existing header tests pass unedited.
+- [x] 2.3 BL-4. With G1 live (task 5.1 on a scratch commit, or `withLive` in a header markup test), add an e2e check that the header fits one row at 320 px with the menu button. Fix the header CSS if it wraps. Verify the existing header tests pass unedited.
 
 ## 3. Planner state (`components/gallery-wall/`)
 
@@ -31,14 +31,14 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 
 ## 4. The widget
 
-- [ ] 4.1 Write a markup test (`renderToStaticMarkup`) for the default state: the drawing's name, the checked template picture, frame buttons A–E, the summary in both units, the group's distances, and no control inside the `role="img"` element. Build the Layout view from boards a–d and "Planner". Verify the test passes.
-- [ ] 4.2 Build the size change, dragging, keyboard moves, "Add a frame" and the 12-frame note, the warnings and "Centre it on the wall" (boards c, m). Verify against the reducer tests and by hand in `pnpm dev` at 360 and 1280.
-- [ ] 4.3 Build the Nail marks view (boards e–i): "Hanger for", the type, drop and inset fields, the map with Start and badges, the table and the no-nail lines (design decision 5). Load it with `next/dynamic`. Write a markup test for the hero's table order (1 A, 2 C, 3 D, 4 B, 5 E). Verify it passes.
-- [ ] 4.4 Wire "Use my wall photo" to F2's photo flow (boards j–l), with the placement on the photo from the engine. Verify by hand with `e2e/fixtures/wall-1200x900.png`.
+- [x] 4.1 Write a markup test (`renderToStaticMarkup`) for the default state: the drawing's name, the checked template picture, frame buttons A–E, the summary in both units, the group's distances, and no control inside the `role="img"` element. Build the Layout view from boards a–d and "Planner". Verify the test passes.
+- [x] 4.2 Build the size change, dragging, keyboard moves, "Add a frame" and the 12-frame note, the warnings and "Centre it on the wall" (boards c, m). Verify against the reducer tests and by hand in `pnpm dev` at 360 and 1280.
+- [x] 4.3 Build the Nail marks view (boards e–i): "Hanger for", the type, drop and inset fields, the map with Start and badges, the table and the no-nail lines (design decision 5). Load it with `next/dynamic`. Write a markup test for the hero's table order (1 A, 2 C, 3 D, 4 B, 5 E). Verify it passes.
+- [x] 4.4 Wire "Use my wall photo" to F2's photo flow (boards j–l), with the placement on the photo from the engine. Verify by hand with `e2e/fixtures/wall-1200x900.png`.
 
 ## 5. The page
 
-- [ ] 5.1 Copy the G1 row from the On-page SEO guide into `site-map.ts`: title, h1, description and `lastModified`. Set `live: true`. Move F1's and F2's `lastModified` to today. Write `site-map.test.ts` cases for G1's head values in a new test case. Verify `checkSiteMap` passes.
+- [x] 5.1 Copy the G1 row from the On-page SEO guide into `site-map.ts`: title, h1, description and `lastModified`. Set `live: true`. Move F1's and F2's `lastModified` to today. Write `site-map.test.ts` cases for G1's head values in a new test case. Verify `checkSiteMap` passes.
 - [ ] 5.2 Build `app/gallery-wall-planner/page.tsx` in the canvas's order:
   - the breadcrumbs and JSON-LD;
   - the `h1` and answer;
@@ -53,9 +53,9 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 
 ## 6. End-to-end
 
-- [ ] 6.1 Write `e2e/gallery-wall-content.spec.ts`: outline, answer, template table, both units in the HTML, default state, links only to live pages, breadcrumbs and `BreadcrumbList`, the nine social tags and the image, the description against the widget.
-- [ ] 6.2 Write `e2e/gallery-wall.spec.ts`: template switch with and without the dialog; gap 2 in and out of range; change size; the group 10 in above the sofa; add to 12; the right-edge warning and centring; Nail marks with no drop, then a 2 in drop, then B at 13 in; the type carry-over; cm; the photo flow with the fixture, and no request carrying image data or the file name.
-- [ ] 6.3 Write `e2e/gallery-wall-phone.spec.ts`: the 360 × 740 first screen; 320 px with no sideways scroll and 44 px controls; CLS 0; axe in the default, nails and warning states.
+- [x] 6.1 Write `e2e/gallery-wall-content.spec.ts`: outline, answer, template table, both units in the HTML, default state, links only to live pages, breadcrumbs and `BreadcrumbList`, the nine social tags and the image, the description against the widget.
+- [x] 6.2 Write `e2e/gallery-wall.spec.ts`: template switch with and without the dialog; gap 2 in and out of range; change size; the group 10 in above the sofa; add to 12; the right-edge warning and centring; Nail marks with no drop, then a 2 in drop, then B at 13 in; the type carry-over; cm; the photo flow with the fixture, and no request carrying image data or the file name.
+- [x] 6.3 Write `e2e/gallery-wall-phone.spec.ts`: the 360 × 740 first screen; 320 px with no sideways scroll and 44 px controls; CLS 0; axe in the default, nails and warning states.
 - [ ] 6.4 Rewrite (approved, task 1.2) the four existing e2e tests: `e2e/seo-home.spec.ts` "sitemap.xml lists the home page and F2" to "The home page, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "links to F2 and to no page that is not live" to "F2 and G1 are live besides the home page"; `e2e/frames-on-wall-content.spec.ts` "links only to live pages" to "F1, F2 and G1 are live"; `e2e/frame-chart-content.spec.ts` "the server HTML follows the approved outline" to "The outline with F2 and G1 live". Add `withLive` unit tests citing the four replaced scenarios, if none cites them yet. Verify all pass.
 
 ## 7. Gate
