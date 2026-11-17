@@ -65,6 +65,7 @@ Read by the global `backlog-batch`, `backlog-fix` and `phase-review` skills (`~/
   - Phone 375 picker and six common sizes (BL-11, BL-12, BL-19): same canvas, boards a–f, "Phone 375 — six common sizes" and "Phone 375×548 — short phone", approved 2026-11-13.
   - F2 Frames on your wall (`/frame-sizes-on-wall`, T7): https://claude.ai/artifact/AzNYiLnMFAN8rg8eeMaXZX, approved 2026-11-15.
   - G1 Gallery wall planner (`/gallery-wall-planner`, T11): https://claude.ai/artifact/HGW1ti5mv6Mc8BqPRepXGd, approved 2026-11-16.
+  - T23 Chrome extension + T24 extension section and page (`/extensions/gallery-wall-layout-generator`): https://claude.ai/artifact/WUq26q5aNBxfiKUTYcaCwv, approved 2026-11-17 (also holds the v2 sample room and the G1 "change sizes" board).
   - Design system: https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5
 - **Chrome Web Store listing (T23):** https://docs.google.com/document/d/1TMWz0VdN7widrUj8JASdWACttfJeCHBb8QQ2QbOwbL0/edit?tab=t.0 (Google Doc: name, short and long description, keyword tables with Times used). The only copy; the Tracker's "Chrome extension and wall tool" section links to it.
 - **Importance order (backlog-batch pass 1):** a wrong size or broken widget a visitor sees; then SEO defects on a live page (indexing, titles, canonical, Core Web Vitals); then ads/affiliate revenue leaks; then anything the next hub launch needs; then internal correctness and test gaps; polish last.
