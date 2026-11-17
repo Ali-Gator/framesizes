@@ -546,6 +546,12 @@ function SidesItem({ left, right }: { left: number | null; right: number | null 
   );
 }
 
+/** Each template laid out once, at the default gap, for its picture. */
+const THUMBS = TEMPLATES.flatMap((t) => {
+  const layout = layoutTemplate(t.stack, GALLERY_GAP, DEMO_ROOM.wall, null);
+  return layout ? [{ t, layout }] : [];
+});
+
 /**
  * The five templates as to-scale pictures, one radio each.
  * {@link openspec/specs/gallery-wall-planner/spec.md#requirement-a-template-is-picked-from-its-picture}
@@ -560,9 +566,7 @@ function Templates({ state, dispatch }: { state: PlannerState; dispatch: Dispatc
         <span className="g-tpl-cur">{current?.name}</span>
       </legend>
       <div className="g-tgrid">
-        {TEMPLATES.map((t) => {
-          const layout = layoutTemplate(t.stack, GALLERY_GAP, DEMO_ROOM.wall, null);
-          if (!layout) return null;
+        {THUMBS.map(({ t, layout }) => {
           const { box } = layout;
           const s = Math.min(44 / box.h, 64 / box.w);
           return (
@@ -651,7 +655,7 @@ function GapRow({
                 if (draft !== null) commit(event.target.value);
               }}
               onKeyDown={(event) => {
-                if (event.key !== "Enter") return;
+                if (event.key !== "Enter" || draft === null) return;
                 event.preventDefault();
                 commit(event.currentTarget.value);
               }}
@@ -803,7 +807,7 @@ function Selection({
                         if (drafts[side] !== undefined) commit(side, event.target.value);
                       }}
                       onKeyDown={(event) => {
-                        if (event.key !== "Enter") return;
+                        if (event.key !== "Enter" || drafts[side] === undefined) return;
                         event.preventDefault();
                         commit(side, event.currentTarget.value);
                       }}

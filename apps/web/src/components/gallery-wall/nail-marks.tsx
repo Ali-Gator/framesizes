@@ -128,7 +128,7 @@ export function NailMarks({
 
       <div className="g-side">
         <HangerForm
-          key={`${state.hangerFor}-${unit}`}
+          key={`${state.hangerFor}-${unit}-${formHanger(state).kind}`}
           state={state}
           frames={frames}
           unit={unit}
@@ -355,7 +355,15 @@ function HangerForm({
       </div>
       {own ? (
         <div>
-          <Button variant="ghost" onClick={() => dispatch({ type: "sameAsAll" })}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              // The frame now hangs on All frames' hanger: its fields start empty again.
+              setDrop("");
+              setInset("");
+              dispatch({ type: "sameAsAll" });
+            }}
+          >
             Same as all frames
           </Button>
         </div>

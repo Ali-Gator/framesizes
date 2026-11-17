@@ -250,7 +250,7 @@ export function distancesOf(
 
 export type Warning =
   | { kind: "wide"; by: number }
-  | { kind: "right" | "left" | "ceiling"; by: number }
+  | { kind: "right" | "left" | "ceiling" | "floor"; by: number }
   | { kind: "photo" };
 
 /**
@@ -270,11 +270,15 @@ export function warningOf(state: PlannerState, frames = framesOf(state)): Warnin
   if (m.right !== null && m.right < -tiny) return { kind: "right", by: -m.right };
   if (m.left !== null && m.left < -tiny) return { kind: "left", by: -m.left };
   if (m.toCeiling !== null && m.toCeiling < -tiny) return { kind: "ceiling", by: -m.toCeiling };
-  if (state.mode !== "sample" && left === null && right === null) {
+  const floor = placeOf(state).wall.edges.bottom;
+  if (floor !== null && box.y < floor - tiny) return { kind: "floor", by: floor - box.y };
+  if (state.mode !== "sample") {
+    // Sides with no marked edge end at the photo's border.
     const { bounds } = wallOf(state).wall;
     const out =
       box.x < bounds.x - tiny ||
       box.x + box.w > bounds.x + bounds.w + tiny ||
+      box.y < bounds.y - tiny ||
       box.y + box.h > bounds.y + bounds.h + tiny;
     if (out) return { kind: "photo" };
   }
@@ -384,6 +388,21 @@ export type Action =
   | { type: "resetSample" }
   | PhotoAction;
 
+/** A fresh layout on a new wall: added frames go, and with them their hangers and the form. */
+const relaid = (state: PlannerState): Partial<PlannerState> => ({
+  ...LAYOUT_START,
+  view: "layout",
+  confirmReset: false,
+  hangerFor: "all",
+  draft: null,
+  hangers: {
+    ...state.hangers,
+    byFrame: Object.fromEntries(
+      Object.entries(state.hangers.byFrame).filter(([id]) => id.startsWith("t")),
+    ),
+  },
+});
+
 const changed = (state: PlannerState, next: Partial<PlannerState>): PlannerState => ({
   ...state,
   ...next,
@@ -413,7 +432,9 @@ function moveFrame(state: PlannerState, frame: PlannerFrame, rect: Rect): Partia
 
 /** A gap in range, with hand moves dropped: the frames line up again. */
 const withGap = (state: PlannerState, gap: number): PlannerState =>
-  changed(state, { gap, gapError: false, moved: {} });
+  gap === state.gap
+    ? { ...state, gapError: false }
+    : changed(state, { gap, gapError: false, moved: {} });
 
 /**
  * {@link openspec/specs/gallery-wall-planner/spec.md#requirement-a-template-is-picked-from-its-picture}
@@ -708,26 +729,16 @@ export function reducer(state: PlannerState, action: Action): PlannerState {
 
     case "photo":
     case "toSample":
-      return changed(photoReducer(state, action), {
-        ...LAYOUT_START,
-        view: "layout",
-        confirmReset: false,
-      });
+      return changed(photoReducer(state, action), relaid(state));
 
     case "restartPhoto":
-      return state.photo
-        ? changed(photoReducer(state, action), {
-            ...LAYOUT_START,
-            view: "layout",
-            confirmReset: false,
-          })
-        : state;
+      return state.photo ? changed(photoReducer(state, action), relaid(state)) : state;
 
     case "setScale": {
       if (!state.photo) return state;
       const set = photoReducer(state, action);
       // The template hangs again on the photo: above the marked sofa or bed, else centred.
-      return set.lengthError ? set : changed(set, LAYOUT_START);
+      return set.lengthError ? set : changed(set, relaid(state));
     }
 
     case "markFloor":

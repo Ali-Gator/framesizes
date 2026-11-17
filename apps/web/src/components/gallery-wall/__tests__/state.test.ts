@@ -1,4 +1,4 @@
-import { DEMO_ROOM } from "@framesizes/sizes";
+import { DEMO_ROOM, TEMPLATES } from "@framesizes/sizes";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -8,6 +8,7 @@ import {
   formHanger,
   framesOf,
   initialState,
+  leaves,
   MAX_FRAMES,
   measureOf,
   type PlannerState,
@@ -15,6 +16,7 @@ import {
   templateTable,
   warningOf,
 } from "../state";
+import { TEMPLATE_FRAMES } from "../copy";
 
 const run = (actions: Action[], from: PlannerState = initialState()) =>
   actions.reduce(reducer, from);
@@ -125,9 +127,9 @@ describe("the gap", () => {
   it("lines the frames up again, dropping hand moves", () => {
     const moved = run([{ type: "nudge", id: "t0", dx: -2, dy: 0 }]);
     expect(moved.moved).not.toEqual({});
-    const state = reducer(moved, { type: "gapText", text: "3", unit: "in" });
+    const state = reducer(moved, { type: "gapText", text: "2", unit: "in" });
     expect(state.moved).toEqual({});
-    expect(framesOf(state)).toEqual(framesOf(initialState()));
+    expect(framesOf(state)).toEqual(framesOf(run([{ type: "gapText", text: "2", unit: "in" }])));
   });
 });
 
@@ -359,5 +361,66 @@ describe("the template table", () => {
       ["One big, two on each side", 46, 27, 69],
       ["Two rows", 50, 35, 75],
     ]);
+  });
+});
+
+describe("review fixes", () => {
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#requirement-one-gap-spaces-every-frame} */
+  it("keeps hand moves when a gap step changes nothing", () => {
+    const state = run([
+      { type: "gapText", text: "12", unit: "in" },
+      { type: "nudge", id: "t0", dx: -1, dy: 0 },
+      { type: "gapStep", direction: 1, unit: "in" },
+    ]);
+    expect(state.gap).toBe(12);
+    expect(state.moved).not.toEqual({});
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#requirement-the-hanger-type-carries-over-to-the-next-frame} */
+  it("drops an added frame's hanger when the layout starts again on the sample wall", () => {
+    const added = run([{ type: "openPicker", mode: "add" }, { type: "applyPicker" }]);
+    const id = added.selected;
+    const state = run(
+      [
+        { type: "hangerFor", for: id },
+        { type: "hangerField", field: "drop", text: "2", unit: "in" },
+        { type: "upload" },
+        { type: "toSample" },
+      ],
+      added,
+    );
+    expect(state.hangerFor).toBe("all");
+    expect(state.hangers.byFrame).toEqual({});
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#requirement-a-group-past-the-walls-edge-is-flagged} */
+  it("flags a group moved below the floor", () => {
+    const state = run([{ type: "moveGroup", dx: 0, dy: -60 }]);
+    expect(warningOf(state)?.kind).toBe("floor");
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#requirement-a-group-past-the-walls-edge-is-flagged} */
+  it("flags a group past the photo's bottom border", () => {
+    const PHOTO = { url: "blob:test", width: 1200, height: 900 };
+    const state = run([
+      { type: "upload" },
+      { type: "photo", photo: PHOTO },
+      { type: "toPlace" },
+      { type: "placeNext" },
+      { type: "setScale", unit: "in" },
+      { type: "moveGroup", dx: 0, dy: -500 },
+    ]);
+    expect(warningOf(state)).toEqual({ kind: "photo" });
+  });
+
+  it("lists each template's frames as many as the engine lays out", () => {
+    for (const t of TEMPLATES) {
+      const text = TEMPLATE_FRAMES[t.id] ?? "";
+      const total = text
+        .split(/[,+]/)
+        .map((part) => Number(/^\s*(\d+) ×/.exec(part)?.[1] ?? 1))
+        .reduce((a, b) => a + b, 0);
+      expect(total, t.id).toBe(leaves(t.stack).length);
+    }
   });
 });

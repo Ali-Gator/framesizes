@@ -69,6 +69,11 @@ export function warningText(w: Warning, unit: Unit): { title: string; text: stri
         title: "The group runs past the wall's left edge",
         text: `By ${writeDistance(w.by, unit)}. Move it right or pick smaller frames.`,
       };
+    case "floor":
+      return {
+        title: "The group runs past the floor",
+        text: `By ${writeDistance(w.by, unit)}. Move it up or pick smaller frames.`,
+      };
     case "ceiling":
       return {
         title: "The group runs past the ceiling",
