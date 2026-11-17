@@ -77,7 +77,7 @@ It starts after `t11-gallery-wall-engine` is merged.
   - `e2e/frames-on-wall-content.spec.ts`, "links only to live pages": Related tools holds F1 and G1, and the G1 link may appear.
   - `e2e/frame-chart-content.spec.ts`, "the server HTML follows the approved outline": Related tools gains the "Gallery wall" `h3` after "Frames".
 
-  The header, footer and related-tools unit tests use fixture page lists and are unaffected. No other existing test is edited.
+  The header, footer and related-tools unit tests use fixture page lists and are unaffected. A fifth, `e2e/frames-on-wall.spec.ts` "six frames at most", asserted no link in F2's widget; with G1 live its six-frame note links to G1, as F2's spec says. The user approved rewriting it on 2026-11-17. No other existing test is edited.
 
 - **Code:**
   - new: `apps/web/src/app/gallery-wall-planner/` (`page.tsx`, `opengraph-image.tsx`, `gallery.css`) and `apps/web/src/components/gallery-wall/`;

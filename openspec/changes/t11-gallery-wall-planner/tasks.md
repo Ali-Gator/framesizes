@@ -61,7 +61,7 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 ## 7. Gate
 
 - [x] 7.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green.
-- [ ] 7.2 Run the On-page SEO guide's pre-publish checklist against `pnpm build && pnpm start` for `/gallery-wall-planner`, with the `seo-audit:seo-page-audit` skill loaded. The affiliate item is not applicable until T21. Verify every other item passes.
+- [x] 7.2 Run the On-page SEO guide's pre-publish checklist against `pnpm build && pnpm start` for `/gallery-wall-planner`, with the `seo-audit:seo-page-audit` skill loaded. The affiliate item is not applicable until T21. Verify every other item passes.
 
 ## Workflow follow-up
 
