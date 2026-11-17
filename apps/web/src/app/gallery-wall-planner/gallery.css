@@ -89,6 +89,7 @@
 .g-thumb {
   position: relative;
   max-width: 100%;
+  pointer-events: none;
 }
 .g-thumb i {
   position: absolute;
