@@ -15,7 +15,7 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 
 ## 3. Planner state (`components/gallery-wall/`)
 
-- [ ] 3.1 Write `state.test.ts` for the reducer:
+- [x] 3.1 Write `state.test.ts` for the reducer:
   - opening on "One big, two on each side" with the group selected;
   - switching templates, with and without the "replace?" dialog;
   - gap: 2 in, out of range, and the re-layout that clears hand moves;
@@ -27,7 +27,7 @@ Branch `t11-gallery-wall-planner`, cut from `main` after `t11-gallery-wall-engin
 
   Implement `state.ts` (design decision 3). Verify the tests pass.
 
-- [ ] 3.2 Write a unit test pinning the template table's five rows (design decision 7) in both units. Implement the table rows. Verify the test passes.
+- [x] 3.2 Write a unit test pinning the template table's five rows (design decision 7) in both units. Implement the table rows. Verify the test passes.
 
 ## 4. The widget
 
