@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-51**
+_Next id:_ **BL-56**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -61,6 +61,24 @@ when to add and when to fold items in.
 - **[BL-50] G1 copies small helpers from F2** — `clampTo`, `PICKER_START`, `pc`, `Dims` and the OG
   image's `SOFA_PARTS` exist twice; export them once so F2 and G1 cannot drift.
   _Refs:_ `apps/web/src/components/gallery-wall/`, `apps/web/src/components/frames-on-wall/` · _Status:_ open — t11-gallery-wall-planner review, 2026-11-17
+- **[BL-51] Richer sample room on F2 and G1** — swap the flat sample room for the drawn v2 room
+  (lamp light, baseboard, wood floor, cushioned sofa, plant) at the same 144 × 96 in geometry, so
+  F2, G1 and the extension share one room. Adds plant and lamp-light colours to the design system.
+  _Refs:_ T23 canvas https://claude.ai/artifact/WUq26q5aNBxfiKUTYcaCwv (boards "Sample room v2"), `apps/web/src/components/frames-on-wall/` · _Status:_ open — canvas approved 2026-11-17
+- **[BL-52] G1: change sizes with All frames selected** — the selection block lists the layout's
+  sizes, one row each with its frames and "Change", which opens the picker for every frame of
+  that size. Oleg, 2026-11-17.
+  _Refs:_ T23 canvas board e2, `apps/web/src/components/gallery-wall/` · _Status:_ open — canvas approved 2026-11-17
+- **[BL-53] G1 template thumbs touch the button border** — thumbs are sized to 64 px wide but a
+  button at 360 is about 58 px inside, so wide templates hit the border and squash; add 6 px
+  padding and size the thumb by aspect ratio inside it. Oleg, 2026-11-17.
+  _Refs:_ `apps/web/src/components/gallery-wall/gallery-wall.tsx` (`THUMBS`), `apps/web/src/app/gallery-wall-planner/gallery.css` (`.g-tpl`) · _Status:_ open
+- **[BL-54] G1 nail table scrolls sideways on desktop** — the nail positions table should fit the
+  desktop side column with no horizontal scroll; scroll only below 360. Oleg, 2026-11-17.
+  _Refs:_ `apps/web/src/components/gallery-wall/nail-marks.tsx`, `apps/web/src/app/gallery-wall-planner/gallery.css` · _Status:_ open
+- **[BL-55] G1 template table scrolls sideways** — "Gallery wall layout with sizes" scrolls a
+  little on wide screens; five columns should fit the prose width without a scroll bar. Oleg, 2026-11-17.
+  _Refs:_ `apps/web/src/app/gallery-wall-planner/page.tsx`, `apps/web/src/app/widgets.css` (`.fs-table`) · _Status:_ open
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once
@@ -151,10 +169,4 @@ when to add and when to fold items in.
 
 From Oleg directly (needs proposal first):
 
-1. https://framesizes.app/gallery-wall-planner
-   1. when All frames selected show button to change sizes (of all frames)
-   2. Frames within buttons for choosing templates - no paddings for some of them
-   3. Nail positions table on desktop - remove horizontal scroll
-   4. Gallery wall layout with sizes - scroll is to small. Can we remove it as well?
-2. https://walldecor.io/tools/wall-art-visualizer - wdyt about using more natural/real default room background?
-3.
+1.
