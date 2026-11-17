@@ -77,6 +77,11 @@ The HTML the server returns for `/` SHALL hold the page's sections in this order
 - **WHEN** `/` is requested while only the home page and F2 are live
 - **THEN** the six `h2` headings are followed by "Related tools", whose one `h3` is "Frames"
 
+#### Scenario: The outline with F2 and G1 live
+
+- **WHEN** `/` is requested while only the home page, F2 and G1 are live
+- **THEN** the six `h2` headings are followed by "Related tools", whose `h3` headings are "Frames" and "Gallery wall", in that order
+
 ### Requirement: The first paragraph answers with the six common sizes
 
 The paragraph under the `h1` SHALL name the six most common sizes from the size engine, in inches, in the search form. On a phone the `h1`, this paragraph and the top of the widget SHALL be visible without scrolling.
@@ -376,6 +381,11 @@ The related tools section SHALL list the live pages of the page's own hub and th
 
 - **WHEN** the related tools section is rendered with the poster sizes page live
 - **THEN** it holds the heading "Related tools", the group "Posters" and one card linking to `/poster-sizes`
+
+#### Scenario: F2 and G1 are live besides the home page
+
+- **WHEN** `/` is requested while only the home page, F2 and G1 are live
+- **THEN** the response HTML has a "See it on my wall" link, a "Related tools" heading with two cards, linking to `/frame-sizes-on-wall` and `/gallery-wall-planner`, and no `href` that starts with `#`
 
 ### Requirement: The description's sizes are the catalog's
 

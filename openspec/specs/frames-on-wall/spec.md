@@ -18,6 +18,9 @@ function parseLength(text: string, unit: Unit): number | null; // inches; "8.25"
 function stepDistance(inches: number, direction: 1 | -1, unit: Unit): number;
 function outsideSize(frame: Size): Size; // frameAnatomy(...).outside
 
+// apps/web/src/components/frames-on-wall/photo-flow.tsx: PhotoFlow, Picker, ConfirmDialog,
+// usePhotoFile (reads the size from an <img> and decode()), shared with the gallery wall planner
+
 // apps/web/src/components/frames-on-wall/state.ts (pure reducer over the wall engine)
 type Mode = "sample" | "upload" | "pick" | "place" | "short" | "confirm" | "photo";
 interface WallState {
@@ -36,6 +39,18 @@ interface WallState {
   revision;
 }
 function initialState(): WallState; // sample room, 16x20 selected (DEMO_ROOM.frame)
+interface PhotoSlice {
+  mode;
+  photo;
+  known;
+  marks;
+  lengthText;
+  lengthError;
+  scale;
+  floor;
+} // WallState extends it
+function photoReducer<S extends PhotoSlice>(state: S, action: PhotoAction): S; // the photo steps, shared with G1
+function namedDistances<T>(rect, named, wall, edge): Record<Side, { value: number; to: T } | null>;
 function reducer(state: WallState, action: Action): WallState;
 function wallOf(state): { wall: Wall; furniture: Rect[] };
 function distancesOf(state, id): Record<Side, { value: number; to: { kind; name } } | null>;
@@ -327,6 +342,11 @@ Related tools SHALL list the live Frames pages other than F2, then C1 and G1 whe
 
 - **WHEN** `/frame-sizes-on-wall` is requested while only F1 and F2 are live
 - **THEN** Related tools holds one card, linking to `/`; no link points to `/how-high-to-hang-pictures` or `/gallery-wall-planner`; and no `href` starts with `#`
+
+#### Scenario: F1, F2 and G1 are live
+
+- **WHEN** `/frame-sizes-on-wall` is requested while only F1, F2 and G1 are live
+- **THEN** Related tools holds two cards, linking to `/` and `/gallery-wall-planner`; no link points to `/how-high-to-hang-pictures`; and no `href` starts with `#`
 
 ### Requirement: The description's sizes are the catalog's
 

@@ -202,6 +202,11 @@ The HTML the server returns for the home page SHALL hold one JSON-LD script whos
 - **WHEN** the sitemap entries are built from a site map with one live and one not-live page
 - **THEN** only the live page's URL is in the result
 
+#### Scenario: The home page, F2 and G1 are live
+
+- **WHEN** `/sitemap.xml` is requested while only the home page, F2 and G1 are live
+- **THEN** it holds three `url` entries, the home page's canonical URL, `https://framesizes.app/frame-sizes-on-wall` and `https://framesizes.app/gallery-wall-planner`, each with its own content date as `lastmod`, and no `priority` or `changefreq` element
+
 ### Requirement: Pages below the home page carry breadcrumbs
 
 A live page other than the home page SHALL show a breadcrumb trail above its `h1`, as a `nav` named "Breadcrumb". The trail SHALL start with "Home" linking to `/` and end with the page's short name, marked as the current page and not linked. The page's server HTML SHALL hold one JSON-LD script with a `BreadcrumbList` that lists the same items, with absolute URLs on `https://framesizes.app`. The home page SHALL carry neither.
