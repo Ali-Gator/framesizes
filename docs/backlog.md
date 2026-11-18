@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-56**
+_Next id:_ **BL-60**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -51,10 +51,6 @@ when to add and when to fold items in.
   BL-33 if the same approach covers inputs.
   _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` · _Status:_ open — t7-frames-on-wall review, 2026-11-15
 
-- **[BL-48] G1 drops the sample layout when the visitor backs out of the upload** — "Use my wall
-  photo" then "Back to the sample room" resets moves, added and removed frames with no dialog. F2
-  does the same; keep the layout when no photo was picked.
-  _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`toSample`) · _Status:_ open — t11-gallery-wall-planner review, 2026-11-17
 - **[BL-49] G1 re-lays out the template on every drag move** — `dragFrame` calls `framesOf` per
   pointer move; pass the frames the view already has. No visible lag at 12 frames yet.
   _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`dragFrame`) · _Status:_ deferred — lag on a slow phone
@@ -65,17 +61,6 @@ when to add and when to fold items in.
   (lamp light, baseboard, wood floor, cushioned sofa, plant) at the same 144 × 96 in geometry, so
   F2, G1 and the extension share one room. Adds plant and lamp-light colours to the design system.
   _Refs:_ T23 canvas https://claude.ai/artifact/WUq26q5aNBxfiKUTYcaCwv (boards "Sample room v2"), `apps/web/src/components/frames-on-wall/` · _Status:_ open — canvas approved 2026-11-17
-- **[BL-52] G1: change sizes with All frames selected** — the selection block lists the layout's
-  sizes, one row each with its frames and "Change", which opens the picker for every frame of
-  that size. Oleg, 2026-11-17.
-  _Refs:_ T23 canvas board e2, `apps/web/src/components/gallery-wall/` · _Status:_ open — canvas approved 2026-11-17
-- **[BL-53] G1 template thumbs touch the button border** — thumbs are sized to 64 px wide but a
-  button at 360 is about 58 px inside, so wide templates hit the border and squash; add 6 px
-  padding and size the thumb by aspect ratio inside it. Oleg, 2026-11-17.
-  _Refs:_ `apps/web/src/components/gallery-wall/gallery-wall.tsx` (`THUMBS`), `apps/web/src/app/gallery-wall-planner/gallery.css` (`.g-tpl`) · _Status:_ open
-- **[BL-54] G1 nail table scrolls sideways on desktop** — the nail positions table should fit the
-  desktop side column with no horizontal scroll; scroll only below 360. Oleg, 2026-11-17.
-  _Refs:_ `apps/web/src/components/gallery-wall/nail-marks.tsx`, `apps/web/src/app/gallery-wall-planner/gallery.css` · _Status:_ open
 - **[BL-55] G1 template table scrolls sideways** — "Gallery wall layout with sizes" scrolls a
   little on wide screens; five columns should fit the prose width without a scroll bar. Oleg, 2026-11-17.
   _Refs:_ `apps/web/src/app/gallery-wall-planner/page.tsx`, `apps/web/src/app/widgets.css` (`.fs-table`) · _Status:_ open
@@ -115,6 +100,28 @@ when to add and when to fold items in.
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
   system colour once a second hub makes the nav visible.
   _Refs:_ `apps/web/src/components/site/hub-nav.tsx` · _Status:_ gated — a second live hub (backlog-3 triage, 2026-11-15)
+
+## Chrome extension
+
+- **[BL-56] Wall select during the upload step** — after G1's "Use my wall photo" from the sample
+  room, the select already reads "My wall photo", so picking it fires nothing and the saved photo is
+  reached only through "Sample room" first. Show the photo choice only on the photo, or add a third
+  state for the upload and scale steps.
+  _Refs:_ `apps/extension/src/use-wall.ts` (`wall`), `apps/extension/src/toolbar.tsx` · _Status:_ open — t23-extension-panel review, 2026-11-18
+- **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
+  toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
+  extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
+  consumer appears (design decision 2).
+  _Refs:_ `apps/extension/vite.config.ts`, `apps/extension/tsconfig.json` · _Status:_ deferred — a third consumer of G1's planner
+- **[BL-58] The wall photo is rewritten with every layout change** — while on the photo, each saved
+  layout change writes the whole photo Blob again in the one record. Keep the photo under its own key,
+  written only when it changes.
+  _Refs:_ `apps/extension/src/saved-wall.ts` · _Status:_ open — t23-extension-panel review, 2026-11-18
+- **[BL-59] No test for the saved wall's write races** — the flush on `pagehide` and on hidden
+  visibility, the stale write dropped after the other page's write, and a broadcast ignored while a
+  change waits are untested; cover them with an e2e that closes the panel inside 300 ms and edits both
+  pages at once.
+  _Refs:_ `apps/extension/src/use-wall.ts`, `e2e/extension.spec.ts` · _Status:_ open — t23-extension-panel review, 2026-11-18
 
 ## Widgets
 

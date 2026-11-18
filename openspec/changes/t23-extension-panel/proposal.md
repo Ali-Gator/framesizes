@@ -73,7 +73,7 @@ The split keeps each review a reasonable size. It also lets the planner, which i
   - `@types/chrome`;
   - `@fontsource/schibsted-grotesk` and `@fontsource/ibm-plex-mono`, because extension pages cannot use `next/font`.
 - **CI:** `e2e.yml` builds the extension before Playwright. A new e2e spec loads the unpacked build in Chromium.
-- **Existing tests:** none are edited. The G1 tests guard that the default `GalleryWall` is unchanged.
+- **Existing tests:** one is edited, with the user's approval on 2026-11-18. `state.test.ts`'s "drops an added frame's hanger" now reaches the sample room from a scaled photo, since BL-48 keeps the added frame and its hanger when no photo was picked. The other G1 tests guard that the default `GalleryWall` is unchanged.
 - **Specs:**
   - The new `gallery-wall-extension` spec gets its README row at archive: `apps/extension/src/**`.
   - Files outside `src/` (the HTML entries, `public/`, configs) match no row, and `public/` is spec-exempt anyway.

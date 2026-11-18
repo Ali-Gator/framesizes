@@ -24,11 +24,19 @@ const panelOnClick = (api: Api) => api.sidePanel.setPanelBehavior({ openPanelOnA
  * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-first-install-opens-the-how-to-page}
  */
 export async function onInstalled(api: Api, details: { reason: string }): Promise<void> {
-  await panelOnClick(api);
+  // A failure here must not cost the first install its how-to tab.
+  await panelOnClick(api).catch(() => undefined);
   if (details.reason !== "install") return;
-  const { isOnToolbar } = await api.action.getUserSettings();
-  await api.tabs.create({ url: `${HOW_TO}?pinned=${isOnToolbar ? 1 : 0}` });
+  const pinned = await isPinned(api);
+  await api.tabs.create({ url: `${HOW_TO}?pinned=${pinned ? 1 : 0}` });
 }
+
+/** Whether the toolbar button is pinned; unknown counts as not pinned. */
+const isPinned = (api: Api) =>
+  api.action
+    .getUserSettings()
+    .then(({ isOnToolbar }) => isOnToolbar)
+    .catch(() => false);
 
 export const onStartup = (api: Api) => panelOnClick(api);
 
@@ -45,11 +53,9 @@ export function onMessageExternal(
 ): boolean {
   if (sender.origin !== SITE) return false;
   if ((message as { type?: unknown } | null)?.type !== "status") return false;
-  void api.action
-    .getUserSettings()
-    .then(({ isOnToolbar }) =>
-      reply({ installed: true, pinned: isOnToolbar, version: api.runtime.getManifest().version }),
-    );
+  void isPinned(api).then((pinned) =>
+    reply({ installed: true, pinned, version: api.runtime.getManifest().version }),
+  );
   return true;
 }
 

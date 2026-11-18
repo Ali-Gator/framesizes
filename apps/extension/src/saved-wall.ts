@@ -27,8 +27,8 @@ const KEPT = [
 ] as const satisfies readonly (keyof PlannerState)[];
 
 export type SavedPlanner = Pick<PlannerState, (typeof KEPT)[number]> & {
-  /** Which wall the layout was on: `flow` is the upload or a scale step. */
-  wall: "sample" | "photo" | "flow";
+  /** Which wall the layout is on. */
+  wall: "sample" | "photo";
 };
 
 export interface SavedPhoto {
@@ -53,21 +53,25 @@ export function toSaved(state: PlannerState): SavedPlanner {
     PlannerState,
     (typeof KEPT)[number]
   >;
-  const wall = state.mode === "sample" ? "sample" : state.mode === "photo" ? "photo" : "flow";
+  // In the upload or a scale step the layout is still on the wall it came from: the scaled photo
+  // ("Change photo") while that photo and its scale are held, else the sample room.
+  const wall = state.mode !== "sample" && state.photo && state.scale !== null ? "photo" : "sample";
   return { ...kept, wall };
 }
 
 /**
- * The photo the record keeps: the planner's photo once its scale is set (`blob` is its bytes, or
- * `null` when the planner shows the stored photo itself), else the record's photo as it was.
+ * The photo the record keeps: the planner's photo once its scale is set, else the record's photo as
+ * it was. `blob` is the planner photo's bytes; `fromStore` says the planner shows the stored photo
+ * itself, whose bytes are the record's. A new photo whose bytes could not be read changes nothing.
  */
 export function savedPhoto(
   state: PlannerState,
   kept: SavedPhoto | null,
   blob: Blob | null,
+  fromStore = false,
 ): SavedPhoto | null {
   if (state.mode !== "photo" || !state.photo || state.scale === null) return kept;
-  const bytes = blob ?? kept?.blob;
+  const bytes = blob ?? (fromStore ? kept?.blob : undefined);
   if (!bytes) return kept;
   const { width, height } = state.photo;
   const { known, marks, floor, scale } = state;
@@ -93,11 +97,34 @@ export function fromSaved(record: unknown, makeUrl: (blob: Blob) => string): Pla
   if (r?.v !== 1 || !r.planner) return null;
   const { wall, ...kept } = r.planner;
   const layout: PlannerState = { ...initialState(), ...kept };
-  if (!r.photo || wall === "sample") return layout;
-  const restored = reducer(layout, restoreAction(r.photo, makeUrl(r.photo.blob)));
-  // On the photo already: its moves are the photo's, so they stay. From a scale step, it lays out again.
-  return wall === "photo" ? { ...restored, ...kept } : restored;
+  if (wall !== "photo") return layout;
+  const photo = usablePhoto(r.photo);
+  if (!photo) {
+    // A photo layout with no photo to put it on: the template, laid out again in the sample room.
+    const fresh = initialState();
+    return {
+      ...layout,
+      moved: fresh.moved,
+      group: fresh.group,
+      added: fresh.added,
+      removed: fresh.removed,
+      hangers: { all: kept.hangers.all, byFrame: {} },
+    };
+  }
+  // The photo's moves are the photo's: they stay over the fresh layout restorePhoto makes.
+  return { ...reducer(layout, restoreAction(photo, makeUrl(photo.blob))), ...kept };
 }
+
+/** The stored photo when it can be drawn: bytes, a size and a scale. */
+function usablePhoto(photo: SavedPhoto | null | undefined): SavedPhoto | null {
+  if (!photo || !(photo.blob instanceof Blob)) return null;
+  const ok = (n: unknown) => typeof n === "number" && Number.isFinite(n) && n > 0;
+  return ok(photo.width) && ok(photo.height) && ok(photo.scale) ? photo : null;
+}
+
+/** The record's layout and photo, to tell a real change from one that changes nothing saved. */
+export const sameSaved = (a: SavedRecord | null, b: SavedRecord) =>
+  a !== null && a.photo === b.photo && JSON.stringify(a.planner) === JSON.stringify(b.planner);
 
 /**
  * Whether a state is the visitor's change and needs writing: a state the page applied itself, from

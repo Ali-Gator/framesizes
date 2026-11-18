@@ -809,6 +809,7 @@ export function reducer(state: PlannerState, action: Action): PlannerState {
           scale,
           lengthText: null,
           lengthError: false,
+          confirmSwitch: null,
         },
         relaid(state),
       );

@@ -179,6 +179,7 @@ export function GalleryWall({
   return (
     <WidgetCard
       title={variant === "page" ? WIDGET_TITLE : undefined}
+      label={WIDGET_TITLE}
       actions={actions}
       footer={footer}
       className={variant === "panel" ? "wf g wf-panel" : "wf g"}

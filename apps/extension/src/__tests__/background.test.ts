@@ -60,6 +60,19 @@ describe("the service worker", () => {
     expect(answer).toEqual({ installed: true, pinned: true, version: "0.1.0" });
   });
 
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-with-the-button-not-pinned} */
+  it("still opens the how-to tab and answers when Chrome's calls fail", async () => {
+    const { api, calls } = fake();
+    api.sidePanel.setPanelBehavior = () => Promise.reject(new Error("no panel"));
+    api.action.getUserSettings = () => Promise.reject(new Error("no settings"));
+    await onInstalled(api, { reason: "install" });
+    expect(calls).toEqual([`tab ${HOW_TO}?pinned=0`]);
+    const answer = await new Promise((resolve) => {
+      onMessageExternal(api, { type: "status" }, SITE, resolve);
+    });
+    expect(answer).toEqual({ installed: true, pinned: false, version: "0.1.0" });
+  });
+
   /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-an-unknown-message} */
   it("sends no reply to an unknown message or another origin", async () => {
     const { api } = fake();

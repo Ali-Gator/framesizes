@@ -162,6 +162,56 @@ describe("the saved wall", () => {
     expect(needsBlob(undefined, made)).toBe(false);
     // The stored photo shown again keeps its stored bytes.
     const kept = savedPhoto(loaded, null, BLOB);
-    expect(savedPhoto(loaded, kept, null)?.blob).toBe(BLOB);
+    expect(savedPhoto(loaded, kept, null, true)?.blob).toBe(BLOB);
+  });
+
+  it("keeps the old photo when a new photo's bytes could not be read", () => {
+    const kept = savedPhoto(run(ON_SOFA), null, BLOB);
+    const other = run([
+      { type: "upload" },
+      { type: "photo", photo: { url: "blob:other", width: 800, height: 600 } },
+      { type: "toPlace" },
+      { type: "placeNext" },
+      { type: "setScale", unit: "in" },
+    ]);
+    expect(savedPhoto(other, kept, null, false)).toBe(kept);
+  });
+
+  it("brings back the photo's moves when the page closed in Change photo", () => {
+    const moved = run([...ON_SOFA, { type: "nudge", id: "t0", dx: -4, dy: 0 }]);
+    const photo = savedPhoto(moved, null, BLOB);
+    const changing = reducer(moved, { type: "upload" });
+    expect(toSaved(changing).wall).toBe("photo");
+    const back = fromSaved(record(changing, photo), () => "blob:fresh");
+    expect(back?.mode).toBe("photo");
+    expect(back && framesOf(back)).toEqual(framesOf(moved));
+  });
+
+  it("brings back the sample room's moves when the page closed in the upload step", () => {
+    const kept = savedPhoto(run(ON_SOFA), null, BLOB);
+    const moved = run([{ type: "nudge", id: "t0", dx: -4, dy: 0 }]);
+    const uploading = reducer(moved, { type: "upload" });
+    expect(toSaved(uploading).wall).toBe("sample");
+    const back = fromSaved(record(uploading, kept), () => {
+      throw new Error("no URL for a hidden photo");
+    });
+    expect(back?.mode).toBe("sample");
+    expect(back && framesOf(back)).toEqual(framesOf(moved));
+  });
+
+  it("lays the template out again in the sample room when the saved photo cannot be drawn", () => {
+    const moved = run([...ON_SOFA, { type: "nudge", id: "t0", dx: -4, dy: 0 }]);
+    const photo = savedPhoto(moved, null, BLOB);
+    const broken: (SavedPhoto | null)[] = [
+      null,
+      photo && { ...photo, scale: 0 },
+      photo && { ...photo, width: Number.NaN },
+      photo && ({ ...photo, blob: "bytes" } as unknown as SavedPhoto),
+    ];
+    for (const bad of broken) {
+      const back = fromSaved(record(moved, bad), () => "blob:never");
+      expect(back?.mode).toBe("sample");
+      expect(back && framesOf(back)).toEqual(framesOf(initialState()));
+    }
   });
 });
