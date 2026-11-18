@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-60**
+_Next id:_ **BL-61**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -122,6 +122,11 @@ when to add and when to fold items in.
   change waits are untested; cover them with an e2e that closes the panel inside 300 ms and edits both
   pages at once.
   _Refs:_ `apps/extension/src/use-wall.ts`, `e2e/extension.spec.ts` · _Status:_ open — t23-extension-panel review, 2026-11-18
+- **[BL-60] Pad the manifest's 128 icon before publishing** — `icon-128.png` fills the whole
+  square, but Chrome shows it in the install dialog and on the extensions page, where it should be
+  96 px of art with 16 px clear on each side (as `apps/extension/store/store-icon-128.png`). Render
+  the 128 size padded in `scripts/extension-icons.mjs`; fix before the first store upload.
+  _Refs:_ `scripts/extension-icons.mjs`, `apps/extension/public/icons/icon-128.png`, store graphics canvas https://claude.ai/artifact/QwSKJm2AYhdU2mEUejMMkF · _Status:_ open — store graphics, 2026-11-18
 
 ## Widgets
 
