@@ -31,6 +31,10 @@ export default defineConfig({
     assetsInlineLimit: 0,
     modulePreload: { polyfill: false },
     rollupOptions: {
+      // G1's "use client" lines mean nothing outside Next.
+      onwarn(warning, warn) {
+        if (warning.code !== "MODULE_LEVEL_DIRECTIVE") warn(warning);
+      },
       input: {
         sidepanel: path.resolve(here, "sidepanel.html"),
         tab: path.resolve(here, "tab.html"),

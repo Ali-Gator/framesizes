@@ -44,7 +44,7 @@
 
 ## 4. The saved wall
 
-- [ ] 4.1 Write `src/__tests__/saved-wall.test.ts` citing "A changed layout survives a reload". It covers:
+- [x] 4.1 Write `src/__tests__/saved-wall.test.ts` citing "A changed layout survives a reload". It covers:
   - the `toSaved` / `fromSaved` round trip of every listed field;
   - that dialogs, pickers, drafts and `photo.url` are dropped;
   - that a record with another `v` is ignored;
@@ -53,11 +53,11 @@
 
   Implement `src/saved-wall.ts` (design decision 4): IndexedDB, the Blob read from the object URL, the 300 ms debounce, `BroadcastChannel`, and `navigator.storage.persist()`. Verify the tests pass.
 
-- [ ] 4.2 Implement `src/use-wall.ts` (design decision 5): load on start, the `ready` flag, `load` from the channel, and the wall select's two choices. Verify through the e2e group below.
+- [x] 4.2 Implement `src/use-wall.ts` (design decision 5): load on start, the `ready` flag, `load` from the channel, and the wall select's two choices. Verify through the e2e group below.
 
 ## 5. The panel and the tab
 
-- [ ] 5.1 Build `src/extension.css`:
+- [x] 5.1 Build `src/extension.css`:
   - import `@/app/globals.css`, the wall and gallery CSS, and the two fontsource faces;
   - set `--font-schibsted` and `--font-plex-mono`;
   - add `@source "../../web/src"`;
@@ -65,21 +65,21 @@
 
   Verify the built `dist/` holds the font files, and that no CSS or HTML file in it references an `http` URL.
 
-- [ ] 5.2 Build the panel entry (`sidepanel.html` and `src/panel.tsx`):
+- [x] 5.2 Build the panel entry (`sidepanel.html` and `src/panel.tsx`):
   - set `data-unit` before the first render (design decision 6);
   - the toolbar from PanelHead: the "Wall" select, `UnitToggle`, "Open full size" through `chrome.tabs.create`, and the saved line while a photo is saved;
   - `GalleryWall variant="panel"`, controlled by `use-wall`.
 
   Verify by loading the unpacked build in Chrome and opening the side panel from the toolbar button.
 
-- [ ] 5.3 Build the tab entry (`tab.html` and `src/tab.tsx`) from board h. The top bar holds the icon, the `h1`, "Saved on this device", the "Wall" select and `UnitToggle`, above `GalleryWall variant="tab"`. Verify the desktop layout shows at 1280 in the unpacked build.
-- [ ] 5.4 Run the `humanizer:humanizer` skill over the new visitor-facing text:
+- [x] 5.3 Build the tab entry (`tab.html` and `src/tab.tsx`) from board h. The top bar holds the icon, the `h1`, "Saved on this device", the "Wall" select and `UnitToggle`, above `GalleryWall variant="tab"`. Verify the desktop layout shows at 1280 in the unpacked build.
+- [x] 5.4 Run the `humanizer:humanizer` skill over the new visitor-facing text:
   - the extension's toolbar, tab bar, saved lines, aria labels and manifest description;
   - G1's "Sizes in this layout" label, its explanatory line and the "Change …" aria labels (BL-52). Keep the name and the store doc's keywords as they are. Verify the diff changes wording only.
 
 ## 6. End-to-end
 
-- [ ] 6.1 Write `e2e/extension.spec.ts` (design decision 10). It loads the unpacked build in a persistent Chromium context and routes `https://framesizes.app/**` locally. It covers:
+- [x] 6.1 Write `e2e/extension.spec.ts` (design decision 10). It loads the unpacked build in a persistent Chromium context and routes `https://framesizes.app/**` locally. It covers:
   - the install tab with `?pinned=0`;
   - "The panel's first state" at 360 × 800;
   - "The toolbar on a first open";
