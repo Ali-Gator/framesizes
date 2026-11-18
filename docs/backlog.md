@@ -176,4 +176,8 @@ when to add and when to fold items in.
 
 From Oleg directly (needs proposal first):
 
-1.
+1. https://framesizes.app/gallery-wall-planner:  
+   1. Letters (A,B,C etc) are not good visible on the frames itself
+   2. Need to rethink widget layout - many buttons/controls on the right side, empty space under Get nail marks. We need to rethink and simplify widget.
+
+
