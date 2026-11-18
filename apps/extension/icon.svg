@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Board k: the nested-frames mark in white and tape on an ink square. scripts/extension-icons.mjs sets the stroke per size. -->
+  <rect width="64" height="64" rx="14" fill="#14181C"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="STROKE" stroke-linejoin="round">
+    <rect x="13" y="13" width="38" height="38"/>
+    <rect x="13" y="27" width="24" height="24"/>
+  </g>
+  <rect x="13" y="40" width="11" height="11" fill="#FFC21A" stroke="#FFFFFF" stroke-width="STROKE" stroke-linejoin="round"/>
+</svg>

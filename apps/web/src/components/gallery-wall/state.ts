@@ -24,8 +24,10 @@ import {
 
 import { outsideSize, parseLength, stepDistance } from "@/components/frames-on-wall/display";
 import {
+  type Mark,
   namedDistances,
   type PhotoAction,
+  type PhotoInfo,
   photoReducer,
   type PhotoSlice,
   sampleSlice,
@@ -74,7 +76,14 @@ export interface PlannerState extends PhotoSlice {
   removed: number[];
   /** A frame's id, or the whole group. */
   selected: string;
-  picker: { mode: "add" | "size"; orientation: Orientation; size: string; all: boolean } | null;
+  /** `group-size`: every frame of size `from`, opened from the whole group's size list. */
+  picker: {
+    mode: "add" | "size" | "group-size";
+    orientation: Orientation;
+    size: string;
+    all: boolean;
+    from?: string;
+  } | null;
   hangers: { all: Hanger; byFrame: Record<string, Hanger> };
   /** The type picked last: a frame with no hanger of its own opens on it. */
   lastType: HangerKind | null;
@@ -296,6 +305,24 @@ export const changedLayout = (s: PlannerState) =>
   s.added.length > 0 ||
   s.removed.length > 0;
 
+/**
+ * The layout's sizes, largest first, each with its frames: the whole group's size list.
+ * {@link openspec/specs/gallery-wall-planner/spec.md#requirement-a-frames-size-is-changed-in-place}
+ */
+export function sizesOf(
+  frames: readonly PlannerFrame[],
+): { size: string; frames: PlannerFrame[] }[] {
+  const bySize = new Map<string, PlannerFrame[]>();
+  for (const f of frames) bySize.set(f.size, [...(bySize.get(f.size) ?? []), f]);
+  const area = (size: string) => {
+    const f = findFrame(size);
+    return f ? f.w * f.h : 0;
+  };
+  return [...bySize]
+    .map(([size, of]) => ({ size, frames: of }))
+    .sort((a, b) => area(b.size) - area(a.size));
+}
+
 /** Keeps a rectangle inside the bounds, as far as it fits. */
 function clampTo(rect: Rect, b: Rect): Rect {
   const x = Math.max(b.x, Math.min(rect.x, b.x + b.w - rect.w));
@@ -374,6 +401,7 @@ export type Action =
   | { type: "centre" }
   | { type: "remove"; id: string }
   | { type: "openPicker"; mode: "add" | "size" }
+  | { type: "openGroupSize"; size: string }
   | { type: "pickerOrientation"; orientation: Orientation }
   | { type: "pickerSize"; size: string }
   | { type: "pickerAll"; all: boolean }
@@ -386,7 +414,18 @@ export type Action =
   | { type: "openReset" }
   | { type: "cancelReset" }
   | { type: "resetSample" }
+  | RestorePhoto
   | PhotoAction;
+
+/** A saved, scaled wall photo put back: the extension's "My wall photo". */
+export interface RestorePhoto {
+  type: "restorePhoto";
+  photo: PhotoInfo;
+  known: PhotoSlice["known"];
+  marks: Partial<Record<PhotoSlice["known"], Mark>>;
+  floor: number | null;
+  scale: number;
+}
 
 /** A fresh layout on a new wall: added frames go, and with them their hangers and the form. */
 const relaid = (state: PlannerState): Partial<PlannerState> => ({
@@ -593,6 +632,21 @@ export function reducer(state: PlannerState, action: Action): PlannerState {
       };
     }
 
+    case "openGroupSize": {
+      const f = findFrame(action.size);
+      if (!f || !framesOf(state).some((frame) => frame.size === f.id)) return state;
+      return {
+        ...state,
+        picker: {
+          mode: "group-size",
+          orientation: f.orientation,
+          size: f.id,
+          all: true,
+          from: f.id,
+        },
+      };
+    }
+
     case "pickerOrientation":
       return state.picker
         ? {
@@ -630,11 +684,15 @@ export function reducer(state: PlannerState, action: Action): PlannerState {
           picker: null,
         });
       }
-      const frame = selectedFrame(state);
+      // A size from the group's list is a change to its first frame with "also the others" on.
+      const all = framesOf(state);
+      const frame =
+        picker.mode === "group-size"
+          ? all.find((f) => f.size === picker.from)
+          : selectedFrame(state);
       if (!frame) return { ...state, picker: null };
-      const hit = framesOf(state).filter(
-        (f) => f.id === frame.id || (picker.all && f.size === frame.size),
-      );
+      const others = picker.all || picker.mode === "group-size";
+      const hit = all.filter((f) => f.id === frame.id || (others && f.size === frame.size));
       const ids = new Set(hit.map((f) => f.id));
       const sizes = { ...state.sizes };
       for (const id of ids) if (id.startsWith("t")) sizes[Number(id.slice(1))] = picker.size;
@@ -728,8 +786,34 @@ export function reducer(state: PlannerState, action: Action): PlannerState {
       return { ...photoReducer(state, action), picker: null, confirmReset: false };
 
     case "photo":
-    case "toSample":
       return changed(photoReducer(state, action), relaid(state));
+
+    case "toSample":
+      // Out of the upload step with no photo picked: the layout stays as it was.
+      // {@link openspec/specs/gallery-wall-planner/spec.md#requirement-backing-out-of-the-upload-keeps-the-layout}
+      return state.photo
+        ? changed(photoReducer(state, action), relaid(state))
+        : photoReducer(state, action);
+
+    case "restorePhoto": {
+      // As a scale just set: the template hangs again on the photo.
+      const { photo, known, marks, floor, scale } = action;
+      return changed(
+        {
+          ...state,
+          mode: "photo",
+          photo,
+          known,
+          marks,
+          floor,
+          scale,
+          lengthText: null,
+          lengthError: false,
+          confirmSwitch: null,
+        },
+        relaid(state),
+      );
+    }
 
     case "restartPhoto":
       return state.photo ? changed(photoReducer(state, action), relaid(state)) : state;

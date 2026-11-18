@@ -17,7 +17,7 @@
     "fix": "prettier --write . && eslint --fix . && pnpm typecheck",
     "test": "pnpm test:unit && pnpm test:e2e",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "pnpm --filter extension build && playwright test"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

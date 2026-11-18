@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "jsx": "react-jsx",
+    "types": ["vite/client", "chrome", "node"],
+    "paths": {
+      "@/*": ["../web/src/*"],
+      "next/dynamic": ["./src/shims/next-dynamic.tsx"],
+      "next/link": ["./src/shims/next-link.tsx"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+}

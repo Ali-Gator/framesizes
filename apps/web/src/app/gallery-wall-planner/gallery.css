@@ -60,6 +60,8 @@
   align-items: center;
   justify-content: center;
   height: 60px;
+  /* The picture keeps clear of the border at 360; its width and aspect ratio come inline. */
+  padding: 6px;
   box-sizing: border-box;
   border: 1.5px solid var(--line-strong);
   border-radius: var(--radius-md);
@@ -89,6 +91,7 @@
 .g-thumb {
   position: relative;
   max-width: 100%;
+  max-height: 100%;
   pointer-events: none;
 }
 .g-thumb i {
@@ -414,4 +417,83 @@
 .g-select:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+
+/* the whole group's sizes, each with "Change" (canvas board e2) */
+.g-gsizes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.g-gsizes .fs-label {
+  margin: 0;
+}
+.g-gs {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}
+.g-gs-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 60px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line);
+}
+.g-gs-row:first-child {
+  border-top: 0;
+}
+.g-gs-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.g-gs-size {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 500;
+}
+.g-gs-of {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ink-muted);
+}
+
+/* the extension's side panel: no card edges, Chrome's own bar names it (canvas note "dPanel") */
+.fs-widget.wf-panel {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.wf-panel .fs-widget-head,
+.wf-panel .fs-widget-body,
+.wf-panel .fs-widget-foot {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* the nail table fits a 360 column and the desktop side column: no 600 px floor, no fixed columns */
+.g .fs-table {
+  min-width: 0;
+  table-layout: auto;
+}
+.g .fs-table col.fs-col-num {
+  width: auto;
+}
+.g .fs-table thead th,
+.g .fs-table tbody th,
+.g .fs-table td {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+.g .fs-table thead th {
+  white-space: normal;
 }

@@ -1,14 +1,17 @@
 import type { ReactNode } from "react";
 
-/** Design system WidgetCard: a titled card (`h2`) with an optional footer. */
+/** Design system WidgetCard: a titled card (`h2`) with an optional footer; untitled in a place that already names it. */
 export function WidgetCard({
   title,
+  label,
   actions,
   footer,
   children,
   className,
 }: {
-  title: string;
+  title?: string;
+  /** The card's accessible name when it shows no title. */
+  label?: string;
   /** Controls beside the title. */
   actions?: ReactNode;
   footer?: ReactNode;
@@ -16,9 +19,9 @@ export function WidgetCard({
   className?: string;
 }) {
   return (
-    <section className={`fs-widget${className ? ` ${className}` : ""}`} aria-label={title}>
+    <section className={`fs-widget${className ? ` ${className}` : ""}`} aria-label={label ?? title}>
       <header className="fs-widget-head">
-        <h2 className="fs-widget-title">{title}</h2>
+        {title ? <h2 className="fs-widget-title">{title}</h2> : null}
         {actions}
       </header>
       <div className="fs-widget-body">{children}</div>

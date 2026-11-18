@@ -25,3 +25,7 @@ playwright-report/
 .playwright-mcp/
 .claude/settings.local.json
 .claude/worktrees/
+
+# extension build
+apps/extension/dist/
+apps/extension/*.zip

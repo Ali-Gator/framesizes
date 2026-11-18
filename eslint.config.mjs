@@ -14,6 +14,7 @@ export default tseslint.config(
       ".claude/",
       "playwright-report/",
       "test-results/",
+      "**/dist/",
     ],
   },
   eslint.configs.recommended,
@@ -28,13 +29,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ["apps/{web,extension}/**/*.{ts,tsx}"],
+    plugins: { "react-hooks": reactHooks },
+    rules: reactHooks.configs.recommended.rules,
+  },
+  {
     files: ["apps/web/**/*.{ts,tsx}"],
-    plugins: { "react-hooks": reactHooks, "@next/next": nextPlugin },
+    plugins: { "@next/next": nextPlugin },
     settings: { next: { rootDir: "apps/web/" } },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      ...nextPlugin.configs.recommended.rules,
-    },
+    rules: nextPlugin.configs.recommended.rules,
   },
   eslintConfigPrettier,
 );

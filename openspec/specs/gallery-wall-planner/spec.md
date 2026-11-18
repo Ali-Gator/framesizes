@@ -40,8 +40,16 @@ function distancesOf(state): Record<Side, { value: number; to: Target } | null>;
 function warningOf(state): Warning | null; // wide | right | left | ceiling | floor | photo
 function formHanger(state): Hanger; // what "Hanger for" shows, with the type carry-over
 function templateTable(): { id; name; w; h; fits }[]; // at GALLERY_GAP, fits = 1.5 × w
+function sizesOf(frames): { size; frames }[]; // the whole group's sizes, largest first
+// Action also holds { type: "openGroupSize"; size } (picker mode "group-size") and
+// RestorePhoto { type: "restorePhoto"; photo; known; marks; floor; scale } (the extension only)
 
-// apps/web/src/components/gallery-wall/gallery-wall.tsx — the client island, GalleryWall
+// apps/web/src/components/gallery-wall/gallery-wall.tsx — the client island:
+function GalleryWall(props?: {
+  variant?: "page" | "panel" | "tab"; // default "page"; panel: no title, no card edges; tab: no title
+  state?: PlannerState; // controlled, with dispatch; both or neither
+  dispatch?: (action: Action) => void;
+}): JSX.Element;
 // apps/web/src/components/gallery-wall/nail-marks.tsx — the Nail marks view (next/dynamic)
 // apps/web/src/components/gallery-wall/copy.ts — warnings, no-nail lines, template frame lists
 // apps/web/src/app/gallery-wall-planner/ — page.tsx, opengraph-image.tsx, gallery.css
@@ -54,6 +62,9 @@ function templateTable(): { id; name; w; h; fits }[]; // at GALLERY_GAP, fits = 
 - A frame drags with the engine's snap inside the wall and is kept on it. The group moves by keyboard or drag without being kept on the wall, so the warning can say by how much it is past an edge.
 - F2's photo flow, size picker and dialog are reused from `components/frames-on-wall/photo-flow.tsx`; a new photo, a new scale or the sample room lays the template out again on that wall and drops the hangers of added frames.
 - A frame with no hanger of its own opens on the last type picked, with empty fields; it gets its own hanger once a drop is typed.
+- "Back to the sample room" from the upload step with no photo picked changes only the mode; from a photo it lays the template out again.
+- A size from the whole group's list opens the picker in `group-size` mode, and applying it changes the first frame of that size with "also the others" on.
+- With no props `GalleryWall` keeps its own reducer; given `state` and `dispatch` it uses them, its own reducer still running so the hook order never changes.
 
 ## Edge Cases
 
@@ -136,13 +147,20 @@ The widget SHALL hold one gap between all frames, 3 inches by default, in steps 
 
 ### Requirement: A frame's size is changed in place
 
-Selecting a frame SHALL offer "Change size" with F2's size picker. The option to change every other frame of the same size SHALL be on by default. Frames SHALL be lettered A, B, C in the template's order.
+Selecting a frame SHALL offer "Change size" with F2's size picker. The option to change every other frame of the same size SHALL be on by default. Frames SHALL be lettered A, B, C in the template's order. With the whole group selected, the selection block SHALL list the layout's sizes, largest first, each with its frames' letters and a "Change" button that opens the picker for every frame of that size.
 
 #### Scenario: Changing every 8x10 at once
 
 - **GIVEN** the default state
 - **WHEN** frame A is changed to 5x7 with the option left on
 - **THEN** frames A, B, D and E are 5x7 and the group is laid out again
+
+#### Scenario: Changing a size with All frames selected
+
+- **GIVEN** the default state, with the whole group selected
+- **WHEN** the selection block is shown
+- **THEN** it lists "18 × 24 in" for frame C, then "8 × 10 in" for frames A, B, D and E, each with "Change"
+- **AND** picking 11x14 from the 8 × 10 in row's "Change" makes frames A, B, D and E 11x14, keeps frame C 18x24, and lays the group out again
 
 ### Requirement: The group and its frames move like F2's frames
 
@@ -271,3 +289,29 @@ Every verb in the page's meta description (pick a template, set the spacing, nai
 
 - **WHEN** the description is checked against the widget
 - **THEN** the widget has a template picker, a gap field and a numbered nail list
+
+### Requirement: The widget fits a 360 px column
+
+In a 360 px wide column, each template picture SHALL sit inside its button with clear space on every side, and the nail table SHALL fit without scrolling sideways. On the desktop layout, the nail table SHALL fit its side column.
+
+#### Scenario: Template pictures and the nail table at 360
+
+- **GIVEN** `/gallery-wall-planner` at 360 × 740, in the Nail marks view with All frames on one nail with a 2 in drop
+- **WHEN** the template pictures and the nail table are measured
+- **THEN** every template picture's box lies inside its button's padding box, and the nail table is no wider than its container
+
+#### Scenario: The nail table on the desktop
+
+- **GIVEN** `/gallery-wall-planner` at 1280 × 800, in the Nail marks view with All frames on one nail with a 2 in drop
+- **WHEN** the nail table is measured
+- **THEN** it is no wider than its container
+
+### Requirement: Backing out of the upload keeps the layout
+
+Leaving the upload step with no photo picked SHALL return to the wall the visitor came from with the layout as it was: hand moves, added and removed frames, sizes and the group's move kept, and no question asked.
+
+#### Scenario: Back to the sample room before picking a photo
+
+- **GIVEN** the default state with frame A moved and a frame added
+- **WHEN** "Use my wall photo" is pressed and then "Back to the sample room", with no photo picked
+- **THEN** the six frames are where they were and no dialog is shown

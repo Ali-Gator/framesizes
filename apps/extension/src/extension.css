@@ -1,0 +1,163 @@
+/*
+ * The extension's pages: the site's tokens, Tailwind and G1's widget CSS, imported in place from
+ * apps/web, plus the panel toolbar and the tab bar from the T23 canvas (`ext.css`).
+ * Fonts come from @fontsource in the entries: extension pages cannot use next/font.
+ */
+@import "../../web/src/app/globals.css";
+@import "../../web/src/app/frame-sizes-on-wall/wall.css";
+@import "../../web/src/app/gallery-wall-planner/gallery.css";
+
+/* Tailwind finds classes from apps/web's components too. */
+@source "../../web/src";
+
+:root {
+  --font-schibsted: "Schibsted Grotesk";
+  --font-plex-mono: "IBM Plex Mono";
+}
+
+/* the panel toolbar: the wall, the units and "Open full size" */
+.x-ptool {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.x-wallsel {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.x-wallsel select {
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 44px;
+  padding: 0 32px 0 12px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.x-wallsel select:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.x-wallsel svg {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--ink-muted);
+}
+.x-ibtn {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+.x-ibtn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.x-ibtn svg {
+  width: 18px;
+  height: 18px;
+}
+p.x-saved {
+  margin: 0;
+}
+.x-saved {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--ink-muted);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.x-saved svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--good);
+}
+
+/* the panel page */
+.x-panel {
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+/* the full-size tab (board h) */
+.x-tab {
+  min-height: 100vh;
+  background: var(--wall);
+}
+.x-tabbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 16px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.x-tabbar h1 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+.x-tabbar p.x-saved {
+  margin: 0;
+}
+.x-saved {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 14px;
+  line-height: 20px;
+}
+.x-tabbar .x-wallsel {
+  flex: 0 0 220px;
+}
+.x-tabbar > svg {
+  flex: none;
+  width: 28px;
+  height: 28px;
+}
+.x-tabmain {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+/* "Units" at 44 px, as every toolbar control: the site's small track is 38. */
+.x-ptool [role="radiogroup"],
+.x-tabbar [role="radiogroup"] {
+  box-sizing: border-box;
+  height: 44px;
+}
+.x-ptool [role="radiogroup"] > button,
+.x-tabbar [role="radiogroup"] > button {
+  height: 100%;
+}
