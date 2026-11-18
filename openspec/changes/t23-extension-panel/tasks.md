@@ -96,9 +96,9 @@
 
 ## 7. Gate
 
-- [ ] 7.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green.
-- [ ] 7.2 Run the On-page SEO guide's pre-publish checklist for `/gallery-wall-planner` against `pnpm build && pnpm start`, with the `seo-audit:seo-page-audit` skill loaded, since BL-52 adds copy to the live page. Verify every applicable item passes.
-- [ ] 7.3 Run `pnpm --filter extension zip`. Load the zip's contents unpacked in Chrome and check the panel, the tab and the install tab by hand. Verify the zip holds `manifest.json` at its root and that no file in it is a source map.
+- [x] 7.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green.
+- [x] 7.2 Run the On-page SEO guide's pre-publish checklist for `/gallery-wall-planner` against `pnpm build && pnpm start`, with the `seo-audit:seo-page-audit` skill loaded, since BL-52 adds copy to the live page. Verify every applicable item passes.
+- [x] 7.3 Run `pnpm --filter extension zip`. Load the zip's contents unpacked in Chrome and check the panel, the tab and the install tab by hand. Verify the zip holds `manifest.json` at its root and that no file in it is a source map.
 
 ## Workflow follow-up
 
