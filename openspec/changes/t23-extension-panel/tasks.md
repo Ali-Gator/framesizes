@@ -2,20 +2,20 @@
 
 ## 1. Scaffold `apps/extension`
 
-- [ ] 1.1 Create the `apps/extension` workspace app (design decision 1):
+- [x] 1.1 Create the `apps/extension` workspace app (design decision 1):
   - `package.json` (`build`, `zip`, `typecheck`), `vite.config.ts`, `postcss.config.mjs` and `tsconfig.json` with the `@/` path to `../web/src`;
   - empty `sidepanel.html` and `tab.html`, and `src/background.ts`;
   - `src/shims/next-dynamic.tsx` and `src/shims/next-link.tsx` (design decision 2).
 
   Add `vite`, `tailwindcss`, `@tailwindcss/postcss`, `@types/chrome`, `@fontsource/schibsted-grotesk` and `@fontsource/ibm-plex-mono`. Gitignore `apps/extension/dist` and the zip. Verify `pnpm install`, `pnpm --filter extension build` and `pnpm typecheck` succeed.
 
-- [ ] 1.2 Widen ESLint's react-hooks block to `apps/{web,extension}/**` (design decision 10). Change the root `test:e2e` to build the extension first. Verify `pnpm lint` passes and `pnpm test:unit` still picks up `apps/*/src` tests.
+- [x] 1.2 Widen ESLint's react-hooks block to `apps/{web,extension}/**` (design decision 10). Change the root `test:e2e` to build the extension first. Verify `pnpm lint` passes and `pnpm test:unit` still picks up `apps/*/src` tests.
 
 ## 2. Manifest, icons and the service worker
 
-- [ ] 2.1 Write `src/__tests__/manifest.test.ts` citing "The built manifest" and "Name and icons in the build". It reads `public/manifest.json` and each icon's IHDR size. Write `public/manifest.json` (design decision 8) with the short description copied from the store listing doc. Verify the test passes.
-- [ ] 2.2 Draw `apps/extension/icon.svg` from board k. Write `scripts/extension-icons.mjs` with `sharp` resolved from `apps/web`. Render and commit the four PNGs. Verify the manifest test's size checks pass and the 16 px icon reads on Chrome's light toolbar when the unpacked build is loaded.
-- [ ] 2.3 Write `src/__tests__/background.test.ts` with a fake `chrome`, citing:
+- [x] 2.1 Write `src/__tests__/manifest.test.ts` citing "The built manifest" and "Name and icons in the build". It reads `public/manifest.json` and each icon's IHDR size. Write `public/manifest.json` (design decision 8) with the short description copied from the store listing doc. Verify the test passes.
+- [x] 2.2 Draw `apps/extension/icon.svg` from board k. Write `scripts/extension-icons.mjs` with `sharp` resolved from `apps/web`. Render and commit the four PNGs. Verify the manifest test's size checks pass and the 16 px icon reads on Chrome's light toolbar when the unpacked build is loaded.
+- [x] 2.3 Write `src/__tests__/background.test.ts` with a fake `chrome`, citing:
   - "Install and browser start set the panel behaviour";
   - "A fresh install with the button not pinned";
   - "An update opens nothing";
