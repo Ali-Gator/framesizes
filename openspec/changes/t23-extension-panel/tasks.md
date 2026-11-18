@@ -26,15 +26,15 @@
 
 ## 3. G1: the additive props and the backlog items
 
-- [ ] 3.1 Write `apps/web/src/components/gallery-wall/__tests__/state-extension.test.ts`, a new file, citing:
+- [x] 3.1 Write `apps/web/src/components/gallery-wall/__tests__/state-extension.test.ts`, a new file, citing:
   - "Changing a size with All frames selected" (the size list, largest first, and the group-size change);
   - "Back to the sample room before picking a photo" (BL-48);
   - for `restorePhoto`, the extension's "To the sample room and back".
 
   Implement the BL-52 size list, the `group-size` picker mode, BL-48's `toSample` and the `restorePhoto` action (design decisions 5 and 9). Verify the new tests and every existing G1 test pass unedited.
 
-- [ ] 3.2 Add `variant`, `state` and `dispatch` to `GalleryWall`, and make `WidgetCard`'s `title` optional (design decision 3). Add the `wf-panel` CSS. Render BL-52's selection block from board e2. G1 opens with the whole group selected, so its default server HTML gains the "Sizes in this layout" list; nothing else in it changes. Verify the existing G1 markup, content and e2e tests pass unedited.
-- [ ] 3.3 Fix BL-53 (template thumbs) and BL-54 (the nail table) in `gallery.css` (design decision 9). Write `e2e/gallery-wall-panel-fit.spec.ts` citing:
+- [x] 3.2 Add `variant`, `state` and `dispatch` to `GalleryWall`, and make `WidgetCard`'s `title` optional (design decision 3). Add the `wf-panel` CSS. Render BL-52's selection block from board e2. G1 opens with the whole group selected, so its default server HTML gains the "Sizes in this layout" list; nothing else in it changes. Verify the existing G1 markup, content and e2e tests pass unedited.
+- [x] 3.3 Fix BL-53 (template thumbs) and BL-54 (the nail table) in `gallery.css` (design decision 9). Write `e2e/gallery-wall-panel-fit.spec.ts` citing:
   - "Template pictures and the nail table at 360";
   - "The nail table on the desktop";
   - "Back to the sample room before picking a photo";

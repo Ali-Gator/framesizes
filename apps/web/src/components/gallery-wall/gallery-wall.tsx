@@ -2,6 +2,7 @@
 
 import {
   CM_PER_INCH,
+  findFrame,
   GALLERY_GAP,
   layoutTemplate,
   photoSize,
@@ -49,6 +50,7 @@ import {
   previewRect,
   reducer,
   selectedFrame,
+  sizesOf,
   templateOf,
   warningOf,
 } from "./state";
@@ -119,11 +121,28 @@ function announcement(state: PlannerState, unit: Unit): string {
  * The G1 gallery wall layout generator: a template of standard frames on the sample wall or the
  * visitor's photo, one gap, the group's size and distances, and nail marks. One client island,
  * prerendered in the Layout view.
+ *
+ * The Chrome extension renders it as a `panel` (no card edges, no title) or a `tab` (no title),
+ * with its own saved state passed in. With no props it is the site's widget.
  * {@link openspec/specs/gallery-wall-planner/spec.md#requirement-the-planner-opens-on-the-default-template-above-the-sofa}
+ * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-side-panel-holds-the-gallery-wall-planner}
  */
-export function GalleryWall() {
+export function GalleryWall({
+  variant = "page",
+  state: outerState,
+  dispatch: outerDispatch,
+}: {
+  variant?: "page" | "panel" | "tab";
+  /** Controlled: both, or neither. */
+  state?: PlannerState;
+  dispatch?: Dispatch;
+} = {}) {
   const unit = useUnit();
-  const [state, dispatch] = useReducer(reducer, undefined, initialState);
+  // Runs either way, so the hook order never changes; ignored while controlled.
+  const [ownState, ownDispatch] = useReducer(reducer, undefined, initialState);
+  const controlled = outerState !== undefined && outerDispatch !== undefined;
+  const state = controlled ? outerState : ownState;
+  const dispatch = controlled ? outerDispatch : ownDispatch;
   const [live, setLive] = useState("");
   const { pickFile, error } = usePhotoFile(state, dispatch);
 
@@ -158,7 +177,12 @@ export function GalleryWall() {
   const switching = state.confirmSwitch ? templateOf(state.confirmSwitch) : null;
 
   return (
-    <WidgetCard title={WIDGET_TITLE} actions={actions} footer={footer} className="wf g">
+    <WidgetCard
+      title={variant === "page" ? WIDGET_TITLE : undefined}
+      actions={actions}
+      footer={footer}
+      className={variant === "panel" ? "wf g wf-panel" : "wf g"}
+    >
       {flow ? (
         <PhotoFlow
           state={state}
@@ -483,6 +507,7 @@ function LayoutView({
               key={`${state.selected}-${unit}`}
               frame={selected}
               box={box}
+              sizes={groupSelected ? sizesOf(frames) : []}
               distances={distances}
               furniture={furniture}
               unit={unit}
@@ -581,7 +606,7 @@ function Templates({ state, dispatch }: { state: PlannerState; dispatch: Dispatc
               />
               <span
                 className="g-thumb"
-                style={{ width: box.w * s, height: box.h * s }}
+                style={{ width: box.w * s, aspectRatio: `${box.w} / ${box.h}` }}
                 aria-hidden="true"
               >
                 {layout.frames.map((f, i) => (
@@ -693,6 +718,7 @@ function GapRow({
 function Selection({
   frame,
   box,
+  sizes,
   distances,
   furniture,
   unit,
@@ -701,6 +727,8 @@ function Selection({
 }: {
   frame: PlannerFrame | null;
   box: Rect | null;
+  /** The whole group's sizes, largest first; empty with one frame selected. */
+  sizes: { size: string; frames: PlannerFrame[] }[];
   distances: Record<Side, Distance | null>;
   furniture: string;
   unit: Unit;
@@ -758,6 +786,7 @@ function Selection({
           </Button>
         </div>
       ) : null}
+      {sizes.length ? <GroupSizes sizes={sizes} unit={unit} dispatch={dispatch} /> : null}
       <fieldset className="wf-rows">
         <legend className="fs-label">Distances</legend>
         {SIDES.map((side) => {
@@ -840,6 +869,71 @@ function Selection({
   );
 }
 
+/** "A, B, D and E". */
+const letters = (frames: readonly PlannerFrame[]) => {
+  const all = frames.map((f) => f.letter);
+  return all.length > 1 ? `${all.slice(0, -1).join(", ")} and ${all.at(-1)}` : (all[0] ?? "");
+};
+
+/** A catalog size as it hangs, unframed: "8 × 10 in" / "20 × 25 cm". */
+function nominal(size: string, unit: Unit): string {
+  const f = findFrame(size);
+  return f ? `${writeNumber(f.w, unit)} × ${writeNumber(f.h, unit)} ${unit}` : chipSize(size);
+}
+
+/**
+ * With the whole group selected: the layout's sizes, each with its frames and "Change", which
+ * opens the picker for every frame of that size.
+ * {@link openspec/specs/gallery-wall-planner/spec.md#requirement-a-frames-size-is-changed-in-place}
+ */
+function GroupSizes({
+  sizes,
+  unit,
+  dispatch,
+}: {
+  sizes: { size: string; frames: PlannerFrame[] }[];
+  unit: Unit;
+  dispatch: Dispatch;
+}) {
+  const id = useId();
+  return (
+    <div className="g-gsizes">
+      <p className="fs-label" id={id}>
+        Sizes in this layout
+      </p>
+      <ul className="g-gs" aria-labelledby={id}>
+        {sizes.map(({ size, frames }) => {
+          const f = findFrame(size);
+          return (
+            <li key={size} className="g-gs-row">
+              <div className="g-gs-name">
+                <span className="g-gs-size">{f ? <Dims w={f.w} h={f.h} /> : chipSize(size)}</span>
+                <span className="g-gs-of">
+                  {frames.length === 1 ? "Frame" : "Frames"} {letters(frames)}
+                </span>
+              </div>
+              <Button
+                variant="secondary"
+                aria-label={
+                  frames.length === 1
+                    ? `Change the ${nominal(size, unit)} frame`
+                    : `Change all ${count(frames.length, "", `${nominal(size, unit)} frames`)}`
+                }
+                onClick={() => dispatch({ type: "openGroupSize", size })}
+              >
+                Change
+              </Button>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="wf-muted">
+        Change swaps every frame of that size and lays the template out again.
+      </p>
+    </div>
+  );
+}
+
 /**
  * F2's size picker: "Add a frame" beside the selection, or a new size for the selected frame and,
  * by default, every other frame of its size.
@@ -859,9 +953,14 @@ function PlannerPicker({
   const frame = selectedFrame(state, frames);
   const same = frame ? frames.filter((f) => f.id !== frame.id && f.size === frame.size).length : 0;
   const adding = picker.mode === "add";
+  const group = picker.mode === "group-size" ? frames.filter((f) => f.size === picker.from) : [];
   return (
     <Picker
-      title={adding ? "Add a frame" : `New size for ${frame?.letter ?? ""}`}
+      title={
+        adding
+          ? "Add a frame"
+          : `New size for ${group.length ? letters(group) : (frame?.letter ?? "")}`
+      }
       count={`${frames.length} of ${MAX_FRAMES}`}
       orientation={picker.orientation}
       size={picker.size}
@@ -871,7 +970,7 @@ function PlannerPicker({
       onApply={() => dispatch({ type: "applyPicker" })}
       onCancel={() => dispatch({ type: "closePicker" })}
     >
-      {!adding && frame && same > 0 ? (
+      {picker.mode === "size" && frame && same > 0 ? (
         <label className="g-check">
           <input
             type="checkbox"
