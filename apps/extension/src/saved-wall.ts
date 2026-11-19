@@ -1,4 +1,4 @@
-import { ART } from "./store";
+import { ART, artKey, CURRENT, done, PHOTO, transact } from "./store";
 import {
   initialState,
   type PlannerState,
@@ -228,34 +228,39 @@ export const needsWrite = (state: PlannerState, applied: PlannerState | null) =>
 export const needsBlob = (url: string | undefined, madeFromStore: ReadonlySet<string>) =>
   url !== undefined && !madeFromStore.has(url);
 
-const DB = "gallery-wall";
-const STORE = "wall";
-const KEY = "current";
-
-function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB, 1);
-    request.onupgradeneeded = () => request.result.createObjectStore(STORE);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+/** `current`, the photo's bytes and every print's picture, read in one transaction. */
+export const readWall = () =>
+  transact("readonly", async (store) => {
+    const record = await done<unknown>(store.get(CURRENT));
+    const photo = await done<unknown>(store.get(PHOTO));
+    const keys = await done(store.getAllKeys());
+    const art: Record<string, Blob> = {};
+    for (const key of keys) {
+      if (typeof key !== "string" || !key.startsWith(ART)) continue;
+      const blob = await done<unknown>(store.get(key));
+      if (blob instanceof Blob) art[key.slice(ART.length)] = blob;
+    }
+    return { record, blobs: { photo: photo instanceof Blob ? photo : null, art } as StoredBlobs };
   });
-}
 
-async function run<T>(mode: IDBTransactionMode, work: (store: IDBObjectStore) => IDBRequest<T>) {
-  const db = await openDb();
-  try {
-    return await new Promise<T>((resolve, reject) => {
-      const request = work(db.transaction(STORE, mode).objectStore(STORE));
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  } finally {
-    db.close();
-  }
-}
-
-export const readRecord = () => run<unknown>("readonly", (store) => store.get(KEY));
-export const writeRecord = (record: SavedRecord) =>
-  run("readwrite", (store) => store.put(record, KEY));
+/**
+ * One write in one transaction: `current`, the photo's bytes when they changed (none kept with no
+ * photo), each new print's picture, and no picture of a print that is gone. Returns the frame ids
+ * whose pictures it put.
+ */
+export const writeWall = (
+  current: StoredRecord,
+  putPhoto: Blob | null,
+  pending: ReadonlyMap<string, Blob>,
+) =>
+  transact("readwrite", async (store) => {
+    await done(store.put(current, CURRENT));
+    if (putPhoto) await done(store.put(putPhoto, PHOTO));
+    else if (!current.photo) await done(store.delete(PHOTO));
+    const { put, remove } = artChanges(await done(store.getAllKeys()), current.planner, pending);
+    for (const [id, blob] of put) await done(store.put(blob, artKey(id)));
+    for (const key of remove) await done(store.delete(key));
+    return put.map(([id]) => id);
+  });
 
 export { CHANNEL } from "./store";

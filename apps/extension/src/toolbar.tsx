@@ -5,12 +5,16 @@ import { useId } from "react";
  * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-panel-toolbar-holds-the-wall-the-units-and-open-full-size}
  */
 
-/** The native "Wall" select: the sample room or the saved wall photo. */
+/**
+ * The native "Wall" select: the sample room or the saved wall photo, and in the upload and scale
+ * steps a disabled "New wall photo", so either real option acts from there (BL-56).
+ * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-wall-select-names-the-upload-step}
+ */
 export function WallSelect({
   value,
   onChange,
 }: {
-  value: "sample" | "photo";
+  value: "sample" | "photo" | "new";
   onChange: (value: "sample" | "photo") => void;
 }) {
   const id = useId();
@@ -26,6 +30,11 @@ export function WallSelect({
       >
         <option value="sample">Sample room</option>
         <option value="photo">My wall photo</option>
+        {value === "new" ? (
+          <option value="new" disabled>
+            New wall photo
+          </option>
+        ) : null}
       </select>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
         <path d="M6 9l6 6 6-6" strokeLinecap="round" />
