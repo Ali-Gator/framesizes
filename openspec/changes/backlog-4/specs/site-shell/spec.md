@@ -16,7 +16,7 @@ The header's Units toggle SHALL look checked on the visitor's stored unit from t
 
 ### Requirement: A stored centimetre choice waits for the widgets
 
-When the stored unit is centimetres, the root element SHALL carry a pending marker from before the first paint until the page's widgets have rendered in centimetres. It SHALL NOT carry the marker when the unit is inches, when nothing is stored or when storage is unavailable.
+When the stored unit is centimetres, the root element SHALL carry a pending marker from before the first paint until the page's distance fields have rendered in centimetres or the visitor changes the unit. The marker SHALL be set only then: never when nothing is stored, when inches are stored or when storage is unavailable.
 
 #### Scenario: The marker with centimetres stored
 

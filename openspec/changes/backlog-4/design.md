@@ -86,11 +86,11 @@ Files: `apps/web/src/components/site/unit-toggle.tsx`, `apps/web/src/components/
 
 - **Marker.** The head script in `layout.tsx` sets `data-unit-pending` on `<html>` when, and only when, it applies a stored "cm".
 - **Hiding.** `globals.css` gets `[data-unit-pending] .wf-num input { color: transparent; }`, or an equivalent that keeps the box and the caret position. Layout is unchanged, so the CLS tests keep passing.
-- **Clearing.** A small hook in `lib/unit.ts` runs a `useLayoutEffect` keyed on the rendered unit, and removes the marker once the rendered unit equals `document.documentElement.dataset.unit`. `FramesOnWall` and `GalleryWall` call it.
+- **Clearing.** A small hook in `lib/unit.ts` runs a `useLayoutEffect` keyed on the rendered unit, and removes the marker once the rendered unit equals `document.documentElement.dataset.unit`. `FramesOnWall` and `GalleryWall` call it. `setUnit` also removes the marker, so any unit change by the visitor clears it in the one place every change passes through.
   - A layout effect runs before the browser paints that commit, so no frame shows inch digits.
   - Clearing on the first `subscribe` is a passive effect and could let one inch frame paint, so it isn't used.
   - Clearing from the header toggle could fire before the widget's own cm render, so it isn't used either.
-- **Pages without fields.** The marker stays there. It only reaches `.wf-num` inputs, so it does no harm. A soft navigation to F2 or G1 mounts the widget, which clears it.
+- **Pages without fields.** The marker stays there until the visitor changes the unit. It only reaches `.wf-num` inputs, so it does no harm. A soft navigation to F2 or G1 mounts the widget, which clears it.
 - **Extension.** It never sets the marker: `boot.tsx` sets only `data-unit`. t23's try rows, which reuse `.wf-num`, stay visible.
 - **Scope.** G1's gap and selection fields use `.wf-num`, so the same rule covers them with no markup change.
 - **Specs.** `frames-on-wall`'s Behavior text ("they render in inches and switch after hydration") and t7 decision 2's "nothing visible moves" get corrected at archive.
@@ -110,7 +110,7 @@ The `gallery-wall.tsx` call is one line next to t23's edits. Whichever change me
 ### 1. BL-33: how the Units toggle and the F1 table show the stored unit before hydration
 
 - (a) The toggle's checked look comes from `[data-unit]` in CSS, for the Units control only. The F1 table's cells and second header use `<U>`. Two existing e2e tests change:
-  - `e2e/frame-chart-content.spec.ts:95-100`: the server-HTML row text now holds both units in `textContent`, so it reads the inch span or the visible text instead. The expected strings are unchanged.
+  - `e2e/frame-chart-content.spec.ts:95-100` (and the `row` helper at lines 17–20 that only this test uses): the server-HTML row text now holds both units in `textContent`, so it reads the inch span or the visible text instead. The expected strings are unchanged.
   - `e2e/frame-chart.spec.ts:145`: `toHaveText("Inches")` reads both spans, so it reads the visible header text instead.
 
   Before hydration, the toggle looks like cm while `aria-checked` says "in". The preview's text still flips (BL-61).

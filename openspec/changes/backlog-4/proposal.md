@@ -35,13 +35,13 @@ A visitor who chose centimetres still sees inches before React loads. The Units 
 
 **Overlap with t23-try-on-my-wall:**
 
-- Source: none. BL-41's CSS rule reaches G1's fields without editing `gallery-wall.tsx`.
+- Source: one line. BL-41's CSS rule reaches G1's fields through the shared class, but `GalleryWall` calls the clearing hook (one line in `gallery-wall.tsx`). That is a textual conflict with t23 task 4.2; whichever merges second resolves it.
 - Specs: none. Every delta here is `ADDED`, and t23 modifies no requirement this batch touches.
 - t23's try view reuses `.wf-num`. The extension never sets the pending marker, so the rule can't hide those fields.
 
 **Approved test edits:** two, both from Decision 1 (user, 2026-11-19).
 
-- `e2e/frame-chart-content.spec.ts`, "the whole table is in the server HTML" (lines 95–100). It reads `textContent`, which will hold both units. It changes to read the inch span or visible text, and its expected strings stay the same.
+- `e2e/frame-chart-content.spec.ts`, "the whole table is in the server HTML" (lines 95–100, through the `row` helper at lines 17–20 that only this test uses). It reads `textContent`, which will hold both units. It changes to read the inch span or visible text, and its expected strings stay the same.
 - `e2e/frame-chart.spec.ts:145`. `toHaveText("Inches")` reads both header spans. It changes to read the visible header text.
 
 ## Capabilities
@@ -63,7 +63,7 @@ None.
 - `apps/web/src/app/layout.tsx` (head script marker), `apps/web/src/lib/unit.ts` or the field components (clearing the marker), `apps/web/src/app/globals.css` (toggle look, field digits).
 - `apps/web/src/components/site/unit-toggle.tsx` and `apps/web/src/components/ui/segmented-control.tsx` (a hook class for the Units control only).
 - `apps/web/src/components/frame-chart/frame-chart.tsx`, plus `apps/web/src/components/ui/size-table.tsx` (column labels take a ReactNode).
-- `apps/web/src/components/frames-on-wall/frames-on-wall.tsx`, `apps/web/src/components/gallery-wall/gallery-wall.tsx`: only if the marker is cleared from the widget (see design.md).
+- `apps/web/src/components/frames-on-wall/frames-on-wall.tsx`, `apps/web/src/components/gallery-wall/gallery-wall.tsx`: one call each to the hook that clears the marker.
 - `apps/web/src/app/gallery-wall-planner/page.tsx` and a G1 CSS file (template table).
 - `scripts/extension-icons.mjs`, `apps/extension/public/icons/icon-128.png`.
 - `apps/web/src/app/widgets.css` (phone stage height).
