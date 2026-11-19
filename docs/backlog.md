@@ -40,16 +40,6 @@ when to add and when to fold items in.
 
 ## Site
 
-- **[BL-33] Units toggle and table say inches until hydration** — with cm stored, the head script
-  shows the static sections in cm before paint, but the Units toggle and the chart table render the
-  server's "in" until React hydrates; on a slow load the page mixes units. Drive the toggle's checked
-  look from `[data-unit]` too, or accept it.
-  _Refs:_ `apps/web/src/components/site/unit-toggle.tsx`, `apps/web/src/lib/unit.ts` · _Status:_ open — backlog-3 review, 2026-11-15
-- **[BL-41] F2 distance fields show inch digits until hydration** — the visualizer's field values
-  (8, 32, 63) come from `useUnit`, "in" on the server, so a cm visitor sees them flip to 20, 81, 160
-  when React hydrates; the unit suffix already uses `<U>`. Design decision 2 accepted this; fix with
-  BL-33 if the same approach covers inputs.
-  _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` · _Status:_ open — t7-frames-on-wall review, 2026-11-15
 - **[BL-61] F1 preview text says inches until hydration** — with cm stored, the scale preview's
   dimension labels, legend, reference sentence and "Next size up", and the all-sizes labels, render in
   inches until React hydrates (`useUnit` is "in" on the server). The SVG labels' layout depends on the
@@ -60,16 +50,10 @@ when to add and when to fold items in.
 - **[BL-49] G1 re-lays out the template on every drag move** — `dragFrame` calls `framesOf` per
   pointer move; pass the frames the view already has. No visible lag at 12 frames yet.
   _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`dragFrame`) · _Status:_ deferred — lag on a slow phone
-- **[BL-50] G1 copies small helpers from F2** — `clampTo`, `PICKER_START`, `pc`, `Dims` and the OG
-  image's `SOFA_PARTS` exist twice; export them once so F2 and G1 cannot drift.
-  _Refs:_ `apps/web/src/components/gallery-wall/`, `apps/web/src/components/frames-on-wall/` · _Status:_ open — t11-gallery-wall-planner review, 2026-11-17
 - **[BL-51] Richer sample room on F2 and G1** — swap the flat sample room for the drawn v2 room
   (lamp light, baseboard, wood floor, cushioned sofa, plant) at the same 144 × 96 in geometry, so
   F2, G1 and the extension share one room. Adds plant and lamp-light colours to the design system.
   _Refs:_ T23 canvas https://claude.ai/artifact/WUq26q5aNBxfiKUTYcaCwv (boards "Sample room v2"), `apps/web/src/components/frames-on-wall/` · _Status:_ open — canvas approved 2026-11-17
-- **[BL-55] G1 template table scrolls sideways** — "Gallery wall layout with sizes" scrolls a
-  little on wide screens; five columns should fit the prose width without a scroll bar. Oleg, 2026-11-17.
-  _Refs:_ `apps/web/src/app/gallery-wall-planner/page.tsx`, `apps/web/src/app/widgets.css` (`.fs-table`) · _Status:_ open
 
 - **[BL-2] Dark theme** — the site ships light only; `tokens.css` has a dark theme, but no page
   was designed or reviewed in it. Add `[data-theme="dark"]` / `prefers-color-scheme` tokens once
@@ -128,11 +112,6 @@ when to add and when to fold items in.
   change waits are untested; cover them with an e2e that closes the panel inside 300 ms and edits both
   pages at once.
   _Refs:_ `apps/extension/src/use-wall.ts`, `e2e/extension.spec.ts` · _Status:_ open — t23-extension-panel review, 2026-11-18
-- **[BL-60] Pad the manifest's 128 icon before publishing** — `icon-128.png` fills the whole
-  square, but Chrome shows it in the install dialog and on the extensions page, where it should be
-  96 px of art with 16 px clear on each side (as `apps/extension/store/store-icon-128.png`). Render
-  the 128 size padded in `scripts/extension-icons.mjs`; fix before the first store upload.
-  _Refs:_ `scripts/extension-icons.mjs`, `apps/extension/public/icons/icon-128.png`, store graphics canvas https://claude.ai/artifact/QwSKJm2AYhdU2mEUejMMkF · _Status:_ open — store graphics, 2026-11-18
 
 ## Widgets
 
@@ -179,11 +158,6 @@ when to add and when to fold items in.
   on every ArrowDown; on a phone it squeezes the 68px row and moves the radio 2px left. Needs a mark
   that takes no layout space and still clears the focus ring.
   _Refs:_ `apps/web/src/app/widgets.css` (forced-colors block) · _Status:_ open — backlog-3 review, 2026-11-15
-- **[BL-34] Phone `scroll-margin-top` rebuilds the stage height** — the radio's margin repeats the
-  184px floor, the 720:384 ratio, the `50svh - 73px` cap and the 16px preview sides by hand; a change to
-  any of them lets focused rows slide under the pinned preview again. Define the height once as a
-  custom property both rules use.
-  _Refs:_ `apps/web/src/app/widgets.css` (phone block) · _Status:_ open — backlog-3 review, 2026-11-15
 
 From Oleg directly (needs proposal first):
 
