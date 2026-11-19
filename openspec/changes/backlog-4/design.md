@@ -8,11 +8,10 @@
 | BL-41 | B    | Every option trades something visible (blank digits, duplicate inputs or wrong digits), so the owner chose                                       |
 | BL-55 | A    | The approved G1 canvas (Main board) draws "Furniture it suits" as a `num` (monospace) column, so the look is decided; only the width is a defect |
 | BL-60 | A    | The approved store graphics canvas already holds the padded 128 icon (`apps/extension/store/store-icon-128.png`)                                 |
+| BL-50 | A    | Pure refactor with no visible change; added by the user after triage (six fixes, one over the ceiling, approved)                                 |
 | BL-34 | A    | Pure CSS refactor. The bullet names the technique, and the existing focus tests cover all three stage branches                                   |
 
-Skipped for size: BL-50 (lane A). See proposal.md.
-
-Order: BL-34 and BL-33 both edit CSS for `/`, and BL-33 and BL-41 both edit `layout.tsx` and `globals.css`. Running them one after another avoids conflicts: BL-60, BL-55, BL-34, BL-33, BL-41.
+Order: BL-34 and BL-33 both edit CSS for `/`, and BL-33 and BL-41 both edit `layout.tsx` and `globals.css`. Running them one after another avoids conflicts: BL-50, BL-60, BL-55, BL-34, BL-33, BL-41. BL-50 goes first so BL-41's hook calls and BL-55's `page.tsx` edit land on the deduplicated files.
 
 ## Corrections to the bullets
 
@@ -45,6 +44,25 @@ The shared rules in `widgets.css` don't change, so F1, F2 and G1's nail table ke
 The new e2e test opens 1280 × 800 in inches and in cm. It asserts `scrollWidth <= clientWidth` on the template table's `.fs-table-wrap`, and that a "Furniture it suits" cell's computed `font-family` is the mono stack. It's modelled on `e2e/frame-chart-phone.spec.ts:44-51`.
 
 Files: `apps/web/src/app/gallery-wall-planner/page.tsx`, the G1 CSS file it imports, a new e2e spec (or a new test in `e2e/gallery-wall-content.spec.ts`).
+
+## BL-50: one copy of each shared helper
+
+The bullet is wrong on three points:
+
+- `Dims` is not an F2 copy. Both copies are in G1 (`gallery-wall.tsx:81`, `gallery-wall-planner/page.tsx:151`). F2's look-alikes use `writeSize` (one-decimal cm) where `Dims` uses `writeNumber` (rounded), so merging across F2 and G1 would change visible text. Dedupe it inside G1 only.
+- `pc` has three copies, two of them in G1 (`gallery-wall.tsx:548`, `nail-marks.tsx:31`).
+- F2's `SampleRoom` (`stage.tsx:52-59`) draws the same sofa in SVG coordinates. It stays out of scope (different coordinate frame); BL-51's room redraw will replace it anyway.
+
+No copy has drifted: every body and value matches. Homes, keeping the existing G1 → F2 import direction and the server/client split:
+
+- `clampTo` (`frames-on-wall/state.ts:258`) and `PICKER_START` (`:316`): export them; delete `gallery-wall/state.ts:327` and `:452` and import instead.
+- `pc` (`frames-on-wall/stage.tsx:18`): export it; delete the two G1 copies. Every file involved is `"use client"`, and `gallery-wall.tsx` already imports `stage.tsx`.
+- `SOFA_PARTS`: a Next `opengraph-image.tsx` route can't export it and `stage.tsx` is client, so move it to `frames-on-wall/display.ts` (non-client, already imported server-side). Both OG routes import it.
+- `Dims`: a new non-client G1 file (for example `components/gallery-wall/dims.tsx`). `page.tsx` is a server component, and importing from the client `gallery-wall.tsx` would turn `Dims` into a client reference. `gallery-wall.tsx` re-exports or imports from it, so its existing importers keep working.
+
+No spec delta: no requirement changes, and both mapped specs exist, so the spec hook passes. No new test. The guards are typecheck, the unit suites (`frames-on-wall` and `gallery-wall` state and component tests, `saved-wall.test.ts`), the F2, G1 and extension e2e, and the extension build. No test checks OG image pixels, so the fix lane compares the two prerendered OG PNGs byte for byte before and after.
+
+Files: `apps/web/src/components/frames-on-wall/{state.ts,stage.tsx,display.ts}`, `apps/web/src/components/gallery-wall/{state.ts,gallery-wall.tsx,nail-marks.tsx}`, the new `Dims` file, `apps/web/src/app/gallery-wall-planner/page.tsx`, `apps/web/src/app/{frame-sizes-on-wall,gallery-wall-planner}/opengraph-image.tsx`.
 
 ## BL-34: one phone stage height
 

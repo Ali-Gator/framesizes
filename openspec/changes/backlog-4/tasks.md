@@ -8,6 +8,7 @@
 
 ## 2. Fixes — one subagent at a time, serially
 
+- [ ] 2.0 BL-50 — before editing, build once and save the two prerendered OG PNGs (`/frame-sizes-on-wall` and `/gallery-wall-planner` `opengraph-image`); export `clampTo` and `PICKER_START` from `frames-on-wall/state.ts` and `pc` from `frames-on-wall/stage.tsx`, delete the G1 copies (`gallery-wall/state.ts`, `gallery-wall.tsx`, `nail-marks.tsx`) and import them; move `SOFA_PARTS` to `frames-on-wall/display.ts` and import it in both OG routes; move `Dims` to one new non-client G1 file used by `gallery-wall.tsx` and `gallery-wall-planner/page.tsx`. No test is added or edited: `pnpm typecheck`, `pnpm test:unit`, the F2, G1 and extension e2e and the extension build pass unedited, and a rebuild gives byte-identical OG PNGs. `grep -rn "function clampTo\|PICKER_START =\|const pc\|function pc\|SOFA_PARTS =\|function Dims" apps/web/src` lists one definition of each
 - [ ] 2.1 BL-60 — failing test: a new `it` in `apps/extension/src/__tests__/manifest.test.ts` reads `icon-128.png` raw RGBA through sharp (loaded as `scripts/extension-icons.mjs` loads it) and asserts a transparent 16 px ring and opaque art on the inset edge ({@link openspec/specs/gallery-wall-extension/spec.md#scenario-the-128-px-icon-in-the-build}); verify it fails
 - [ ] 2.2 BL-60 — render the 128 size at 96 px with stroke 4.5 and extend by a 16 px transparent border in `scripts/extension-icons.mjs`; run `node scripts/extension-icons.mjs`; commit the regenerated `apps/extension/public/icons/icon-128.png` (16/32/48 unchanged: `git diff --stat` shows only icon-128) until 2.1 passes
 - [ ] 2.3 BL-55 — failing e2e: at 1280 × 800, in inches and in cm, the template table's `.fs-table-wrap` has `scrollWidth <= clientWidth` and a "Furniture it suits" cell is monospace ({@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-template-table-on-a-desktop-screen}); verify it fails
@@ -22,6 +23,6 @@
 ## 3. Verify, delete, review, archive, ship
 
 - [ ] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
-- [ ] 3.2 Delete shipped bullets BL-33, BL-34, BL-41, BL-55, BL-60 from `docs/backlog.md`; verify `grep -cE "BL-(33|34|41|55|60)\]" docs/backlog.md` prints 0
+- [ ] 3.2 Delete shipped bullets BL-33, BL-34, BL-41, BL-50, BL-55, BL-60 from `docs/backlog.md`; verify `grep -cE "BL-(33|34|41|50|55|60)\]" docs/backlog.md` prints 0
 - [ ] 3.3 `/code-review high` in a fresh subagent; fix, log the rest as new BL items from the `_Next id:_` counter
 - [ ] 3.4 Archive (`/opsx:archive` flow, no Tracker). After archive, fix the Behavior text in `openspec/specs/frame-size-chart/spec.md` (the island "re-render once with the stored unit": the table now shows it from first paint) and `openspec/specs/frames-on-wall/spec.md` ("they render in inches and switch after hydration": the digits are hidden until the widget renders in cm). Preflight (`pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `openspec validate --all --no-interactive`), push, PR to `main`, auto-merge with a merge commit

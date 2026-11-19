@@ -14,6 +14,7 @@ A visitor who chose centimetres still sees inches before React loads. The Units 
 - **G1 template table fits its column (BL-55).** The five-row, four-column table "Gallery wall layout with sizes" no longer scrolls sideways at desktop widths. "Furniture it suits" keeps the monospace look the approved canvas draws.
 - **Padded 128 icon (BL-60).** `scripts/extension-icons.mjs` renders the 128 px icon as 96 px of art inside a 16 px transparent border, matching `apps/extension/store/store-icon-128.png`. `icon-128.png` is regenerated.
 - **One stage height on the phone (BL-34).** A registered custom property holds the phone stage height. The stage and the focused row's `scroll-margin-top` both read it. Nothing rendered changes.
+- **One copy of each shared helper (BL-50).** `clampTo` and `PICKER_START` are exported from F2's state, and `pc` from F2's stage. G1 imports them instead of keeping copies. The OG images' `SOFA_PARTS` moves to one non-client F2 module. G1's two copies of `Dims` move to one non-client G1 file. Nothing rendered changes.
 
 ## Members
 
@@ -24,10 +25,11 @@ A visitor who chose centimetres still sees inches before React loads. The Units 
 | BL-55 | G1 template table scrolls sideways                  | A, the approved G1 canvas keeps the column monospace                                     |
 | BL-60 | Pad the manifest's 128 icon before publishing       | A, the approved store icon is the target                                                 |
 | BL-34 | Phone `scroll-margin-top` rebuilds the stage height | A                                                                                        |
+| BL-50 | G1 copies small helpers from F2                     | A, added at the user's request                                                           |
 
 **Parked:** none.
 
-**Skipped for size:** BL-50 (G1 copies small helpers from F2). It's fixable now (lane A), but the batch was already at its ceiling of five. It touches the same G1 files as t23-try-on-my-wall task group 4, so it should land before that group starts. Its bullet is unchanged.
+**Batch size:** six fixes, one over the ceiling of five, approved by the user, 2026-11-19 (BL-50 added after triage). BL-50 touches the same G1 files as t23-try-on-my-wall task group 4; landing it first keeps t23 from adding a third `clampTo` copy.
 
 **Base branch:** `22bca20` on `t23-try-on-my-wall`, which is `origin/main` (`4d2446a`) plus the commit that logged BL-60. `main` doesn't have BL-60 yet. The batch branch is `backlog-4`.
 
@@ -68,4 +70,5 @@ None.
 - `scripts/extension-icons.mjs`, `apps/extension/public/icons/icon-128.png`.
 - `apps/web/src/app/widgets.css` (phone stage height).
 - Specs: the behaviour text in `frame-size-chart` and `frames-on-wall` ("re-render once with the stored unit" / "render in inches and switch after hydration") gets fixed at archive.
-- Backlog: BL-33, BL-34, BL-41, BL-55 and BL-60 are deleted when this ships.
+- BL-50: `apps/web/src/components/frames-on-wall/{state.ts,stage.tsx,display.ts}`, `apps/web/src/components/gallery-wall/{state.ts,gallery-wall.tsx,nail-marks.tsx}`, a new non-client G1 file for `Dims`, `apps/web/src/app/gallery-wall-planner/page.tsx`, both `opengraph-image.tsx` routes. The extension bundles these G1 files and rebuilds unchanged.
+- Backlog: BL-33, BL-34, BL-41, BL-50, BL-55 and BL-60 are deleted when this ships.
