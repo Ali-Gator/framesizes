@@ -230,6 +230,7 @@ test("a landscape picture hangs its longer side across", async ({ context, exten
   // 36 wide on the 144 in wall: 54 in each side.
   await expect(distance(page, "From the left")).toHaveValue("54");
   await expect(distance(page, "To the ceiling")).toHaveValue("30");
+  await expect(page.getByText("36 × 24 in · unframed")).toBeVisible();
 });
 
 /**
@@ -262,6 +263,22 @@ test("Add to my layout makes the print frame F, kept with its picture", async ({
   await expect(planner(page).locator(".wf-hit")).toHaveCount(6);
   await expect(planner(page).getByRole("button", { name: "F · 24 × 36 in print" })).toBeVisible();
   await expect(planner(page).locator(".wf-art-img")).toHaveAttribute("src", /^blob:/);
+});
+
+/** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-an-added-print-survives-a-reload} */
+test("a print added just before the panel closes keeps its picture", async ({
+  context,
+  extensionId,
+}) => {
+  const page = await openPanel(context, extensionId);
+  await hang(page);
+  await page.getByRole("button", { name: "Add to my layout" }).click();
+  await expect(planner(page).locator(".wf-hit")).toHaveCount(6);
+  // Closed inside the 300 ms write, as a side panel closes.
+  await page.close({ runBeforeUnload: true });
+  const again = await openPanel(context, extensionId);
+  await expect(planner(again).getByRole("button", { name: "F · 24 × 36 in print" })).toBeVisible();
+  await expect(planner(again).locator(".wf-art-img")).toHaveAttribute("src", /^blob:/);
 });
 
 /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-going-back} */

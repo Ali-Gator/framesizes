@@ -33,7 +33,9 @@ function Panel() {
   const { planner } = wall;
   const inFlow = planner.mode !== "sample" && planner.mode !== "photo";
   const live = wall.ready && record && t.id === record.id && !inFlow ? record : null;
-  const size = live ? chosenSize(t, live.sizes, unit) : null;
+  const size = live ? chosenSize(t, live.sizes) : null;
+  // The page's own image size says which way it runs; else the stored picture's.
+  const landscape = live?.shape ? live.shape.w > live.shape.h : (trial.image?.landscape ?? null);
 
   let body = null;
   if (live && t.step === "hang" && size) {
@@ -41,6 +43,7 @@ function Panel() {
       <HangView
         record={live}
         image={trial.image}
+        landscape={landscape}
         state={t}
         dispatch={sendT}
         size={size}

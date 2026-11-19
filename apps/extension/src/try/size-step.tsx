@@ -107,10 +107,12 @@ export function SizeStep({
                   inputMode="decimal"
                   autoComplete="off"
                   value={field === "w" ? state.wText : state.hText}
-                  onChange={(event) => dispatch({ type: "text", field, text: event.target.value })}
+                  onChange={(event) =>
+                    dispatch({ type: "text", field, text: event.target.value, unit })
+                  }
                 />
                 <span className="wf-u" aria-hidden="true">
-                  {unit}
+                  {state.wText || state.hText ? state.typedUnit : unit}
                 </span>
               </span>
             </div>
@@ -137,7 +139,7 @@ export function SizeStep({
           Hang it on my wall
         </Button>
         {reason ? (
-          <p className="x-why" id={`${id}-why`}>
+          <p className="x-why" id={`${id}-why`} role="status">
             {reason}
           </p>
         ) : null}

@@ -27,7 +27,11 @@ export const CHANNEL = "gallery-wall";
 export interface TryRecord {
   v: 1;
   id: string;
+  /** When "Try on my wall" was chosen: a slower, older click never replaces a newer try. */
+  at: number;
   image: Blob | null;
+  /** The image's own pixel size on the page, for which way it runs; `null` when not found. */
+  shape: { w: number; h: number } | null;
   title: string;
   host: string;
   sizes: FoundSize[];
@@ -98,17 +102,23 @@ export async function transact<T>(
 
 export const readTry = () => transact("readonly", (store) => done<unknown>(store.get(TRY)));
 export const writeTry = (record: TryRecord) =>
-  transact("readwrite", (store) => done(store.put(record, TRY)));
+  transact("readwrite", async (store) => {
+    const stored = usableTry(await done<unknown>(store.get(TRY)));
+    if (!stored || stored.at <= record.at) await done(store.put(record, TRY));
+  });
 export const deleteTry = () => transact("readwrite", (store) => done(store.delete(TRY)));
 
 /** A stored try the panel can show, or `null`. */
 export function usableTry(value: unknown): TryRecord | null {
   const r = value as Partial<TryRecord> | null | undefined;
   if (r?.v !== 1 || typeof r.id !== "string" || !Array.isArray(r.sizes)) return null;
+  const shape = r.shape;
   return {
     v: 1,
     id: r.id,
+    at: typeof r.at === "number" ? r.at : 0,
     image: r.image instanceof Blob ? r.image : null,
+    shape: shape && shape.w > 0 && shape.h > 0 ? { w: Number(shape.w), h: Number(shape.h) } : null,
     title: typeof r.title === "string" ? r.title : "",
     host: typeof r.host === "string" ? r.host : "",
     sizes: r.sizes,

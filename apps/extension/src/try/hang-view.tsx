@@ -8,7 +8,7 @@ import {
   writeNumber,
 } from "@/components/frames-on-wall/display";
 import { type Dimension, WallStage } from "@/components/frames-on-wall/stage";
-import { areaOf } from "@/components/gallery-wall/gallery-wall";
+import { areaOf, furnitureWord as furnitureOf } from "@/components/gallery-wall/gallery-wall";
 import { MAX_FRAMES, placeOf, type PlannerState } from "@/components/gallery-wall/state";
 import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -25,6 +25,7 @@ import {
   type Size,
   tipOf,
   type To,
+  turnLabel,
   turnSize,
   withDistance,
 } from "./hang";
@@ -62,6 +63,7 @@ function rowName(side: Side, to: To | undefined, furniture: string) {
 export function HangView({
   record,
   image,
+  landscape,
   state,
   dispatch,
   size,
@@ -75,6 +77,8 @@ export function HangView({
 }: {
   record: TryRecord;
   image: TryImage | null;
+  /** Which way the picture runs; `null` when unknown, and the size hangs as written. */
+  landscape: boolean | null;
   state: TryState;
   dispatch: (action: TryAction) => void;
   /** The picked or typed size, as written. */
@@ -90,9 +94,10 @@ export function HangView({
 }) {
   const id = useId();
   const sample = planner.mode === "sample";
-  const furnitureWord = sample || planner.known === "sofa" ? "sofa" : "bed";
+  const furnitureWord = furnitureOf(planner);
   const { wall, furniture } = placeOf(planner);
-  const turned = turnSize(size, image?.landscape ?? null);
+  const turned = turnSize(size, landscape);
+  const label = turnLabel(size.label, size, turned);
   const outside = outsideOf(turned, state.framed);
   const base = hangPrint(outside, wall, furniture);
   const rect = placed(base, state.at);
@@ -141,7 +146,7 @@ export function HangView({
       ? `${writeDistance(d.below.value, unit)} above the ${furnitureWord}`
       : "centred on the wall";
   const sizeWords = `${inUnit(turned.w, written)} by ${inUnit(turned.h, written)} ${written}`;
-  const label = `${record.title || "The print"}, ${sizeWords}${state.framed ? ", in a 1 in frame" : ""}, ${where}, ${sample ? "on a 12 by 8 ft sample wall" : "on your wall photo"}`;
+  const scene = `${record.title || "The print"}, ${sizeWords}${state.framed ? ", in a 1 in frame" : ""}, ${where}, ${sample ? "on a 12 by 8 ft sample wall" : "on your wall photo"}`;
   const dims: Dimension[] = SIDES.flatMap((side) => {
     const one = d[side];
     return one ? [{ side, value: one.value }] : [];
@@ -152,7 +157,7 @@ export function HangView({
     <div className="x-pbody">
       <ArtHead record={record} image={image}>
         <span className="x-size-line">
-          {size.label} ·{" "}
+          {label} ·{" "}
           {state.framed
             ? `${inUnit(outside.w, written)} × ${inUnit(outside.h, written)} framed`
             : "unframed"}
@@ -166,14 +171,14 @@ export function HangView({
       <WallStage
         area={areaOf(planner)}
         photo={sample ? null : planner.photo}
-        label={label}
+        label={scene}
         frames={[
           {
             id: "print",
-            size: size.label,
+            size: label,
             rect: shown,
             selected: true,
-            name: `The print, ${size.label}`,
+            name: `The print, ${label}`,
             art: image?.url,
             moulding: state.framed ? MOULDING : 0,
           },
@@ -287,14 +292,12 @@ export function HangView({
           className="x-block"
           disabled={full}
           aria-describedby={full ? `${id}-full` : undefined}
-          onClick={() =>
-            onAdd({ w: turned.w, h: turned.h, label: size.label, framed: state.framed })
-          }
+          onClick={() => onAdd({ w: turned.w, h: turned.h, label, framed: state.framed })}
         >
           Add to my layout
         </Button>
         {full ? (
-          <p className="x-why" id={`${id}-full`}>
+          <p className="x-why" id={`${id}-full`} role="status">
             That&apos;s 12 frames, the most the planner holds.
           </p>
         ) : null}

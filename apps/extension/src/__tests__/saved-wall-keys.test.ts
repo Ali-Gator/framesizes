@@ -12,6 +12,7 @@ import {
 import {
   artChanges,
   fromSaved,
+  journalFor,
   type SavedPhoto,
   type StoredRecord,
   savedPhoto,
@@ -133,10 +134,31 @@ describe("the saved wall's keys", () => {
     expect(bare && framesOf(bare).at(-1)?.print).toEqual({ ...PRINT, art: undefined });
   });
 
+  it("journals a closing write only when no new photo bytes are waiting", () => {
+    const state = run(ON_SOFA);
+    const fresh = toStored(wall(state, savedPhoto(state, null, BLOB)), null, stamp);
+    expect(fresh.putPhoto).toBe(BLOB);
+    expect(journalFor(fresh)).toBeNull();
+    const before: WallRecord = { planner: fresh.current.planner, photo: fresh.photo };
+    const moved = reducer(state, { type: "nudge", id: "t0", dx: -2, dy: 0 });
+    const layoutOnly = toStored(wall(moved, savedPhoto(moved, fresh.photo, null, true)), before);
+    expect(journalFor(layoutOnly)).toBe(layoutOnly.current);
+  });
+
   it("reads a try record the panel can show, and nothing else", () => {
-    const record = { v: 1, id: "t1", image: ART, title: "Blue", host: "shop.example", sizes: [] };
+    const record = {
+      v: 1,
+      id: "t1",
+      at: 5,
+      image: ART,
+      shape: { w: 3, h: 4 },
+      title: "Blue",
+      host: "shop.example",
+      sizes: [],
+    };
     expect(usableTry(record)).toEqual(record);
     expect(usableTry({ ...record, image: "data" })?.image).toBeNull();
+    expect(usableTry({ ...record, shape: { w: 0, h: 4 } })?.shape).toBeNull();
     expect(usableTry({ ...record, v: 2 })).toBeNull();
     expect(usableTry(undefined)).toBeNull();
   });

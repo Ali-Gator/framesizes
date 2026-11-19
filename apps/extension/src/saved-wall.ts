@@ -265,6 +265,10 @@ export const writeWall = (
     return put.map(([id]) => id);
   });
 
+/** A print's picture, written as soon as the print is added, not with the next layout write. */
+export const writeArt = (frameId: string, picture: Blob) =>
+  transact("readwrite", (store) => done(store.put(picture, artKey(frameId))));
+
 /**
  * A closing page's last change. Chrome drops an IndexedDB write started while a page closes, so
  * the flush also keeps `current` in localStorage, which is written at once. The next page to read
@@ -273,7 +277,15 @@ export const writeWall = (
  */
 export const JOURNAL = "gallery-wall-closing";
 
-export function writeJournal(current: StoredRecord): string | null {
+/**
+ * What a closing write may journal: `current`, unless it names photo bytes not stored yet. A
+ * replay would pair the new photo's scale and marks with the old photo's bytes.
+ */
+export const journalFor = (write: { current: StoredRecord; putPhoto: Blob | null }) =>
+  write.putPhoto ? null : write.current;
+
+export function writeJournal(current: StoredRecord | null): string | null {
+  if (!current) return null;
   const text = JSON.stringify({ ...current, at: Date.now() });
   try {
     localStorage.setItem(JOURNAL, text);

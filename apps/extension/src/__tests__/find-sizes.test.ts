@@ -23,6 +23,13 @@ describe("the sizes in a page's text", () => {
     expect(findSizes("Image 24 x 36 px, 18x24 pixels")).toEqual([]);
   });
 
+  it("reads past a canvas's depth, and skips feet and metres", () => {
+    expect(labels("Canvas, 60 × 90 × 3 cm")).toEqual(["60 × 90 cm"]);
+    expect(labels('16 x 20 x 1.5" deep')).toEqual(["16 × 20 in"]);
+    expect(findSizes("Rug 4 x 6 ft, mat 5 x 7 m, 6 x 9' runner")).toEqual([]);
+    expect(labels("24 x 36 matte")).toEqual(["24 × 36 in"]);
+  });
+
   it("reads millimetres and comma decimals as exact inches", () => {
     const [mm] = findSizes("A2 poster, 420 x 594 mm");
     expect(mm?.label).toBe("420 × 594 mm");

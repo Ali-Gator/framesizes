@@ -35,6 +35,13 @@ export function turnSize(size: Size, landscape: boolean | null): Size {
   return landscape ? { w: long, h: short } : { w: short, h: long };
 }
 
+/** The size as written, its numbers swapped when the print hangs turned: "36 × 24 in". */
+export function turnLabel(label: string, size: Size, turned: Size): string {
+  if (size.w === turned.w) return label;
+  const parts = /^(.+?) × (.+?) (\S+)$/.exec(label);
+  return parts ? `${parts[2]} × ${parts[1]} ${parts[3]}` : label;
+}
+
 /** The wall the print covers: its own size, plus a 1 in moulding each side when framed. */
 export const outsideOf = (size: Size, framed: boolean): Size => {
   const m = framed ? MOULDING : 0;

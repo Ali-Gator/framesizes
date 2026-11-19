@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-62**
+_Next id:_ **BL-66**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -98,6 +98,23 @@ when to add and when to fold items in.
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
   consumer appears (design decision 2).
   _Refs:_ `apps/extension/vite.config.ts`, `apps/extension/tsconfig.json` · _Status:_ deferred — a third consumer of G1's planner
+- **[BL-62] The crop can race the side panel's reflow** — with no host permission most shop CDNs fail
+  the fetch, so the picture is cut from `captureVisibleTab`; the capture and `readPage`'s box can land
+  after `sidePanel.open` narrows the page, so the crop can be off. Measure what happens on real shops
+  (task 9.2) and, if it bites, capture before opening or crop from the box measured after the reflow.
+  _Refs:_ `apps/extension/src/background.ts` (`onMenuClick`), `apps/extension/src/read-page.ts` · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
+- **[BL-63] A waiting button leaves the Tab order** — "Hang it on my wall" and "Add to my layout" use
+  native `disabled`, so keyboard users never land on them to hear the reason (now a `role="status"`
+  line). Consider `aria-disabled` with a no-op click so the reason is read on focus.
+  _Refs:_ `apps/extension/src/try/size-step.tsx`, `apps/extension/src/try/hang-view.tsx` · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
+- **[BL-64] Two panels can share a print picture's URL** — `artUrlFor` caches object URLs by frame id;
+  two panels in two windows adding prints with the same next id keep each other's picture. Key the
+  cache by the Blob, not the id.
+  _Refs:_ `apps/extension/src/use-wall.ts` (`artUrls`) · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
+- **[BL-65] Every load reads every print picture** — `readWall` reads all `art:` Blobs on each load
+  (twice when a journal is replayed), though a page reuses the URLs it holds. Read only the ids it has
+  no URL for.
+  _Refs:_ `apps/extension/src/saved-wall.ts` (`readWall`, `replayJournal`) · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
 
 ## Widgets
 

@@ -1,8 +1,8 @@
 import type { Unit } from "@framesizes/sizes";
 
-import { parseLength } from "@/components/frames-on-wall/display";
+import { parseLength, writeDistance } from "@/components/frames-on-wall/display";
 
-import type { FoundSize } from "../find-sizes";
+import { type FoundSize, MAX_SIDE, MIN_SIDE } from "../find-sizes";
 
 /*
  * The try's own state: the size step's pick, typed size and frame, then the print hanging with the
@@ -18,6 +18,8 @@ export interface TryState {
   picked: number | "other" | null;
   wText: string;
   hText: string;
+  /** The unit the size was typed in: in | cm switched later does not change it. */
+  typedUnit: Unit;
   framed: boolean;
   /** The visitor's move from where the rule hangs it, in inches. */
   at: { dx: number; dy: number };
@@ -26,7 +28,7 @@ export interface TryState {
 export type TryAction =
   | { type: "start"; id: string; sizes: readonly FoundSize[] }
   | { type: "pick"; picked: number | "other" }
-  | { type: "text"; field: "w" | "h"; text: string }
+  | { type: "text"; field: "w" | "h"; text: string; unit: Unit }
   | { type: "frame"; framed: boolean }
   | { type: "hang" }
   | { type: "change" }
@@ -41,6 +43,7 @@ export const startTry = (id: string, sizes: readonly FoundSize[]): TryState => (
   picked: sizes.length === 1 ? 0 : sizes.length === 0 ? "other" : null,
   wText: "",
   hText: "",
+  typedUnit: "in",
   framed: false,
   at: ZERO,
 });
@@ -52,7 +55,12 @@ export function tryReducer(state: TryState, action: TryAction): TryState {
     case "pick":
       return { ...state, picked: action.picked, at: ZERO };
     case "text":
-      return { ...state, [action.field === "w" ? "wText" : "hText"]: action.text, at: ZERO };
+      return {
+        ...state,
+        [action.field === "w" ? "wText" : "hText"]: action.text,
+        typedUnit: action.unit,
+        at: ZERO,
+      };
     case "frame":
       return { ...state, framed: action.framed };
     case "hang":
@@ -64,18 +72,24 @@ export function tryReducer(state: TryState, action: TryAction): TryState {
   }
 }
 
+/** The typed width and height in inches, in the unit they were typed in. */
+const typed = (state: TryState) => ({
+  w: parseLength(state.wText, state.typedUnit),
+  h: parseLength(state.hText, state.typedUnit),
+});
+const inRange = (side: number | null) => side !== null && side >= MIN_SIDE && side <= MAX_SIDE;
+
 /** The size picked or typed, in inches as written, with its label; `null` while it waits. */
 export function chosenSize(
   state: TryState,
   sizes: readonly FoundSize[],
-  unit: Unit,
 ): { w: number; h: number; label: string } | null {
   if (typeof state.picked === "number") return sizes[state.picked] ?? null;
   if (state.picked !== "other") return null;
-  const w = parseLength(state.wText, unit);
-  const h = parseLength(state.hText, unit);
-  if (!w || !h) return null;
-  return { w, h, label: `${state.wText.trim()} × ${state.hText.trim()} ${unit}` };
+  const { w, h } = typed(state);
+  if (!inRange(w) || !inRange(h) || w === null || h === null) return null;
+  const label = `${state.wText.trim()} × ${state.hText.trim()} ${state.typedUnit}`;
+  return { w, h, label };
 }
 
 const COUNT = ["", "one", "two", "three", "four", "five", "six", "seven", "eight"];
@@ -89,7 +103,11 @@ export function waitReason(
   sizes: readonly FoundSize[],
   unit: Unit,
 ): string | null {
-  if (chosenSize(state, sizes, unit)) return null;
-  if (state.picked === "other") return "Type the width and height first.";
+  if (chosenSize(state, sizes)) return null;
+  if (state.picked === "other") {
+    const { w, h } = typed(state);
+    if (!w || !h) return "Type the width and height first.";
+    return `Type a width and height from ${writeDistance(MIN_SIDE, unit)} to ${writeDistance(MAX_SIDE, unit)}.`;
+  }
   return `Pick a size first: this page lists ${COUNT[sizes.length] ?? sizes.length}.`;
 }

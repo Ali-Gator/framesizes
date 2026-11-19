@@ -27,6 +27,8 @@ import {
   toStored,
   toWall,
   type WallRecord,
+  journalFor,
+  writeArt,
   writeJournal,
   writeWall,
 } from "./saved-wall";
@@ -190,9 +192,9 @@ export function useWall() {
       // The other page's write landed meanwhile: this planner is stale.
       if (loads.current !== startedAt) return;
       const next: WallRecord = { planner: toSaved(planner), photo };
-      if (sameSaved(record.current, next) && pendingArt.current.size === 0) return;
+      if (sameSaved(record.current, next)) return;
       const stored = toStored(next, record.current);
-      const journaled = closing ? writeJournal(stored.current) : null;
+      const journaled = closing ? writeJournal(journalFor(stored)) : null;
       try {
         await writeWall(stored.current, stored.putPhoto, pendingArt.current);
       } catch {
@@ -200,11 +202,11 @@ export function useWall() {
       }
       // The page lived to finish the write: no journal needed.
       if (closing) dropJournal(journaled);
-      // A picture is stored once its print is written; one whose print was removed is dropped.
-      const written = new Set(next.planner.added.map((a) => a.id));
+      // A picture stays at hand while its print is on this page's wall: a write from the other
+      // page may drop its key, and the next write here puts it back.
       const shown = new Set(current.current.added.map((a) => a.id));
       for (const id of [...pendingArt.current.keys()]) {
-        if (written.has(id) || !shown.has(id)) pendingArt.current.delete(id);
+        if (!shown.has(id)) pendingArt.current.delete(id);
       }
       record.current = { planner: next.planner, photo: stored.photo };
       send({ type: "saved", hasPhoto: !!stored.photo });
@@ -305,6 +307,8 @@ export function useWall() {
       art = URL.createObjectURL(picture);
       artUrls.current.set(id, art);
       pendingArt.current.set(id, picture);
+      // At once: a panel closed right after "Add" must not lose the picture.
+      void writeArt(id, picture).catch(() => undefined);
     }
     send({ type: "addPrint", print: { ...print, art } });
   }, []);

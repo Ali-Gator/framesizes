@@ -16,6 +16,8 @@ export interface PageRead {
   text: string;
   title: string;
   rect: ImageRect | null;
+  /** The image's natural size: its shape, whatever part of it is on screen. */
+  shape: { w: number; h: number } | null;
 }
 
 /**
@@ -40,7 +42,11 @@ export function readPage(srcUrl: string): PageRead {
     box && box.width > 0 && box.height > 0
       ? { x: box.x, y: box.y, w: box.width, h: box.height, dpr: window.devicePixelRatio || 1 }
       : null;
-  return { text, title, rect };
+  const shape =
+    image && image.naturalWidth > 0 && image.naturalHeight > 0
+      ? { w: image.naturalWidth, h: image.naturalHeight }
+      : null;
+  return { text, title, rect, shape };
 }
 
 /** The right-clicked image's bytes: `http`, `https` and `data:` only, and only an image. */

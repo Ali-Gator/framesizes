@@ -9,6 +9,7 @@ const PAGE = {
   text: "Poster. Sizes: 24 x 36 in, 18 x 24 in.",
   title: "Blue Hour Print",
   rect: { x: 10, y: 20, w: 300, h: 400, dpr: 2 },
+  shape: { w: 1200, h: 1600 },
 };
 const INFO = {
   menuItemId: MENU_ID,
@@ -63,6 +64,7 @@ function fake({
       saved.push(record);
     },
     ping: () => calls.push("ping"),
+    clearTry: async () => void calls.push("clear"),
   };
   return { api, io, calls, saved };
 }
@@ -89,9 +91,9 @@ describe("the Try on my wall menu", () => {
     const { api, io, calls } = fake();
     const done = onMenuClick(api, io, INFO, TAB);
     // Synchronously, before the first await settles: the read, the capture and the open.
-    expect(calls).toEqual(["inject 7 0", "capture 3", "open 3"]);
+    expect(calls).toEqual(["inject 7 0", "capture 3", "open 3", "clear"]);
     await done;
-    expect(calls.slice(3)).toEqual([`fetch ${INFO.srcUrl}`, "ping"]);
+    expect(calls.slice(4)).toEqual([`fetch ${INFO.srcUrl}`, "ping"]);
   });
 
   /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-try-keeps-only-what-the-panel-shows} */
@@ -101,14 +103,16 @@ describe("the Try on my wall menu", () => {
     expect(saved).toHaveLength(1);
     const record = saved[0];
     expect(Object.keys(record ?? {}).sort()).toEqual(
-      ["host", "id", "image", "sizes", "title", "v"].sort(),
+      ["at", "host", "id", "image", "shape", "sizes", "title", "v"].sort(),
     );
     expect(record).toMatchObject({
       v: 1,
       image: BLOB,
       title: "Blue Hour Print",
       host: "www.shop.example",
+      shape: { w: 1200, h: 1600 },
     });
+    expect(record?.at).toBeGreaterThan(0);
     expect(record?.sizes.map((s) => s.label)).toEqual(["24 × 36 in", "18 × 24 in"]);
     expect(JSON.stringify(record)).not.toContain("Poster.");
   });

@@ -9,6 +9,7 @@ import {
   outsideOf,
   placed,
   tipOf,
+  turnLabel,
   turnSize,
   withDistance,
 } from "../try/hang";
@@ -45,7 +46,10 @@ describe("the print on the wall", () => {
   });
 
   /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-landscape-picture} */
-  it("turns the size the way the picture runs", () => {
+  it("turns the size the way the picture runs, and its label with it", () => {
+    expect(turnLabel("24 × 36 in", P24, { w: 36, h: 24 })).toBe("36 × 24 in");
+    expect(turnLabel("60 × 90 cm", P24, P24)).toBe("60 × 90 cm");
+    expect(turnLabel("29,7 × 42 cm", { w: 1, h: 2 }, { w: 2, h: 1 })).toBe("42 × 29,7 cm");
     expect(turnSize(P24, true)).toEqual({ w: 36, h: 24 });
     expect(turnSize(size(36, 24), false)).toEqual({ w: 24, h: 36 });
     expect(turnSize(size(36, 24), null)).toEqual({ w: 36, h: 24 });
@@ -83,7 +87,7 @@ describe("the size step", () => {
     expect(waitReason(state, three, "in")).toBe("Pick a size first: this page lists three.");
     const picked = tryReducer(state, { type: "pick", picked: 2 });
     expect(waitReason(picked, three, "in")).toBeNull();
-    expect(chosenSize(picked, three, "in")).toEqual(P24);
+    expect(chosenSize(picked, three)).toEqual(P24);
   });
 
   /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-one-size-found} */
@@ -98,12 +102,31 @@ describe("the size step", () => {
     let state = startTry("t1", []);
     expect(state.picked).toBe("other");
     expect(waitReason(state, [], "in")).toBe("Type the width and height first.");
-    state = tryReducer(state, { type: "text", field: "w", text: "60" });
+    state = tryReducer(state, { type: "text", field: "w", text: "60", unit: "cm" });
     expect(waitReason(state, [], "cm")).not.toBeNull();
-    state = tryReducer(state, { type: "text", field: "h", text: "90" });
-    const chosen = chosenSize(state, [], "cm");
+    state = tryReducer(state, { type: "text", field: "h", text: "90", unit: "cm" });
+    const chosen = chosenSize(state, []);
     expect(chosen?.label).toBe("60 × 90 cm");
     expect(chosen?.w).toBeCloseTo(60 / 2.54, 9);
+    // Switching to inches later reads the same print, not a 60 × 90 in one.
+    expect(waitReason(state, [], "in")).toBeNull();
+    expect(chosenSize(state, [])?.w).toBeCloseTo(60 / 2.54, 9);
+  });
+
+  it("waits for a typed size from 3 to 120 in", () => {
+    const typed = (w: string, h: string) =>
+      [
+        { type: "text", field: "w", text: w, unit: "in" } as const,
+        { type: "text", field: "h", text: h, unit: "in" } as const,
+      ].reduce(tryReducer, startTry("t1", []));
+    expect(chosenSize(typed("5000", "3000"), [])).toBeNull();
+    expect(waitReason(typed("5000", "3000"), [], "in")).toBe(
+      "Type a width and height from 3 in to 120 in.",
+    );
+    expect(waitReason(typed("2", "10"), [], "cm")).toBe(
+      "Type a width and height from 8 cm to 305 cm.",
+    );
+    expect(chosenSize(typed("3", "120"), [])).toMatchObject({ w: 3, h: 120 });
   });
 
   it("starts again only for a new try, and goes back to the size step", () => {

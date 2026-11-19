@@ -7,7 +7,7 @@
 
 import { findSizes } from "./find-sizes";
 import { cropShot, fetchImage, type ImageRect, type PageRead, readPage } from "./read-page";
-import { CHANNEL, type TryRecord, writeTry } from "./store";
+import { CHANNEL, deleteTry, type TryRecord, writeTry } from "./store";
 
 export const SITE = "https://framesizes.app";
 export const HOW_TO = `${SITE}/extensions/gallery-wall-layout-generator`;
@@ -92,6 +92,8 @@ export interface TryIo {
   fetchImage(url: string): Promise<Blob | null>;
   crop(shot: string, rect: ImageRect): Promise<Blob | null>;
   saveTry(record: TryRecord): Promise<void>;
+  /** The last try goes at once, so the panel never shows it while this one is read. */
+  clearTry(): Promise<void>;
   /** Tells an open panel a try is waiting. */
   ping(): void;
 }
@@ -123,6 +125,7 @@ export async function onMenuClick(
   tab: { id?: number; windowId?: number; title?: string } | undefined,
 ): Promise<void> {
   if (info.menuItemId !== MENU_ID || tab?.id === undefined || tab.windowId === undefined) return;
+  const at = Date.now();
   const frameId = info.frameId ?? 0;
   const srcUrl = info.srcUrl ?? "";
   const read = api.scripting
@@ -139,6 +142,7 @@ export async function onMenuClick(
       ? api.tabs.captureVisibleTab(tab.windowId, { format: "png" }).catch(() => null)
       : Promise.resolve(null);
   void api.sidePanel.open({ windowId: tab.windowId }).catch(() => undefined);
+  void io.clearTry().catch(() => undefined);
 
   const page = await read;
   let image = await io.fetchImage(srcUrl);
@@ -155,7 +159,9 @@ export async function onMenuClick(
   await io.saveTry({
     v: 1,
     id: crypto.randomUUID(),
+    at,
     image,
+    shape: page?.shape ?? null,
     title: page?.title || (tab.title ?? "").trim().slice(0, 80),
     host,
     sizes: findSizes(page?.text ?? ""),
@@ -166,7 +172,8 @@ export async function onMenuClick(
 const tryIo: TryIo = {
   fetchImage,
   crop: cropShot,
-  saveTry: (record) => writeTry(record).then(() => undefined),
+  saveTry: (record) => writeTry(record),
+  clearTry: () => deleteTry().then(() => undefined),
   ping: () => {
     const bus = new BroadcastChannel(CHANNEL);
     bus.postMessage({ from: "worker", try: true });
