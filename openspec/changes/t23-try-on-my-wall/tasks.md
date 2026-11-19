@@ -22,7 +22,7 @@
 
 ## 5. Storage keys and the try record
 
-- [ ] 5.1 Write `apps/extension/src/__tests__/saved-wall-keys.test.ts`: a v1 inline photo read, a v2 write split into `current`, `photo` and `art:<id>`, the photo Blob not rewritten when only the layout changes (BL-58), an orphan `art:` key deleted, a print round trip with its picture, and the `try` record read and deleted; verify it fails and `saved-wall.test.ts` is untouched
+- [x] 5.1 Write `apps/extension/src/__tests__/saved-wall-keys.test.ts`: a v1 inline photo read, a v2 write split into `current`, `photo` and `art:<id>`, the photo Blob not rewritten when only the layout changes (BL-58), an orphan `art:` key deleted, a print round trip with its picture, and the `try` record read and deleted; verify it fails and `saved-wall.test.ts` is untouched
 - [ ] 5.2 Implement record v2 and the blob keys in `saved-wall.ts` and `use-wall.ts` (design decision 4); verify both saved-wall test files pass and the existing `e2e/extension.spec.ts` passes unedited
 
 ## 6. The try view

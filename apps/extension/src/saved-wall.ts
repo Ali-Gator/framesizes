@@ -1,6 +1,8 @@
+import { ART } from "./store";
 import {
   initialState,
   type PlannerState,
+  type Print,
   reducer,
   type RestorePhoto,
 } from "@/components/gallery-wall/state";
@@ -39,6 +41,30 @@ export interface SavedPhoto {
   marks: RestorePhoto["marks"];
   floor: number | null;
   scale: number;
+  /** Changes with the bytes: the `photo` key is written only when it does (BL-58). */
+  stamp?: string;
+}
+
+/** The photo as `current` keeps it in v2: its bytes are under the `photo` key. */
+export type PhotoMeta = Omit<SavedPhoto, "blob" | "stamp"> & { stamp: string };
+
+/** Record v2: the layout and the photo's meta; the photo and print pictures have their own keys. */
+export interface StoredRecord {
+  v: 2;
+  planner: SavedPlanner;
+  photo: PhotoMeta | null;
+}
+
+/** The wall in memory, either version: the photo with its bytes. */
+export interface WallRecord {
+  planner: SavedPlanner;
+  photo: SavedPhoto | null;
+}
+
+/** The Blobs read beside `current`: the photo's bytes and each print's picture by frame id. */
+export interface StoredBlobs {
+  photo: Blob | null;
+  art: Record<string, Blob>;
 }
 
 export interface SavedRecord {
@@ -56,7 +82,13 @@ export function toSaved(state: PlannerState): SavedPlanner {
   // In the upload or a scale step the layout is still on the wall it came from: the scaled photo
   // ("Change photo") while that photo and its scale are held, else the sample room.
   const wall = state.mode !== "sample" && state.photo && state.scale !== null ? "photo" : "sample";
-  return { ...kept, wall };
+  // A print's picture is an object URL of this page: its bytes are under `art:<id>`.
+  const added = kept.added.map((a) => {
+    if (!a.print) return a;
+    const { w, h, label, framed } = a.print;
+    return { ...a, print: { w, h, label, framed } };
+  });
+  return { ...kept, added, wall };
 }
 
 /**
@@ -92,10 +124,24 @@ export const restoreAction = (photo: SavedPhoto, url: string): RestorePhoto => (
  * The planner a record brings back, every dialog closed, or `null` for a record of another
  * version. `makeUrl` turns the stored photo into an object URL, only when the photo is shown.
  */
-export function fromSaved(record: unknown, makeUrl: (blob: Blob) => string): PlannerState | null {
-  const r = record as Partial<SavedRecord> | null | undefined;
-  if (r?.v !== 1 || !r.planner) return null;
-  const { wall, ...kept } = r.planner;
+export function fromSaved(
+  record: unknown,
+  makeUrl: (blob: Blob) => string,
+  blobs: StoredBlobs = { photo: null, art: {} },
+  artUrl: (frameId: string, blob: Blob) => string = (_, blob) => makeUrl(blob),
+): PlannerState | null {
+  const r = toWall(record, blobs);
+  if (!r) return null;
+  const { wall, ...saved } = r.planner;
+  const kept = {
+    ...saved,
+    added: saved.added.map((a) => {
+      if (!a.print) return a;
+      const bytes = blobs.art[a.id];
+      const print: Print = { ...a.print, art: bytes ? artUrl(a.id, bytes) : undefined };
+      return { ...a, print };
+    }),
+  };
   const layout: PlannerState = { ...initialState(), ...kept };
   if (wall !== "photo") return layout;
   const photo = usablePhoto(r.photo);
@@ -115,6 +161,52 @@ export function fromSaved(record: unknown, makeUrl: (blob: Blob) => string): Pla
   return { ...reducer(layout, restoreAction(photo, makeUrl(photo.blob))), ...kept };
 }
 
+/** Either version of `current` as the wall in memory, or `null` for any other. */
+export function toWall(record: unknown, blobs: StoredBlobs): WallRecord | null {
+  const r = record as Partial<SavedRecord> | Partial<StoredRecord> | null | undefined;
+  if (!r?.planner) return null;
+  if (r.v === 1) return { planner: r.planner, photo: (r.photo as SavedPhoto | null) ?? null };
+  if (r.v !== 2) return null;
+  const meta = r.photo as PhotoMeta | null | undefined;
+  return { planner: r.planner, photo: meta && blobs.photo ? { ...meta, blob: blobs.photo } : null };
+}
+
+/**
+ * The write of `next`: `current` with the photo's meta, and the photo's bytes only when they are
+ * not the bytes already stored (a v1 photo, with no stamp, counts as not stored).
+ */
+export function toStored(
+  next: WallRecord,
+  before: WallRecord | null,
+  newStamp: () => string = () => crypto.randomUUID(),
+): { current: StoredRecord; photo: SavedPhoto | null; putPhoto: Blob | null } {
+  const was = before?.photo;
+  if (!next.photo)
+    return { current: { v: 2, planner: next.planner, photo: null }, photo: null, putPhoto: null };
+  const same = !!was?.stamp && was.blob === next.photo.blob;
+  const stamp = same && was?.stamp ? was.stamp : newStamp();
+  const { blob, ...meta } = next.photo;
+  return {
+    current: { v: 2, planner: next.planner, photo: { ...meta, stamp } },
+    photo: { ...next.photo, stamp },
+    putPhoto: same ? null : blob,
+  };
+}
+
+/** The `art:` keys to put (a new print's picture) and to delete (a print that is gone). */
+export function artChanges(
+  keys: readonly IDBValidKey[],
+  planner: SavedPlanner,
+  pending: ReadonlyMap<string, Blob>,
+): { put: [string, Blob][]; remove: string[] } {
+  const prints = new Set(planner.added.filter((a) => a.print).map((a) => a.id));
+  const stored = keys.filter((k): k is string => typeof k === "string" && k.startsWith(ART));
+  const have = new Set(stored.map((k) => k.slice(ART.length)));
+  const put = [...pending].filter(([id]) => prints.has(id) && !have.has(id));
+  const remove = stored.filter((k) => !prints.has(k.slice(ART.length)));
+  return { put, remove };
+}
+
 /** The stored photo when it can be drawn: bytes, a size and a scale. */
 function usablePhoto(photo: SavedPhoto | null | undefined): SavedPhoto | null {
   if (!photo || !(photo.blob instanceof Blob)) return null;
@@ -123,7 +215,7 @@ function usablePhoto(photo: SavedPhoto | null | undefined): SavedPhoto | null {
 }
 
 /** The record's layout and photo, to tell a real change from one that changes nothing saved. */
-export const sameSaved = (a: SavedRecord | null, b: SavedRecord) =>
+export const sameSaved = (a: WallRecord | null, b: WallRecord) =>
   a !== null && a.photo === b.photo && JSON.stringify(a.planner) === JSON.stringify(b.planner);
 
 /**
@@ -166,5 +258,4 @@ export const readRecord = () => run<unknown>("readonly", (store) => store.get(KE
 export const writeRecord = (record: SavedRecord) =>
   run("readwrite", (store) => store.put(record, KEY));
 
-/** The channel the panel and the tab tell each other on after a write. */
-export const CHANNEL = "gallery-wall";
+export { CHANNEL } from "./store";
