@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { U } from "@/components/ui/u";
 import { WidgetCard } from "@/components/ui/widget-card";
-import { useUnit } from "@/lib/unit";
+import { useUnit, useUnitSettled } from "@/lib/unit";
 
 import { chipSize, count, targetName, warningText, WIDGET_TITLE } from "./copy";
 import { Dims } from "./dims";
@@ -132,6 +132,7 @@ export function GalleryWall({
   dispatch?: Dispatch;
 } = {}) {
   const unit = useUnit();
+  useUnitSettled(unit);
   // Runs either way, so the hook order never changes; ignored while controlled.
   const [ownState, ownDispatch] = useReducer(reducer, undefined, initialState);
   const controlled = outerState !== undefined && outerDispatch !== undefined;

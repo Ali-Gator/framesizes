@@ -165,6 +165,16 @@
   box-shadow: none;
 }
 
+/*
+ * A stored "cm" sets `<html data-unit-pending>` (layout.tsx) until the widget renders in cm
+ * (lib/unit.ts): the fields' server-rendered inch digits stay invisible, the box and caret stay put.
+ * `!important` beats gallery.css's negative-distance colour.
+ */
+[data-unit-pending] .wf-num input {
+  color: transparent !important;
+  caret-color: var(--ink);
+}
+
 /* In-text links in page copy (PageLink renders a bare <a>): the `link` look. */
 .page :is(p, li) a:not([class]) {
   color: var(--ink);
