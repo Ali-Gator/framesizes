@@ -200,7 +200,7 @@ export default function GalleryWallPlanner() {
           Each template uses standard frame sizes, so you can buy the frames off the shelf.
         </p>
         {/* {@link openspec/specs/gallery-wall-planner/spec.md#requirement-the-template-table-lists-each-templates-size-on-the-wall} */}
-        <div className="max-w-[760px]">
+        <div className="g-tpl-table max-w-[760px]">
           <SizeTable
             title="Gallery wall layout with sizes"
             meta={
