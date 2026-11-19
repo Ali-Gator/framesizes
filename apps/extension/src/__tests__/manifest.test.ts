@@ -25,7 +25,7 @@ describe("the manifest", () => {
   it("asks only for the side panel and lets only framesizes.app message it", () => {
     expect(manifest.manifest_version).toBe(3);
     expect(manifest.minimum_chrome_version).toBe("116");
-    expect(manifest.permissions).toEqual(["sidePanel"]);
+    expect(manifest.permissions).toEqual(["sidePanel", "contextMenus", "activeTab", "scripting"]);
     for (const key of ["host_permissions", "optional_permissions", "content_scripts"]) {
       expect(manifest).not.toHaveProperty(key);
     }

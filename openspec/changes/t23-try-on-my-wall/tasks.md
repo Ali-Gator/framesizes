@@ -2,12 +2,12 @@
 
 ## 1. Permissions
 
-- [ ] 1.1 Set `permissions` in `apps/extension/public/manifest.json` to `["sidePanel", "contextMenus", "activeTab", "scripting"]` and change only the permissions assertion in `manifest.test.ts` (approved 2026-11-18); verify `pnpm test:unit` passes and `manifest.test.ts` still cites `#scenario-the-built-manifest`
+- [x] 1.1 Set `permissions` in `apps/extension/public/manifest.json` to `["sidePanel", "contextMenus", "activeTab", "scripting"]` and change only the permissions assertion in `manifest.test.ts` (approved 2026-11-18); verify `pnpm test:unit` passes and `manifest.test.ts` still cites `#scenario-the-built-manifest`
 
 ## 2. Sizes from page text
 
-- [ ] 2.1 Write `apps/extension/src/__tests__/find-sizes.test.ts` from the spec's "The sizes come from the page text" scenarios plus mm, comma decimals, unitless inches, orientation dedupe and the eight cap; verify it fails
-- [ ] 2.2 Implement `apps/extension/src/find-sizes.ts` (design decision 3); verify the test passes
+- [x] 2.1 Write `apps/extension/src/__tests__/find-sizes.test.ts` from the spec's "The sizes come from the page text" scenarios plus mm, comma decimals, unitless inches, orientation dedupe and the eight cap; verify it fails
+- [x] 2.2 Implement `apps/extension/src/find-sizes.ts` (design decision 3); verify the test passes
 
 ## 3. The click in the worker
 
