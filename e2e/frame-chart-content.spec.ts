@@ -14,9 +14,14 @@ async function serverHtml(page: Page) {
     let answer = h1?.nextElementSibling;
     while (answer && answer.tagName !== "P") answer = answer.nextElementSibling;
     const rows = [...(main?.querySelectorAll("table tbody tr") ?? [])];
+    // Each size cell holds both units (`<U>`); read the inch form, the one shown with nothing stored.
     const row = (value: string) => {
       const r = rows.find((tr) => tr.querySelector<HTMLInputElement>("input")?.value === value);
-      return [...(r?.querySelectorAll("th, td") ?? [])].map(text);
+      return [...(r?.querySelectorAll("th, td") ?? [])].map((cell) => {
+        const inches = cell.cloneNode(true) as Element;
+        inches.querySelectorAll(".u-cm").forEach((cm) => cm.remove());
+        return text(inches);
+      });
     };
     const common = doc.querySelector('[aria-label^="Six common picture frame sizes"]');
     const details = [...(main?.querySelectorAll("details") ?? [])];
