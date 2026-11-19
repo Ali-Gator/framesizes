@@ -14,12 +14,24 @@ const sharp = createRequire(fromWeb.resolve("next/package.json"))("sharp");
 const svg = fs.readFileSync(path.join(root, "apps/extension/icon.svg"), "utf8");
 const STROKE = { 16: 6, 32: 5, 48: 4.5, 128: 4.5 };
 
+// Chrome wants the 128 icon as 96 px art inside a 16 px transparent border; the rest go edge to edge.
+const PAD = { 128: 16 };
+
 for (const [px, stroke] of Object.entries(STROKE)) {
   const out = path.join(root, `apps/extension/public/icons/icon-${px}.png`);
+  const pad = PAD[px] ?? 0;
+  const art = Number(px) - 2 * pad;
   await sharp(Buffer.from(svg.replaceAll("STROKE", String(stroke))), {
-    density: 72 * (Number(px) / 64) * 4,
+    density: 72 * (art / 64) * 4,
   })
-    .resize(Number(px), Number(px))
+    .resize(art, art)
+    .extend({
+      top: pad,
+      bottom: pad,
+      left: pad,
+      right: pad,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
     .png()
     .toFile(out);
   stdout.write(`${out}\n`);
