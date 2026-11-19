@@ -11,8 +11,8 @@
 
 ## 3. The click in the worker
 
-- [ ] 3.1 Write `apps/extension/src/__tests__/menu.test.ts` with a fake `MenuApi`: `registerMenu`'s `removeAll` then `create` arguments, `sidePanel.open` called before any await, fetch → crop → `null` image fallbacks, a failed injection giving no sizes and `tab.title`, and a stored try with no page text; verify it fails and `background.test.ts` is untouched
-- [ ] 3.2 Implement `registerMenu` and `onMenuClick` in `background.ts`, `readPage` and the crop in `src/read-page.ts`, and the try record write plus channel ping (design decisions 1, 2 and 4); verify `menu.test.ts` and `background.test.ts` pass and `pnpm --filter extension build` emits `background.js`
+- [x] 3.1 Write `apps/extension/src/__tests__/menu.test.ts` with a fake `MenuApi`: `registerMenu`'s `removeAll` then `create` arguments, `sidePanel.open` called before any await, fetch → crop → `null` image fallbacks, a failed injection giving no sizes and `tab.title`, and a stored try with no page text; verify it fails and `background.test.ts` is untouched
+- [x] 3.2 Implement `registerMenu` and `onMenuClick` in `background.ts`, `readPage` and the crop in `src/read-page.ts`, and the try record write plus channel ping (design decisions 1, 2 and 4); verify `menu.test.ts` and `background.test.ts` pass and `pnpm --filter extension build` emits `background.js`
 
 ## 4. G1: a print on an added frame
 
