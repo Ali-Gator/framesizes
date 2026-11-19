@@ -51,7 +51,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className={`inline-flex gap-0.5 rounded-pill border-[1.5px] border-line-strong bg-paper p-[3px] ${className ?? ""}`}
+      className={`inline-flex gap-0.5 rounded-pill border-[1.5px] border-line-strong bg-paper p-[3px]${className ? ` ${className}` : ""}`}
     >
       {options.map((option, index) => {
         const checked = option.value === value;

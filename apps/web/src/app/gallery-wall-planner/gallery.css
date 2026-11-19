@@ -494,14 +494,11 @@
   padding-left: 6px;
   padding-right: 6px;
 }
-.g .fs-table thead th {
+:is(.g, .g-tpl-table) .fs-table thead th {
   white-space: normal;
 }
 
 /* Template table: "about 191 cm wide" and its header outgrow the shared 146 px `num` column. */
 .g-tpl-table .fs-table col.fs-col-num:last-child {
   width: 172px;
-}
-.g-tpl-table .fs-table thead th {
-  white-space: normal;
 }

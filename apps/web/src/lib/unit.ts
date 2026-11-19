@@ -58,8 +58,10 @@ const PENDING = "data-unit-pending";
  */
 export function useUnitSettled(unit: Unit) {
   useLayoutEffect(() => {
-    if (document.documentElement.dataset.unit === unit)
-      document.documentElement.removeAttribute(PENDING);
+    // Against the store, not `data-unit`: another tab may have changed storage before hydration.
+    if (unit !== snapshot()) return;
+    document.documentElement.dataset.unit = unit;
+    document.documentElement.removeAttribute(PENDING);
   }, [unit]);
 }
 

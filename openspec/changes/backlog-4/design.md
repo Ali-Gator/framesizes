@@ -153,5 +153,5 @@ Recommendation: (a).
 ## Risks / Trade-offs
 
 - [BL-41's marker never clears if the widget throws before its layout effect] The fields stay blank. The error boundary already replaces the widget in that case, so nothing hides useful digits.
-- [BL-34's `@property` support] It's Baseline since 2024 (Chrome 85, Safari 16.4, Firefox 128). The site targets evergreen browsers. If a browser doesn't support it, the property is unregistered: `100cqi` then resolves at each use, and the radio margin is about 32 px too large. That's harmless.
+- [BL-34's `@property` support] It's Baseline since 2024 (Chrome 85, Safari 16.4, Firefox 128). The site targets evergreen browsers. If a browser doesn't support it, the property is unregistered: `100cqi` then resolves at each use: the radio margin is about 32 px too large and the phone stage about 32 px narrower and 17 px shorter (it measures `.fs-scale`). Accepted: those browsers (Firefox 110–127, Safari 16.0–16.3) are a negligible share, and the picker still works.
 - [BL-33's `ReactNode` labels in `SizeTable`] Typecheck catches the other callers, and they pass strings, which still work.

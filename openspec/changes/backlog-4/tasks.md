@@ -24,5 +24,5 @@
 
 - [x] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
 - [x] 3.2 Delete shipped bullets BL-33, BL-34, BL-41, BL-50, BL-55, BL-60 from `docs/backlog.md`; verify `grep -cE "BL-(33|34|41|50|55|60)\]" docs/backlog.md` prints 0
-- [ ] 3.3 `/code-review high` in a fresh subagent; fix, log the rest as new BL items from the `_Next id:_` counter
+- [x] 3.3 `/code-review high` in a fresh subagent; fix, log the rest as new BL items from the `_Next id:_` counter
 - [ ] 3.4 Archive (`/opsx:archive` flow, no Tracker). After archive, fix the Behavior text in `openspec/specs/frame-size-chart/spec.md` (the island "re-render once with the stored unit": the table now shows it from first paint) and `openspec/specs/frames-on-wall/spec.md` ("they render in inches and switch after hydration": the digits are hidden until the widget renders in cm). Preflight (`pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `openspec validate --all --no-interactive`), push, PR to `main`, auto-merge with a merge commit
