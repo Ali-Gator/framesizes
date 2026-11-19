@@ -83,3 +83,13 @@ export function stepDistance(inches: number, direction: 1 | -1, unit: Unit): num
   const shown = roundDistance(inches, unit);
   return unit === "cm" ? (shown + direction) / CM_PER_INCH : shown + direction * 0.25;
 }
+
+/** The sofa's parts as the widget draws them, in inches from its left end and the floor. */
+export const SOFA_PARTS = [
+  { x: 0, y: 14, w: 84, h: 20, r: 3 },
+  { x: 3, y: 8, w: 78, h: 14, r: 2 },
+  { x: 0, y: 8, w: 7, h: 19, r: 2.5 },
+  { x: 77, y: 8, w: 7, h: 19, r: 2.5 },
+  { x: 3, y: 2.5, w: 2.5, h: 5.5, r: 0 },
+  { x: 78.5, y: 2.5, w: 2.5, h: 5.5, r: 0 },
+];

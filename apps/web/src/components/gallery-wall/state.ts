@@ -24,12 +24,14 @@ import {
 
 import { outsideSize, parseLength, stepDistance } from "@/components/frames-on-wall/display";
 import {
+  clampTo,
   type Mark,
   namedDistances,
   type PhotoAction,
   type PhotoInfo,
   photoReducer,
   type PhotoSlice,
+  PICKER_START,
   sampleSlice,
   wallOf,
 } from "@/components/frames-on-wall/state";
@@ -323,13 +325,6 @@ export function sizesOf(
     .sort((a, b) => area(b.size) - area(a.size));
 }
 
-/** Keeps a rectangle inside the bounds, as far as it fits. */
-function clampTo(rect: Rect, b: Rect): Rect {
-  const x = Math.max(b.x, Math.min(rect.x, b.x + b.w - rect.w));
-  const y = Math.max(b.y, Math.min(rect.y, b.y + b.h - rect.h));
-  return { ...rect, x, y };
-}
-
 /**
  * A frame dragged from `from` by `dx`, `dy` inches: snapped by the engine inside the wall, kept on
  * it. The lines are what it lines up on.
@@ -447,13 +442,6 @@ const changed = (state: PlannerState, next: Partial<PlannerState>): PlannerState
   ...next,
   revision: state.revision + 1,
 });
-
-/** The picker's opening sizes per orientation, as on F2. */
-const PICKER_START: Record<Orientation, string> = {
-  portrait: "11x14",
-  landscape: "14x11",
-  square: "12x12",
-};
 
 /** Moves frame `id` to `rect`: a hand move for a template frame, a new place for an added one. */
 function moveFrame(state: PlannerState, frame: PlannerFrame, rect: Rect): Partial<PlannerState> {

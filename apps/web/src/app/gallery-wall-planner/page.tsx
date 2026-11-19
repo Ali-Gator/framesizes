@@ -12,6 +12,7 @@ import type { ReactNode } from "react";
 import { RelatedTools } from "@/components/frame-chart/related-tools";
 import { writeNumber } from "@/components/frames-on-wall/display";
 import { TEMPLATE_FRAMES } from "@/components/gallery-wall/copy";
+import { Dims } from "@/components/gallery-wall/dims";
 import { GalleryWall } from "@/components/gallery-wall/gallery-wall";
 import { templateTable } from "@/components/gallery-wall/state";
 import { IfLive, PageLink } from "@/components/site/page-link";
@@ -146,14 +147,6 @@ const QUESTIONS = [
     ),
   },
 ];
-
-/** "45 × 16 in" / "114 × 41 cm", each side rounded as a distance. */
-const Dims = ({ w, h }: { w: number; h: number }) => (
-  <U
-    in={`${writeNumber(w, "in")} × ${writeNumber(h, "in")} in`}
-    cm={`${writeNumber(w, "cm")} × ${writeNumber(h, "cm")} cm`}
-  />
-);
 
 /**
  * G1: the gallery wall layout planner, with the gallery wall layout generator.
