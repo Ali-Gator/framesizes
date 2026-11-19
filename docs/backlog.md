@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-61**
+_Next id:_ **BL-62**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -50,6 +50,12 @@ when to add and when to fold items in.
   when React hydrates; the unit suffix already uses `<U>`. Design decision 2 accepted this; fix with
   BL-33 if the same approach covers inputs.
   _Refs:_ `apps/web/src/components/frames-on-wall/frames-on-wall.tsx` · _Status:_ open — t7-frames-on-wall review, 2026-11-15
+- **[BL-61] F1 preview text says inches until hydration** — with cm stored, the scale preview's
+  dimension labels, legend, reference sentence and "Next size up", and the all-sizes labels, render in
+  inches until React hydrates (`useUnit` is "in" on the server). The SVG labels' layout depends on the
+  unit, so `<U>` alone does not fit them. Found in backlog-4 triage (BL-33 was scoped to the toggle and
+  the table).
+  _Refs:_ `apps/web/src/components/ui/scale-preview.tsx`, `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open — backlog-4 triage, 2026-11-19
 
 - **[BL-49] G1 re-lays out the template on every drag move** — `dragFrame` calls `framesOf` per
   pointer move; pass the frames the view already has. No visible lag at 12 frames yet.
