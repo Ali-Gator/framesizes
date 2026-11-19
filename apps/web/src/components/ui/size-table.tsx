@@ -36,7 +36,7 @@ export function SizeTable({
   meta?: ReactNode;
   selectable?: boolean;
   name?: string;
-  columns: readonly { label: string; num?: boolean; mat?: boolean }[];
+  columns: readonly { label: ReactNode; num?: boolean; mat?: boolean }[];
   rows: readonly SizeTableRow[];
   value?: string;
   onSelect?: (id: string) => void;
@@ -60,14 +60,14 @@ export function SizeTable({
           <caption className="fs-sr">{caption}</caption>
         )}
         <colgroup>
-          {columns.map((column) => (
-            <col key={column.label} className={column.num ? "fs-col-num" : undefined} />
+          {columns.map((column, index) => (
+            <col key={index} className={column.num ? "fs-col-num" : undefined} />
           ))}
         </colgroup>
         <thead>
           <tr role="row">
-            {columns.map((column) => (
-              <th key={column.label} scope="col" role="columnheader">
+            {columns.map((column, index) => (
+              <th key={index} scope="col" role="columnheader">
                 {column.label}
               </th>
             ))}

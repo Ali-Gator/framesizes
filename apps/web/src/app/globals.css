@@ -152,6 +152,29 @@
   display: none;
 }
 
+/*
+ * The Units toggle (UnitToggle's `fs-units`) is checked on the option `<html data-unit>` names, so
+ * it shows the stored unit before hydration, when React still marks "in". The same looks as
+ * SegmentedControl's checked and unchecked classes; unlayered, so they win over them.
+ */
+:is([data-unit="in"] .fs-units [data-value="in"], [data-unit="cm"] .fs-units [data-value="cm"]) {
+  @apply bg-tape text-on-tape shadow-[inset_0_0_0_1.5px_var(--ink)] forced-colors:border-[Highlight];
+}
+:is([data-unit="in"] .fs-units [data-value="cm"], [data-unit="cm"] .fs-units [data-value="in"]) {
+  @apply bg-transparent text-ink-muted hover:text-ink forced-colors:border-[Canvas];
+  box-shadow: none;
+}
+
+/*
+ * A stored "cm" sets `<html data-unit-pending>` (layout.tsx) until the widget renders in cm
+ * (lib/unit.ts): the fields' server-rendered inch digits stay invisible, the box and caret stay put.
+ * `!important` beats gallery.css's negative-distance colour.
+ */
+[data-unit-pending] .wf-num input {
+  color: transparent !important;
+  caret-color: var(--ink);
+}
+
 /* In-text links in page copy (PageLink renders a bare <a>): the `link` look. */
 .page :is(p, li) a:not([class]) {
   color: var(--ink);

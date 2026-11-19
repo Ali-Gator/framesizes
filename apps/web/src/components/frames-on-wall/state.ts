@@ -255,7 +255,7 @@ export function centreHeight(state: WallState): number | null {
 }
 
 /** Keeps a rectangle inside the bounds, as far as it fits. */
-function clampTo(rect: Rect, b: Rect): Rect {
+export function clampTo(rect: Rect, b: Rect): Rect {
   const x = Math.max(b.x, Math.min(rect.x, b.x + b.w - rect.w));
   const y = Math.max(b.y, Math.min(rect.y, b.y + b.h - rect.h));
   return { ...rect, x, y };
@@ -313,7 +313,7 @@ function knownInches(state: PhotoSlice, unit: Unit): number | null {
 }
 
 /** The default sizes a new picker opens on, per orientation. */
-const PICKER_START: Record<Orientation, string> = {
+export const PICKER_START: Record<Orientation, string> = {
   portrait: "11x14",
   landscape: "14x11",
   square: "12x12",

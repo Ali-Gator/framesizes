@@ -24,12 +24,15 @@ export function SegmentedControl<T extends string>({
   onChange,
   label,
   size = "md",
+  className,
 }: {
   options: readonly SegmentOption<T>[];
   value: T;
   onChange: (value: T) => void;
   label: string;
   size?: keyof typeof SIZES;
+  /** Extra classes on the group, a hook for page CSS. */
+  className?: string;
 }) {
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -48,7 +51,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className="inline-flex gap-0.5 rounded-pill border-[1.5px] border-line-strong bg-paper p-[3px]"
+      className={`inline-flex gap-0.5 rounded-pill border-[1.5px] border-line-strong bg-paper p-[3px]${className ? ` ${className}` : ""}`}
     >
       {options.map((option, index) => {
         const checked = option.value === value;
@@ -60,6 +63,7 @@ export function SegmentedControl<T extends string>({
             }}
             type="button"
             role="radio"
+            data-value={option.value}
             aria-checked={checked}
             tabIndex={checked ? 0 : -1}
             onClick={() => onChange(option.value)}

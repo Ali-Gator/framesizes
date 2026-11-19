@@ -17,7 +17,7 @@ import { IfLive, PageLink } from "@/components/site/page-link";
 import { Button } from "@/components/ui/button";
 import { U } from "@/components/ui/u";
 import { WidgetCard } from "@/components/ui/widget-card";
-import { useUnit } from "@/lib/unit";
+import { useUnit, useUnitSettled } from "@/lib/unit";
 
 import { KNOWN_COPY, withArticle } from "./copy";
 import { MAX_FRAMES, outsideSize, writeDistance, writeNumber } from "./display";
@@ -97,6 +97,7 @@ function announcement(state: WallState, unit: Unit): string {
  */
 export function FramesOnWall() {
   const unit = useUnit();
+  useUnitSettled(unit);
   const [state, dispatch] = useReducer(reducer, undefined, initialState);
   const [live, setLive] = useState("");
 

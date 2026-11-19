@@ -13,6 +13,7 @@ import { ScalePreview } from "@/components/ui/scale-preview";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { SizeCompare } from "@/components/ui/size-compare";
 import { SizeTable } from "@/components/ui/size-table";
+import { U } from "@/components/ui/u";
 import { WidgetCard } from "@/components/ui/widget-card";
 import { useUnit } from "@/lib/unit";
 import { currentSearch, replaceSearch, useSearch } from "@/lib/url-state";
@@ -78,7 +79,6 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
   const unit = useUnit();
   const state = parseChartState(useSearch());
   const frame = selectedFrame(state);
-  const other = unit === "cm" ? "in" : "cm";
   // Built from the live URL at the moment of the write, never from a stale render.
   const set = (next: Partial<ChartState>) =>
     replaceSearch(chartSearch({ ...parseChartState(currentSearch()), ...next }));
@@ -90,10 +90,16 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
 
   const square = frame.orientation === "square";
   const rectangular = framesFor(frame.orientation === "landscape" ? "landscape" : "portrait");
+  // Both units in the HTML (`<U>`), so `<html data-unit>` shows the stored one from the first paint.
+  // {@link openspec/specs/frame-size-chart/spec.md#requirement-the-table-shows-the-stored-unit-from-first-paint}
   const rows = [...rectangular, ...framesFor("square")].map((f) => ({
     id: f.id,
-    label: writeSize(f, unit),
-    cells: [writeSize(f, other), f.mat ? writeSize(f.mat, unit) : "No mat", f.use],
+    label: <U in={writeSize(f, "in")} cm={writeSize(f, "cm")} />,
+    cells: [
+      <U key="other" in={writeSize(f, "cm")} cm={writeSize(f, "in")} />,
+      f.mat ? <U key="mat" in={writeSize(f.mat, "in")} cm={writeSize(f.mat, "cm")} /> : "No mat",
+      f.use,
+    ],
     hidden: (f.orientation === "square") !== square,
     mat: !!f.mat,
   }));
@@ -152,7 +158,7 @@ export function FrameChart({ footer }: { footer: ReactNode }) {
               name="frame-size"
               columns={[
                 { label: "Frame size", num: true },
-                { label: unit === "cm" ? "Inches" : "Centimetres", num: true },
+                { label: <U in="Centimetres" cm="Inches" />, num: true },
                 { label: "Image with a mat", num: true, mat: true },
                 { label: "Common use" },
               ]}

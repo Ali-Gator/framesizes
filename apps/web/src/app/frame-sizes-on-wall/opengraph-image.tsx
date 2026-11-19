@@ -1,6 +1,7 @@
 import { MOULDING, wallScene } from "@framesizes/sizes";
 import { ImageResponse } from "next/og";
 
+import { SOFA_PARTS } from "@/components/frames-on-wall/display";
 import { LogoMark } from "@/components/site/logo-mark";
 import { ogFonts } from "@/lib/og-font";
 import { livePage } from "@/lib/site-map";
@@ -9,15 +10,6 @@ const F2 = livePage("F2");
 const SCENE = wallScene({ frame: { w: 16, h: 20 }, reference: "sofa" });
 /** Pixels per inch of the drawn scene. */
 const PX = 5;
-/** The sofa's parts as the widget draws them, in inches from its left end and the floor. */
-const SOFA_PARTS = [
-  { x: 0, y: 14, w: 84, h: 20, r: 3 },
-  { x: 3, y: 8, w: 78, h: 14, r: 2 },
-  { x: 0, y: 8, w: 7, h: 19, r: 2.5 },
-  { x: 77, y: 8, w: 7, h: 19, r: 2.5 },
-  { x: 3, y: 2.5, w: 2.5, h: 5.5, r: 0 },
-  { x: 78.5, y: 2.5, w: 2.5, h: 5.5, r: 0 },
-];
 
 // The guide's alt for F2's image.
 export const alt = "16x20 picture frame at true scale next to a three-seat sofa";

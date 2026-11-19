@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useLayoutEffect, useSyncExternalStore } from "react";
 
 export type Unit = "in" | "cm";
 
@@ -48,6 +48,23 @@ export function useUnit(): Unit {
   return useSyncExternalStore(subscribe, snapshot, () => "in");
 }
 
+/** Set by layout.tsx's head script for a stored "cm": globals.css hides `.wf-num` digits meanwhile. */
+const PENDING = "data-unit-pending";
+
+/**
+ * For a widget with `.wf-num` fields: once it renders in the root's unit, lift the head script's
+ * pending marker. A layout effect, so the commit that shows cm digits is the first one painted.
+ * {@link openspec/specs/site-shell/spec.md#requirement-a-stored-centimetre-choice-waits-for-the-widgets}
+ */
+export function useUnitSettled(unit: Unit) {
+  useLayoutEffect(() => {
+    // Against the store, not `data-unit`: another tab may have changed storage before hydration.
+    if (unit !== snapshot()) return;
+    document.documentElement.dataset.unit = unit;
+    document.documentElement.removeAttribute(PENDING);
+  }, [unit]);
+}
+
 /**
  * Every change also lands on `<html data-unit>`, which layout.tsx's head script sets at load, so CSS
  * shows the server-rendered sections in the visitor's unit.
@@ -56,6 +73,7 @@ export function useUnit(): Unit {
 export function setUnit(unit: Unit) {
   chosen = unit;
   document.documentElement.dataset.unit = unit;
+  document.documentElement.removeAttribute(PENDING);
   try {
     window.localStorage.setItem(KEY, unit);
   } catch {

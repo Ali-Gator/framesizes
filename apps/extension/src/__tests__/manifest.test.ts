@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -51,5 +52,32 @@ describe("the manifest", () => {
         expect(pngSize(set[px])).toEqual([Number(px), Number(px)]);
       }
     }
+  });
+
+  // {@link openspec/specs/gallery-wall-extension/spec.md#scenario-the-128-px-icon-in-the-build}
+  it("pads the 128 px icon with a clear 16 px border around 96 px art", async () => {
+    // sharp is Next's dependency, loaded as scripts/extension-icons.mjs loads it.
+    const fromWeb = createRequire(path.resolve(PUBLIC, "../../web/package.json"));
+    const sharp = createRequire(fromWeb.resolve("next/package.json"))("sharp");
+    const { data, info } = await sharp(path.join(PUBLIC, manifest.icons["128"]))
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    expect([info.width, info.height, info.channels]).toEqual([128, 128, 4]);
+    const alpha = (x: number, y: number) => data[(y * 128 + x) * 4 + 3];
+    const inRing = (v: number) => v < 16 || v >= 112;
+    let ringOpaque = 0;
+    let edgeOpaque = 0;
+    for (let y = 0; y < 128; y++) {
+      for (let x = 0; x < 128; x++) {
+        if (inRing(x) || inRing(y)) {
+          if (alpha(x, y) !== 0) ringOpaque++;
+        } else if ((x === 16 || x === 111 || y === 16 || y === 111) && alpha(x, y) === 255) {
+          edgeOpaque++;
+        }
+      }
+    }
+    expect(ringOpaque, "pixels with alpha > 0 in the outer 16 px ring").toBe(0);
+    expect(edgeOpaque, "opaque pixels on the 16 px inset edge").toBeGreaterThan(0);
   });
 });

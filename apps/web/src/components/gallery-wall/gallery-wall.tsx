@@ -25,14 +25,15 @@ import {
   Picker,
   usePhotoFile,
 } from "@/components/frames-on-wall/photo-flow";
-import { type StageFrame, WallStage } from "@/components/frames-on-wall/stage";
+import { pc, type StageFrame, WallStage } from "@/components/frames-on-wall/stage";
 import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { U } from "@/components/ui/u";
 import { WidgetCard } from "@/components/ui/widget-card";
-import { useUnit } from "@/lib/unit";
+import { useUnit, useUnitSettled } from "@/lib/unit";
 
 import { chipSize, count, targetName, warningText, WIDGET_TITLE } from "./copy";
+import { Dims } from "./dims";
 import {
   type Action,
   boxOf,
@@ -76,13 +77,6 @@ const VIEWS = [
 /** A length in both units, for HTML the server renders. */
 export const Len = ({ inches }: { inches: number }) => (
   <U in={writeDistance(inches, "in")} cm={writeDistance(inches, "cm")} />
-);
-/** "46 × 27 in" / "117 × 69 cm", each side rounded as a distance. */
-export const Dims = ({ w, h }: { w: number; h: number }) => (
-  <U
-    in={`${writeNumber(w, "in")} × ${writeNumber(h, "in")} in`}
-    cm={`${writeNumber(w, "cm")} × ${writeNumber(h, "cm")} cm`}
-  />
 );
 
 /** The furniture on the wall, by what was marked. */
@@ -138,6 +132,7 @@ export function GalleryWall({
   dispatch?: Dispatch;
 } = {}) {
   const unit = useUnit();
+  useUnitSettled(unit);
   // Runs either way, so the hook order never changes; ignored while controlled.
   const [ownState, ownDispatch] = useReducer(reducer, undefined, initialState);
   const controlled = outerState !== undefined && outerDispatch !== undefined;
@@ -544,8 +539,6 @@ function LayoutView({
     </div>
   );
 }
-
-const pc = (n: number, of: number) => `${((n / of) * 100).toFixed(3)}%`;
 
 function SidesItem({ left, right }: { left: number | null; right: number | null }) {
   if (left === null && right === null) {

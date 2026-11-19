@@ -106,3 +106,59 @@ test("a stored cm shows the static numbers in cm before any bundle runs", async 
   expect(await shown(anatomy(page))).not.toMatch(INCH);
   expect(await shown(footer(page))).toContain("244 cm");
 });
+
+/** The colours that draw a segmented option's checked look. */
+const look = (option: Locator) =>
+  option.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return [style.backgroundColor, style.color, style.boxShadow].join(" | ");
+  });
+
+/** The checked and unchecked looks, read off the Orientation control: the same component, drawn by React. */
+async function referenceLooks(page: Page) {
+  const orientation = page.getByRole("radiogroup", { name: "Orientation" });
+  return {
+    checked: await look(orientation.getByRole("radio", { name: "Portrait" })),
+    unchecked: await look(orientation.getByRole("radio", { name: "Landscape" })),
+  };
+}
+
+/** {@link openspec/specs/site-shell/spec.md#scenario-a-stored-centimetre-choice-before-the-scripts-run} */
+test("a stored cm gives the Units toggle its checked look before any bundle runs", async ({
+  page,
+}) => {
+  await openBeforeBundles(page, "cm");
+  const { checked, unchecked } = await referenceLooks(page);
+  expect(checked).not.toBe(unchecked);
+  const units = page.getByRole("radiogroup", { name: "Units" });
+  expect(await look(units.getByRole("radio", { name: "cm" }))).toBe(checked);
+  expect(await look(units.getByRole("radio", { name: "in" }))).toBe(unchecked);
+});
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-table-with-centimetres-stored-before-the-scripts-run} */
+test("a stored cm shows the table in cm before any bundle runs", async ({ page }) => {
+  await openBeforeBundles(page, "cm");
+  const row = page.locator('tbody tr:has(input[value="8x10"])');
+  expect(await shown(row.locator("th"))).toBe("20.3 × 25.4 cm");
+  expect(await shown(row.locator("td").first())).toBe("8 × 10 in");
+  // The header's text, not `innerText`: the table's CSS sets headers in capitals.
+  await expect(page.locator("thead th").nth(1).locator("span:visible")).toHaveText("Inches");
+  // `innerText` of a row that is not rendered falls back to its text content, so skip hidden rows.
+  const firstColumn = page.locator("tbody tr:not([hidden]) th");
+  expect(await firstColumn.count()).toBeGreaterThan(0);
+  for (const cell of await firstColumn.all()) expect(await shown(cell)).not.toMatch(INCH);
+});
+
+/** {@link openspec/specs/site-shell/spec.md#scenario-the-toggle-after-the-scripts-run} */
+test("after the bundles run, the Units toggle's look and aria-checked agree", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("unit", "cm"));
+  await open(page);
+  const { checked, unchecked } = await referenceLooks(page);
+  const units = page.getByRole("radiogroup", { name: "Units" });
+  const cm = units.getByRole("radio", { name: "cm" });
+  const inches = units.getByRole("radio", { name: "in" });
+  await expect(cm).toHaveAttribute("aria-checked", "true");
+  await expect(inches).toHaveAttribute("aria-checked", "false");
+  expect(await look(cm)).toBe(checked);
+  expect(await look(inches)).toBe(unchecked);
+});

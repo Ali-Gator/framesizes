@@ -41,7 +41,7 @@ Props-in widgets under `apps/web/src/components/ui/` (ported from the design sys
 
 ## Behavior
 
-`page.tsx` is a server component: the `h1` and answer paragraph, the `FrameChart` island, then the static sections, all reading the size engine. The static sections and the widget footer hold both units in the HTML as `u-in` / `u-cm` spans; CSS on `<html data-unit>` shows the visitor's unit and hides the other, so cm stays crawlable. Next prerenders the island with its default state, so the server HTML holds the whole table and the default drawing. On the client, `useSearch` and `useUnit` (both `useSyncExternalStore`) hydrate with the server values and re-render once with the query string and the stored unit; fixed table column widths (from a widget width of 600px; below it, rows of a fixed 68px) and a fixed-ratio stage keep that re-render from moving the page.
+`page.tsx` is a server component: the `h1` and answer paragraph, the `FrameChart` island, then the static sections, all reading the size engine. The static sections and the widget footer hold both units in the HTML as `u-in` / `u-cm` spans; CSS on `<html data-unit>` shows the visitor's unit and hides the other, so cm stays crawlable. Next prerenders the island with its default state, so the server HTML holds the whole table and the default drawing. On the client, `useSearch` and `useUnit` (both `useSyncExternalStore`) hydrate with the server values and re-render once with the query string and the stored unit. The table's size, other-unit and mat cells and its second header are `<U>` pairs and the Units toggle's checked look follows `<html data-unit>` in CSS, so both show the stored unit from first paint; fixed table column widths (from a widget width of 600px; below it, rows of a fixed 68px) and a fixed-ratio stage keep that re-render from moving the page.
 
 The store also wraps `history.pushState` once, so a soft navigation (the logo link back to `/`) resets the widget, and it keeps its last write in memory until the address bar shows it, so a `replaceState` call the browser drops (Chrome throttles, Safari throws) cannot desync the widget. Each selection writes the URL once: the row's own click handler ignores clicks that start on its label or radio.
 
@@ -488,3 +488,12 @@ When the browser forces its own colours, the selected row of the size table SHAL
 
 - **WHEN** `/` is opened with forced colors active at 390 × 664
 - **THEN** the checked radio's computed fill differs from an unchecked radio's, and the selected row has an outline or border that an unselected row does not
+
+### Requirement: The table shows the stored unit from first paint
+
+The chart table's size, other-unit and mat cells and its second column header SHALL show the visitor's stored unit from the first paint, before any of the page's script bundles have run. The server HTML SHALL hold both units for each of them, and only the stored unit SHALL be visible.
+
+#### Scenario: The table with centimetres stored before the scripts run
+
+- **WHEN** a visitor whose stored unit is centimetres opens `/` and its script bundles have not run yet
+- **THEN** the 8x10 row's first cell shows "20.3 × 25.4 cm" and its second "8 × 10 in", the second column header shows "Inches", and no inch size is visible in the first column

@@ -15,7 +15,7 @@ import { U } from "@/components/ui/u";
 import { writeDistance } from "./display";
 import type { Mark, PhotoInfo } from "./state";
 
-const pc = (n: number, of: number) => `${((n / of) * 100).toFixed(3)}%`;
+export const pc = (n: number, of: number) => `${((n / of) * 100).toFixed(3)}%`;
 
 /** A rectangle in wall inches (bottom-left origin) as CSS on a `w` × `h` stage. */
 const place = (r: Rect, w: number, h: number): CSSProperties => ({

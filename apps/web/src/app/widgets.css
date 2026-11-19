@@ -614,6 +614,13 @@
   }
 }
 
+/* Registered, so `100cqi` computes once on `.fc-grid` (against `.fc`) and descendants inherit px. */
+@property --fc-stage-h {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /*
  * Phone picker (boards a–f): full-bleed rows of three lines with a visible radio, 44px filters
  * and a compact pinned preview. It keys off the card, not `.fc`: zeroing the body's padding widens
@@ -628,30 +635,38 @@
     padding-left: 0;
     padding-right: 0;
   }
+  /*
+   * The stage's height, for the stage and the focused row alike: the drawing's own ratio over the
+   * stage width (`.fc` less the preview's 16px sides), so wide phones see its top and bottom, and
+   * never under 184px.
+   */
+  .fc-grid {
+    --fc-stage-h: max(184px, (100cqi - 32px) * 384 / 720);
+  }
   .fc-preview {
     padding: 12px 16px 8px;
     border-bottom: 1px solid var(--line);
   }
-  /* The drawing's own ratio, so wide phones see its top and bottom. */
+  /* Width follows the height, so a capped stage narrows; uncapped, it is the full stage width. */
   .fc-preview .fs-scale-stage {
-    aspect-ratio: 720 / 384;
+    aspect-ratio: auto;
+    height: var(--fc-stage-h);
+    width: min(100%, var(--fc-stage-h) * 720 / 384);
     max-height: none;
     margin-inline: 0;
   }
   /* Up to a 345px stage (184 · 720/384) it stays 184px tall: the slice crops the sides, kept clipped. */
   @container (max-width: 345px) {
-    .fc-preview .fs-scale-stage {
-      height: 184px;
-      aspect-ratio: auto;
-    }
     .fc-preview .fs-scale-stage svg {
       overflow: hidden;
     }
   }
   /* Pinned: the stage plus the preview's 73px ends in the upper half; at the cap it narrows and centres. */
   @media (min-height: 600px) {
+    .fc-grid {
+      --fc-stage-h: min(max(184px, (100cqi - 32px) * 384 / 720), 50svh - 73px);
+    }
     .fc-preview .fs-scale-stage {
-      max-height: calc(50svh - 73px);
       margin-inline: auto;
     }
   }
@@ -812,13 +827,10 @@
     background: var(--paper);
     outline: none; /* the row draws the focus ring */
   }
-  /*
-   * Only while the preview is pinned: the row top (80px plus the stage) + 23px to the radio's top.
-   * The stage's height again, here through `.fc`: its width less the preview's 16px sides.
-   */
+  /* Only while the preview is pinned: the row top (80px plus the stage) + 23px to the radio's top. */
   @media (min-height: 600px) {
     .fs-table tbody tr:not([hidden]) input {
-      scroll-margin-top: calc(103px + clamp(184px, (100cqi - 32px) * 384 / 720, 50svh - 73px));
+      scroll-margin-top: calc(103px + var(--fc-stage-h));
     }
   }
   .fs-table tbody tr:not([hidden]) input:checked {

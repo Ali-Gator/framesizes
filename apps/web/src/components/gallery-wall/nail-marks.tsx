@@ -4,6 +4,7 @@ import { CM_PER_INCH, type Hanger, type Unit } from "@framesizes/sizes";
 import { useId, useState } from "react";
 
 import { parseLength, writeDistance, writeNumber } from "@/components/frames-on-wall/display";
+import { pc } from "@/components/frames-on-wall/stage";
 import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { SizeTable } from "@/components/ui/size-table";
@@ -28,7 +29,6 @@ const TYPES = [
 
 /** Space around the group on the map, in inches. */
 const MARGIN = 6;
-const pc = (n: number, of: number) => `${((n / of) * 100).toFixed(3)}%`;
 
 /** A typed drop or inset as the field shows it: ¼ in, or one decimal in cm. */
 const fieldText = (inches: number | null, unit: Unit) =>

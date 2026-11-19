@@ -83,7 +83,7 @@ test.describe("at 620 × 800", () => {
   });
 });
 
-// 620 × 600 caps the stage, so the clamp's cap term sets `scroll-margin-top` there.
+// 620 × 600 caps the stage, so `--fc-stage-h`'s cap term sets `scroll-margin-top` there.
 for (const viewport of [
   { width: 620, height: 800 },
   { width: 620, height: 600 },

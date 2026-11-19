@@ -142,7 +142,7 @@ test("centimetres reach the table and the sentence", async ({ page }) => {
   await open(page);
   await choose(page, "Units", "cm");
   await expect(sizeRadio(page, "40.6 × 50.8 cm")).toBeChecked();
-  await expect(page.locator("thead th").nth(1)).toHaveText("Inches");
+  await expect(page.locator("thead th").nth(1).locator("span:visible")).toHaveText("Inches");
   await expect(legend(page)).toContainText("Hung 20 cm above a sofa 213 cm wide");
 });
 
