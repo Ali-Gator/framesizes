@@ -43,7 +43,7 @@
 
 ## 9. Gate
 
-- [ ] 9.1 Run `pnpm fix`, then `pnpm test`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck` and `openspec validate --all --no-interactive`; verify all pass
+- [x] 9.1 Run `pnpm fix`, then `pnpm test`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck` and `openspec validate --all --no-interactive`; verify all pass
 - [ ] 9.2 Load `apps/extension/dist` unpacked in Chrome and right-click a print on a real shop page; verify the panel opens on the print with its sizes and picture, and note in the PR which shop and whether the picture came from the fetch or the crop
 
 ## Workflow follow-up
