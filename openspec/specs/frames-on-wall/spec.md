@@ -69,7 +69,7 @@ Route files: `app/frame-sizes-on-wall/page.tsx`, `opengraph-image.tsx` and `wall
 
 ## Behavior
 
-The page is prerendered with the widget in the sample room, so the server HTML holds the room, the 16x20 and its four distances. Lengths are written with `<U>` (both units in the HTML, CSS shows one); fields, step sizes, `aria-label`s and the live region read `useUnit`, so they render in inches and switch after hydration. The reducer is the only state: each frame change bumps `revision`, and the island reads the selected frame into the polite live region on that bump, never on pointer moves. A drag keeps its rect locally and dispatches once on release. The wall is the demo room, or the photo at `scale` pixels per inch with edges from the floor line and, for the wall, the marked corners; a marked sofa or bed becomes furniture. The photo is an object URL measured with `createImageBitmap` and revoked when it is replaced, when the sample room returns, or on unmount; no code sends it.
+The page is prerendered with the widget in the sample room, so the server HTML holds the room, the 16x20 and its four distances. Lengths are written with `<U>` (both units in the HTML, CSS shows one); fields, step sizes, `aria-label`s and the live region read `useUnit`, so they render in inches and switch after hydration; for a stored cm the head script's `data-unit-pending` marker hides the field digits until the widget's first cm render lifts it (`useUnitSettled`). The reducer is the only state: each frame change bumps `revision`, and the island reads the selected frame into the polite live region on that bump, never on pointer moves. A drag keeps its rect locally and dispatches once on release. The wall is the demo room, or the photo at `scale` pixels per inch with edges from the floor line and, for the wall, the marked corners; a marked sofa or bed becomes furniture. The photo is an object URL measured with `createImageBitmap` and revoked when it is replaced, when the sample room returns, or on unmount; no code sends it.
 
 ## Edge Cases
 
@@ -356,3 +356,17 @@ The page's meta description SHALL give the number of catalog sizes, and the rang
 
 - **WHEN** F2's description is compared with the catalog
 - **THEN** it says "19 standard frame sizes", names 4x6 and 27x40, and names no size outside the catalog
+
+### Requirement: The distance fields show no inch digits to a centimetre visitor
+
+A visitor whose stored unit is centimetres SHALL NOT see inch digits in the widget's distance fields at any point of the page load. Until the widget has rendered in centimetres the fields MAY show no digits. They SHALL keep their size and position, so nothing moves when the digits appear.
+
+#### Scenario: The fields before the scripts run
+
+- **WHEN** a visitor whose stored unit is centimetres opens `/frame-sizes-on-wall` and its script bundles have not run yet
+- **THEN** none of the four distance fields shows a digit, and each field has the same size and position it has after hydration
+
+#### Scenario: The fields after hydration
+
+- **WHEN** a visitor whose stored unit is centimetres opens `/frame-sizes-on-wall` and the page has hydrated
+- **THEN** the 16x20's distance fields read 81 above, 20 below and 160 left and right
