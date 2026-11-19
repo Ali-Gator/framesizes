@@ -16,9 +16,9 @@
 
 ## 4. G1: a print on an added frame
 
-- [ ] 4.1 Write `apps/web/src/components/gallery-wall/__tests__/state-print.test.ts` from the planner delta's scenarios: `addPrint` placement and letter F, outside size framed and unframed, the cm label "60 × 90 cm print", `sizesOf` giving the print its own row, `openPicker` refusing a print, and the 12-frame cap; verify it fails
-- [ ] 4.2 Add `print` to added frames, `addPrint`, the print-aware `outside()`, `frameSize()` and the "Change size" rules in `state.ts`, `gallery-wall.tsx` and `nail-marks.tsx` (design decision 6); verify the new test and every existing G1 unit test pass unedited
-- [ ] 4.3 Give `StageFrame` optional `art` and `moulding` in `frames-on-wall/stage.tsx`, with defaults unchanged; verify the F2 and G1 unit and e2e specs pass unedited
+- [x] 4.1 Write `apps/web/src/components/gallery-wall/__tests__/state-print.test.ts` from the planner delta's scenarios: `addPrint` placement and letter F, outside size framed and unframed, the cm label "60 × 90 cm print", `sizesOf` giving the print its own row, `openPicker` refusing a print, and the 12-frame cap; verify it fails
+- [x] 4.2 Add `print` to added frames, `addPrint`, the print-aware `outside()`, `frameSize()` and the "Change size" rules in `state.ts`, `gallery-wall.tsx` and `nail-marks.tsx` (design decision 6); verify the new test and every existing G1 unit test pass unedited
+- [x] 4.3 Give `StageFrame` optional `art` and `moulding` in `frames-on-wall/stage.tsx`, with defaults unchanged; verify the F2 and G1 unit and e2e specs pass unedited
 
 ## 5. Storage keys and the try record
 

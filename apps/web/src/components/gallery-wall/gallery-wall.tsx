@@ -5,6 +5,7 @@ import {
   findFrame,
   GALLERY_GAP,
   layoutTemplate,
+  MOULDING,
   photoSize,
   type Rect,
   type Side,
@@ -32,7 +33,7 @@ import { U } from "@/components/ui/u";
 import { WidgetCard } from "@/components/ui/widget-card";
 import { useUnit, useUnitSettled } from "@/lib/unit";
 
-import { chipSize, count, targetName, warningText, WIDGET_TITLE } from "./copy";
+import { chipSize, count, frameSize, targetName, warningText, WIDGET_TITLE } from "./copy";
 import { Dims } from "./dims";
 import {
   type Action,
@@ -90,7 +91,8 @@ function sceneLabel(state: PlannerState, frames: number, hasFurniture: boolean):
   return `Gallery wall layout: ${count(frames, "frame", "frames")}${above}${where}`;
 }
 
-const frameName = (f: PlannerFrame) => `Frame ${f.letter}, ${f.size} picture frame`;
+const frameName = (f: PlannerFrame) =>
+  f.print ? `Frame ${f.letter}, ${frameSize(f)}` : `Frame ${f.letter}, ${f.size} picture frame`;
 
 /**
  * The live region's sentence: the selection and its distances.
@@ -107,7 +109,9 @@ function announcement(state: PlannerState, unit: Unit): string {
       ? [`${SIDE_NAME[side]} ${writeDistance(one.value, unit)} to ${targetName(one.to, furniture)}`]
       : [];
   });
-  const who = frame ? `Frame ${frame.letter}, ${frame.size}` : "Whole group";
+  const who = frame
+    ? `Frame ${frame.letter}, ${frame.print ? frameSize(frame) : frame.size}`
+    : "Whole group";
   return `${who}: ${parts.join(", ") || "nothing marked around it"}.`;
 }
 
@@ -293,6 +297,7 @@ function LayoutView({
       selected: f.id === state.selected,
       letter: f.letter,
       name: frameName(f),
+      ...(f.print ? { art: f.print.art, moulding: f.print.framed ? MOULDING : 0 } : {}),
     };
   });
   const shownBox = boxOf(shown);
@@ -494,7 +499,7 @@ function LayoutView({
                     aria-pressed={f.id === state.selected}
                     onClick={() => dispatch({ type: "select", id: f.id })}
                   >
-                    {f.letter} · {chipSize(f.size)}
+                    {f.letter} · {frameSize(f)}
                   </button>
                 ))}
               </div>
@@ -748,7 +753,7 @@ function Selection({
       <div className="wf-sel-head">
         <div className="g-sel-name">
           <span className="wf-sel-size">
-            {frame ? `${frame.letter} · ${chipSize(frame.size)}` : "Whole group"}
+            {frame ? `${frame.letter} · ${frameSize(frame)}` : "Whole group"}
           </span>
           {size ? (
             <span className="wf-muted font-mono">
@@ -770,7 +775,7 @@ function Selection({
           </button>
         ) : null}
       </div>
-      {frame ? (
+      {frame && !frame.print ? (
         <div>
           <Button
             variant="secondary"
@@ -898,25 +903,36 @@ function GroupSizes({
       <ul className="g-gs" aria-labelledby={id}>
         {sizes.map(({ size, frames }) => {
           const f = findFrame(size);
+          const print = frames[0]?.print;
           return (
             <li key={size} className="g-gs-row">
               <div className="g-gs-name">
-                <span className="g-gs-size">{f ? <Dims w={f.w} h={f.h} /> : chipSize(size)}</span>
+                <span className="g-gs-size">
+                  {f ? (
+                    <Dims w={f.w} h={f.h} />
+                  ) : print ? (
+                    frameSize({ size, print })
+                  ) : (
+                    chipSize(size)
+                  )}
+                </span>
                 <span className="g-gs-of">
                   {frames.length === 1 ? "Frame" : "Frames"} {letters(frames)}
                 </span>
               </div>
-              <Button
-                variant="secondary"
-                aria-label={
-                  frames.length === 1
-                    ? `Change the ${nominal(size, unit)} frame`
-                    : `Change all ${count(frames.length, "", `${nominal(size, unit)} frames`)}`
-                }
-                onClick={() => dispatch({ type: "openGroupSize", size })}
-              >
-                Change
-              </Button>
+              {print ? null : (
+                <Button
+                  variant="secondary"
+                  aria-label={
+                    frames.length === 1
+                      ? `Change the ${nominal(size, unit)} frame`
+                      : `Change all ${count(frames.length, "", `${nominal(size, unit)} frames`)}`
+                  }
+                  onClick={() => dispatch({ type: "openGroupSize", size })}
+                >
+                  Change
+                </Button>
+              )}
             </li>
           );
         })}

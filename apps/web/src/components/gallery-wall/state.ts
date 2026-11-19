@@ -8,6 +8,7 @@ import {
   type Hanger,
   layoutTemplate,
   measureGroup,
+  MOULDING,
   type Orientation,
   placeBeside,
   type Rect,
@@ -52,13 +53,28 @@ export const GAP_MAX = 12;
 export type HangerKind = Hanger["kind"];
 type Offset = { dx: number; dy: number };
 
+/**
+ * A print from a shop, added by the Chrome extension: its size in inches as the page wrote it, a
+ * 1 in moulding when framed, and its picture as an object URL the extension owns.
+ * {@link openspec/specs/gallery-wall-planner/spec.md#requirement-a-print-from-a-shop-is-a-frame-of-its-own-size}
+ */
+export interface Print {
+  w: number;
+  h: number;
+  /** The size as found: "24 × 36 in", "60 × 90 cm". */
+  label: string;
+  framed: boolean;
+  art?: string;
+}
+
 export interface PlannerFrame {
   id: string;
   letter: string;
-  /** The catalog id as hung. */
+  /** The catalog id as hung; a print's own frame id, which no catalog size matches. */
   size: string;
   /** The outside rectangle, moulding included. */
   rect: Rect;
+  print?: Print;
 }
 
 export interface PlannerState extends PhotoSlice {
@@ -73,7 +89,7 @@ export interface PlannerState extends PhotoSlice {
   /** The whole group's move. */
   group: Offset;
   /** Frames past the template, placed before the group's move. */
-  added: { id: string; size: string; x: number; y: number }[];
+  added: { id: string; size: string; x: number; y: number; print?: Print }[];
   /** Template frames taken off, by index. */
   removed: number[];
   /** A frame's id, or the whole group. */
@@ -148,7 +164,11 @@ function withSizes(stack: Stack, sizes: Record<number, string>): Stack {
 }
 
 const letter = (n: number) => String.fromCharCode(65 + n);
-const outside = (size: string) => {
+const outside = (size: string, print?: Print) => {
+  if (print) {
+    const m = print.framed ? MOULDING : 0;
+    return { w: print.w + 2 * m, h: print.h + 2 * m };
+  }
   const f = findFrame(size);
   return f ? outsideSize(f) : { w: 0, h: 0 };
 };
@@ -185,7 +205,8 @@ export function framesOf(state: PlannerState): PlannerFrame[] {
     placed.push({
       id: a.id,
       size: a.size,
-      rect: shift({ x: a.x, y: a.y, ...outside(a.size) }, state.group),
+      rect: shift({ x: a.x, y: a.y, ...outside(a.size, a.print) }, state.group),
+      ...(a.print ? { print: a.print } : {}),
     });
   }
   return placed.map((f, n) => ({ ...f, letter: letter(n) }));
@@ -316,13 +337,14 @@ export function sizesOf(
 ): { size: string; frames: PlannerFrame[] }[] {
   const bySize = new Map<string, PlannerFrame[]>();
   for (const f of frames) bySize.set(f.size, [...(bySize.get(f.size) ?? []), f]);
-  const area = (size: string) => {
-    const f = findFrame(size);
+  // A print is keyed by its own id, so it has a row of its own.
+  const area = (size: string, of: PlannerFrame[]) => {
+    const f = findFrame(size) ?? of[0]?.print;
     return f ? f.w * f.h : 0;
   };
   return [...bySize]
     .map(([size, of]) => ({ size, frames: of }))
-    .sort((a, b) => area(b.size) - area(a.size));
+    .sort((a, b) => area(b.size, b.frames) - area(a.size, a.frames));
 }
 
 /**
@@ -352,11 +374,16 @@ export function dragFrame(
 /** Where a new frame of the picker's size goes: beside the selection. */
 export function previewRect(state: PlannerState): Rect | null {
   if (state.picker?.mode !== "add") return null;
+  return besideSelection(state, outside(state.picker.size));
+}
+
+/** Where a new frame of `size` goes: beside the selected frame, or beside the group. */
+function besideSelection(state: PlannerState, size: { w: number; h: number }): Rect | null {
   const frames = framesOf(state);
   const { wall, furniture } = placeOf(state);
   const selected = selectedFrame(state, frames)?.rect ?? boxOf(frames);
   return placeBeside(
-    outside(state.picker.size),
+    size,
     selected,
     [...frames.map((f) => f.rect), ...(furniture ? [furniture] : [])],
     wall,
@@ -402,6 +429,7 @@ export type Action =
   | { type: "pickerAll"; all: boolean }
   | { type: "applyPicker" }
   | { type: "closePicker" }
+  | { type: "addPrint"; print: Print }
   | { type: "hangerFor"; for: "all" | string }
   | { type: "hangerType"; kind: HangerKind }
   | { type: "hangerField"; field: "drop" | "inset"; text: string; unit: Unit }
@@ -695,6 +723,20 @@ export function reducer(state: PlannerState, action: Action): PlannerState {
 
     case "closePicker":
       return { ...state, picker: null };
+
+    case "addPrint": {
+      // The extension's "Add to my layout"; the site never dispatches it.
+      const rect = besideSelection(state, outside("", action.print));
+      if (!rect || framesOf(state).length >= MAX_FRAMES) return state;
+      const id = `a${state.nextId}`;
+      const at = shift(rect, { dx: -state.group.dx, dy: -state.group.dy });
+      return changed(state, {
+        added: [...state.added, { id, size: id, x: at.x, y: at.y, print: action.print }],
+        selected: id,
+        nextId: state.nextId + 1,
+        picker: null,
+      });
+    }
 
     case "hangerFor": {
       const id = action.for;

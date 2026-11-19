@@ -144,6 +144,12 @@ img.wf-scene {
   position: absolute;
   background: var(--tape);
 }
+.wf-art-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .wf-frame.is-sel {
   outline: 2px solid var(--ink);
   outline-offset: 2px;

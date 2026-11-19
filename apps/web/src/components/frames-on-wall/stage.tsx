@@ -37,6 +37,10 @@ export interface StageFrame {
   letter?: string;
   /** The frame button's name; "16x20 frame" by default. */
   name?: string;
+  /** A picture drawn inside the moulding, as an image URL; none by default. */
+  art?: string;
+  /** The moulding's width in inches; `MOULDING` by default. */
+  moulding?: number;
 }
 
 export interface Dimension {
@@ -215,12 +219,18 @@ export function WallStage({
             <span
               className="wf-art"
               style={{
-                left: pc(MOULDING, f.rect.w),
-                right: pc(MOULDING, f.rect.w),
-                top: pc(MOULDING, f.rect.h),
-                bottom: pc(MOULDING, f.rect.h),
+                left: pc(f.moulding ?? MOULDING, f.rect.w),
+                right: pc(f.moulding ?? MOULDING, f.rect.w),
+                top: pc(f.moulding ?? MOULDING, f.rect.h),
+                bottom: pc(f.moulding ?? MOULDING, f.rect.h),
               }}
-            />
+            >
+              {f.art ? (
+                // An object URL the page made; the frame button carries the name.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="wf-art-img" src={f.art} alt="" draggable={false} />
+              ) : null}
+            </span>
             {f.letter ? (
               <span className="g-letter" aria-hidden="true">
                 {f.letter}
