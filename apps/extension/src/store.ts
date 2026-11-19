@@ -42,6 +42,32 @@ function openDb(): Promise<IDBDatabase> {
   });
 }
 
+/**
+ * One connection per page, kept open: a write flushed on `pagehide` must start its transaction in
+ * that task, before the page is gone, and opening a database takes a task of its own (BL-59).
+ */
+let connection: IDBDatabase | null = null;
+let opening: Promise<IDBDatabase> | null = null;
+function db(): IDBDatabase | Promise<IDBDatabase> {
+  if (connection) return connection;
+  opening ??= openDb().then(
+    (opened) => {
+      opened.onclose = opened.onversionchange = () => {
+        opened.close();
+        connection = null;
+      };
+      connection = opened;
+      opening = null;
+      return opened;
+    },
+    (error: unknown) => {
+      opening = null;
+      throw error;
+    },
+  );
+  return opening;
+}
+
 /** One request's result. */
 export const done = <T>(request: IDBRequest<T>) =>
   new Promise<T>((resolve, reject) => {
@@ -57,20 +83,17 @@ export async function transact<T>(
   mode: IDBTransactionMode,
   work: (store: IDBObjectStore) => Promise<T>,
 ): Promise<T> {
-  const db = await openDb();
-  try {
-    const tx = db.transaction(STORE, mode);
-    const committed = new Promise<void>((resolve, reject) => {
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
-      tx.onabort = () => reject(tx.error);
-    });
-    const result = await work(tx.objectStore(STORE));
-    await committed;
-    return result;
-  } finally {
-    db.close();
-  }
+  // With the connection open, the transaction and its first request start in this same task.
+  const open = db();
+  const tx = (open instanceof IDBDatabase ? open : await open).transaction(STORE, mode);
+  const committed = new Promise<void>((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+  const result = await work(tx.objectStore(STORE));
+  await committed;
+  return result;
 }
 
 export const readTry = () => transact("readonly", (store) => done<unknown>(store.get(TRY)));

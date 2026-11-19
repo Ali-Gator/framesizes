@@ -29,17 +29,17 @@
 
 - [x] 6.1 Write `apps/extension/src/__tests__/try.test.ts`: `hangPrint` at 18/8/60/60 unframed and 16/8/59/59 framed in the sample room, the landscape turn, a set distance of 10 in to the sofa giving 16 in to the ceiling, the reducer's pick/wait rules for one, several and no sizes, and the tip's 56 in over 84 in; verify it fails
 - [x] 6.2 Implement `src/try/` (`use-try.ts`, `try-reducer.ts`, `hang.ts`, `size-step.tsx`, `hang-view.tsx`) and the panel switch in `panel.tsx`, including "Use my wall photo" through G1's flow and "Add to my layout" writing `art:<id>` (design decision 5), with the canvas's `x-chip`, `x-art-head`, `x-tip` and `x-why` styles in `extension.css`; verify `try.test.ts` passes and `pnpm --filter extension build` succeeds
-- [ ] 6.3 Run the `humanizer:humanizer` skill over the new panel copy (size step, try view, tip, waiting reasons, aria names), keeping every size and number; verify the strings in the spec scenarios still match
+- [x] 6.3 Run the `humanizer:humanizer` skill over the new panel copy (size step, try view, tip, waiting reasons, aria names), keeping every size and number; verify the strings in the spec scenarios still match
 
 ## 7. BL-56: the wall select in the upload step
 
-- [ ] 7.1 Make `useWall().wall` return `"new"` in the upload and scale steps and render the disabled "New wall photo" option in `toolbar.tsx` (design decision 7); verify by the e2e case in 8.2
+- [x] 7.1 Make `useWall().wall` return `"new"` in the upload and scale steps and render the disabled "New wall photo" option in `toolbar.tsx` (design decision 7); verify by the e2e case in 8.2
 
 ## 8. End to end
 
 - [x] 8.1 Write `e2e/extension-try.spec.ts`, which seeds the `try` record and drives the panel through every extension-delta scenario that a page can reach: several, one and no sizes, hang, framed, set distance, Add then reload, Back, a full layout, "Use my wall photo", reload during a try, axe on the size step and the hang view, and the request list; verify it passes locally with `pnpm test:e2e`
-- [ ] 8.2 Write `e2e/extension-races.spec.ts` for BL-59 (a panel closed inside 300 ms keeps its change; panel and tab edited at once end on the last write) and the BL-56 case; verify it passes locally
-- [ ] 8.3 Delete BL-56, BL-58 and BL-59 from `docs/backlog.md`; verify `grep -c "BL-5[689]" docs/backlog.md` prints 0
+- [x] 8.2 Write `e2e/extension-races.spec.ts` for BL-59 (a panel closed inside 300 ms keeps its change; panel and tab edited at once end on the last write) and the BL-56 case; verify it passes locally
+- [x] 8.3 Delete BL-56, BL-58 and BL-59 from `docs/backlog.md`; verify `grep -c "BL-5[689]" docs/backlog.md` prints 0
 
 ## 9. Gate
 

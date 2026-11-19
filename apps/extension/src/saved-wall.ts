@@ -53,6 +53,8 @@ export interface StoredRecord {
   v: 2;
   planner: SavedPlanner;
   photo: PhotoMeta | null;
+  /** When it was written, to tell a closing page's journal from a later write. */
+  at?: number;
 }
 
 /** The wall in memory, either version: the photo with its bytes. */
@@ -254,7 +256,7 @@ export const writeWall = (
   pending: ReadonlyMap<string, Blob>,
 ) =>
   transact("readwrite", async (store) => {
-    await done(store.put(current, CURRENT));
+    await done(store.put({ ...current, at: current.at ?? Date.now() }, CURRENT));
     if (putPhoto) await done(store.put(putPhoto, PHOTO));
     else if (!current.photo) await done(store.delete(PHOTO));
     const { put, remove } = artChanges(await done(store.getAllKeys()), current.planner, pending);
@@ -262,5 +264,57 @@ export const writeWall = (
     for (const key of remove) await done(store.delete(key));
     return put.map(([id]) => id);
   });
+
+/**
+ * A closing page's last change. Chrome drops an IndexedDB write started while a page closes, so
+ * the flush also keeps `current` in localStorage, which is written at once. The next page to read
+ * the wall writes it to IndexedDB when nothing newer is stored (BL-59).
+ * `ponytail:` new photo bytes and new print pictures are not journaled; they wait for a write.
+ */
+export const JOURNAL = "gallery-wall-closing";
+
+export function writeJournal(current: StoredRecord): string | null {
+  const text = JSON.stringify({ ...current, at: Date.now() });
+  try {
+    localStorage.setItem(JOURNAL, text);
+    return text;
+  } catch {
+    return null;
+  }
+}
+
+/** Drops the journal once its change is in IndexedDB, unless a newer one replaced it. */
+export function dropJournal(text: string | null) {
+  try {
+    if (text === null || localStorage.getItem(JOURNAL) === text) localStorage.removeItem(JOURNAL);
+  } catch {
+    // Storage blocked: nothing was journaled.
+  }
+}
+
+/** Writes a journaled change newer than the stored wall; `true` when it wrote one. */
+export async function replayJournal(): Promise<boolean> {
+  let text: string | null;
+  try {
+    text = localStorage.getItem(JOURNAL);
+  } catch {
+    return false;
+  }
+  if (!text) return false;
+  let wrote = false;
+  try {
+    const journaled = JSON.parse(text) as StoredRecord;
+    const { record } = await readWall();
+    const at = (record as Partial<StoredRecord> | null)?.at ?? 0;
+    if (journaled.v === 2 && (journaled.at ?? 0) > at) {
+      await writeWall(journaled, null, new Map());
+      wrote = true;
+    }
+  } catch {
+    // A journal that cannot be read or written is dropped.
+  }
+  dropJournal(text);
+  return wrote;
+}
 
 export { CHANNEL } from "./store";

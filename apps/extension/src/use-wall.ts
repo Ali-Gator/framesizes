@@ -13,8 +13,11 @@ import {
   CHANNEL,
   fromSaved,
   needsBlob,
+  dropJournal,
+  JOURNAL,
   needsWrite,
   readWall,
+  replayJournal,
   restoreAction,
   type SavedPhoto,
   type StoredBlobs,
@@ -24,6 +27,7 @@ import {
   toStored,
   toWall,
   type WallRecord,
+  writeJournal,
   writeWall,
 } from "./saved-wall";
 
@@ -126,6 +130,8 @@ export function useWall() {
     let saved: unknown = null;
     let blobs: StoredBlobs = { photo: null, art: {} };
     try {
+      // A page that closed with a change still to write left it in the journal.
+      if (await replayJournal()) channel.current?.postMessage({ from: pageId.current });
       ({ record: saved, blobs } = await readWall());
     } catch {
       // Storage blocked: the planner starts fresh and nothing is kept.
@@ -171,7 +177,7 @@ export function useWall() {
   }, []);
 
   const write = useCallback(
-    async (planner: PlannerState) => {
+    async (planner: PlannerState, closing = false) => {
       const startedAt = loads.current;
       const url = planner.photo?.url;
       const kept = record.current?.photo ?? null;
@@ -186,11 +192,14 @@ export function useWall() {
       const next: WallRecord = { planner: toSaved(planner), photo };
       if (sameSaved(record.current, next) && pendingArt.current.size === 0) return;
       const stored = toStored(next, record.current);
+      const journaled = closing ? writeJournal(stored.current) : null;
       try {
         await writeWall(stored.current, stored.putPhoto, pendingArt.current);
       } catch {
         return;
       }
+      // The page lived to finish the write: no journal needed.
+      if (closing) dropJournal(journaled);
       // A picture is stored once its print is written; one whose print was removed is dropped.
       const written = new Set(next.planner.added.map((a) => a.id));
       const shown = new Set(current.current.added.map((a) => a.id));
@@ -214,7 +223,7 @@ export function useWall() {
     if (!waiting) return;
     clearTimeout(waiting.timer);
     pending.current = null;
-    void write(waiting.planner);
+    void write(waiting.planner, true);
   }, [write]);
 
   // Start: read the record, listen for the other page's writes, and flush when hidden.
@@ -233,12 +242,20 @@ export function useWall() {
     const onHide = () => {
       if (document.visibilityState === "hidden") flush();
     };
+    // The other page closed with a change still to write: take it from the journal now.
+    const onJournal = (event: StorageEvent) => {
+      if (event.key !== JOURNAL || !event.newValue) return;
+      if (pending.current || inFlow(current.current)) return;
+      void load();
+    };
     document.addEventListener("visibilitychange", onHide);
     window.addEventListener("pagehide", flush);
+    window.addEventListener("storage", onJournal);
     return () => {
       bus.close();
       document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("pagehide", flush);
+      window.removeEventListener("storage", onJournal);
     };
   }, [load, flush]);
 

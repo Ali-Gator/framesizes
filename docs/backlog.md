@@ -93,25 +93,11 @@ when to add and when to fold items in.
 
 ## Chrome extension
 
-- **[BL-56] Wall select during the upload step** — after G1's "Use my wall photo" from the sample
-  room, the select already reads "My wall photo", so picking it fires nothing and the saved photo is
-  reached only through "Sample room" first. Show the photo choice only on the photo, or add a third
-  state for the upload and scale steps.
-  _Refs:_ `apps/extension/src/use-wall.ts` (`wall`), `apps/extension/src/toolbar.tsx` · _Status:_ open — t23-extension-panel review, 2026-11-18
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
   consumer appears (design decision 2).
   _Refs:_ `apps/extension/vite.config.ts`, `apps/extension/tsconfig.json` · _Status:_ deferred — a third consumer of G1's planner
-- **[BL-58] The wall photo is rewritten with every layout change** — while on the photo, each saved
-  layout change writes the whole photo Blob again in the one record. Keep the photo under its own key,
-  written only when it changes.
-  _Refs:_ `apps/extension/src/saved-wall.ts` · _Status:_ open — t23-extension-panel review, 2026-11-18
-- **[BL-59] No test for the saved wall's write races** — the flush on `pagehide` and on hidden
-  visibility, the stale write dropped after the other page's write, and a broadcast ignored while a
-  change waits are untested; cover them with an e2e that closes the panel inside 300 ms and edits both
-  pages at once.
-  _Refs:_ `apps/extension/src/use-wall.ts`, `e2e/extension.spec.ts` · _Status:_ open — t23-extension-panel review, 2026-11-18
 
 ## Widgets
 

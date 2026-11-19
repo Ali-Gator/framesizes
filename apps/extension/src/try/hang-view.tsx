@@ -141,7 +141,7 @@ export function HangView({
       ? `${writeDistance(d.below.value, unit)} above the ${furnitureWord}`
       : "centred on the wall";
   const sizeWords = `${inUnit(turned.w, written)} by ${inUnit(turned.h, written)} ${written}`;
-  const label = `${record.title || "The print"}, ${sizeWords}${state.framed ? " in a 1 in frame" : ""}, ${where}, ${sample ? "on a 12 by 8 ft sample wall" : "on your wall photo"}`;
+  const label = `${record.title || "The print"}, ${sizeWords}${state.framed ? ", in a 1 in frame" : ""}, ${where}, ${sample ? "on a 12 by 8 ft sample wall" : "on your wall photo"}`;
   const dims: Dimension[] = SIDES.flatMap((side) => {
     const one = d[side];
     return one ? [{ side, value: one.value }] : [];
