@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-76**
+_Next id:_ **BL-78**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -134,8 +134,17 @@ when to add and when to fold items in.
   _Refs:_ `apps/web/src/components/extension/mode-switch.tsx` · _Status:_ open — t24 phase review, 2026-11-20
 - **[BL-70] The pin picture is hard to read on a phone** — the 880-wide toolbar drawing scales to
   about 360 px, so its menu text is near 5 px. Pin mode is rare on a phone (extensions need a
-  computer), so a cropped phone variant of the menu is optional.
+  computer), so a cropped phone variant of the menu is optional. Translated labels are longer:
+  the menu's grey lines shrink below 11.5 px in Hungarian, Greek and Russian (t25).
   _Refs:_ `apps/web/src/components/extension/pin-picture.tsx` · _Status:_ open — t24 apply, 2026-11-20
+- **[BL-76] Mirrored pin picture for Arabic Chrome** — in right-to-left Chrome the puzzle piece and
+  the Extensions menu sit at the top left, but the drawing stays the left-to-right Chrome (the
+  Arabic text says "top left"). Draw a mirrored variant for `/ar/`.
+  _Refs:_ `apps/web/src/components/extension/pin-picture.tsx`, `copy/ar.ts` · _Status:_ open — t25 apply, 2026-11-20
+- **[BL-77] Translated OG image alt** — the 27 translated X1 versions re-export the English social
+  image, so `og:image:alt` stays English; the OG font lacks most of their scripts. Translate the alt
+  (and, with a wider font, the image text) when the whole site is translated.
+  _Refs:_ `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/opengraph-image.tsx` · _Status:_ deferred — whole-site translation
 
 ## Widgets
 

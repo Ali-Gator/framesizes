@@ -56,7 +56,7 @@ No existing test is edited without the user's yes. All tests below are new files
 
   Verify it fails.
 
-- [ ] 5.2 Build `components/i18n/language-picker.tsx` and `components/i18n/picker-copy.ts` to the approved canvas and design "Picker": the trigger (globe-only below 600px), the native `<dialog>`, server-rendered links, the search and the no-match hint. `picker-copy.ts` holds the picker's strings for all 28 languages. Add `TRANSLATED_PATHS` to `lib/locales.ts`, and mount the island in `SiteHeader`'s right-hand group, before the Units toggle. Run `humanizer:humanizer` over the new English picker strings. Verify that 5.1 passes, and that the existing `site-header.test.tsx`, `shell-a11y.spec.ts` and `gallery-wall-phone.spec.ts` pass unedited.
+- [x] 5.2 Build `components/i18n/language-picker.tsx` and `components/i18n/picker-copy.ts` to the approved canvas and design "Picker": the trigger (globe-only below 600px), the native `<dialog>`, server-rendered links, the search and the no-match hint. `picker-copy.ts` holds the picker's strings for all 28 languages. Add `TRANSLATED_PATHS` to `lib/locales.ts`, and mount the island in `SiteHeader`'s right-hand group, before the Units toggle. Run `humanizer:humanizer` over the new English picker strings. Verify that 5.1 passes, and that the existing `site-header.test.tsx`, `shell-a11y.spec.ts` and `gallery-wall-phone.spec.ts` pass unedited.
 
 ## 6. Translations (extension-site)
 
@@ -65,7 +65,7 @@ No existing test is edited without the user's yes. All tests below are new files
 
 ## 7. End-to-end and fonts
 
-- [ ] 7.1 Write `e2e/extension-page-locales.spec.ts`, citing the spec scenarios:
+- [x] 7.1 Write `e2e/extension-page-locales.spec.ts`, citing the spec scenarios:
   - Russian heading outline and `lang="ru"`.
   - Arabic `dir="rtl"`.
   - Japanese pin mode at `?pinned=0`.
@@ -86,18 +86,18 @@ No existing test is edited without the user's yes. All tests below are new files
 
   Verify that `pnpm test` passes.
 
-- [ ] 7.2 Run `pnpm fix` then `pnpm test` (the phase gate). Verify both pass.
+- [x] 7.2 Run `pnpm fix` then `pnpm test` (the phase gate). Verify both pass.
 
 ## 8. Docs and backlog
 
-- [ ] 8.1 Add backlog items:
+- [x] 8.1 Add backlog items:
   - "Mirrored pin picture for Arabic Chrome".
   - "Translated OG image alt".
   - A note on BL-70 that translated labels are longer.
 
   Verify that `_Next id:_` advanced.
 
-- [ ] 8.2 In the On-page SEO guide (docs tools), change the hreflang row from "None" to "X1: 28 languages at `/<code>/…`, `x-default` English", and add one line to X1's note. Verify by reading the row back.
+- [x] 8.2 In the On-page SEO guide (docs tools), change the hreflang row from "None" to "X1: 28 languages at `/<code>/…`, `x-default` English", and add one line to X1's note. Verify by reading the row back.
 
 ## Workflow follow-up
 

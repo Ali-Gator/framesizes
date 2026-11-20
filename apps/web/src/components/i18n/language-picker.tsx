@@ -125,6 +125,12 @@ export function LanguagePicker() {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            // A filled search field eats Escape to clear itself; Escape closes the picker here too.
+            onKeyDown={(event) => {
+              if (event.key !== "Escape") return;
+              event.preventDefault();
+              dialog.current?.close();
+            }}
             placeholder={copy.placeholder}
             autoComplete="off"
             spellCheck={false}

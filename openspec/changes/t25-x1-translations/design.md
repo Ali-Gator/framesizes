@@ -28,7 +28,7 @@ See proposal.md for scope. The requirements are in the three spec deltas.
 
 The translated page lives at `app/[locale]/extensions/gallery-wall-layout-generator/page.tsx`. It sets `generateStaticParams()` from the 27 non-English locales and `dynamicParams = false`, so `/en/…` and `/xx/…` give Next's real 404.
 
-The codes in the path are lowercase, to keep seo-base's lowercase-path rule (`pt-br`, `zh-cn`). The hreflang values keep their standard casing (`pt-BR`).
+The codes in the path are lowercase, to keep seo-base's lowercase-path rule (`pt-br`, `zh-hans`). The hreflang values keep their standard casing (`pt-BR`).
 
 _Alternative:_ route groups with one root layout per language (`(en)` and `[locale]`). That would let `<html lang>` change per language, but it moves every existing route and breaks every README glob. We don't need it while the header and footer are English, so we don't take it.
 
@@ -141,4 +141,4 @@ Nothing to migrate. The English URL is unchanged. All translated versions ship `
 
 ## Open Questions
 
-- **Exact hreflang codes for Norwegian, Filipino and Chinese Simplified.** These are checked against Google's documentation at apply (see the language list decision). The answer changes only a string in `LOCALES`.
+None left. The hreflang codes were settled at apply against Google's localized-versions page (only ISO 639-1 language codes): Norwegian `no`, Filipino `tl` (`fil` is ISO 639-2), Chinese Simplified `zh-Hans`. The source is noted in `lib/locales.ts`.
