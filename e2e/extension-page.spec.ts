@@ -50,6 +50,7 @@ async function serverHtml(page: Page, path = PATH) {
       breadcrumbLists: [...doc.querySelectorAll('script[type="application/ld+json"]')]
         .map((s) => JSON.parse(s.textContent ?? "null") as { "@type"?: string })
         .filter((d) => d?.["@type"] === "BreadcrumbList"),
+      photoNote: text(perm?.nextElementSibling),
       storeLinks: doc.querySelectorAll('a[href^="https://chromewebstore.google.com"]').length,
       shopHeadings: [...doc.querySelectorAll("h2")].filter(
         (h) => text(h) === "Plan on any shop's page",
@@ -157,6 +158,9 @@ test("the permissions list has a framesizes.app row", async ({ page }) => {
   const row = html.permissions.find(([dt]) => dt === "framesizes.app")?.[1] ?? "";
   expect(row).toMatch(/whether the extension is installed and pinned/);
   expect(row).toMatch(/Nothing else is shared/);
+  expect(html.permissions[0]?.[1]).toMatch(/Adds “Try on my wall” when you right-click an image/);
+  expect(html.permissions[1]?.[1]).toMatch(/reads that page once.*the image and any sizes/);
+  expect(html.photoNote).toBe("Your wall photo stays on this computer.");
 });
 
 /** {@link openspec/specs/extension-site/spec.md#scenario-no-detectable-violations-in-either-mode} */
@@ -185,6 +189,7 @@ for (const query of ["?pinned=0", "?pinned=1"]) {
 
 /** {@link openspec/specs/seo-base/spec.md#scenario-the-extension-page-before-go-live} */
 test("before go-live the page is noindex and linked from nowhere", async ({ page }) => {
+  test.skip(X1.live, "X1 is live: the go-live scenarios replace this one");
   const html = await serverHtml(page);
   expect(html.title).toBe("Gallery Wall Layout Generator Chrome Extension | Frame Sizes");
   expect(html.canonicals).toEqual([URL]);
@@ -220,12 +225,14 @@ test("the breadcrumbs name the hub between Home and the page", async ({ page }) 
 
 /** {@link openspec/specs/extension-site/spec.md#scenario-no-store-link-before-go-live} */
 test("no Chrome Web Store link before go-live", async ({ page }) => {
+  test.skip(X1.live, "X1 is live: the go-live scenarios replace this one");
   expect((await serverHtml(page)).storeLinks).toBe(0);
 });
 
 /** {@link openspec/specs/extension-site/spec.md#scenario-no-section-before-go-live} */
 for (const path of ["/gallery-wall-planner", "/frame-sizes-on-wall"]) {
   test(`no extension section on ${path} before go-live`, async ({ page }) => {
+    test.skip(X1.live, "X1 is live: the go-live scenarios replace this one");
     const html = await serverHtml(page, path);
     expect(html.shopHeadings).toBe(0);
     expect(html.storeLinks).toBe(0);

@@ -11,7 +11,7 @@ import {
   siteJsonLd,
   sitemapEntries,
 } from "../seo";
-import { builtPage, type LivePage, livePage, type SitePage } from "../site-map";
+import { builtPage, type LivePage, livePage, page, type SitePage } from "../site-map";
 
 const POSTERS: LivePage = {
   id: "P1",
@@ -149,7 +149,7 @@ describe("pageMetadata for a built page", () => {
 
   /** {@link openspec/specs/seo-base/spec.md#scenario-the-extension-page-before-go-live} */
   it("adds noindex while the page is not live, keeping its own canonical", () => {
-    const meta = pageMetadata(builtPage("X1"));
+    const meta = pageMetadata({ ...builtPage("X1"), live: false });
     expect(meta.robots).toEqual({ index: false });
     expect(meta.alternates?.canonical).toBe(
       "https://framesizes.app/extensions/gallery-wall-layout-generator",
@@ -177,6 +177,14 @@ describe("breadcrumbTrail", () => {
     expect(breadcrumbTrail(livePage("F2")).map((c) => c.name)).toEqual([
       "Home",
       "Frame sizes on your wall",
+    ]);
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#requirement-pages-below-the-home-page-carry-breadcrumbs} */
+  it("leaves out a hub head that is not live, so no crumb links to a missing page", () => {
+    expect(breadcrumbTrail(page("P2"))).toEqual([
+      { name: "Home", path: "/" },
+      { name: "Poster board sizes", path: "/poster-board-sizes" },
     ]);
   });
 });

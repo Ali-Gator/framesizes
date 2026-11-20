@@ -50,7 +50,7 @@ describe("ExtensionSection", () => {
     expect(
       renderToStaticMarkup(<ExtensionSection pages={withLive("G1", "F2")} extensionId={ID} />),
     ).toBe("");
-    expect(renderToStaticMarkup(<ExtensionSection />)).toBe("");
+    expect(renderToStaticMarkup(<ExtensionSection pages={LIVE} extensionId="" />)).toBe("");
   });
 
   /** {@link openspec/specs/extension-site/spec.md#scenario-the-section-on-a-phone} */

@@ -125,4 +125,6 @@ Before 1.1, re-read the X1 row in the On-page SEO guide (https://claude.ai/artif
   - Add "Plan on any shop's page" to the two outline e2e tests (approved 2026-11-20).
   - Run the deferred pre-publish items.
   - Do the manual pin check: install from the store, open `?pinned=0`, pin it, and watch the page switch.
+  - With the store build installed, check on G1 that the section's height is the same before and after the "You have it" swap, and on a 390 px touch phone that it shows the computer line and no "Add to Chrome" (phase review: jsdom checks only the inline `visibility` and the CSS text).
+  - The not-live unit and e2e cases are fixture-driven or skip once X1 is live, so the only test edits are the two outline e2e files.
   - Set T24 to `Done`.

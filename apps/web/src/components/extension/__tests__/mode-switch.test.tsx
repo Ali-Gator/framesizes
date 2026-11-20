@@ -140,6 +140,36 @@ describe("ModeSwitch", () => {
     expect(document.activeElement?.textContent).toBe("What you can do in the side panel");
   });
 
+  /** {@link openspec/specs/extension-site/spec.md#requirement-pin-mode-switches-itself-once-the-button-is-pinned} */
+  it("polls again when Back clears the hash and the query says pin", async () => {
+    const send = fakeExtension(false);
+    await mount(`${PATH}?pinned=0`);
+    window.history.pushState(null, "", `${PATH}?pinned=0#usage`);
+    await act(async () => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    expect(mode()).toBe("usage");
+    await wait(4000);
+    expect(send).toHaveBeenCalledTimes(1);
+    const focused = document.activeElement;
+    window.history.pushState(null, "", `${PATH}?pinned=0`);
+    await act(async () => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    expect(mode()).toBe("pin");
+    expect(document.activeElement).toBe(focused);
+    expect(send).toHaveBeenCalledTimes(2);
+    fakeExtension(true);
+    await wait(2000);
+    expect(mode()).toBe("usage");
+  });
+
+  /** {@link openspec/specs/extension-site/spec.md#scenario-the-visitor-pins-the-button} */
+  it("carries focus from the pin section to the usage heading when it switches itself", async () => {
+    fakeExtension(false, true);
+    document.querySelector<HTMLElement>("#pin h2")?.focus();
+    await mount(`${PATH}?pinned=0`);
+    await wait(2000);
+    expect(mode()).toBe("usage");
+    expect(document.activeElement?.textContent).toBe("What you can do in the side panel");
+  });
+
   it("clears the mode when it leaves the page", async () => {
     await mount(`${PATH}?pinned=0`, "");
     expect(mode()).toBe("pin");

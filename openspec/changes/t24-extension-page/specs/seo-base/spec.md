@@ -21,7 +21,7 @@ The site SHALL declare each page once, with its id, path, hub, short name and wh
 
 ### Requirement: Pages below the home page carry breadcrumbs
 
-A live page other than the home page, and a built page that is not live, SHALL show a breadcrumb trail above its `h1`, as a `nav` named "Breadcrumb". The trail SHALL start with "Home" linking to `/`, then, when the page is not its hub's head and that head is not the home page, the hub's name linking to the hub head, and end with the page's short name, marked as the current page and not linked. The page's server HTML SHALL hold one JSON-LD script with a `BreadcrumbList` that lists the same items, with absolute URLs on `https://framesizes.app`. The home page SHALL carry neither.
+A live page other than the home page, and a built page that is not live, SHALL show a breadcrumb trail above its `h1`, as a `nav` named "Breadcrumb". The trail SHALL start with "Home" linking to `/`, then, when the page is not its hub's head and that head is live and not the home page, the hub's name linking to the hub head, and end with the page's short name, marked as the current page and not linked. The page's server HTML SHALL hold one JSON-LD script with a `BreadcrumbList` that lists the same items, with absolute URLs on `https://framesizes.app`. The home page SHALL carry neither.
 
 #### Scenario: F2's breadcrumbs
 

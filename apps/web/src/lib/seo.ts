@@ -77,7 +77,7 @@ export interface Crumb {
 }
 
 /**
- * Home, then the hub head when the page is not that head and the head is not the home page, then
+ * Home, then the hub head when the page is not that head and the head is live and not the home page, then
  * the page. The visible `Breadcrumbs` and the `BreadcrumbList` both come from it.
  * {@link openspec/specs/seo-base/spec.md#requirement-pages-below-the-home-page-carry-breadcrumbs}
  */
@@ -86,7 +86,7 @@ export function breadcrumbTrail(target: SitePage): Crumb[] {
   const hub = HUBS.find((h) => h.id === target.hub);
   const head = hub && page(hub.head);
   const middle =
-    hub && head && head.id !== target.id && head.path !== "/"
+    hub && head?.live && head.id !== target.id && head.path !== "/"
       ? [{ name: hub.name, path: head.path }]
       : [];
   return [home, ...middle, { name: target.name, path: target.path }];

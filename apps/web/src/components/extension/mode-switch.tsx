@@ -21,39 +21,47 @@ export function ModeSwitch({ extensionId }: { extensionId: string }) {
   useEffect(() => {
     const html = document.documentElement;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    let polling = true;
+    // Each run of the poll has its own token, so a reply to a stopped run is ignored.
+    let run = 0;
     const stop = () => {
-      polling = false;
+      run += 1;
       clearTimeout(timer);
     };
-    const apply = () => {
-      const current = modeOf(location.hash, location.search);
-      html.dataset.extMode = current.mode;
-      return current;
-    };
+    const heading = (mode: string) =>
+      document.getElementById(mode)?.querySelector<HTMLElement>("h2");
 
     // A setTimeout chained after each answer, so a slow reply never overlaps the next question.
-    const poll = async () => {
+    const poll = async (token: number) => {
       if (document.visibilityState === "visible") {
         const status = await askExtension(extensionId);
-        if (!polling) return;
+        if (token !== run) return;
         if (status.installed && status.pinned) {
           stop();
+          const hadFocus = document.getElementById("pin")?.contains(document.activeElement);
           html.dataset.extMode = "usage";
+          // The pin section is about to vanish under the focus; carry it to the shown heading.
+          if (hadFocus) heading("usage")?.focus();
           return;
         }
       }
-      timer = setTimeout(() => void poll(), POLL_MS);
+      timer = setTimeout(() => void poll(token), POLL_MS);
     };
 
-    const first = apply();
-    if (first.mode === "pin" && first.from === "query" && extensionId) void poll();
-    else stop();
+    /** Sets the mode from the URL and polls only in pin mode from `?pinned=0` with no hash. */
+    const apply = () => {
+      stop();
+      const current = modeOf(location.hash, location.search);
+      html.dataset.extMode = current.mode;
+      if (current.mode === "pin" && current.from === "query" && extensionId) void poll(run);
+      return current;
+    };
+
+    apply();
 
     const onHash = () => {
-      stop();
-      const { mode } = apply();
-      document.getElementById(mode)?.querySelector<HTMLElement>("h2")?.focus();
+      const { mode, from } = apply();
+      // A switch link moves focus to the shown section; a hash cleared by Back does not.
+      if (from === "hash") heading(mode)?.focus();
     };
     window.addEventListener("hashchange", onHash);
     return () => {

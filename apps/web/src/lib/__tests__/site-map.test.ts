@@ -140,9 +140,8 @@ describe("a page not yet live that breaks a head limit", () => {
 
 /** {@link openspec/specs/seo-base/spec.md#requirement-a-built-page-that-is-not-live-stays-out-of-the-index} */
 describe("builtPage", () => {
-  it("returns the extension page, not live, with the guide's head values", () => {
+  it("returns the extension page with the guide's head values", () => {
     const x1 = builtPage("X1");
-    expect(x1.live).toBe(false);
     expect(x1.path).toBe("/extensions/gallery-wall-layout-generator");
     expect(fullTitle(x1.seo.title)).toBe(
       "Gallery Wall Layout Generator Chrome Extension | Frame Sizes",

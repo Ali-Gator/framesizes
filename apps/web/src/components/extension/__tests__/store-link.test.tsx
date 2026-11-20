@@ -28,6 +28,6 @@ describe("StoreLink", () => {
   /** {@link openspec/specs/extension-site/spec.md#scenario-no-store-link-before-go-live} */
   it("renders nothing while the extension page is not live", () => {
     expect(renderToStaticMarkup(<StoreLink pages={withLive()} extensionId={ID} />)).toBe("");
-    expect(renderToStaticMarkup(<StoreLink />)).toBe("");
+    expect(renderToStaticMarkup(<StoreLink pages={withLive("X1")} extensionId="" />)).toBe("");
   });
 });
