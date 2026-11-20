@@ -337,6 +337,12 @@ test("a stale page's print gets its own id and picture", async ({ context, exten
   expect(p2?.id).not.toBe(p1?.id);
   // The last write wins: the wall is the second page's, and only P2's picture is kept.
   await expect.poll(() => storedKeys(second)).toEqual([`art:${p2?.id}`, "current"]);
+  // Before any reload, the first page takes the second's wall and shows P2's own picture, not
+  // P1's cached one. The try reached it too: hang it and go back to see the wall.
+  await hangButton(first).click();
+  await first.getByRole("button", { name: "Back to my layout" }).click();
+  await expect(planner(first).locator(".wf-art-img")).toHaveCount(1);
+  await expect.poll(() => shownArt(first)).toEqual([true]);
 
   // After both reload, the print on the wall shows its own picture: P2's runs landscape.
   for (const page of [first, second]) {

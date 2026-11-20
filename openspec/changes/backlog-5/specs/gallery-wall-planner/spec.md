@@ -2,7 +2,7 @@
 
 ### Requirement: Frame letters read on any frame
 
-On the Layout drawing and the nail map, each frame's letter SHALL sit on a paper chip with a 1 px border, centred on the frame, between 12 px and 20 px tall and growing with the frame. On the drawing, the selected frame's chip SHALL be ink.
+On the Layout drawing and the nail map, each frame's letter SHALL sit on a paper chip with a 1 px border, centred on the frame, its letter between 12 px and 20 px tall and growing with the frame. On the drawing, the selected frame's chip SHALL be ink.
 
 #### Scenario: Letters on the sample wall at 1280
 

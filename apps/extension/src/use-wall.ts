@@ -303,6 +303,9 @@ export function useWall() {
   const addPrint = useCallback((print: Print, picture: Blob | null) => {
     // Unique to this page: another page's wall may not have reached this one yet (BL-64).
     const id = `a${current.current.nextId}-${crypto.randomUUID().slice(0, 8)}`;
+    // A print the wall refuses (no room, or 12 frames) keeps no picture under a fresh key.
+    const probe: Action = { type: "addPrint", print, id };
+    if (reducer(current.current, probe) === current.current) return;
     let art: string | undefined;
     if (picture) {
       art = URL.createObjectURL(picture);

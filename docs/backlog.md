@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-73**
+_Next id:_ **BL-76**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -27,6 +27,11 @@ when to add and when to fold items in.
 
 ## Tooling
 
+- **[BL-75] One shared IndexedDB reader for the extension e2e** — `storedKeys`, `storedPrints` and the
+  copies in `extension.spec.ts` and `extension-races.spec.ts` each open `gallery-wall` v1 with no
+  `onerror`, so a schema bump missed in one copy hangs that test until timeout. Move them to one
+  helper in `e2e/fixtures` (edits existing tests).
+  _Refs:_ `e2e/extension-try.spec.ts`, `e2e/extension.spec.ts`, `e2e/extension-races.spec.ts` · _Status:_ open — backlog-5 review, 2026-11-20
 - **[BL-1] Drop the TypeScript 6 alias** — `typescript` is aliased to `@typescript/typescript6` only because
   typescript-eslint lacks TS 7 support; once it ships, depend on plain `typescript@^7` and remove
   `@typescript/native`, so `tsc`, Next.js and eslint use one compiler.
@@ -86,6 +91,11 @@ when to add and when to fold items in.
 
 ## Chrome extension
 
+- **[BL-73] Frames from "Add a frame" can share an id across pages** — `state.ts` still gives them
+  `a${nextId}`, so two stale extension pages can each make the same id for different frames, and the
+  kept selection or a hanger entry (`hangers.byFrame`) lands on the wrong frame. Make every added id
+  unique per page, as BL-64 did for prints.
+  _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`applyPicker`), `apps/extension/src/use-wall.ts` · _Status:_ open — backlog-5 review, 2026-11-20
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
@@ -129,6 +139,10 @@ when to add and when to fold items in.
 
 ## Widgets
 
+- **[BL-74] `ScalePreview` keeps an unused `unit` prop** — since BL-61 the preview holds both units
+  and the `data-unit` CSS picks one, so the prop is never read; drop it from the type and from
+  `frame-chart.tsx` and the unit test's call sites (an existing-test edit).
+  _Refs:_ `apps/web/src/components/ui/scale-preview.tsx` · _Status:_ open — backlog-5 review, 2026-11-20
 - **[BL-45] F2 drag should pass the wall to `snapFrame`** — F2's drag handler still snaps without
   the wall and clamps afterwards, so a snap that would leave the bounds is dropped instead of the
   nearest in-bounds one winning. Pass the wall when the F2 drag code is next touched.
