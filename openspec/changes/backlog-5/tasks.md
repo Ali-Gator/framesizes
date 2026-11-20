@@ -22,7 +22,7 @@
 
 ## 3. Verify, delete, review, archive, ship
 
-- [ ] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
-- [ ] 3.2 Delete shipped bullets BL-32, BL-61, BL-64, BL-71, BL-72 from `docs/backlog.md`; verify `grep -cE "BL-(32|61|64|71|72)\]" docs/backlog.md` prints 0
+- [x] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
+- [x] 3.2 Delete shipped bullets BL-32, BL-61, BL-64, BL-71, BL-72 from `docs/backlog.md`; verify `grep -cE "BL-(32|61|64|71|72)\]" docs/backlog.md` prints 0
 - [ ] 3.3 `/code-review high` in a fresh subagent; fix, log the rest as new BL items from the `_Next id:_` counter
 - [ ] 3.4 Archive (`/opsx:archive` flow, no Tracker). After archive, update the Behavior paragraph in `openspec/specs/frame-size-chart/spec.md` (the preview, like the table, shows the stored unit from first paint). Preflight (`pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `openspec validate --all --no-interactive`), push, PR to `main`, auto-merge with a merge commit
