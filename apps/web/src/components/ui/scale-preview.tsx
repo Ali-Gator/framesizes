@@ -11,6 +11,8 @@ import {
 } from "@framesizes/sizes";
 import type { ReactNode } from "react";
 
+import { U } from "./u";
+
 /**
  * Stage geometry from the design system: 720 × 384 units, 3.5 units per inch, floor at 352.
  * The scale is fixed, never zoom-to-fit: small frames must look small.
@@ -96,12 +98,15 @@ const SILHOUETTES: Record<ReferenceId, ReactNode> = {
 /** Stage units of an inches rect. */
 const box = (r: Rect) => ({ x: sx(r.x), y: sy(r.y + r.h), width: su(r.w), height: su(r.h) });
 
-/** The size, its unit close to the number, the other unit apart. */
+/**
+ * The size, its unit close to the number, the other unit apart. Carries `u-in` / `u-cm` itself:
+ * a `<U>` inside would match the `.fs-scale-size span` rules (widgets.css).
+ */
 function SizeLegend({ size, unit }: { size: Size; unit: Unit }) {
   const text = writeSize(size, unit);
   const cut = text.lastIndexOf(" ");
   return (
-    <span className="fs-scale-size">
+    <span className={`fs-scale-size u-${unit}`}>
       {text.slice(0, cut)}
       <b>{text.slice(cut + 1)}</b>
       <span>{writeSize(size, unit === "cm" ? "in" : "cm")}</span>
@@ -112,13 +117,14 @@ function SizeLegend({ size, unit }: { size: Size; unit: Unit }) {
 /**
  * Design system ScalePreview: one frame on an 8 ft wall at true scale beside a reference, the
  * next size up as a dashed outline. Geometry comes from the size engine's `wallScene`.
+ * Every length is in the HTML in both units; `<html data-unit>` (globals.css) shows one before
+ * the scripts run, so `unit` no longer picks the text.
  * {@link openspec/specs/frame-size-chart/spec.md#requirement-the-wall-view-shows-the-size-beside-a-reference-with-the-next-size-up}
  */
 export function ScalePreview({
   frame,
   ghost,
   reference,
-  unit,
 }: {
   frame: Size;
   ghost?: Size | null;
@@ -135,7 +141,12 @@ export function ScalePreview({
   // Dimension brackets span the artwork, above and to the right of both outlines.
   const wy = top - 12;
   const hx = right + 12;
-  const one = (inches: number) => (unit === "cm" ? `${toCm(inches)} cm` : `${inches} in`);
+  const one = (inches: number) => (
+    <>
+      <tspan className="u-in">{`${inches} in`}</tspan>
+      <tspan className="u-cm">{`${toCm(inches)} cm`}</tspan>
+    </>
+  );
   const name = `${writeSize(frame, "search")} picture frame at true scale next to ${REFERENCES[reference].name}`;
   return (
     <figure className="fs-scale">
@@ -192,11 +203,16 @@ export function ScalePreview({
         </svg>
       </div>
       <div className="fs-scale-legend">
-        <SizeLegend size={frame} unit={unit} />
+        <SizeLegend size={frame} unit="in" />
+        <SizeLegend size={frame} unit="cm" />
         <span className="fs-scale-ref">
-          <span className="fs-scale-sentence">{referenceSentence(reference, unit)}.</span>
+          <span className="fs-scale-sentence">
+            <U in={referenceSentence(reference, "in")} cm={referenceSentence(reference, "cm")} />.
+          </span>
           {ghost ? (
-            <span className="fs-scale-ghost">Next size up: {writeSize(ghost, unit)}</span>
+            <span className="fs-scale-ghost">
+              Next size up: <U in={writeSize(ghost, "in")} cm={writeSize(ghost, "cm")} />
+            </span>
           ) : null}
         </span>
       </div>
