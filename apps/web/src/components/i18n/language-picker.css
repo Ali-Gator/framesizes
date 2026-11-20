@@ -95,18 +95,6 @@
 .lp-dlg::backdrop {
   background: rgba(20, 24, 28, 0.48);
 }
-.lp-dlg:lang(ar),
-.lp-dlg:lang(el),
-.lp-dlg:lang(hi),
-.lp-dlg:lang(ja),
-.lp-dlg:lang(ko),
-.lp-dlg:lang(ru),
-.lp-dlg:lang(th),
-.lp-dlg:lang(uk),
-.lp-dlg:lang(vi),
-.lp-dlg:lang(zh) {
-  font-family: system-ui, sans-serif;
-}
 .lp-head {
   display: flex;
   align-items: center;

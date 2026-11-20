@@ -1,6 +1,7 @@
-import { builtPage } from "@/lib/site-map";
+import { builtPage, HUBS } from "@/lib/site-map";
 
 const X1 = builtPage("X1");
+const HUB = HUBS.find((h) => h.id === X1.hub);
 
 /**
  * The extension page's visitor-facing text, in English. Every other language is a
@@ -28,7 +29,7 @@ const X1 = builtPage("X1");
 export const en = {
   seo: { title: X1.seo.title, h1: X1.seo.h1, description: X1.seo.description },
   /** By position in the trail: Home, the hub head, this page. */
-  crumbs: { home: "Home", hub: "Gallery wall", page: "Chrome extension" },
+  crumbs: { home: "Home", hub: HUB?.name ?? "", page: X1.name },
   answer:
     "Click the extension's button in Chrome's toolbar to open the side panel and plan a gallery wall. On any shop, right-click a print and pick “Try on my wall” to hang it on your wall at true size.",
   store: "Get it from the Chrome Web Store",

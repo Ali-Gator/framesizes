@@ -38,6 +38,8 @@ export function LanguagePicker() {
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  // `?pinned=0#pin` etc., added to every link once the picker opens; the server HTML keeps clean hrefs.
+  const [state, setState] = useState("");
   const button = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const search = useRef<HTMLInputElement>(null);
@@ -52,6 +54,7 @@ export function LanguagePicker() {
   const shown = LOCALES.filter((l) => matchLanguage(query, l));
 
   function show() {
+    setState(`${location.search}${location.hash}`);
     dialog.current?.showModal();
     setOpen(true);
     search.current?.focus();
@@ -61,13 +64,22 @@ export function LanguagePicker() {
     setOpen(false);
     button.current?.focus();
   }
+  // Only a click outside the dialog's box is a backdrop click; its padding and gaps are not.
   function onBackdrop(event: MouseEvent<HTMLDialogElement>) {
-    if (event.target === dialog.current) dialog.current.close();
+    const box = dialog.current;
+    if (event.target !== box) return;
+    const r = box.getBoundingClientRect();
+    const inside =
+      event.clientX >= r.left &&
+      event.clientX <= r.right &&
+      event.clientY >= r.top &&
+      event.clientY <= r.bottom;
+    if (!inside) box.close();
   }
-  // Keeps `?pinned=0` and `#pin` across the switch; the server href stays the clean URL.
-  function keepState(event: MouseEvent<HTMLAnchorElement>) {
-    const link = event.currentTarget;
-    link.href = `${link.pathname}${location.search}${location.hash}`;
+  // The current language's link would be a same-page (or same-fragment) visit: just close.
+  function onCurrent(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    dialog.current?.close();
   }
 
   return (
@@ -95,6 +107,7 @@ export function LanguagePicker() {
         aria-labelledby={titleId}
         lang={current.hreflang}
         dir={current.dir}
+        style={current.font === "system" ? { fontFamily: "system-ui, sans-serif" } : undefined}
         onClose={closed}
         onClick={onBackdrop}
       >
@@ -127,7 +140,8 @@ export function LanguagePicker() {
             onChange={(event) => setQuery(event.target.value)}
             // A filled search field eats Escape to clear itself; Escape closes the picker here too.
             onKeyDown={(event) => {
-              if (event.key !== "Escape") return;
+              // Escape that ends an input-method composition only cancels the composition.
+              if (event.key !== "Escape" || event.nativeEvent.isComposing) return;
               event.preventDefault();
               dialog.current?.close();
             }}
@@ -142,10 +156,10 @@ export function LanguagePicker() {
               <li key={l.code} hidden={!shown.includes(l)}>
                 <a
                   className="lp-item"
-                  href={localizedPath(l.code, path)}
+                  href={`${localizedPath(l.code, path)}${state}`}
                   hrefLang={l.hreflang}
                   aria-current={l.code === locale ? "page" : undefined}
-                  onClick={keepState}
+                  onClick={l.code === locale ? onCurrent : undefined}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element -- a decorative 24 px SVG */}
                   <img

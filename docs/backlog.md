@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-78**
+_Next id:_ **BL-80**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -141,6 +141,14 @@ when to add and when to fold items in.
   the Extensions menu sit at the top left, but the drawing stays the left-to-right Chrome (the
   Arabic text says "top left"). Draw a mirrored variant for `/ar/`.
   _Refs:_ `apps/web/src/components/extension/pin-picture.tsx`, `copy/ar.ts` · _Status:_ open — t25 apply, 2026-11-20
+- **[BL-78] `<html lang>` stays English on translated pages** — only X1's content wrapper carries
+  `lang`/`dir`, so assistive tech announces the translated `<title>` and the document as English.
+  Fix with a per-language root layout (route groups) when the shell is translated.
+  _Refs:_ `apps/web/src/app/layout.tsx`, `components/extension/how-to.tsx` · _Status:_ deferred — whole-site translation (t25 review)
+- **[BL-79] The language picker ships on every page** — `SiteHeader` mounts the client island
+  site-wide, so F1, F2 and G1 load and hydrate the picker, its 28-language strings and CSS only to
+  render nothing. Mount it only on routes with translations, or split it with a dynamic import.
+  _Refs:_ `apps/web/src/components/site/site-header.tsx`, `components/i18n/language-picker.tsx` · _Status:_ open — t25 review, 2026-11-21
 - **[BL-77] Translated OG image alt** — the 27 translated X1 versions re-export the English social
   image, so `og:image:alt` stays English; the OG font lacks most of their scripts. Translate the alt
   (and, with a wider font, the image text) when the whole site is translated.

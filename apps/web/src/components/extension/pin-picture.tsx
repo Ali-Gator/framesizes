@@ -20,12 +20,12 @@ function MarkIcon({ x, y, s, stroke }: { x: number; y: number; s: number; stroke
 /**
  * The menu's two grey lines at 11.5px hold about 46 Latin characters each; a longer translation
  * (Hungarian, Greek) gets a smaller size so it stays inside the menu. Wide CJK and Hangul characters
- * count about double, combining marks nothing.
+ * count about double, non-spacing marks nothing.
  */
 const SUB_LINE_FIT = 46;
 function fitSize(lines: readonly string[]) {
   const width = (line: string) =>
-    [...line.replace(/\p{M}/gu, "")].reduce(
+    [...line.replace(/[\p{Mn}\p{Me}]/gu, "")].reduce(
       (n, c) => n + (/[\u1100-\u11ff\u2e80-\u9fff\uac00-\ud7af\uff00-\uffef]/.test(c) ? 1.9 : 1),
       0,
     );

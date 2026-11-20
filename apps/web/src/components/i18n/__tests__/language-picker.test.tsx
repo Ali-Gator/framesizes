@@ -109,6 +109,42 @@ describe("LanguagePicker", () => {
     expect(deutsch?.getAttribute("href")).toBe(`/de${X1}?pinned=0#pin`);
   });
 
+  /** {@link openspec/specs/localization/spec.md#requirement-switching-language-keeps-the-pages-state} */
+  it("puts the state on every link once open, so a middle-click or a copied link keeps it", async () => {
+    await mount(X1, `${X1}?pinned=0#pin`);
+    expect(links().every((a) => !a.getAttribute("href")?.includes("?"))).toBe(true);
+    await open();
+    expect(
+      links()
+        .find((a) => a.textContent === "Suomi")
+        ?.getAttribute("href"),
+    ).toBe(`/fi${X1}?pinned=0#pin`);
+  });
+
+  /** {@link openspec/specs/localization/spec.md#requirement-the-language-picker-lists-every-version-of-the-page} */
+  it("closes when the current language is picked, and stays open on a click inside it", async () => {
+    await mount(`/ru${X1}`, `/ru${X1}#pin`);
+    await open();
+    const box = dialog();
+    if (!box) throw new Error("no dialog");
+    box.getBoundingClientRect = () => DOMRect.fromRect({ x: 100, y: 100, width: 600, height: 600 });
+    await act(async () =>
+      box.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: 110, clientY: 110 })),
+    );
+    expect(box.hasAttribute("open")).toBe(true);
+    await act(async () =>
+      box.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: 20, clientY: 20 })),
+    );
+    expect(box.hasAttribute("open")).toBe(false);
+    await open();
+    await act(async () =>
+      links()
+        .find((a) => a.textContent === "Русский")
+        ?.click(),
+    );
+    expect(box.hasAttribute("open")).toBe(false);
+  });
+
   /** {@link openspec/specs/localization/spec.md#scenario-searching-in-english-and-in-russian} */
   it("finds Русский by its English name and by its native name in capitals", async () => {
     await mount(`/ru${X1}`);

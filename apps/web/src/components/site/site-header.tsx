@@ -15,7 +15,7 @@ export function Lockup() {
   return (
     <>
       <LogoMark />
-      <span className="text-xl font-extrabold tracking-[-0.03em] max-[359px]:text-lg max-[389px]:[header:has(.lp-trig)_&]:text-lg">
+      <span className="text-xl font-extrabold tracking-[-0.03em] max-[359px]:text-lg max-[390px]:[header:has(.lp-trig)_&]:text-lg">
         framesizes
         <span className="ml-0.5 font-mono text-sm font-medium tracking-normal text-ink-muted max-[390px]:hidden">
           .app

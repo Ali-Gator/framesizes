@@ -1,6 +1,12 @@
 import type { Metadata, MetadataRoute } from "next";
 
-import { LOCALES, localizedPath, TRANSLATED_LOCALES, translatedPage } from "./locales";
+import {
+  localeByCode,
+  LOCALES,
+  localizedPath,
+  TRANSLATED_LOCALES,
+  translatedPage,
+} from "./locales";
 import {
   BRAND,
   type BuiltPage,
@@ -33,7 +39,7 @@ export function absoluteUrl(path: string): string {
  * {@link openspec/specs/seo-base/spec.md#requirement-a-built-page-that-is-not-live-stays-out-of-the-index}
  */
 export function pageMetadata(target: BuiltPage): Metadata {
-  return headTags(target, target.path, target.seo, "en_US");
+  return headTags(target, target.path, target.seo, LOCALES[0]?.ogLocale ?? "en_US");
 }
 
 /**
@@ -48,7 +54,7 @@ export function localizedMetadata(
   code: string,
   seo: { title: string; description: string },
 ): Metadata {
-  const locale = LOCALES.find((l) => l.code === code);
+  const locale = localeByCode(code);
   if (!locale) throw new Error(`Unknown locale ${code}`);
   return headTags(target, localizedPath(code, target.path), seo, locale.ogLocale);
 }
