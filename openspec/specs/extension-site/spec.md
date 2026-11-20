@@ -18,14 +18,22 @@ function askExtension(id: string, timeout = 1000): Promise<ExtensionStatus>; // 
 function modeOf(hash: string, search: string): { mode: "pin" | "usage"; from: "hash" | "query" };
 const MODE_SCRIPT: string; // the same rule as an inline pre-paint script
 function ModeSwitch(props: { extensionId: string }): null; // client island
-function StoreLink(props: { pages?; extensionId? }): JSX.Element | null;
+function StoreLink(props: { pages?; extensionId?; label? }): JSX.Element | null;
 function ExtensionSection(props: { pages?; extensionId? }): JSX.Element | null;
 function ExtensionStatus(props: { extensionId: string }): JSX.Element; // client island, the CTA cell
-function PinPicture(): JSX.Element;
-function PrintFigure / LayoutFigure / MenuFigure / NailFigure(props: { label: string }): JSX.Element;
+function PinPicture(props: { label?: string; chrome?: ChromeLabels }): JSX.Element; // English defaults
+function PrintFigure / LayoutFigure / NailFigure(props: { label: string }): JSX.Element;
+function MenuFigure(props: { label: string; menu?: { copyImage: string; inspect: string } }): JSX.Element;
+function ExtensionHowTo(props: { copy: ExtensionCopy; locale: string }): JSX.Element; // the page body, every language
+
+// apps/web/src/components/extension/copy/
+const en: { seo; crumbs; answer; store; noButton; showPin; pin; usage; steps; wall; perm; faq; chrome };
+type ExtensionCopy = typeof en; // every other copy/<code>.ts `satisfies ExtensionCopy`
+type ChromeLabels = ExtensionCopy["chrome"]; // Chrome's own labels, from Chromium's xtb files
+const COPY: Readonly<Record<string, ExtensionCopy>>; // copy/index.ts, by URL code, all 28
 ```
 
-Route: `apps/web/src/app/extensions/gallery-wall-layout-generator/` (`page.tsx`, `opengraph-image.tsx`, `extension.css`). Section and figure styles live in `apps/web/src/app/widgets.css` (`ext-sec-*`, `ext-fig-*`, `pp-*`).
+Routes: `apps/web/src/app/extensions/gallery-wall-layout-generator/` (`page.tsx`, `opengraph-image.tsx`, `extension.css`) and `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/` (`page.tsx` with `generateStaticParams` over the 27 translated codes and `dynamicParams = false`, `opengraph-image.tsx` re-exporting the English image). Section and figure styles live in `apps/web/src/app/widgets.css` (`ext-sec-*`, `ext-fig-*`, `pp-*`).
 
 ## Behavior
 
@@ -37,6 +45,8 @@ Go-live is one edit: `EXTENSION_ID` set and X1 `live: true` with its `lastModifi
 
 The section's call to action and the "You have it" line share one grid cell; `ExtensionStatus` asks once after hydration and hides the other line with `visibility: hidden`, so the cell keeps its height. `@media (hover: none) and (pointer: coarse)` shows the phone line instead of "Add to Chrome".
 
+Every language renders through `ExtensionHowTo`. Its wrapper carries the language's `lang`, `dir` and, for scripts Schibsted lacks, the system font stack. `rich()` marks each "Gallery Wall Layout Generator" and "Try on my wall" in a sentence with `lang="en"` and fills `{door}` with the door height in both units. Breadcrumb names come from the dictionary by position (Home, hub, page); English reads them from the site map. Only English shows Related tools. The drawings stay left to right (`direction: ltr` in `extension.css`); the pin picture's grey lines shrink below 11.5 px when a translation is wider than about 46 Latin characters.
+
 ## Edge Cases
 
 - No JS with `#pin`: the pin steps show through `:target`, with the usage sections still below them.
@@ -44,6 +54,8 @@ The section's call to action and the "You have it" line share one grid cell; `Ex
 - After the self-switch the URL keeps `?pinned=0`, so a reload opens pin mode until the first reply (BL-68).
 - A hidden tab: the poll timer keeps running but sends nothing (BL-69).
 - Figures draw the current flat sample room; BL-51 swaps it with F2 and G1.
+- Arabic Chrome puts the puzzle piece at the top left; the Arabic text says so, the drawing stays left to right (BL-76).
+- Translated versions share the English social image and its English alt (BL-77).
 
 ## Requirements
 
@@ -212,3 +224,72 @@ The extension page SHALL be live only when the extension's Chrome Web Store id i
 
 - **WHEN** the unit suite reads the site map and the store id
 - **THEN** the extension page is live exactly when the store id is set, and a set store id matches `^[a-p]{32}$`
+
+### Requirement: The extension page exists in every site language
+
+The extension page SHALL have one version for each of the site's 28 languages. Each translated version SHALL hold the English page's content in its own language, in the same order. That covers the same headings, steps, list rows and questions, both modes, the links between the modes, the pin poll and, once live, the store link.
+
+#### Scenario: The Russian version's heading outline
+
+- **WHEN** `/ru/extensions/gallery-wall-layout-generator` is requested
+- **THEN** the response HTML holds one `h1`, then five `h2` headings, three `h3` steps under the second `h2`, and three `h3` questions, in the English page's order, all in Russian
+
+#### Scenario: Pin mode on a translated version
+
+- **WHEN** `/ja/extensions/gallery-wall-layout-generator?pinned=0` is opened
+- **THEN** the pin section is visible and the usage sections are not
+
+### Requirement: The extension's own words stay in English
+
+Every version SHALL keep the extension's name "Gallery Wall Layout Generator" in English, and the right-click label "Try on my wall" quoted in English, because the extension itself is shown in English.
+
+#### Scenario: The French answer paragraph
+
+- **WHEN** `/fr/extensions/gallery-wall-layout-generator` is requested
+- **THEN** the paragraph after the `h1` holds the text "Try on my wall" in English
+
+### Requirement: The drawings use Chrome's own labels in the page's language
+
+On a translated version, the labels in the pin picture and the right-click figure that belong to Chrome itself SHALL be Chrome's own wording in that language. These are the Extensions menu's title and its access lines, "Manage extensions", "Copy image" and "Inspect". The extension's name and "Try on my wall" SHALL stay English. Every drawing's accessible name SHALL be in the page's language.
+
+#### Scenario: The German pin picture
+
+- **WHEN** `/de/extensions/gallery-wall-layout-generator?pinned=0` is opened
+- **THEN** the pin picture's menu title is Chrome's German "Erweiterungen", it still names "Gallery Wall Layout Generator", and its accessible name is in German
+
+### Requirement: A translated version's breadcrumbs are translated
+
+A translated version SHALL show the same breadcrumb trail as the English page, with every crumb name in its language. The crumb links SHALL point to the English pages, and its `BreadcrumbList` SHALL carry the same translated names.
+
+#### Scenario: The Spanish breadcrumbs
+
+- **WHEN** `/es/extensions/gallery-wall-layout-generator` is requested
+- **THEN** its breadcrumb `nav` has three crumbs in Spanish, the first linking to `/` and the second to `/gallery-wall-planner`, and the last is marked `aria-current="page"`
+
+### Requirement: A translated version leaves out Related tools
+
+A translated version SHALL NOT show the Related tools block, because every page it would link to is English only.
+
+#### Scenario: No Related tools in Italian
+
+- **WHEN** `/it/extensions/gallery-wall-layout-generator` is requested while G1 is live
+- **THEN** the response HTML holds no "Related tools" section
+
+### Requirement: Translated head values stay within limits
+
+Each translated version SHALL declare its own title, `h1` and description. Its title SHALL be 60 characters or fewer including the " | Frame Sizes" suffix. Its description SHALL be 160 characters or fewer and not empty. No two versions SHALL share a title or a description. Unlike English descriptions, translated ones have no 130-character floor, because CJK and Thai text is much shorter.
+
+#### Scenario: A translation breaks a head limit
+
+- **WHEN** a translated version's full title is longer than 60 characters, or its description is empty, longer than 160 characters, or equal to another version's
+- **THEN** the unit suite fails, naming the language
+
+### Requirement: Translated versions go live with the English page
+
+Every translated version SHALL be built while X1 is built. It SHALL carry `noindex` exactly while X1's entry is not live. Setting X1 live SHALL remove it from every version with no other edit.
+
+#### Scenario: A translated version before go-live
+
+- **GIVEN** X1 is not live
+- **WHEN** `/pl/extensions/gallery-wall-layout-generator` is requested
+- **THEN** it answers 200 with a robots meta tag holding `noindex`

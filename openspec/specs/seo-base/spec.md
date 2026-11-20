@@ -196,7 +196,7 @@ The HTML the server returns for the home page SHALL hold one JSON-LD script whos
 
 ### Requirement: The sitemap lists exactly the live pages
 
-`/sitemap.xml` SHALL list the canonical URL of every live page and nothing else, each with a `lastmod` equal to the content date in its site map entry. It SHALL NOT hold `priority` or `changefreq`.
+`/sitemap.xml` SHALL list the canonical URL of every live page and of every translated version of a live page, and nothing else, each with a `lastmod` equal to the content date in the page's site map entry. It SHALL NOT hold `priority` or `changefreq`.
 
 #### Scenario: Only the home page is live
 
@@ -217,6 +217,16 @@ The HTML the server returns for the home page SHALL hold one JSON-LD script whos
 
 - **WHEN** `/sitemap.xml` is requested while only the home page, F2 and G1 are live
 - **THEN** it holds three `url` entries, the home page's canonical URL, `https://framesizes.app/frame-sizes-on-wall` and `https://framesizes.app/gallery-wall-planner`, each with its own content date as `lastmod`, and no `priority` or `changefreq` element
+
+#### Scenario: A live page with translations
+
+- **WHEN** the sitemap entries are built from a site map in which the extension page X1 is live
+- **THEN** they hold X1's English URL and its 27 translated URLs, all with X1's content date as `lastmod`
+
+#### Scenario: Translations of a page that is not live
+
+- **WHEN** `/sitemap.xml` is requested while X1 is not live
+- **THEN** it holds no URL containing `/extensions/gallery-wall-layout-generator`
 
 ### Requirement: Pages below the home page carry breadcrumbs
 
@@ -257,3 +267,28 @@ A page whose route is built while its site map entry is not live SHALL render wi
 
 - **WHEN** head tags are built for the extension page's entry with `live: true`
 - **THEN** they hold no robots directive
+
+### Requirement: A translated version takes its head values from its translation
+
+The requirements that take a page's title, description, `h1` and `og:locale` from its site map entry cover its English version. A translated version SHALL take those four from its translation instead: the title gets the same " | Frame Sizes" suffix rule, and `og:locale` is the language's own locale. Its canonical, `og:url` and the other social tags SHALL follow the same rules as for the English version, at its own URL.
+
+#### Scenario: The Russian extension page's head
+
+- **WHEN** `/ru/extensions/gallery-wall-layout-generator` is requested
+- **THEN** its title and meta description are the Russian ones and its title ends with " | Frame Sizes"
+- **AND** it holds one canonical, `https://framesizes.app/ru/extensions/gallery-wall-layout-generator`, `og:url` equals it, and `og:locale` is "ru_RU"
+
+### Requirement: Every language version names all the others
+
+A page that has translated versions SHALL carry, in each version's server HTML, one `link rel="alternate"` with an `hreflang` for every one of its language versions, itself included. Each link's `href` SHALL be that version's canonical URL. One more link, with `hreflang="x-default"`, SHALL point to the English version. A page without translations SHALL carry no `hreflang` links.
+
+#### Scenario: The extension page's language links
+
+- **WHEN** `/extensions/gallery-wall-layout-generator` or `/ja/extensions/gallery-wall-layout-generator` is requested
+- **THEN** the response HTML holds 29 `hreflang` links: 28 languages and `x-default`
+- **AND** `x-default` and `en` both point to `https://framesizes.app/extensions/gallery-wall-layout-generator`, and the `ja` one to `https://framesizes.app/ja/extensions/gallery-wall-layout-generator`
+
+#### Scenario: A page without translations
+
+- **WHEN** `/` is requested
+- **THEN** the response HTML holds no `hreflang` link
