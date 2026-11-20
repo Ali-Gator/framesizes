@@ -10,7 +10,7 @@ import { SegmentedControl } from "@/components/ui/segmented-control";
 import { SizeTable } from "@/components/ui/size-table";
 import { U } from "@/components/ui/u";
 
-import { chipSize, count, noNailText } from "./copy";
+import { count, frameSize, noNailText } from "./copy";
 import type { Dispatch } from "./gallery-wall";
 import {
   boxOf,
@@ -239,7 +239,7 @@ function HangerForm({
           <option value="all">All frames</option>
           {frames.map((f) => (
             <option key={f.id} value={f.id}>
-              Frame {f.letter} · {chipSize(f.size)}
+              Frame {f.letter} · {frameSize(f)}
               {state.hangers.byFrame[f.id] ? " (its own)" : ""}
             </option>
           ))}

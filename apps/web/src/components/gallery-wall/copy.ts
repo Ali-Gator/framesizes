@@ -39,6 +39,10 @@ export const count = (n: number, one: string, many: string) =>
 /** "8x10" written as the canvas's chips: "8×10". */
 export const chipSize = (size: string) => size.replace("x", "×");
 
+/** A frame's size as its label shows it: "8×10", or a shop print's "60 × 90 cm print". */
+export const frameSize = (f: { size: string; print?: { label: string } }) =>
+  f.print ? `${f.print.label} print` : chipSize(f.size);
+
 /** What a distance runs to, after "to" or "past". */
 export function targetName(to: Target, furniture: string): string {
   if (to.kind === "frame") return `frame ${to.letter}`;

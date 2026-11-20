@@ -116,7 +116,7 @@ describe("the saved wall", () => {
   });
 
   it("ignores a record of another version", () => {
-    expect(fromSaved({ ...record(changed), v: 2 }, () => "blob:x")).toBeNull();
+    expect(fromSaved({ ...record(changed), v: 99 }, () => "blob:x")).toBeNull();
     expect(fromSaved(undefined, () => "blob:x")).toBeNull();
   });
 

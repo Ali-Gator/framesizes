@@ -1,0 +1,84 @@
+/*
+ * What the worker reads from a shop page on the "Try on my wall" click, and the picture it keeps.
+ * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-page-is-read-only-on-the-click}
+ */
+
+/** The image's box in CSS pixels, with the page's device pixel ratio. */
+export interface ImageRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  dpr: number;
+}
+
+export interface PageRead {
+  text: string;
+  title: string;
+  rect: ImageRect | null;
+  /** The image's natural size: its shape, whatever part of it is on screen. */
+  shape: { w: number; h: number } | null;
+}
+
+/**
+ * Injected into the clicked frame by `scripting.executeScript`, which sends only the function's
+ * source: it must use nothing from this module. Returns the page text (cut at 100,000 characters),
+ * the product title (the first `h1`, else `og:title`, else the document's, cut at 80) and the
+ * clicked image's box.
+ */
+export function readPage(srcUrl: string): PageRead {
+  const clean = (s: string | null | undefined) => (s ?? "").replace(/\s+/g, " ").trim();
+  const text = (document.body?.innerText ?? "").slice(0, 100000);
+  const title = (
+    clean(document.querySelector("h1")?.textContent) ||
+    clean(document.querySelector('meta[property="og:title"]')?.getAttribute("content")) ||
+    clean(document.title)
+  ).slice(0, 80);
+  const image = Array.from(document.images).find(
+    (img) => img.currentSrc === srcUrl || img.src === srcUrl,
+  );
+  const box = image?.getBoundingClientRect();
+  const rect =
+    box && box.width > 0 && box.height > 0
+      ? { x: box.x, y: box.y, w: box.width, h: box.height, dpr: window.devicePixelRatio || 1 }
+      : null;
+  const shape =
+    image && image.naturalWidth > 0 && image.naturalHeight > 0
+      ? { w: image.naturalWidth, h: image.naturalHeight }
+      : null;
+  return { text, title, rect, shape };
+}
+
+/** The right-clicked image's bytes: `http`, `https` and `data:` only, and only an image. */
+export async function fetchImage(url: string): Promise<Blob | null> {
+  if (!/^(https?:|data:)/i.test(url)) return null;
+  try {
+    const response = await fetch(url, { credentials: "omit" });
+    if (!response.ok) return null;
+    const blob = await response.blob();
+    return blob.type.startsWith("image/") ? blob : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The image cut from the tab's screenshot: its visible part at screen resolution, as a PNG.
+ * `ponytail:` screen resolution only; a host permission would let the fetch work everywhere.
+ */
+export async function cropShot(shot: string, rect: ImageRect): Promise<Blob | null> {
+  try {
+    const bitmap = await createImageBitmap(await (await fetch(shot)).blob());
+    const x = Math.max(0, Math.round(rect.x * rect.dpr));
+    const y = Math.max(0, Math.round(rect.y * rect.dpr));
+    const w = Math.min(bitmap.width, Math.round((rect.x + rect.w) * rect.dpr)) - x;
+    const h = Math.min(bitmap.height, Math.round((rect.y + rect.h) * rect.dpr)) - y;
+    if (w < 1 || h < 1) return null;
+    const canvas = new OffscreenCanvas(w, h);
+    canvas.getContext("2d")?.drawImage(bitmap, x, y, w, h, 0, 0, w, h);
+    bitmap.close();
+    return await canvas.convertToBlob({ type: "image/png" });
+  } catch {
+    return null;
+  }
+}

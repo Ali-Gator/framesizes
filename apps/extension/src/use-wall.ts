@@ -5,6 +5,7 @@ import {
   type Action,
   initialState,
   type PlannerState,
+  type Print,
   reducer,
 } from "@/components/gallery-wall/state";
 
@@ -12,15 +13,24 @@ import {
   CHANNEL,
   fromSaved,
   needsBlob,
+  dropJournal,
+  JOURNAL,
   needsWrite,
-  readRecord,
+  readWall,
+  replayJournal,
   restoreAction,
   type SavedPhoto,
-  type SavedRecord,
+  type StoredBlobs,
   sameSaved,
   savedPhoto,
   toSaved,
-  writeRecord,
+  toStored,
+  toWall,
+  type WallRecord,
+  journalFor,
+  writeArt,
+  writeJournal,
+  writeWall,
 } from "./saved-wall";
 
 /** How long after the last change the wall is written. */
@@ -54,6 +64,7 @@ function wallReducer(wall: Wall, action: WallAction): Wall {
 const samePhoto = (a: SavedPhoto | null | undefined, b: SavedPhoto | null | undefined) =>
   !!a &&
   !!b &&
+  (a.stamp && b.stamp ? a.stamp === b.stamp : true) &&
   a.blob.size === b.blob.size &&
   a.width === b.width &&
   a.height === b.height &&
@@ -75,7 +86,11 @@ export function useWall() {
     ready: false,
     hasPhoto: false,
   });
-  const record = useRef<SavedRecord | null>(null);
+  const record = useRef<WallRecord | null>(null);
+  /** Pictures of prints added here, waiting for the next write. */
+  const pendingArt = useRef(new Map<string, Blob>());
+  /** Each print's picture as an object URL, by frame id: a picture never changes. */
+  const artUrls = useRef(new Map<string, string>());
   /** The state last applied from the record: not the visitor's change, so not written back. */
   const applied = useRef<PlannerState | null>(null);
   /** The planner shown now, for callbacks outside a render. */
@@ -104,10 +119,22 @@ export function useWall() {
     return url;
   }, []);
 
+  const artUrlFor = useCallback((id: string, blob: Blob) => {
+    let url = artUrls.current.get(id);
+    if (!url) {
+      url = URL.createObjectURL(blob);
+      artUrls.current.set(id, url);
+    }
+    return url;
+  }, []);
+
   const load = useCallback(async () => {
     let saved: unknown = null;
+    let blobs: StoredBlobs = { photo: null, art: {} };
     try {
-      saved = await readRecord();
+      // A page that closed with a change still to write left it in the journal.
+      if (await replayJournal()) channel.current?.postMessage({ from: pageId.current });
+      ({ record: saved, blobs } = await readWall());
     } catch {
       // Storage blocked: the planner starts fresh and nothing is kept.
     }
@@ -116,11 +143,18 @@ export function useWall() {
     const shown = current.current.photo?.url;
     // The same stored photo already on screen keeps its URL: no reload, no flicker.
     const urlFor = (blob: Blob) =>
-      shown && madeFromStore.current.has(shown) && samePhoto(before, (saved as SavedRecord)?.photo)
+      shown && madeFromStore.current.has(shown) && samePhoto(before, toWall(saved, blobs)?.photo)
         ? shown
         : makeUrl(blob);
-    const planner = fromSaved(saved, urlFor);
-    record.current = planner ? (saved as SavedRecord) : null;
+    const planner = fromSaved(saved, urlFor, blobs, artUrlFor);
+    record.current = planner ? toWall(saved, blobs) : null;
+    // Pictures of prints no longer on the wall.
+    const prints = new Set(planner?.added.map((a) => a.id));
+    for (const [id, url] of artUrls.current) {
+      if (prints.has(id)) continue;
+      URL.revokeObjectURL(url);
+      artUrls.current.delete(id);
+    }
     let next = planner ?? initialState();
     // The selection survives the other page's write while its frame does.
     const selected = current.current.selected;
@@ -130,7 +164,7 @@ export function useWall() {
     }
     applied.current = next;
     send({ type: "load", planner: next, hasPhoto: !!record.current?.photo });
-  }, [makeUrl]);
+  }, [makeUrl, artUrlFor]);
 
   const bytesOf = useCallback((url: string | undefined): Promise<Blob | null> => {
     if (!url || !needsBlob(url, madeFromStore.current)) return Promise.resolve(null);
@@ -145,7 +179,7 @@ export function useWall() {
   }, []);
 
   const write = useCallback(
-    async (planner: PlannerState) => {
+    async (planner: PlannerState, closing = false) => {
       const startedAt = loads.current;
       const url = planner.photo?.url;
       const kept = record.current?.photo ?? null;
@@ -157,15 +191,25 @@ export function useWall() {
       );
       // The other page's write landed meanwhile: this planner is stale.
       if (loads.current !== startedAt) return;
-      const next: SavedRecord = { v: 1, planner: toSaved(planner), photo };
+      const next: WallRecord = { planner: toSaved(planner), photo };
       if (sameSaved(record.current, next)) return;
+      const stored = toStored(next, record.current);
+      const journaled = closing ? writeJournal(journalFor(stored)) : null;
       try {
-        await writeRecord(next);
+        await writeWall(stored.current, stored.putPhoto, pendingArt.current);
       } catch {
         return;
       }
-      record.current = next;
-      send({ type: "saved", hasPhoto: !!photo });
+      // The page lived to finish the write: no journal needed.
+      if (closing) dropJournal(journaled);
+      // A picture stays at hand while its print is on this page's wall: a write from the other
+      // page may drop its key, and the next write here puts it back.
+      const shown = new Set(current.current.added.map((a) => a.id));
+      for (const id of [...pendingArt.current.keys()]) {
+        if (!shown.has(id)) pendingArt.current.delete(id);
+      }
+      record.current = { planner: next.planner, photo: stored.photo };
+      send({ type: "saved", hasPhoto: !!stored.photo });
       channel.current?.postMessage({ from: pageId.current });
       if (!persisted.current) {
         persisted.current = true;
@@ -181,7 +225,7 @@ export function useWall() {
     if (!waiting) return;
     clearTimeout(waiting.timer);
     pending.current = null;
-    void write(waiting.planner);
+    void write(waiting.planner, true);
   }, [write]);
 
   // Start: read the record, listen for the other page's writes, and flush when hidden.
@@ -189,7 +233,8 @@ export function useWall() {
     void load();
     const bus = new BroadcastChannel(CHANNEL);
     bus.onmessage = (event: MessageEvent<{ from?: string }>) => {
-      if (event.data?.from === pageId.current) return;
+      // The worker's ping is about a try, not the wall.
+      if (event.data?.from === pageId.current || event.data?.from === "worker") return;
       // A change of this page's own still to write, or a task under way here, wins: its write
       // comes next and the other page reads it then.
       if (pending.current || inFlow(current.current)) return;
@@ -199,12 +244,20 @@ export function useWall() {
     const onHide = () => {
       if (document.visibilityState === "hidden") flush();
     };
+    // The other page closed with a change still to write: take it from the journal now.
+    const onJournal = (event: StorageEvent) => {
+      if (event.key !== JOURNAL || !event.newValue) return;
+      if (pending.current || inFlow(current.current)) return;
+      void load();
+    };
     document.addEventListener("visibilitychange", onHide);
     window.addEventListener("pagehide", flush);
+    window.addEventListener("storage", onJournal);
     return () => {
       bus.close();
       document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("pagehide", flush);
+      window.removeEventListener("storage", onJournal);
     };
   }, [load, flush]);
 
@@ -243,12 +296,37 @@ export function useWall() {
     [makeUrl],
   );
 
+  /**
+   * "Add to my layout": the print as the next frame, its picture kept with the next write.
+   * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-try-ends-by-adding-the-print-or-going-back}
+   */
+  const addPrint = useCallback((print: Print, picture: Blob | null) => {
+    const id = `a${current.current.nextId}`;
+    let art: string | undefined;
+    if (picture) {
+      art = URL.createObjectURL(picture);
+      artUrls.current.set(id, art);
+      pendingArt.current.set(id, picture);
+      // At once: a panel closed right after "Add" must not lose the picture.
+      void writeArt(id, picture).catch(() => undefined);
+    }
+    send({ type: "addPrint", print: { ...print, art } });
+  }, []);
+
+  const mode = wall.planner.mode;
   return {
     planner: wall.planner,
     ready: wall.ready,
     hasPhoto: wall.hasPhoto,
-    wall: wall.planner.mode === "sample" ? ("sample" as const) : ("photo" as const),
+    // BL-56: the upload and scale steps read "New wall photo".
+    wall:
+      mode === "sample"
+        ? ("sample" as const)
+        : mode === "photo"
+          ? ("photo" as const)
+          : ("new" as const),
     dispatch,
     chooseWall,
+    addPrint,
   };
 }

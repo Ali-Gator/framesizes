@@ -5,6 +5,10 @@
  * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-toolbar-button-opens-the-side-panel}
  */
 
+import { findSizes } from "./find-sizes";
+import { cropShot, fetchImage, type ImageRect, type PageRead, readPage } from "./read-page";
+import { CHANNEL, deleteTry, type TryRecord, writeTry } from "./store";
+
 export const SITE = "https://framesizes.app";
 export const HOW_TO = `${SITE}/extensions/gallery-wall-layout-generator`;
 
@@ -59,9 +63,134 @@ export function onMessageExternal(
   return true;
 }
 
+export const MENU_ID = "try-on-my-wall";
+
+/** The parts of `chrome` the "Try on my wall" menu uses. */
+export interface MenuApi {
+  contextMenus: {
+    removeAll(): Promise<void>;
+    create(props: {
+      id: string;
+      title: string;
+      contexts: ["image"];
+      documentUrlPatterns: string[];
+    }): void;
+  };
+  scripting: {
+    executeScript(injection: {
+      target: { tabId: number; frameIds?: number[] };
+      func: (srcUrl: string) => PageRead;
+      args: [string];
+    }): Promise<{ result?: unknown }[]>;
+  };
+  tabs: { captureVisibleTab(windowId: number, options: { format: "png" }): Promise<string> };
+  sidePanel: { open(options: { windowId: number }): Promise<void> };
+}
+
+/** What the click reads and writes beyond `chrome`. */
+export interface TryIo {
+  fetchImage(url: string): Promise<Blob | null>;
+  crop(shot: string, rect: ImageRect): Promise<Blob | null>;
+  saveTry(record: TryRecord): Promise<void>;
+  /** The last try goes at once, so the panel never shows it while this one is read. */
+  clearTry(): Promise<void>;
+  /** Tells an open panel a try is waiting. */
+  ping(): void;
+}
+
+/**
+ * Every install and update makes the one menu item again.
+ * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-right-clicking-an-image-offers-try-on-my-wall}
+ */
+export async function registerMenu(api: MenuApi): Promise<void> {
+  await api.contextMenus.removeAll().catch(() => undefined);
+  api.contextMenus.create({
+    id: MENU_ID,
+    title: "Try on my wall",
+    contexts: ["image"],
+    documentUrlPatterns: ["http://*/*", "https://*/*"],
+  });
+}
+
+/**
+ * The click: read the frame, capture the tab and open the panel in the same tick (the panel must
+ * open inside the gesture, and the capture must start before the panel narrows the page), then
+ * keep the picture, title, host and sizes as the try. The page text is never kept.
+ * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-page-is-read-only-on-the-click}
+ */
+export async function onMenuClick(
+  api: MenuApi,
+  io: TryIo,
+  info: { menuItemId: string | number; frameId?: number; srcUrl?: string; pageUrl?: string },
+  tab: { id?: number; windowId?: number; title?: string } | undefined,
+): Promise<void> {
+  if (info.menuItemId !== MENU_ID || tab?.id === undefined || tab.windowId === undefined) return;
+  const at = Date.now();
+  const frameId = info.frameId ?? 0;
+  const srcUrl = info.srcUrl ?? "";
+  const read = api.scripting
+    .executeScript({
+      target: { tabId: tab.id, frameIds: [frameId] },
+      func: readPage,
+      args: [srcUrl],
+    })
+    .then((results) => (results[0]?.result as PageRead | undefined) ?? null)
+    .catch(() => null);
+  // A subframe's box is not in the tab's coordinates: no crop there.
+  const shot =
+    frameId === 0
+      ? api.tabs.captureVisibleTab(tab.windowId, { format: "png" }).catch(() => null)
+      : Promise.resolve(null);
+  void api.sidePanel.open({ windowId: tab.windowId }).catch(() => undefined);
+  void io.clearTry().catch(() => undefined);
+
+  const page = await read;
+  let image = await io.fetchImage(srcUrl);
+  if (!image && page?.rect) {
+    const screenshot = await shot;
+    if (screenshot) image = await io.crop(screenshot, page.rect);
+  }
+  let host = "";
+  try {
+    host = new URL(info.pageUrl ?? "").hostname;
+  } catch {
+    // No page URL: the try says no host.
+  }
+  await io.saveTry({
+    v: 1,
+    id: crypto.randomUUID(),
+    at,
+    image,
+    shape: page?.shape ?? null,
+    title: page?.title || (tab.title ?? "").trim().slice(0, 80),
+    host,
+    sizes: findSizes(page?.text ?? ""),
+  });
+  io.ping();
+}
+
+const tryIo: TryIo = {
+  fetchImage,
+  crop: cropShot,
+  saveTry: (record) => writeTry(record),
+  clearTry: () => deleteTry().then(() => undefined),
+  ping: () => {
+    const bus = new BroadcastChannel(CHANNEL);
+    bus.postMessage({ from: "worker", try: true });
+    bus.close();
+  },
+};
+
 if (typeof chrome !== "undefined" && chrome.runtime?.onInstalled) {
   const api = chrome as unknown as Api;
-  chrome.runtime.onInstalled.addListener((details) => void onInstalled(api, details));
+  const menu = chrome as unknown as MenuApi;
+  chrome.runtime.onInstalled.addListener((details) => {
+    void onInstalled(api, details);
+    void registerMenu(menu);
+  });
+  chrome.contextMenus.onClicked.addListener(
+    (info, tab) => void onMenuClick(menu, tryIo, info, tab),
+  );
   chrome.runtime.onStartup.addListener(() => void onStartup(api));
   chrome.runtime.onMessageExternal.addListener((message, sender, reply) =>
     onMessageExternal(api, message, sender, reply),

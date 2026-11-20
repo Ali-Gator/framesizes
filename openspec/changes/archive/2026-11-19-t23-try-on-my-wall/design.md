@@ -104,6 +104,7 @@ The same database and store, with no version bump: there are new keys, not a new
 - **`try`:** `{ v: 1, id, image: Blob | null, title, host, sizes }`. The worker writes it, and the panel deletes it on "Add" or "Back".
 - **Reading a v1 record** still works: its inline photo Blob is used as it stands. The next write splits it into keys. Any other version starts fresh, as today.
 - **`fromSaved`** gains a `blobs` argument with the photo and art Blobs, read in the same transaction. It makes object URLs for the shown photo and for each print's picture. `madeFromStore` covers both, so neither is read back or written again.
+- **A closing page's last change (found by the BL-59 e2e):** Chrome drops an IndexedDB write started while a page closes, even one committed at once. So the flush on `pagehide` and hidden also keeps `current` in `localStorage` (`gallery-wall-closing`), with `at`. The next page to read the wall, or an open tab on the `storage` event, writes it when the stored `current` is older. A write with new photo bytes is not journaled, and a print's picture is written as soon as the print is added. Each page keeps one connection open.
 - **Alternative:** a second object store for blobs. Rejected, because it needs `onupgradeneeded` version handling for no gain.
 
 ### 5. The try view: extension components over F2's stage

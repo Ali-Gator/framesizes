@@ -21,6 +21,6 @@
   },
   "side_panel": { "default_path": "sidepanel.html" },
   "background": { "service_worker": "background.js", "type": "module" },
-  "permissions": ["sidePanel"],
+  "permissions": ["sidePanel", "contextMenus", "activeTab", "scripting"],
   "externally_connectable": { "matches": ["https://framesizes.app/*"] }
 }
