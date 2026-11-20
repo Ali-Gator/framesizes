@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-66**
+_Next id:_ **BL-68**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -101,7 +101,7 @@ when to add and when to fold items in.
 - **[BL-62] The crop can race the side panel's reflow** — with no host permission most shop CDNs fail
   the fetch, so the picture is cut from `captureVisibleTab`; the capture and `readPage`'s box can land
   after `sidePanel.open` narrows the page, so the crop can be off. Measure what happens on real shops
-  (task 9.2) and, if it bites, capture before opening or crop from the box measured after the reflow.
+  (task 9.2 ran on Society6, whose picture came from the fetch, so the crop is still unmeasured) and, if it bites, capture before opening or crop from the box measured after the reflow.
   _Refs:_ `apps/extension/src/background.ts` (`onMenuClick`), `apps/extension/src/read-page.ts` · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
 - **[BL-63] A waiting button leaves the Tab order** — "Hang it on my wall" and "Add to my layout" use
   native `disabled`, so keyboard users never land on them to hear the reason (now a `role="status"`
@@ -115,6 +115,17 @@ when to add and when to fold items in.
   (twice when a journal is replayed), though a page reuses the URLs it holds. Read only the ids it has
   no URL for.
   _Refs:_ `apps/extension/src/saved-wall.ts` (`readWall`, `replayJournal`) · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
+- **[BL-66] A panel reopened right after a close can stay blank** — CI run 44619165253 failed
+  `extension-try` "a print added just before the panel closes keeps its picture": the reopened panel
+  drew its header but `load()` never settled, so `MAIN` stayed empty for 30 s. The rerun passed and 86
+  local runs on macOS did not reproduce it. Suspect an IndexedDB transaction from the closing page
+  holding the store; reproduce on Linux (Playwright Docker image) before changing code.
+  _Refs:_ `apps/extension/src/use-wall.ts` (`load`, `flush`), `apps/extension/src/store.ts` (`transact`), `e2e/extension-try.spec.ts` · _Status:_ open — CI flake, 2026-11-20
+- **[BL-67] No "Try on my wall" where the print is not an `<img>`** — Desenio draws its product picture
+  as a CSS background on a `div` inside a link, so Chrome shows the link menu and the "image" context
+  item never appears. Decide whether to also register the item on `link`/`page` and find the image
+  under the pointer in `readPage`.
+  _Refs:_ `apps/extension/src/background.ts` (`contextMenus.create`), `apps/extension/src/read-page.ts` · _Status:_ open — task 9.2, 2026-11-20
 
 ## Widgets
 
