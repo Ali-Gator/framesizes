@@ -27,6 +27,8 @@ html[data-ext-mode="pin"] .ext-usage {
 
 .ext-pin-picture {
   display: block;
+  /* The drawings picture Chrome, drawn once left to right; they never mirror. */
+  direction: ltr;
   width: 100%;
   max-width: 880px;
   height: auto;
@@ -53,7 +55,7 @@ html[data-ext-mode="pin"] .ext-usage {
 
 .ext-list {
   margin: 0;
-  padding-left: 22px;
+  padding-inline-start: 22px;
   list-style: disc;
   display: flex;
   flex-direction: column;
@@ -95,9 +97,10 @@ html[data-ext-mode="pin"] .ext-usage {
   line-height: 20px;
 }
 
-/* Step 2's shop page and right-click menu, drawn in HTML. */
+/* Step 2's shop page and right-click menu, drawn in HTML, left to right in every language. */
 .ext-fig-shop {
   position: relative;
+  direction: ltr;
   aspect-ratio: 3 / 2;
   background: #fff;
   border: 1px solid #dadce0;

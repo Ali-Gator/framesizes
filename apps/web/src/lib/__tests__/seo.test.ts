@@ -7,11 +7,12 @@ import {
   breadcrumbJsonLd,
   breadcrumbTrail,
   jsonLdScript,
+  localizedMetadata,
   pageMetadata,
   siteJsonLd,
   sitemapEntries,
 } from "../seo";
-import { builtPage, type LivePage, livePage, page, type SitePage } from "../site-map";
+import { builtPage, fullTitle, type LivePage, livePage, page, type SitePage } from "../site-map";
 
 const POSTERS: LivePage = {
   id: "P1",
@@ -185,6 +186,84 @@ describe("breadcrumbTrail", () => {
     expect(breadcrumbTrail(page("P2"))).toEqual([
       { name: "Home", path: "/" },
       { name: "Poster board sizes", path: "/poster-board-sizes" },
+    ]);
+  });
+});
+
+describe("translated versions", () => {
+  const X1 = builtPage("X1");
+  const RU = { title: "Gallery Wall Layout Generator для Chrome", description: "Описание." };
+  const X1_URL = "https://framesizes.app/extensions/gallery-wall-layout-generator";
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-the-russian-extension-pages-head} */
+  it("gives the Russian version its own title, description, canonical, og:url and og:locale", () => {
+    const meta = localizedMetadata(X1, "ru", RU);
+    expect(meta.title).toBe(RU.title);
+    expect(fullTitle(RU.title)).toBe(`${RU.title} | Frame Sizes`);
+    expect(meta.description).toBe(RU.description);
+    expect(meta.alternates?.canonical).toBe(
+      "https://framesizes.app/ru/extensions/gallery-wall-layout-generator",
+    );
+    expect(meta.openGraph).toMatchObject({
+      title: RU.title,
+      url: "https://framesizes.app/ru/extensions/gallery-wall-layout-generator",
+      locale: "ru_RU",
+    });
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-the-extension-pages-language-links} */
+  it("names all 28 versions and x-default from the English and the translated versions", () => {
+    for (const meta of [pageMetadata(X1), localizedMetadata(X1, "ja", RU)]) {
+      const languages = meta.alternates?.languages as Record<string, string>;
+      expect(Object.keys(languages)).toHaveLength(29);
+      expect(languages["x-default"]).toBe(X1_URL);
+      expect(languages.en).toBe(X1_URL);
+      expect(languages.ja).toBe(
+        "https://framesizes.app/ja/extensions/gallery-wall-layout-generator",
+      );
+    }
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-a-page-without-translations} */
+  it("gives a page without translations no language links", () => {
+    expect(pageMetadata(livePage("F1")).alternates).toEqual({
+      canonical: "https://framesizes.app",
+    });
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-a-live-page-with-translations} */
+  it("lists the 27 translated URLs of a live page with translations, with its date", () => {
+    const x1 = sitemapEntries(withLive("X1"));
+    expect(x1).toHaveLength(28);
+    expect(x1[0]).toEqual({ url: X1_URL, lastModified: "2026-11-11" });
+    expect(x1).toContainEqual({
+      url: "https://framesizes.app/pt-br/extensions/gallery-wall-layout-generator",
+      lastModified: "2026-11-11",
+    });
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-translations-of-a-page-that-is-not-live} */
+  it("lists no translated URL while the page is not live", () => {
+    expect(
+      sitemapEntries().some((e) => e.url.includes("/extensions/gallery-wall-layout-generator")),
+    ).toBe(false);
+  });
+
+  /** {@link openspec/specs/extension-site/spec.md#scenario-a-translated-version-before-go-live} */
+  it("keeps a translated version out of the index while X1 is not live", () => {
+    expect(localizedMetadata(X1, "pl", RU).robots).toEqual({ index: false });
+    expect(localizedMetadata({ ...X1, live: true }, "pl", RU).robots).toBeUndefined();
+  });
+
+  /** {@link openspec/specs/extension-site/spec.md#requirement-a-translated-versions-breadcrumbs-are-translated} */
+  it("puts translated crumb names in the BreadcrumbList", () => {
+    const crumbs = [
+      { name: "Inicio", path: "/" },
+      { name: "Extensión", path: X1.path },
+    ];
+    expect(breadcrumbJsonLd(X1, crumbs).itemListElement.map((i) => [i.name, i.item])).toEqual([
+      ["Inicio", "https://framesizes.app"],
+      ["Extensión", X1_URL],
     ]);
   });
 });

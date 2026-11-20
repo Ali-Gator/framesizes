@@ -8,15 +8,17 @@ import { PAGES, type SitePage } from "@/lib/site-map";
 export function StoreLink({
   pages = PAGES,
   extensionId = EXTENSION_ID,
+  label = "Get it from the Chrome Web Store",
 }: {
   pages?: readonly SitePage[];
   extensionId?: string;
+  label?: string;
 }) {
   if (!pages.find((p) => p.id === "X1")?.live || !extensionId) return null;
   return (
     <p>
       <a href={storeUrl(extensionId)} target="_blank" rel="noopener">
-        Get it from the Chrome Web Store
+        {label}
       </a>
     </p>
   );

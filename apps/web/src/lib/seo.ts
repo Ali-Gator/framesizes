@@ -1,6 +1,13 @@
 import type { Metadata, MetadataRoute } from "next";
 
 import {
+  localeByCode,
+  LOCALES,
+  localizedPath,
+  TRANSLATED_LOCALES,
+  translatedPage,
+} from "./locales";
+import {
   BRAND,
   type BuiltPage,
   fullTitle,
@@ -32,15 +39,56 @@ export function absoluteUrl(path: string): string {
  * {@link openspec/specs/seo-base/spec.md#requirement-a-built-page-that-is-not-live-stays-out-of-the-index}
  */
 export function pageMetadata(target: BuiltPage): Metadata {
-  const { title, description } = target.seo;
-  const url = absoluteUrl(target.path);
+  return headTags(target, target.path, target.seo, LOCALES[0]?.ogLocale ?? "en_US");
+}
+
+/**
+ * Head tags for one translated version of a page with translations: its own title and description
+ * from the translation, its own canonical and `og:url` under `/<code>`, its language's `og:locale`.
+ * `noindex` follows the page's `live` flag, as for the English version.
+ * {@link openspec/specs/seo-base/spec.md#requirement-a-translated-version-takes-its-head-values-from-its-translation}
+ * {@link openspec/specs/extension-site/spec.md#requirement-translated-versions-go-live-with-the-english-page}
+ */
+export function localizedMetadata(
+  target: BuiltPage,
+  code: string,
+  seo: { title: string; description: string },
+): Metadata {
+  const locale = localeByCode(code);
+  if (!locale) throw new Error(`Unknown locale ${code}`);
+  return headTags(target, localizedPath(code, target.path), seo, locale.ogLocale);
+}
+
+/**
+ * The 28 language versions of a page with translations, plus `x-default` (English), each at its
+ * canonical URL; nothing for a page without translations.
+ * {@link openspec/specs/seo-base/spec.md#requirement-every-language-version-names-all-the-others}
+ */
+export function languageAlternates(path: string): Record<string, string> | undefined {
+  if (!translatedPage(path)) return undefined;
+  return {
+    ...Object.fromEntries(
+      LOCALES.map((l) => [l.hreflang, absoluteUrl(localizedPath(l.code, path))]),
+    ),
+    "x-default": absoluteUrl(path),
+  };
+}
+
+function headTags(
+  target: BuiltPage,
+  path: string,
+  { title, description }: { title: string; description: string },
+  locale: string,
+): Metadata {
+  const url = absoluteUrl(path);
+  const languages = languageAlternates(target.path);
   return {
     ...(target.live ? {} : { robots: { index: false } }),
     // A title without the brand gets the layout's "%s | Frame Sizes" template.
     title: fullTitle(title) === title ? { absolute: title } : title,
     description,
-    alternates: { canonical: url },
-    openGraph: { title, description, url, type: "website", siteName: BRAND, locale: "en_US" },
+    alternates: languages ? { canonical: url, languages } : { canonical: url },
+    openGraph: { title, description, url, type: "website", siteName: BRAND, locale },
     twitter: { card: "summary_large_image" },
   };
 }
@@ -63,12 +111,19 @@ export function siteJsonLd() {
   };
 }
 
-/** {@link openspec/specs/seo-base/spec.md#requirement-the-sitemap-lists-exactly-the-live-pages} */
+/**
+ * Every live page, then every translated version of a live page, with the page's content date.
+ * {@link openspec/specs/seo-base/spec.md#requirement-the-sitemap-lists-exactly-the-live-pages}
+ */
 export function sitemapEntries(pages: readonly SitePage[] = PAGES): MetadataRoute.Sitemap {
-  return livePages(pages).map((p) => ({
-    url: absoluteUrl(p.path),
-    lastModified: p.seo.lastModified,
-  }));
+  return livePages(pages).flatMap((p) =>
+    [
+      p.path,
+      ...(translatedPage(p.path) ? TRANSLATED_LOCALES : []).map((l) =>
+        localizedPath(l.code, p.path),
+      ),
+    ].map((path) => ({ url: absoluteUrl(path), lastModified: p.seo.lastModified })),
+  );
 }
 
 export interface Crumb {
@@ -93,11 +148,16 @@ export function breadcrumbTrail(target: SitePage): Crumb[] {
 }
 
 /**
- * The breadcrumb trail as a `BreadcrumbList`, with absolute URLs.
+ * The breadcrumb trail as a `BreadcrumbList`, with absolute URLs. A translated version passes its
+ * trail with translated names.
  * {@link openspec/specs/seo-base/spec.md#requirement-pages-below-the-home-page-carry-breadcrumbs}
+ * {@link openspec/specs/extension-site/spec.md#requirement-a-translated-versions-breadcrumbs-are-translated}
  */
-export function breadcrumbJsonLd(target: SitePage) {
-  const items = breadcrumbTrail(target).map((c) => ({ name: c.name, url: absoluteUrl(c.path) }));
+export function breadcrumbJsonLd(
+  target: SitePage,
+  crumbs: readonly Crumb[] = breadcrumbTrail(target),
+) {
+  const items = crumbs.map((c) => ({ name: c.name, url: absoluteUrl(c.path) }));
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
