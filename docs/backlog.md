@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-71**
+_Next id:_ **BL-76**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -27,6 +27,11 @@ when to add and when to fold items in.
 
 ## Tooling
 
+- **[BL-75] One shared IndexedDB reader for the extension e2e** — `storedKeys`, `storedPrints` and the
+  copies in `extension.spec.ts` and `extension-races.spec.ts` each open `gallery-wall` v1 with no
+  `onerror`, so a schema bump missed in one copy hangs that test until timeout. Move them to one
+  helper in `e2e/fixtures` (edits existing tests).
+  _Refs:_ `e2e/extension-try.spec.ts`, `e2e/extension.spec.ts`, `e2e/extension-races.spec.ts` · _Status:_ open — backlog-5 review, 2026-11-20
 - **[BL-1] Drop the TypeScript 6 alias** — `typescript` is aliased to `@typescript/typescript6` only because
   typescript-eslint lacks TS 7 support; once it ships, depend on plain `typescript@^7` and remove
   `@typescript/native`, so `tsc`, Next.js and eslint use one compiler.
@@ -39,13 +44,6 @@ when to add and when to fold items in.
   _Refs:_ `scripts/__tests__/spec-citations.test.ts` · _Status:_ open — backlog-3 review, 2026-11-15
 
 ## Site
-
-- **[BL-61] F1 preview text says inches until hydration** — with cm stored, the scale preview's
-  dimension labels, legend, reference sentence and "Next size up", and the all-sizes labels, render in
-  inches until React hydrates (`useUnit` is "in" on the server). The SVG labels' layout depends on the
-  unit, so `<U>` alone does not fit them. Found in backlog-4 triage (BL-33 was scoped to the toggle and
-  the table).
-  _Refs:_ `apps/web/src/components/ui/scale-preview.tsx`, `apps/web/src/components/ui/size-compare.tsx` · _Status:_ open — backlog-4 triage, 2026-11-19
 
 - **[BL-49] G1 re-lays out the template on every drag move** — `dragFrame` calls `framesOf` per
   pointer move; pass the frames the view already has. No visible lag at 12 frames yet.
@@ -93,6 +91,11 @@ when to add and when to fold items in.
 
 ## Chrome extension
 
+- **[BL-73] Frames from "Add a frame" can share an id across pages** — `state.ts` still gives them
+  `a${nextId}`, so two stale extension pages can each make the same id for different frames, and the
+  kept selection or a hanger entry (`hangers.byFrame`) lands on the wrong frame. Make every added id
+  unique per page, as BL-64 did for prints.
+  _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`applyPicker`), `apps/extension/src/use-wall.ts` · _Status:_ open — backlog-5 review, 2026-11-20
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
@@ -107,10 +110,6 @@ when to add and when to fold items in.
   native `disabled`, so keyboard users never land on them to hear the reason (now a `role="status"`
   line). Consider `aria-disabled` with a no-op click so the reason is read on focus.
   _Refs:_ `apps/extension/src/try/size-step.tsx`, `apps/extension/src/try/hang-view.tsx` · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
-- **[BL-64] Two panels can share a print picture's URL** — `artUrlFor` caches object URLs by frame id;
-  two panels in two windows adding prints with the same next id keep each other's picture. Key the
-  cache by the Blob, not the id.
-  _Refs:_ `apps/extension/src/use-wall.ts` (`artUrls`) · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
 - **[BL-65] Every load reads every print picture** — `readWall` reads all `art:` Blobs on each load
   (twice when a journal is replayed), though a page reuses the URLs it holds. Read only the ids it has
   no URL for.
@@ -140,6 +139,10 @@ when to add and when to fold items in.
 
 ## Widgets
 
+- **[BL-74] `ScalePreview` keeps an unused `unit` prop** — since BL-61 the preview holds both units
+  and the `data-unit` CSS picks one, so the prop is never read; drop it from the type and from
+  `frame-chart.tsx` and the unit test's call sites (an existing-test edit).
+  _Refs:_ `apps/web/src/components/ui/scale-preview.tsx` · _Status:_ open — backlog-5 review, 2026-11-20
 - **[BL-45] F2 drag should pass the wall to `snapFrame`** — F2's drag handler still snaps without
   the wall and clamps afterwards, so a snap that would leave the bounds is dropped instead of the
   nearest in-bounds one winning. Pass the wall when the F2 drag code is next touched.
@@ -178,14 +181,3 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
-- **[BL-32] Selected row grows in forced colors** — the forced-colors `Highlight` border sits on the
-  selected row only: on desktop it beats the cells' 1px collapsed borders and the rows below jump 1–2px
-  on every ArrowDown; on a phone it squeezes the 68px row and moves the radio 2px left. Needs a mark
-  that takes no layout space and still clears the focus ring.
-  _Refs:_ `apps/web/src/app/widgets.css` (forced-colors block) · _Status:_ open — backlog-3 review, 2026-11-15
-
-From Oleg directly (needs proposal first):
-
-1. https://framesizes.app/gallery-wall-planner:
-   1. Letters (A,B,C etc) are not good visible on the frames itself
-   2. Need to rethink widget layout - many buttons/controls on the right side, empty space under Get nail marks. We need to rethink and simplify widget.

@@ -134,6 +134,19 @@ describe("the saved wall's keys", () => {
     expect(bare && framesOf(bare).at(-1)?.print).toEqual({ ...PRINT, art: undefined });
   });
 
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-an-older-saved-print} */
+  it("loads a print saved under an older id with its picture", () => {
+    const added = reducer(initialState(), { type: "addPrint", print: PRINT, id: "a1" });
+    const { current } = toStored(wall(added), null, stamp);
+    const back = fromSaved(
+      clone(current),
+      () => "blob:never",
+      { photo: null, art: { a1: ART } },
+      (frame, blob) => (blob === ART ? `blob:art-${frame}` : "blob:wrong"),
+    );
+    expect(back && framesOf(back).at(-1)?.print).toEqual({ ...PRINT, art: "blob:art-a1" });
+  });
+
   it("journals a closing write only when no new photo bytes are waiting", () => {
     const state = run(ON_SOFA);
     const fresh = toStored(wall(state, savedPhoto(state, null, BLOB)), null, stamp);

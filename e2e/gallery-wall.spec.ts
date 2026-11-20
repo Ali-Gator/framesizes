@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { expect, type Page, type Request, test } from "@playwright/test";
+import { expect, type Locator, type Page, type Request, test } from "@playwright/test";
 
 const PATH = "/gallery-wall-planner";
 const PHOTO = path.join(import.meta.dirname, "fixtures/wall-1200x900.png");
@@ -248,4 +248,143 @@ test("on a photo scaled from the sofa the group hangs 8 in above it, and the pho
     expect(request.url()).not.toMatch(/blob:|data:|wall-1200x900/);
     expect(body?.toString("latin1") ?? "").not.toContain("wall-1200x900");
   }
+});
+
+/**
+ * A frame letter's font size and chip background, the paper and ink colours, and how far the
+ * chip's centre sits from its frame's centre, in px.
+ */
+const letter = (scope: Locator, name: string) =>
+  scope.locator(".g-letter", { hasText: new RegExp(`^${name}$`) }).evaluate((el) => {
+    const chip = el.getBoundingClientRect();
+    const frame = (el.parentElement as HTMLElement).getBoundingClientRect();
+    const colour = (token: string) => {
+      const probe = document.createElement("span");
+      probe.style.backgroundColor = `var(${token})`;
+      document.body.append(probe);
+      const value = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return value;
+    };
+    const style = getComputedStyle(el);
+    return {
+      size: parseFloat(style.fontSize),
+      background: style.backgroundColor,
+      paper: colour("--paper"),
+      ink: colour("--ink"),
+      off: Math.max(
+        Math.abs(chip.x + chip.width / 2 - (frame.x + frame.width / 2)),
+        Math.abs(chip.y + chip.height / 2 - (frame.y + frame.height / 2)),
+      ),
+    };
+  });
+const drawing = (page: Page) => widget(page).locator(".wf-drawing");
+
+test.describe("frame letters", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-letters-on-the-sample-wall-at-1280} */
+  test("frame A's letter is a paper chip centred on the frame", async ({ page }) => {
+    await open(page);
+    const a = await letter(drawing(page), "A");
+    expect(a.size).toBeGreaterThanOrEqual(12);
+    expect(a.size).toBeLessThanOrEqual(20);
+    expect(a.off).toBeLessThanOrEqual(1);
+    expect(a.background).toBe(a.paper);
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-a-small-frame-on-a-phone} */
+  test("a 4x6 frame B at 360 px gets a 12 px chip centred on it", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await open(page);
+    await chip(page, "B · 8×10").click();
+    await widget(page).getByRole("button", { name: "Change size" }).click();
+    await widget(page).getByRole("radio", { name: "Portrait" }).click();
+    await widget(page).locator(".wf-picker").getByRole("button", { name: /^4x6 / }).click();
+    await widget(page)
+      .getByLabel(/^Also the other/)
+      .uncheck();
+    await widget(page).getByRole("button", { name: "Use 4x6" }).click();
+    await expect(chip(page, "A · 8×10")).toBeVisible();
+    await expect(chip(page, "B · 4×6")).toBeVisible();
+    const b = await letter(drawing(page), "B");
+    expect(b.size).toBe(12);
+    expect(b.off).toBeLessThanOrEqual(1);
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-selected-frames-letter} */
+  test("the selected frame's chip is ink and the others stay paper", async ({ page }) => {
+    await open(page);
+    await chip(page, "A · 8×10").click();
+    await expect
+      .poll(async () => {
+        const [a, b] = [await letter(drawing(page), "A"), await letter(drawing(page), "B")];
+        return [a.background === a.ink, b.background === b.paper];
+      })
+      .toEqual([true, true]);
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-letters-on-the-nail-map} */
+  test("frame A's letter on the nail map is a chip centred on its outline", async ({ page }) => {
+    await open(page);
+    await widget(page).getByRole("radio", { name: "Nail marks" }).click();
+    const a = await letter(widget(page).locator(".g-map"), "A");
+    expect(a.size).toBeGreaterThanOrEqual(12);
+    expect(a.size).toBeLessThanOrEqual(20);
+    expect(a.off).toBeLessThanOrEqual(1);
+  });
+});
+
+test.describe("the Layout view's columns", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+  const main = (page: Page) => widget(page).locator(".g-main");
+  const side = (page: Page) => widget(page).locator(".g-side");
+  const top = (locator: Locator) => locator.evaluate((el) => el.getBoundingClientRect().top);
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-columns-at-1280} */
+  test("the settings sit under the drawing and the columns end near each other", async ({
+    page,
+  }) => {
+    await open(page);
+    await expect(main(page).locator(".g-tpls")).toBeVisible();
+    await expect(main(page).getByLabel("Gap between frames", { exact: true })).toBeVisible();
+    await expect(main(page).getByRole("button", { name: "Use my wall photo" })).toBeVisible();
+    await expect(side(page).locator(".wf-chips")).toBeVisible();
+    await expect(side(page).locator(".wf-sel")).toBeVisible();
+    const bottom = (locator: Locator) =>
+      locator.evaluate((el) => el.getBoundingClientRect().bottom);
+    const [m, s] = [await bottom(main(page)), await bottom(side(page))];
+    expect(Math.abs(m - s)).toBeLessThan(200);
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-stacked-order-on-a-phone} */
+  test("at 360 px the controls stack drawing, nail marks, settings, then the selection", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await open(page);
+    const tops = [
+      await top(drawing(page)),
+      await top(widget(page).getByRole("button", { name: "Get nail marks" })),
+      await top(widget(page).locator(".g-tpls")),
+      await top(field(page, "Gap between frames")),
+      await top(widget(page).getByRole("button", { name: "Use my wall photo" })),
+      await top(chip(page, "All 5")),
+      await top(widget(page).locator(".wf-sel .wf-row input").first()),
+    ];
+    expect(tops).toEqual([...tops].sort((a, b) => a - b));
+    expect(new Set(tops).size).toBe(tops.length);
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-picker-takes-the-side-column} */
+  test("the size picker takes the side column and hides the templates and gap", async ({
+    page,
+  }) => {
+    await open(page);
+    await chip(page, "A · 8×10").click();
+    await widget(page).getByRole("button", { name: "Change size" }).click();
+    await expect(side(page).locator(".wf-picker")).toBeVisible();
+    await expect(widget(page).locator(".g-tpls")).toBeHidden();
+    await expect(field(page, "Gap between frames")).toBeHidden();
+  });
 });

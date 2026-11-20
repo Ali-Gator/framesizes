@@ -24,6 +24,14 @@
   flex-direction: column;
   gap: 16px;
 }
+/* the Layout view's settings, under the summary in the main column */
+.g-set {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
 @container (min-width: 860px) {
   .g-side {
     max-width: 360px;
@@ -124,15 +132,33 @@
 }
 
 /* stage additions */
+/* Each frame is a size container, so its letter chip grows with it: 12 px up to 20 px. */
+.g-app .wf-frame,
+.g-mframe {
+  container-type: size;
+}
 .g-letter {
   position: absolute;
-  left: 3px;
-  top: 2px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 1.5em;
+  padding: 2px 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 12px;
-  font-weight: 500;
-  color: var(--on-tape);
+  font-size: clamp(12px, 28cqmin, 20px);
+  line-height: 1;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+}
+.wf-frame.is-sel .g-letter {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
 }
 .g-gbox {
   position: absolute;
@@ -258,11 +284,11 @@
   background: var(--paper);
   border-radius: 1px;
 }
-.g-mframe .g-letter {
-  color: var(--ink-muted);
-}
 .g-mframe.is-scope {
   background: var(--tape-soft);
+  border-color: var(--ink);
+}
+.g-mframe.is-scope .g-letter {
   border-color: var(--ink);
 }
 .g-nail {

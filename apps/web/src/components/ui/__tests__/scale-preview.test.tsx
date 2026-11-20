@@ -43,7 +43,7 @@ describe("ScalePreview", () => {
           renderToStaticMarkup(
             <ScalePreview frame={frame("16x20")} reference="sofa" unit={unit} />,
           ),
-        ).querySelectorAll(".dim-text"),
+        ).querySelectorAll(`.dim-text .u-${unit}`),
       ].map((t) => t.textContent);
     expect(labels("in")).toEqual(["16 in", "20 in"]);
     expect(labels("cm")).toEqual(["40.6 cm", "50.8 cm"]);

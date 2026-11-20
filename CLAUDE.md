@@ -65,6 +65,7 @@ Read by the global `backlog-batch`, `backlog-fix` and `phase-review` skills (`~/
   - Phone 375 picker and six common sizes (BL-11, BL-12, BL-19): same canvas, boards a–f, "Phone 375 — six common sizes" and "Phone 375×548 — short phone", approved 2026-11-13.
   - F2 Frames on your wall (`/frame-sizes-on-wall`, T7): https://claude.ai/artifact/AzNYiLnMFAN8rg8eeMaXZX, approved 2026-11-15.
   - G1 Gallery wall planner (`/gallery-wall-planner`, T11): https://claude.ai/artifact/HGW1ti5mv6Mc8BqPRepXGd, approved 2026-11-16.
+  - G1 v3 balanced layout and letter chips (BL-71, BL-72): same canvas, boards n–u (row "v3 (backlog-5)"), version 13, approved 2026-11-20.
   - T23 Chrome extension + T24 extension section and page (`/extensions/gallery-wall-layout-generator`): https://claude.ai/artifact/WUq26q5aNBxfiKUTYcaCwv, approved 2026-11-17 (also holds the v2 sample room and the G1 "change sizes" board).
   - T23 Chrome Web Store graphics (small promo tile, 128 store icon, three screenshots; 1x PNGs in `apps/extension/store/`): https://claude.ai/artifact/QwSKJm2AYhdU2mEUejMMkF, approved 2026-11-18.
   - Design system: https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5

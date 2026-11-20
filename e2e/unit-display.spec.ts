@@ -162,3 +162,53 @@ test("after the bundles run, the Units toggle's look and aria-checked agree", as
   expect(await look(cm)).toBe(checked);
   expect(await look(inches)).toBe(unchecked);
 });
+
+/** What each wall-view dimension label shows: SVG has no `innerText`, so skip undisplayed tspans. */
+const dimLabels = (page: Page) =>
+  page.locator(".fc-preview .dim-text").evaluateAll((els) =>
+    els.map((el) =>
+      [...el.childNodes]
+        .filter((n) => !(n instanceof Element) || getComputedStyle(n).display !== "none")
+        .map((n) => n.textContent)
+        .join(""),
+    ),
+  );
+
+/** The legend's main size, then its secondary size in the other unit. */
+async function legendSizes(page: Page) {
+  const size = page.locator(".fc-preview .fs-scale-size:visible");
+  await expect(size).toHaveCount(1);
+  return size.evaluate((el) => [
+    [...el.childNodes]
+      .filter((n) => n.nodeName !== "SPAN")
+      .map((n) => n.textContent)
+      .join(" "),
+    el.querySelector("span")?.textContent,
+  ]);
+}
+
+/** The reference sentence and the "Next size up" line, as the visitor sees them. */
+async function previewLines(page: Page) {
+  await expect(page.locator(".fc-preview .fs-scale-ghost")).toHaveCount(1);
+  return shown(page.locator(".fc-preview .fs-scale-ref"));
+}
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-preview-with-centimetres-stored-before-the-scripts-run} */
+test("a stored cm shows the wall view in cm before any bundle runs", async ({ page }) => {
+  await openBeforeBundles(page, "cm");
+  expect(await dimLabels(page)).toEqual(["40.6 cm", "50.8 cm"]);
+  expect(await legendSizes(page)).toEqual(["40.6 × 50.8 cm", "16 × 20 in"]);
+  const lines = await previewLines(page);
+  expect(lines).toContain("Next size up");
+  expect(lines).toMatch(/\d cm\b/);
+  expect(lines).not.toMatch(INCH);
+});
+
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-the-preview-with-inches-stored-before-the-scripts-run} */
+test("with nothing stored the wall view shows inches before any bundle runs", async ({ page }) => {
+  await openBeforeBundles(page);
+  expect(await dimLabels(page)).toEqual(["16 in", "20 in"]);
+  const lines = await previewLines(page);
+  expect(lines).toContain("Next size up");
+  expect(lines).not.toMatch(/\bcm\b/);
+});

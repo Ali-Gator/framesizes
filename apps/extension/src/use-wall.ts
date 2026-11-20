@@ -89,7 +89,7 @@ export function useWall() {
   const record = useRef<WallRecord | null>(null);
   /** Pictures of prints added here, waiting for the next write. */
   const pendingArt = useRef(new Map<string, Blob>());
-  /** Each print's picture as an object URL, by frame id: a picture never changes. */
+  /** Each print's picture as an object URL, by its frame id: ids are unique, so it never changes. */
   const artUrls = useRef(new Map<string, string>());
   /** The state last applied from the record: not the visitor's change, so not written back. */
   const applied = useRef<PlannerState | null>(null);
@@ -301,7 +301,11 @@ export function useWall() {
    * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-try-ends-by-adding-the-print-or-going-back}
    */
   const addPrint = useCallback((print: Print, picture: Blob | null) => {
-    const id = `a${current.current.nextId}`;
+    // Unique to this page: another page's wall may not have reached this one yet (BL-64).
+    const id = `a${current.current.nextId}-${crypto.randomUUID().slice(0, 8)}`;
+    // A print the wall refuses (no room, or 12 frames) keeps no picture under a fresh key.
+    const probe: Action = { type: "addPrint", print, id };
+    if (reducer(current.current, probe) === current.current) return;
     let art: string | undefined;
     if (picture) {
       art = URL.createObjectURL(picture);
@@ -310,7 +314,7 @@ export function useWall() {
       // At once: a panel closed right after "Add" must not lose the picture.
       void writeArt(id, picture).catch(() => undefined);
     }
-    send({ type: "addPrint", print: { ...print, art } });
+    send({ type: "addPrint", print: { ...print, art }, id });
   }, []);
 
   const mode = wall.planner.mode;
