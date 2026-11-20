@@ -854,10 +854,12 @@
 
 /*
  * Forced colors reset the tape fill, the ink bar and the radio's dot, so the selection gets a
- * system-colour border instead. The focus ring moves 4px in so it never sits on that border.
+ * system-colour border instead. It sits on the label's row-sized overlay, not the row, so it takes
+ * no layout space: no row moves or grows and the phone radio stays put. The focus ring moves 4px
+ * in so it never sits on that border.
  */
 @media (forced-colors: active) {
-  .fs-table tbody tr:has(input:checked) {
+  .fs-table tbody tr:has(input:checked) label::after {
     border: 2px solid Highlight;
   }
   .fs-table tbody tr:has(input:focus-visible) {
