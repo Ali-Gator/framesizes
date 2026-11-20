@@ -33,7 +33,7 @@ export interface StageFrame {
   size: string;
   rect: Rect;
   selected: boolean;
-  /** The planner's letter, drawn in the frame's corner. */
+  /** The planner's letter, drawn as a chip centred on the frame (G1's `gallery.css`). */
   letter?: string;
   /** The frame button's name; "16x20 frame" by default. */
   name?: string;
