@@ -1,0 +1,302 @@
+/*
+ * The language picker (approved canvas, T25): the header trigger and its modal list. Logical
+ * properties throughout, so the dialog mirrors on a right-to-left page.
+ */
+.lp-trig {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  box-sizing: border-box;
+  padding-inline: 12px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.lp-trig svg,
+.lp-dlg svg {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.lp-trig svg {
+  width: 18px;
+  height: 18px;
+}
+.lp-trig .lp-chev {
+  width: 16px;
+  height: 16px;
+  color: var(--ink-muted);
+}
+.lp-trig:hover {
+  border-color: var(--ink);
+}
+.lp-trig[aria-expanded="true"] {
+  background: var(--stage);
+  border-color: var(--ink);
+}
+/* The native name in the scripts Schibsted lacks falls back to the system face. */
+.lp-trig-name,
+.lp-name {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+/* Below 600px: a 44px globe-only button; the name stays in its accessible name. */
+@media (max-width: 599px) {
+  .lp-trig {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  .lp-trig .lp-trig-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .lp-trig .lp-chev {
+    display: none;
+  }
+}
+
+.lp-dlg {
+  box-sizing: border-box;
+  width: min(760px, calc(100vw - 32px));
+  height: min(720px, calc(100dvh - 64px));
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 24px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+.lp-dlg[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.lp-dlg::backdrop {
+  background: rgba(20, 24, 28, 0.48);
+}
+.lp-dlg:lang(ar),
+.lp-dlg:lang(el),
+.lp-dlg:lang(hi),
+.lp-dlg:lang(ja),
+.lp-dlg:lang(ko),
+.lp-dlg:lang(ru),
+.lp-dlg:lang(th),
+.lp-dlg:lang(uk),
+.lp-dlg:lang(vi),
+.lp-dlg:lang(zh) {
+  font-family: system-ui, sans-serif;
+}
+.lp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lp-title {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.lp-x {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-end: -10px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.lp-x:hover {
+  background: var(--stage);
+}
+.lp-x svg {
+  width: 20px;
+  height: 20px;
+}
+.lp-search {
+  position: relative;
+  display: block;
+}
+.lp-search svg {
+  position: absolute;
+  inset-inline-start: 14px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+.lp-search input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  padding-inline: 44px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  appearance: none;
+}
+.lp-search input::placeholder {
+  color: var(--ink-muted);
+  opacity: 1;
+}
+.lp-search input:focus-visible {
+  border-color: var(--ink);
+}
+.lp-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  margin-inline: -8px;
+  padding: 4px 8px 8px;
+}
+.lp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lp-grid li {
+  display: flex;
+}
+.lp-grid li[hidden] {
+  display: none;
+}
+.lp-item {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  text-decoration: none;
+}
+.lp-item:hover {
+  background: var(--stage);
+}
+.lp-item[aria-current="page"] {
+  background: var(--tape-soft);
+  border-color: var(--ink);
+}
+.lp-flag {
+  flex: none;
+  width: 24px;
+  height: 18px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(20, 24, 28, 0.16);
+}
+.lp-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 22px;
+}
+.lp-item[aria-current="page"] .lp-name {
+  font-weight: 600;
+}
+.lp-region {
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+.lp-check {
+  width: 18px;
+  height: 18px;
+  margin-inline-start: auto;
+  stroke-width: 2.5;
+}
+.lp-none {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 56px 16px;
+  text-align: center;
+}
+.lp-none p {
+  max-width: 420px;
+  margin: 0;
+}
+.lp-none-t {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+.lp-none-h {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+
+/* Phone: a full-height sheet with two columns. */
+@media (max-width: 599px) {
+  .lp-dlg {
+    width: 100vw;
+    height: 100dvh;
+    padding: 8px 16px 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .lp-dlg[open] {
+    gap: 12px;
+  }
+  .lp-head {
+    min-height: 52px;
+  }
+  .lp-x {
+    margin-inline-end: -8px;
+  }
+  .lp-list {
+    margin-inline: -4px;
+    padding: 4px 4px 24px;
+  }
+  .lp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 6px;
+  }
+  .lp-item {
+    gap: 10px;
+    padding: 8px 10px;
+  }
+}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LanguagePicker } from "@/components/i18n/language-picker";
 import type { HubLink } from "@/lib/site-map";
 
 import { HubNav } from "./hub-nav";
@@ -27,6 +28,7 @@ export function Lockup() {
 /**
  * {@link openspec/specs/site-shell/spec.md#requirement-every-page-renders-inside-one-shell}
  * {@link openspec/specs/site-shell/spec.md#requirement-the-header-lists-the-live-hubs}
+ * {@link openspec/specs/site-shell/spec.md#requirement-the-header-offers-the-language-picker-on-translated-pages}
  */
 export function SiteHeader({ hubs }: { hubs: HubLink[] }) {
   return (
@@ -40,7 +42,9 @@ export function SiteHeader({ hubs }: { hubs: HubLink[] }) {
         >
           <Lockup />
         </Link>
-        <div className="order-2 ml-auto shrink-0 max-[359px]:[&_[role=radio]]:px-2 min-[900px]:order-3">
+        {/* The language button shows only on pages with translations, before the Units toggle. */}
+        <div className="order-2 ml-auto flex shrink-0 items-center gap-2 max-[359px]:[&_[role=radio]]:px-2 min-[600px]:gap-3 min-[900px]:order-3">
+          <LanguagePicker />
           <UnitToggle />
         </div>
         {hubs.length >= 2 && <HubNav links={hubs} />}

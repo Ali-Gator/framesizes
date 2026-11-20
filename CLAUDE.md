@@ -68,6 +68,7 @@ Read by the global `backlog-batch`, `backlog-fix` and `phase-review` skills (`~/
   - G1 v3 balanced layout and letter chips (BL-71, BL-72): same canvas, boards n–u (row "v3 (backlog-5)"), version 13, approved 2026-11-20.
   - T23 Chrome extension + T24 extension section and page (`/extensions/gallery-wall-layout-generator`): https://claude.ai/artifact/WUq26q5aNBxfiKUTYcaCwv, approved 2026-11-17 (also holds the v2 sample room and the G1 "change sizes" board).
   - T23 Chrome Web Store graphics (small promo tile, 128 store icon, three screenshots; 1x PNGs in `apps/extension/store/`): https://claude.ai/artifact/QwSKJm2AYhdU2mEUejMMkF, approved 2026-11-18.
+  - T25 language picker (X1 header trigger, dialog, phone sheet, RTL): https://claude.ai/artifact/DkYgEZL6NprbwHUPYdoL5G, approved 2026-11-20 (phone: option A, globe-only button).
   - Design system: https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5
 - **Chrome Web Store listing (T23):** https://docs.google.com/document/d/1TMWz0VdN7widrUj8JASdWACttfJeCHBb8QQ2QbOwbL0/edit?tab=t.0 (Google Doc: name, short and long description, keyword tables with Times used). The only copy; the Tracker's "Chrome extension and wall tool" section links to it.
 - **Importance order (backlog-batch pass 1):** a wrong size or broken widget a visitor sees; then SEO defects on a live page (indexing, titles, canonical, Core Web Vitals); then ads/affiliate revenue leaks; then anything the next hub launch needs; then internal correctness and test gaps; polish last.

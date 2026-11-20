@@ -101,13 +101,19 @@ export function LayoutFigure({ label }: { label: string }) {
   );
 }
 
-/** Step 2: a shop image with the right-click menu open on "Try on my wall". */
-export function MenuFigure({ label }: { label: string }) {
+/** Step 2: a shop image with the right-click menu open on "Try on my wall"; Chrome's own items in `menu`'s language. */
+export function MenuFigure({
+  label,
+  menu = { copyImage: "Copy image", inspect: "Inspect" },
+}: {
+  label: string;
+  menu?: { copyImage: string; inspect: string };
+}) {
   return (
     <div role="img" aria-label={label} className="ext-fig ext-fig-shop">
       <PrintArt className="ext-fig-shop-print" />
       <div className="ext-menu" aria-hidden="true">
-        <span>Copy image</span>
+        <span>{menu.copyImage}</span>
         <span className="ext-menu-hot">
           <svg viewBox="0 0 64 64">
             <rect width="64" height="64" rx="14" className="pp-ink" />
@@ -119,7 +125,7 @@ export function MenuFigure({ label }: { label: string }) {
           </svg>
           Try on my wall
         </span>
-        <span>Inspect</span>
+        <span>{menu.inspect}</span>
       </div>
     </div>
   );
