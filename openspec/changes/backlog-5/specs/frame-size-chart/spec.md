@@ -2,12 +2,12 @@
 
 ### Requirement: The scale preview shows the stored unit from first paint
 
-The wall view's two dimension labels, its size legend, its reference sentence and its "Next size up" line SHALL show the visitor's stored unit from the first paint, before any of the page's script bundles have run. The server HTML SHALL hold both units for each of them, and only the stored unit SHALL be visible. The labels' positions SHALL NOT depend on the unit.
+The wall view's two dimension labels, its size legend's main size, its reference sentence and its "Next size up" line SHALL show the visitor's stored unit from the first paint, before any of the page's script bundles have run. The server HTML SHALL hold both units for each of them, and only the stored unit SHALL be visible. The labels' positions SHALL NOT depend on the unit.
 
 #### Scenario: The preview with centimetres stored before the scripts run
 
 - **WHEN** a visitor whose stored unit is centimetres opens `/` and its script bundles have not run yet
-- **THEN** the wall view's dimension labels read "40.6 cm" and "50.8 cm", the legend's main size, the reference sentence and the "Next size up" line show centimetres, and no inch length is visible in the preview
+- **THEN** the wall view's dimension labels read "40.6 cm" and "50.8 cm", the legend's main size reads "40.6 × 50.8 cm" (inches stay its secondary size), and no inch length is visible in the dimension labels, the reference sentence or the "Next size up" line
 
 #### Scenario: The preview with inches stored before the scripts run
 

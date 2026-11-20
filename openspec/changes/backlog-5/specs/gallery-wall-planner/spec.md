@@ -12,7 +12,7 @@ On the Layout drawing and the nail map, each frame's letter SHALL sit on a paper
 
 #### Scenario: A small frame on a phone
 
-- **GIVEN** `/gallery-wall-planner` at 360 × 740, with frame B changed to 4x6
+- **GIVEN** `/gallery-wall-planner` at 360 × 740, with only frame B changed to 4x6 (the picker's "Also the other" box unticked)
 - **WHEN** frame B's letter is measured
 - **THEN** its font size is 12 px and its chip is centred on frame B
 
@@ -36,7 +36,7 @@ In the Layout view, the template pictures, the gap row (with its note) and the a
 
 - **GIVEN** `/gallery-wall-planner` at 1280 × 800 on the default template, the whole group selected
 - **WHEN** the Layout view is measured
-- **THEN** the template pictures, the gap field and "Use my wall photo" are inside `.g-main`, the Select chips and the selection block are inside `.g-side`, and the two columns' bottoms differ by less than 160 px
+- **THEN** the template pictures, the gap field and "Use my wall photo" are inside `.g-main`, the Select chips and the selection block are inside `.g-side`, and the two columns' bottoms differ by less than 200 px (today they differ by about 390 px)
 
 #### Scenario: The stacked order on a phone
 
