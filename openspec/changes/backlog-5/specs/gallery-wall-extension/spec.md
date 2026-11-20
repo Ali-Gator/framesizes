@@ -8,7 +8,7 @@ Each print added from a try SHALL get a frame id that no other page of the exten
 
 - **GIVEN** two extension pages on one wall, both before any print, and the second page in the upload step
 - **WHEN** the first page adds print P1, the second page goes back to the sample room without saving and adds print P2 from a try
-- **THEN** P1 and P2 have different frame ids and two different `art:` keys, and after both pages reload, each shows P1 with P1's picture and P2 with P2's picture
+- **THEN** P1 and P2 have different frame ids; the second page's write wins, so the store holds P2's picture under `art:<P2's id>` only, and after both pages reload, each shows P2 with P2's picture, never P1's
 
 #### Scenario: An older saved print
 

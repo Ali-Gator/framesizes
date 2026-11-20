@@ -47,6 +47,8 @@ Frames added from the page's own picker (`state.ts:694`) also use `a${nextId}`; 
 
 The new test needs two extension pages on one wall with the second in the upload step: the e2e scenario in the spec. Unit tests in `apps/extension/src/__tests__/saved-wall-keys.test.ts` and `apps/web/src/components/gallery-wall/__tests__/state-print.test.ts` stay green because `id` is optional.
 
+Correction at apply (2026-11-20): the triage scenario said both P1 and P2 survive with two `art:` keys. They can't: the stale second page writes a wall holding only P2, the existing "last write wins" rule keeps that write, and `artChanges` deletes `art:<P1's id>` because P1 left the record. The scenario now states what the fix guarantees: different ids, P2's picture under its own key, and no page showing P1's picture for P2. Keeping both pages' prints would be a merge, which this batch does not do.
+
 Files: `apps/extension/src/use-wall.ts`, `apps/web/src/components/gallery-wall/state.ts`, `e2e/extension-try.spec.ts` (approved edit at :260, Decision 3, plus the new two-page test).
 
 ## BL-71: letter chips

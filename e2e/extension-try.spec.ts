@@ -257,7 +257,9 @@ test("Add to my layout makes the print frame F, kept with its picture", async ({
     .evaluateAll((els) => els.map((el) => (el as HTMLElement).style.cssText));
   expect(after.slice(0, 5)).toEqual(before);
   await expect(planner(page).locator(".wf-art-img")).toHaveCount(1);
-  await expect.poll(() => storedKeys(page)).toEqual(["art:a1", "current"]);
+  await expect
+    .poll(() => storedKeys(page))
+    .toEqual([expect.stringMatching(/^art:a1-[0-9a-f]{8}$/), "current"]);
 
   await openPanel(context, extensionId, page);
   await expect(planner(page).locator(".wf-hit")).toHaveCount(6);
@@ -279,6 +281,69 @@ test("a print added just before the panel closes keeps its picture", async ({
   const again = await openPanel(context, extensionId);
   await expect(planner(again).getByRole("button", { name: "F · 24 × 36 in print" })).toBeVisible();
   await expect(planner(again).locator(".wf-art-img")).toHaveAttribute("src", /^blob:/);
+});
+
+/** The saved wall's prints: each frame id and the print's width, read in the page. */
+const storedPrints = (page: Page) =>
+  page.evaluate(
+    () =>
+      new Promise<{ id: string; w: number }[]>((resolve) => {
+        const open = indexedDB.open("gallery-wall", 1);
+        open.onsuccess = () => {
+          const get = open.result.transaction("wall").objectStore("wall").get("current");
+          get.onsuccess = () => {
+            open.result.close();
+            const added: { id: string; print?: { w: number } }[] = get.result?.planner?.added ?? [];
+            resolve(added.flatMap((a) => (a.print ? [{ id: a.id, w: a.print.w }] : [])));
+          };
+        };
+      }),
+  );
+
+/** Whether each shown print's picture runs landscape. */
+const shownArt = (page: Page) =>
+  planner(page)
+    .locator(".wf-art-img")
+    .evaluateAll((imgs) =>
+      imgs.map((img) => {
+        const { naturalWidth, naturalHeight } = img as HTMLImageElement;
+        return naturalWidth > naturalHeight;
+      }),
+    );
+
+/** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-stale-page-adds-a-print} */
+test("a stale page's print gets its own id and picture", async ({ context, extensionId }) => {
+  const first = await openPanel(context, extensionId);
+  const second = await openPanel(context, extensionId);
+  await planner(second).getByRole("button", { name: "Use my wall photo" }).click();
+  // The second page's first write lands before the first page adds anything.
+  await expect.poll(() => storedKeys(first)).toContain("current");
+
+  // P1: a portrait 24 × 36 picture, added on the first page.
+  await hang(first);
+  await first.getByRole("button", { name: "Add to my layout" }).click();
+  await expect.poll(() => storedPrints(first)).toHaveLength(1);
+  const [p1] = await storedPrints(first);
+  expect(p1?.w).toBe(24);
+
+  // P2: the second page backs out of the upload without saving, so its wall is stale, and adds a
+  // landscape picture, which hangs 36 wide.
+  await second.getByRole("combobox", { name: "Wall" }).selectOption("sample");
+  await seedTry(second, [inches(24, 36)], { w: 450, h: 300 });
+  await hangButton(second).click();
+  await second.getByRole("button", { name: "Add to my layout" }).click();
+  await expect.poll(async () => (await storedPrints(second)).map((p) => p.w)).toEqual([36]);
+  const [p2] = await storedPrints(second);
+  expect(p2?.id).not.toBe(p1?.id);
+  // The last write wins: the wall is the second page's, and only P2's picture is kept.
+  await expect.poll(() => storedKeys(second)).toEqual([`art:${p2?.id}`, "current"]);
+
+  // After both reload, the print on the wall shows its own picture: P2's runs landscape.
+  for (const page of [first, second]) {
+    await openPanel(context, extensionId, page);
+    await expect(planner(page).locator(".wf-art-img")).toHaveCount(1);
+    await expect.poll(() => shownArt(page)).toEqual([true]);
+  }
 });
 
 /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-going-back} */

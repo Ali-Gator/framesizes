@@ -429,7 +429,7 @@ export type Action =
   | { type: "pickerAll"; all: boolean }
   | { type: "applyPicker" }
   | { type: "closePicker" }
-  | { type: "addPrint"; print: Print }
+  | { type: "addPrint"; print: Print; id?: string }
   | { type: "hangerFor"; for: "all" | string }
   | { type: "hangerType"; kind: HangerKind }
   | { type: "hangerField"; field: "drop" | "inset"; text: string; unit: Unit }
@@ -728,7 +728,7 @@ export function reducer(state: PlannerState, action: Action): PlannerState {
       // The extension's "Add to my layout"; the site never dispatches it.
       const rect = besideSelection(state, outside("", action.print));
       if (!rect || framesOf(state).length >= MAX_FRAMES) return state;
-      const id = `a${state.nextId}`;
+      const id = action.id ?? `a${state.nextId}`;
       const at = shift(rect, { dx: -state.group.dx, dy: -state.group.dy });
       return changed(state, {
         added: [...state.added, { id, size: id, x: at.x, y: at.y, print: action.print }],
