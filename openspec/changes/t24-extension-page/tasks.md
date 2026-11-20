@@ -79,7 +79,7 @@ Before 1.1, re-read the X1 row in the On-page SEO guide (https://claude.ai/artif
 
 ## 4. The extension section on G1 and F2 (extension-site, gallery-wall-planner, frames-on-wall)
 
-- [ ] 4.1 Write `apps/web/src/components/extension/__tests__/extension-section.test.tsx` (jsdom, a `pages` fixture with X1 live and a test id):
+- [x] 4.1 Write `apps/web/src/components/extension/__tests__/extension-section.test.tsx` (jsdom, a `pages` fixture with X1 live and a test id):
   - "The section while the extension page is live" (`h2`, `href` = `STORE_URL`, `target`, `rel`).
   - Nothing rendered with X1 not live.
   - "The section tells phone visitors to use a computer": both the link and the phone line in the markup, each under its CSS hook (the touch-phone view itself is checked at go-live).
@@ -87,16 +87,16 @@ Before 1.1, re-read the X1 row in the On-page SEO guide (https://claude.ai/artif
 
   Verify it fails.
 
-- [ ] 4.2 Build `extension-section.tsx` (server, `pages` prop like `RelatedTools`) and `extension-status.tsx` (client island). Add the card, phone-line and installed styles (design decision 6) to the existing `apps/web/src/app/widgets.css`. Verify 4.1 passes.
-- [ ] 4.3 Place `<ExtensionSection />` right after the widget in `gallery-wall-planner/page.tsx` and `frame-sizes-on-wall/page.tsx`. Then check:
+- [x] 4.2 Build `extension-section.tsx` (server, `pages` prop like `RelatedTools`) and `extension-status.tsx` (client island). Add the card, phone-line and installed styles (design decision 6) to the existing `apps/web/src/app/widgets.css`. Verify 4.1 passes.
+- [x] 4.3 Place `<ExtensionSection />` right after the widget in `gallery-wall-planner/page.tsx` and `frame-sizes-on-wall/page.tsx`. Then check:
   - `e2e/gallery-wall-content.spec.ts` and `e2e/frames-on-wall-content.spec.ts` pass unedited.
   - A new case in `e2e/extension-page.spec.ts` cites "No section before go-live" and passes.
-- [ ] 4.4 Run the `humanizer:humanizer` skill over the section copy (heading, sentence, phone line, "You have it" line, picture label). Verify the strings in the spec scenarios still match.
+- [x] 4.4 Run the `humanizer:humanizer` skill over the section copy (heading, sentence, phone line, "You have it" line, picture label). Verify the strings in the spec scenarios still match.
 
 ## 5. Gate and pre-publish checks
 
-- [ ] 5.1 Run `pnpm fix`, then `pnpm test`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck` and `openspec validate --all --no-interactive`. Verify all pass.
-- [ ] 5.2 Run the SEO guide's pre-publish items that apply before go-live on the built HTML (view source of `/extensions/gallery-wall-layout-generator`):
+- [x] 5.1 Run `pnpm fix`, then `pnpm test`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck` and `openspec validate --all --no-interactive`. Verify all pass.
+- [x] 5.2 Run the SEO guide's pre-publish items that apply before go-live on the built HTML (view source of `/extensions/gallery-wall-layout-generator`):
   - One `h1` equal to the row.
   - Title and description equal to the row, with every number in the description on the page.
   - One canonical without the query.

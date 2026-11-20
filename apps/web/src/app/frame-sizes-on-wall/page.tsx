@@ -13,6 +13,7 @@ import {
 } from "@framesizes/sizes";
 import type { ReactNode } from "react";
 
+import { ExtensionSection } from "@/components/extension/extension-section";
 import { RelatedTools } from "@/components/frame-chart/related-tools";
 import { outsideSize } from "@/components/frames-on-wall/display";
 import { FramesOnWall } from "@/components/frames-on-wall/frames-on-wall";
@@ -192,6 +193,8 @@ export default function FrameSizesOnWall() {
       </div>
 
       <FramesOnWall />
+
+      <ExtensionSection />
 
       <Section title="How to see frame sizes on your wall">
         <ol className="wp-steps">
