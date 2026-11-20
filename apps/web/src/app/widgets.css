@@ -922,3 +922,77 @@
   content: "/";
   color: var(--line-strong);
 }
+
+/*
+ * Extension figures (components/extension/figures.tsx, pin-picture.tsx): the sample room at true
+ * scale, and the site's colours inside the drawn browser. Shared by the extension page and the
+ * extension section on G1 and F2.
+ */
+.ext-fig {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--stage);
+}
+.ext-fig-wall {
+  fill: var(--stage);
+}
+.ext-fig-furn {
+  fill: var(--furniture);
+}
+.ext-fig-frame,
+.ext-fig-print {
+  filter: drop-shadow(0 0.6px 1.2px rgba(20, 24, 28, 0.25));
+}
+.ext-fig-moulding {
+  fill: var(--oak);
+}
+.ext-fig-art {
+  fill: var(--tape);
+}
+.ext-fig-outline {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 0.4;
+}
+.ext-fig-nail circle {
+  fill: var(--tape);
+  stroke: var(--ink);
+  stroke-width: 0.4;
+}
+.ext-fig-nail text {
+  fill: var(--on-tape);
+  font-family: var(--font-mono);
+  font-size: 3.2px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+.pp-ink {
+  fill: var(--ink);
+}
+.pp-tape {
+  fill: var(--tape);
+}
+.pp-wall {
+  fill: var(--wall);
+}
+.pp-stage {
+  fill: var(--stage);
+}
+.pp-ink-stroke {
+  stroke: var(--ink);
+}
+.pp-tape-stroke {
+  stroke: var(--tape);
+}
+.pp-chrome text {
+  font-family: Roboto, "Segoe UI", system-ui, sans-serif;
+}
+.pp-marker {
+  fill: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 600;
+}

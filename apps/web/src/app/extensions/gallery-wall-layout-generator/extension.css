@@ -1,0 +1,144 @@
+/*
+ * The extension page (X1). One mode at a time, from `<html data-ext-mode>` (set before paint by
+ * components/extension/mode.ts). The server HTML is usage mode; with no JS, `#pin` still shows the
+ * pin steps through `:target`. Unlayered, so it beats the `flex` utility on the same elements.
+ */
+.ext-pin {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+}
+html[data-ext-mode="pin"] .ext-pin,
+html:not([data-ext-mode]) .ext-pin:target {
+  display: flex;
+}
+html[data-ext-mode="pin"] .ext-usage {
+  display: none;
+}
+
+.ext-pin h2,
+#usage h2[tabindex] {
+  scroll-margin-top: 24px;
+}
+.ext-pin h2:focus,
+#usage h2[tabindex]:focus {
+  outline: none;
+}
+
+.ext-pin-picture {
+  display: block;
+  width: 100%;
+  max-width: 880px;
+  height: auto;
+  filter: drop-shadow(0 10px 24px rgba(20, 24, 28, 0.14));
+}
+
+.ext-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 16px;
+}
+.ext-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+.ext-step .ext-fig {
+  aspect-ratio: 3 / 2;
+}
+
+.ext-list {
+  margin: 0;
+  padding-left: 22px;
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ext-perm {
+  display: grid;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  gap: 8px 24px;
+  max-width: 760px;
+  margin: 0;
+}
+.ext-perm dt {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 500;
+}
+.ext-perm dd {
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .ext-perm {
+    grid-template-columns: 1fr;
+  }
+  .ext-perm dd {
+    margin-bottom: 8px;
+  }
+}
+
+.ext-tip {
+  max-width: 760px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--tape-soft);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* Step 2's shop page and right-click menu, drawn in HTML. */
+.ext-fig-shop {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  background: #fff;
+  border: 1px solid #dadce0;
+}
+.ext-fig-shop-print {
+  position: absolute;
+  left: 10%;
+  top: 12%;
+  width: 26%;
+  height: 58%;
+}
+.ext-menu {
+  position: absolute;
+  left: 30%;
+  top: 30%;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.18),
+    0 10px 28px rgba(0, 0, 0, 0.18);
+  font-size: 12px;
+  line-height: 16px;
+  color: #202124;
+}
+.ext-menu span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+}
+.ext-menu .ext-menu-hot {
+  padding-block: 6px;
+  background: #e8eaed;
+  font-weight: 600;
+}
+.ext-menu svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
