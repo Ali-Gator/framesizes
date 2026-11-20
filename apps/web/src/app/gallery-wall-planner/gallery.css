@@ -24,6 +24,14 @@
   flex-direction: column;
   gap: 16px;
 }
+/* the Layout view's settings, under the summary in the main column */
+.g-set {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
 @container (min-width: 860px) {
   .g-side {
     max-width: 360px;

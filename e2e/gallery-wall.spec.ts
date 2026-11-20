@@ -334,3 +334,57 @@ test.describe("frame letters", () => {
     expect(a.off).toBeLessThanOrEqual(1);
   });
 });
+
+test.describe("the Layout view's columns", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+  const main = (page: Page) => widget(page).locator(".g-main");
+  const side = (page: Page) => widget(page).locator(".g-side");
+  const top = (locator: Locator) => locator.evaluate((el) => el.getBoundingClientRect().top);
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-columns-at-1280} */
+  test("the settings sit under the drawing and the columns end near each other", async ({
+    page,
+  }) => {
+    await open(page);
+    await expect(main(page).locator(".g-tpls")).toBeVisible();
+    await expect(main(page).getByLabel("Gap between frames", { exact: true })).toBeVisible();
+    await expect(main(page).getByRole("button", { name: "Use my wall photo" })).toBeVisible();
+    await expect(side(page).locator(".wf-chips")).toBeVisible();
+    await expect(side(page).locator(".wf-sel")).toBeVisible();
+    const bottom = (locator: Locator) =>
+      locator.evaluate((el) => el.getBoundingClientRect().bottom);
+    const [m, s] = [await bottom(main(page)), await bottom(side(page))];
+    expect(Math.abs(m - s)).toBeLessThan(200);
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-stacked-order-on-a-phone} */
+  test("at 360 px the controls stack drawing, nail marks, settings, then the selection", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await open(page);
+    const tops = [
+      await top(drawing(page)),
+      await top(widget(page).getByRole("button", { name: "Get nail marks" })),
+      await top(widget(page).locator(".g-tpls")),
+      await top(field(page, "Gap between frames")),
+      await top(widget(page).getByRole("button", { name: "Use my wall photo" })),
+      await top(chip(page, "All 5")),
+      await top(widget(page).locator(".wf-sel .wf-row input").first()),
+    ];
+    expect(tops).toEqual([...tops].sort((a, b) => a - b));
+    expect(new Set(tops).size).toBe(tops.length);
+  });
+
+  /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-picker-takes-the-side-column} */
+  test("the size picker takes the side column and hides the templates and gap", async ({
+    page,
+  }) => {
+    await open(page);
+    await chip(page, "A · 8×10").click();
+    await widget(page).getByRole("button", { name: "Change size" }).click();
+    await expect(side(page).locator(".wf-picker")).toBeVisible();
+    await expect(widget(page).locator(".g-tpls")).toBeHidden();
+    await expect(field(page, "Gap between frames")).toBeHidden();
+  });
+});

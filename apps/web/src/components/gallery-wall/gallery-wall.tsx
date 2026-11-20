@@ -466,6 +466,38 @@ function LayoutView({
             </div>
           </div>
         ) : null}
+        {state.picker ? null : (
+          <div className="g-set">
+            <Templates state={state} dispatch={dispatch} />
+            <GapRow state={state} unit={unit} dispatch={dispatch} />
+            {Object.keys(state.moved).length ? (
+              <p className="g-note">Changing the gap or a size lines the frames up again.</p>
+            ) : null}
+            <div className="wf-actions">
+              {sample ? (
+                <Button onClick={() => dispatch({ type: "upload" })}>Use my wall photo</Button>
+              ) : (
+                <Button variant="secondary" onClick={() => dispatch({ type: "upload" })}>
+                  Change photo
+                </Button>
+              )}
+              {atCap ? null : (
+                <Button
+                  variant="secondary"
+                  onClick={() => dispatch({ type: "openPicker", mode: "add" })}
+                >
+                  Add a frame
+                </Button>
+              )}
+              <Button variant="ghost" onClick={() => dispatch({ type: "openReset" })}>
+                Start over
+              </Button>
+              {atCap ? (
+                <p className="wf-cap g-cap">That&apos;s 12 frames, the most the planner holds.</p>
+              ) : null}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="g-side">
@@ -473,11 +505,6 @@ function LayoutView({
           <PlannerPicker state={state} frames={frames} dispatch={dispatch} />
         ) : (
           <>
-            <Templates state={state} dispatch={dispatch} />
-            <GapRow state={state} unit={unit} dispatch={dispatch} />
-            {Object.keys(state.moved).length ? (
-              <p className="g-note">Changing the gap or a size lines the frames up again.</p>
-            ) : null}
             <div className="wf-on">
               <span className="fs-label" id="g-on-label">
                 Select
@@ -515,29 +542,6 @@ function LayoutView({
               canRemove={frames.length > 1}
               dispatch={dispatch}
             />
-            <div className="wf-actions">
-              {sample ? (
-                <Button onClick={() => dispatch({ type: "upload" })}>Use my wall photo</Button>
-              ) : (
-                <Button variant="secondary" onClick={() => dispatch({ type: "upload" })}>
-                  Change photo
-                </Button>
-              )}
-              {atCap ? null : (
-                <Button
-                  variant="secondary"
-                  onClick={() => dispatch({ type: "openPicker", mode: "add" })}
-                >
-                  Add a frame
-                </Button>
-              )}
-              <Button variant="ghost" onClick={() => dispatch({ type: "openReset" })}>
-                Start over
-              </Button>
-              {atCap ? (
-                <p className="wf-cap g-cap">That&apos;s 12 frames, the most the planner holds.</p>
-              ) : null}
-            </div>
           </>
         )}
       </div>
