@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-71**
+_Next id:_ **BL-73**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -184,8 +184,11 @@ when to add and when to fold items in.
   that takes no layout space and still clears the focus ring.
   _Refs:_ `apps/web/src/app/widgets.css` (forced-colors block) · _Status:_ open — backlog-3 review, 2026-11-15
 
-From Oleg directly (needs proposal first):
-
-1. https://framesizes.app/gallery-wall-planner:
-   1. Letters (A,B,C etc) are not good visible on the frames itself
-   2. Need to rethink widget layout - many buttons/controls on the right side, empty space under Get nail marks. We need to rethink and simplify widget.
+- **[BL-71] G1 frame letters are hard to see** — from Oleg directly: on
+  https://framesizes.app/gallery-wall-planner the letters (A, B, C …) on the frames themselves are not
+  well visible. Make them legible on every frame.
+  _Refs:_ `apps/web/src/components/gallery-wall/` · _Status:_ open — from Oleg, 2026-11-20
+- **[BL-72] Rethink and simplify the G1 widget layout** — from Oleg directly: many buttons and
+  controls sit on the right side, with empty space under "Get nail marks". Rethink the widget layout and
+  simplify it (needs a proposal and a design first).
+  _Refs:_ `apps/web/src/components/gallery-wall/`, G1 canvas https://claude.ai/artifact/HGW1ti5mv6Mc8BqPRepXGd · _Status:_ open — from Oleg, 2026-11-20
