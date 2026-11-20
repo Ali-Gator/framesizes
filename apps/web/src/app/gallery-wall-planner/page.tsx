@@ -9,6 +9,7 @@ import {
 } from "@framesizes/sizes";
 import type { ReactNode } from "react";
 
+import { ExtensionSection } from "@/components/extension/extension-section";
 import { RelatedTools } from "@/components/frame-chart/related-tools";
 import { writeNumber } from "@/components/frames-on-wall/display";
 import { TEMPLATE_FRAMES } from "@/components/gallery-wall/copy";
@@ -169,6 +170,8 @@ export default function GalleryWallPlanner() {
       </div>
 
       <GalleryWall />
+
+      <ExtensionSection />
 
       <Section title="How to use the gallery wall planner">
         <ol className="wp-steps">

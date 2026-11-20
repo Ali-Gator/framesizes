@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-68**
+_Next id:_ **BL-71**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -126,6 +126,17 @@ when to add and when to fold items in.
   item never appears. Decide whether to also register the item on `link`/`page` and find the image
   under the pointer in `readPage`.
   _Refs:_ `apps/extension/src/background.ts` (`contextMenus.create`), `apps/extension/src/read-page.ts` · _Status:_ open — task 9.2, 2026-11-20
+- **[BL-68] A reload after the self-switch shows the pin steps again** — once the poll sees the button
+  pinned, the page switches to usage but the URL keeps `?pinned=0`, so a reload opens pin mode until
+  the first reply. Consider `history.replaceState` dropping `pinned` on the switch.
+  _Refs:_ `apps/web/src/components/extension/mode-switch.tsx` · _Status:_ open — t24 phase review, 2026-11-20
+- **[BL-69] The pin poll wakes every 2 s in a hidden tab** — it sends nothing while hidden but keeps
+  its timer running; pausing on `visibilitychange` would stop the wake-ups. Polish.
+  _Refs:_ `apps/web/src/components/extension/mode-switch.tsx` · _Status:_ open — t24 phase review, 2026-11-20
+- **[BL-70] The pin picture is hard to read on a phone** — the 880-wide toolbar drawing scales to
+  about 360 px, so its menu text is near 5 px. Pin mode is rare on a phone (extensions need a
+  computer), so a cropped phone variant of the menu is optional.
+  _Refs:_ `apps/web/src/components/extension/pin-picture.tsx` · _Status:_ open — t24 apply, 2026-11-20
 
 ## Widgets
 

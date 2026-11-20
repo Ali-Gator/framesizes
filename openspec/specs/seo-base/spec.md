@@ -10,26 +10,29 @@ What a search engine and a link preview read on every page: the record of which 
 // apps/web/src/lib/site-map.ts
 type HubId = "frames" | "posters" | "photo" | "canvas" | "quality" | "gallery";
 type SitePage = { id; path; hub: HubId; name; card?: { question; ratio } } & (
-  { live: true; seo: { title; h1; description; lastModified } } | { live: false }
+  { live: true; seo: { title; h1; description; lastModified } } | { live: false; seo?: { … } }
 );
-const PAGES: readonly SitePage[]; // the 19 launch pages
+type BuiltPage = SitePage & { live: boolean; seo: { … } }; // has head values, live or not
+const PAGES: readonly SitePage[]; // the 19 launch pages and X1, the extension page
 const HUBS: readonly { id: HubId; name: string; head: PageId }[]; // header order
 function page(id: PageId): SitePage;
 function livePage(id: PageId): LivePage; // throws when not live
+function builtPage(id: PageId): BuiltPage; // throws when the page has no head values
 function livePages(pages?): LivePage[];
 function liveHubHeads(pages?): (Hub & { path: string })[];
 function navHubs(pages?): HubLink[];
 function footerGroups(pages?): FooterGroup[];
 function fullTitle(title: string): string; // with " | Frame Sizes" unless it names the brand
-function checkSiteMap(pages): string[]; // head-limit problems, each naming the page
+function checkSiteMap(pages): string[]; // head-limit problems on every page with head values, each naming it
 
 // apps/web/src/lib/seo.ts
 const SITE_URL = "https://framesizes.app";
 function absoluteUrl(path: string): string; // "/" is the bare origin
-function pageMetadata(page: LivePage): Metadata;
+function pageMetadata(page: BuiltPage): Metadata; // adds robots { index: false } while not live
 function siteJsonLd(): { "@context"; "@graph": [WebSite, Organization] };
 function sitemapEntries(pages?): MetadataRoute.Sitemap;
-function breadcrumbJsonLd(page: LivePage): BreadcrumbList; // Home › the page, absolute URLs
+function breadcrumbTrail(page: SitePage): { name; path }[]; // Home › live hub head (when not the page or "/") › the page
+function breadcrumbJsonLd(page: SitePage): BreadcrumbList; // the trail, absolute URLs
 function jsonLdScript(data: unknown): string; // JSON with `<` escaped, for a ld+json script
 
 // apps/web/src/lib/og-font.ts
@@ -46,7 +49,9 @@ File conventions: `app/robots.ts`, `app/sitemap.ts`, `app/opengraph-image.tsx`.
 
 ## Behavior
 
-A page goes live by setting `live: true` and its `seo` values in `PAGES`; the header, footer, sitemap and every `PageLink` follow from that one edit. Pages export `metadata = pageMetadata(livePage(id))` and render `seo.h1` as their only `h1`.
+A page goes live by setting `live: true` and its `seo` values in `PAGES`; the header, footer, sitemap and every `PageLink` follow from that one edit. Pages export `metadata = pageMetadata(livePage(id))` and render `seo.h1` as their only `h1`. A page built ahead of go-live (X1) carries its `seo` while `live: false`, exports `pageMetadata(builtPage(id))`, and so renders with `noindex` and stays out of every list until the same `live: true` edit.
+
+Breadcrumbs come from `breadcrumbTrail`: the visible `Breadcrumbs` and the `BreadcrumbList` share it. Pages whose hub head is the home page, and hub heads themselves, get two crumbs.
 
 `absoluteUrl` builds every absolute URL (canonical, `og:url`, sitemap `loc`, JSON-LD), so they always agree. Next renders the canonical of `/` without a trailing slash, and so does `absoluteUrl("/")`.
 
@@ -59,22 +64,28 @@ The social image is prerendered at build time with `ImageResponse` and a committ
 - A live page whose title already contains "Frame Sizes": used as the absolute title, no suffix.
 - `?size=11x14` on the home page: the canonical drops the query.
 - `//evil.example/`: not redirected, so no protocol-relative `Location`.
+- A page whose hub head is not live: the trail skips the hub, so no crumb links to a missing page.
 - `next dev`: file-based `og:image` URLs point at localhost; the production build uses `metadataBase`.
 
 ## Requirements
 
 ### Requirement: The site map is the single record of pages
 
-The site SHALL declare each launch page once, with its id, path, hub, short name and whether it is live. A live page SHALL also declare its title, `h1`, description and the date its content last changed. No two pages SHALL share an id or a path, and no two live pages SHALL share a title or a description. A live page's title SHALL be 60 characters or fewer including any suffix, and its description 130 to 155 characters.
+The site SHALL declare each page once, with its id, path, hub, short name and whether it is live. A live page SHALL also declare its title, `h1`, description and the date its content last changed; a page that is not live MAY declare them ahead of go-live. No two pages SHALL share an id or a path, and no two pages that declare head values SHALL share a title or a description. Every declared title SHALL be 60 characters or fewer including any suffix, and every declared description 130 to 155 characters.
 
 #### Scenario: The launch pages are declared
 
 - **WHEN** the site map is read
-- **THEN** it holds 19 pages with unique ids and unique paths, every path is lowercase with no trailing slash (the home page is `/`), and the home page, id F1, is live
+- **THEN** it holds 20 pages, the 19 launch pages and the extension page X1, with unique ids and unique paths, every path is lowercase with no trailing slash (the home page is `/`), and the home page, id F1, is live
 
 #### Scenario: A live page breaks a head limit
 
 - **WHEN** a live page's full title is longer than 60 characters, or its description is outside 130 to 155 characters, or it repeats another live page's title or description
+- **THEN** the unit suite fails, naming the page
+
+#### Scenario: A page not yet live breaks a head limit
+
+- **WHEN** a page that is not live declares a full title longer than 60 characters, or a description outside 130 to 155 characters, or a title or description another page declares
 - **THEN** the unit suite fails, naming the page
 
 ### Requirement: A link appears only when its target page is live
@@ -209,7 +220,7 @@ The HTML the server returns for the home page SHALL hold one JSON-LD script whos
 
 ### Requirement: Pages below the home page carry breadcrumbs
 
-A live page other than the home page SHALL show a breadcrumb trail above its `h1`, as a `nav` named "Breadcrumb". The trail SHALL start with "Home" linking to `/` and end with the page's short name, marked as the current page and not linked. The page's server HTML SHALL hold one JSON-LD script with a `BreadcrumbList` that lists the same items, with absolute URLs on `https://framesizes.app`. The home page SHALL carry neither.
+A live page other than the home page, and a built page that is not live, SHALL show a breadcrumb trail above its `h1`, as a `nav` named "Breadcrumb". The trail SHALL start with "Home" linking to `/`, then, when the page is not its hub's head and that head is live and not the home page, the hub's name linking to the hub head, and end with the page's short name, marked as the current page and not linked. The page's server HTML SHALL hold one JSON-LD script with a `BreadcrumbList` that lists the same items, with absolute URLs on `https://framesizes.app`. The home page SHALL carry neither.
 
 #### Scenario: F2's breadcrumbs
 
@@ -220,3 +231,29 @@ A live page other than the home page SHALL show a breadcrumb trail above its `h1
 
 - **WHEN** `/` is requested
 - **THEN** the response HTML holds no breadcrumb `nav` and no `BreadcrumbList`
+
+#### Scenario: A hub head keeps two crumbs
+
+- **WHEN** `/gallery-wall-planner` is requested
+- **THEN** its breadcrumb `nav` reads "Home" then "Gallery wall layout planner", and its `BreadcrumbList` has two items
+
+#### Scenario: The extension page's breadcrumbs
+
+- **WHEN** `/extensions/gallery-wall-layout-generator` is requested
+- **THEN** its breadcrumb `nav` reads "Home", "Gallery wall" linking to `/gallery-wall-planner`, then "Chrome extension" marked `aria-current="page"`, and its `BreadcrumbList` has three items ending `https://framesizes.app/gallery-wall-planner` and `https://framesizes.app/extensions/gallery-wall-layout-generator`
+
+### Requirement: A built page that is not live stays out of the index
+
+A page whose route is built while its site map entry is not live SHALL render with its declared head values plus a robots meta tag holding `noindex`, and SHALL be left out of the sitemap, the header, the footer, Related tools and every in-text link. Setting the entry live SHALL remove the `noindex` with no other edit.
+
+#### Scenario: The extension page before go-live
+
+- **GIVEN** the extension page X1 is not live
+- **WHEN** `/extensions/gallery-wall-layout-generator` is requested
+- **THEN** it answers 200 with the title "Gallery Wall Layout Generator Chrome Extension | Frame Sizes", one canonical to its own URL, and a robots meta tag holding `noindex`
+- **AND** `/sitemap.xml`, the footer and the Related tools on `/gallery-wall-planner` hold no link to it
+
+#### Scenario: Head tags of a page set live
+
+- **WHEN** head tags are built for the extension page's entry with `live: true`
+- **THEN** they hold no robots directive

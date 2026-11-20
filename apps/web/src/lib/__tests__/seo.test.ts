@@ -5,12 +5,13 @@ import { withLive } from "@/components/site/__tests__/fixtures";
 import {
   absoluteUrl,
   breadcrumbJsonLd,
+  breadcrumbTrail,
   jsonLdScript,
   pageMetadata,
   siteJsonLd,
   sitemapEntries,
 } from "../seo";
-import { type LivePage, livePage, type SitePage } from "../site-map";
+import { builtPage, type LivePage, livePage, page, type SitePage } from "../site-map";
 
 const POSTERS: LivePage = {
   id: "P1",
@@ -125,7 +126,65 @@ describe("breadcrumbJsonLd", () => {
     });
   });
 
+  /** {@link openspec/specs/seo-base/spec.md#scenario-the-extension-pages-breadcrumbs} */
+  it("lists the hub head between Home and a page below it", () => {
+    expect(breadcrumbJsonLd(builtPage("X1")).itemListElement.map((i) => i.item)).toEqual([
+      "https://framesizes.app",
+      "https://framesizes.app/gallery-wall-planner",
+      "https://framesizes.app/extensions/gallery-wall-layout-generator",
+    ]);
+  });
+
   it("escapes < so the JSON cannot close its script", () => {
     expect(jsonLdScript({ name: "</script>" })).toBe('{"name":"\\u003c/script>"}');
+  });
+});
+
+describe("pageMetadata for a built page", () => {
+  /** {@link openspec/specs/seo-base/spec.md#scenario-head-tags-of-a-page-set-live} */
+  it("holds no robots directive once the page is live", () => {
+    const meta = pageMetadata({ ...builtPage("X1"), live: true });
+    expect(meta).not.toHaveProperty("robots");
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-the-extension-page-before-go-live} */
+  it("adds noindex while the page is not live, keeping its own canonical", () => {
+    const meta = pageMetadata({ ...builtPage("X1"), live: false });
+    expect(meta.robots).toEqual({ index: false });
+    expect(meta.alternates?.canonical).toBe(
+      "https://framesizes.app/extensions/gallery-wall-layout-generator",
+    );
+    expect(meta.title).toBe("Gallery Wall Layout Generator Chrome Extension");
+  });
+});
+
+describe("breadcrumbTrail", () => {
+  /** {@link openspec/specs/seo-base/spec.md#scenario-the-extension-pages-breadcrumbs} */
+  it("puts the hub head between Home and the extension page", () => {
+    expect(breadcrumbTrail(builtPage("X1"))).toEqual([
+      { name: "Home", path: "/" },
+      { name: "Gallery wall", path: "/gallery-wall-planner" },
+      { name: "Chrome extension", path: "/extensions/gallery-wall-layout-generator" },
+    ]);
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-a-hub-head-keeps-two-crumbs} */
+  it("keeps two crumbs on a hub head and on a page whose hub head is the home page", () => {
+    expect(breadcrumbTrail(livePage("G1")).map((c) => c.name)).toEqual([
+      "Home",
+      "Gallery wall layout planner",
+    ]);
+    expect(breadcrumbTrail(livePage("F2")).map((c) => c.name)).toEqual([
+      "Home",
+      "Frame sizes on your wall",
+    ]);
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#requirement-pages-below-the-home-page-carry-breadcrumbs} */
+  it("leaves out a hub head that is not live, so no crumb links to a missing page", () => {
+    expect(breadcrumbTrail(page("P2"))).toEqual([
+      { name: "Home", path: "/" },
+      { name: "Poster board sizes", path: "/poster-board-sizes" },
+    ]);
   });
 });
