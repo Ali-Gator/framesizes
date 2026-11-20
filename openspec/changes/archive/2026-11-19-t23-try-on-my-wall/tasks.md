@@ -44,7 +44,8 @@
 ## 9. Gate
 
 - [x] 9.1 Run `pnpm fix`, then `pnpm test`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck` and `openspec validate --all --no-interactive`; verify all pass
-- [ ] 9.2 Load `apps/extension/dist` unpacked in Chrome and right-click a print on a real shop page; verify the panel opens on the print with its sizes and picture, and note in the PR which shop and whether the picture came from the fetch or the crop
+- [x] 9.2 Load `apps/extension/dist` unpacked in Chrome and right-click a print on a real shop page; verify the panel opens on the print with its sizes and picture, and note in the PR which shop and whether the picture came from the fetch or the crop
+  - Done 2026-11-20 on Society6 ("Minimal Abstract Wild floral bouquet on Peach Fuzz Art Print"): the panel opened on the print with its title, host and the page's five sizes (8 × 10, 11 × 14, 16 × 20, 18 × 24, 30 × 40 in) and its picture. The picture came from the fetch: the image is on society6.com (the tab's own host, granted by activeTab) and serves `access-control-allow-origin: *`. Desenio showed no item (BL-67).
 
 ## Workflow follow-up
 
