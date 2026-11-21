@@ -55,6 +55,58 @@ describe("reading the page for a clicked link", () => {
     expect(page.rect).toMatchObject({ x: 5, y: 6, w: 200, h: 300 });
   });
 
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-print-drawn-as-a-links-background} */
+  it("takes the largest picture in the link, not an icon or badge before it", () => {
+    document.body.innerHTML = `
+      <a href="${LINK}" id="link" style="background-image: url(https://cdn.shop.example/arrow.svg)">
+        <img id="badge" src="https://cdn.shop.example/sale.png">
+        <img id="hidden" src="https://cdn.shop.example/hidden.jpg">
+        <div id="print" style="background-image: url('https://cdn.shop.example/print.jpg')"></div>
+      </a>`;
+    box(document.getElementById("link"), 0, 0, 16, 16);
+    box(document.getElementById("badge"), 0, 0, 40, 20);
+    box(document.getElementById("hidden"), 0, 0, 0, 0);
+    box(document.getElementById("print"), 10, 20, 300, 400);
+    const page = readPage("", LINK);
+    expect(page.url).toBe("https://cdn.shop.example/print.jpg");
+    expect(page.rect).toMatchObject({ x: 10, y: 20, w: 300, h: 400 });
+  });
+
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-print-drawn-as-a-links-background} */
+  it("finds an SVG link by its resolved address", () => {
+    document.body.innerHTML = `
+      <a href="http://[broken">x</a>
+      <svg><a href="/p/blue-hour" id="svg"><image href="x.png"></image></a></svg>
+      <div id="print" style="background-image: url('https://cdn.shop.example/print.jpg')"></div>`;
+    const base = document.createElement("base");
+    base.href = "https://www.shop.example/";
+    document.head.append(base);
+    const svgLink = document.getElementById("svg");
+    svgLink?.append(document.getElementById("print") as Element);
+    box(svgLink, 0, 0, 300, 400);
+    box(document.getElementById("print"), 0, 0, 300, 400);
+    expect(readPage("", LINK).url).toBe("https://cdn.shop.example/print.jpg");
+    base.remove();
+  });
+
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-print-drawn-as-a-links-background} */
+  it("undoes CSS escapes in a background image's address", () => {
+    document.body.innerHTML = `<a href="${LINK}" id="link">x</a>`;
+    box(document.getElementById("link"), 0, 0, 200, 300);
+    const link = document.getElementById("link") as HTMLElement;
+    // jsdom does not serialise escapes; set the computed form Chrome returns.
+    const real = window.getComputedStyle;
+    window.getComputedStyle = ((el: Element) =>
+      el === link
+        ? ({ backgroundImage: 'url("https://cdn.shop.example/a\\"b.jpg")' } as CSSStyleDeclaration)
+        : real(el)) as typeof window.getComputedStyle;
+    try {
+      expect(readPage("", LINK).url).toBe("https://cdn.shop.example/a%22b.jpg");
+    } finally {
+      window.getComputedStyle = real;
+    }
+  });
+
   /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-link-with-no-picture} */
   it("finds no picture in a text link, and still reads the title", () => {
     document.body.innerHTML = `<h1>Blue Hour Print</h1><a href="${LINK}" id="link">See the print</a>`;

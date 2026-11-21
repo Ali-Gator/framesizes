@@ -26,8 +26,8 @@ export interface PageRead {
  * Injected into the clicked frame by `scripting.executeScript`, which sends only the function's
  * source: it must use nothing from this module. Returns the page text (cut at 100,000 characters),
  * the product title (the first `h1`, else `og:title`, else the document's, cut at 80) and the
- * picture with its box: the clicked image, or with only `linkUrl`, the first `<img>` or CSS
- * background image in the largest link to it (the link itself first).
+ * picture with its box: the clicked image, or with only `linkUrl`, the largest `<img>` or CSS
+ * background image in the largest link to it.
  * {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-print-drawn-as-a-links-background}
  */
 export function readPage(srcUrl: string, linkUrl = ""): PageRead {
@@ -50,16 +50,30 @@ export function readPage(srcUrl: string, linkUrl = ""): PageRead {
       const b = el.getBoundingClientRect();
       return b.width * b.height;
     };
+    // A malformed address on the page must not stop the read.
+    const abs = (href: string) => {
+      try {
+        return new URL(href, document.baseURI).href;
+      } catch {
+        return "";
+      }
+    };
+    // `href` resolved by hand: on an SVG `<a>` it is an SVGAnimatedString, not the address.
     const link = Array.from(document.querySelectorAll("a"))
-      .filter((a) => a.href === linkUrl)
+      .filter((a) => abs(a.getAttribute("href") ?? "") === linkUrl)
       .sort((a, b) => area(b) - area(a))[0];
+    // The largest picture in the link, so an arrow icon or a "Sale" badge never wins over the print.
+    let best = 0;
     for (const el of link ? [link, ...Array.from(link.querySelectorAll("*"))] : []) {
       const bg = /url\(\s*(['"]?)(.*?)\1\s*\)/.exec(getComputedStyle(el).backgroundImage);
-      const src = el instanceof HTMLImageElement ? el.currentSrc || el.src : (bg?.[2] ?? "");
-      if (src) {
+      const src =
+        el instanceof HTMLImageElement
+          ? el.currentSrc || el.src
+          : (bg?.[2] ?? "").replace(/\\(.)/g, "$1");
+      if (src && abs(src) && area(el) > best) {
+        best = area(el);
         found = el;
-        url = new URL(src, document.baseURI).href;
-        break;
+        url = abs(src);
       }
     }
   }

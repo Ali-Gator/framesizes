@@ -24,5 +24,5 @@
 
 - [x] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
 - [x] 3.2 Delete shipped bullets BL-63, BL-67, BL-73, BL-76, BL-79 from `docs/backlog.md`; verify `grep -cE "BL-(63|67|73|76|79)\]" docs/backlog.md` prints 0
-- [ ] 3.3 `/code-review high` in a fresh subagent; fix, log the rest as new BL items from the `_Next id:_` counter
+- [x] 3.3 `/code-review high` in a fresh subagent; fix, log the rest as new BL items from the `_Next id:_` counter
 - [ ] 3.4 Archive (`/opsx:archive` flow, no Tracker). After archive: in `openspec/specs/gallery-wall-extension/spec.md` change the code-map comment "one image item" (`:20`) to images and links; in `openspec/specs/extension-site/spec.md` reword the Behavior sentence "The drawings stay left to right…" (`:48`: the pin picture follows the page's direction, the right-click figure stays left to right, BL-80) and delete the BL-76 Edge Case bullet (`:57`). Preflight (`pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `openspec validate --all --no-interactive`), push, PR to `main`, auto-merge with a merge commit

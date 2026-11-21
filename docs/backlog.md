@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-82**
+_Next id:_ **BL-85**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -45,6 +45,10 @@ when to add and when to fold items in.
 
 ## Site
 
+- **[BL-84] The language button pops in on a client-side move** — `LanguagePickerGate`'s
+  `next/dynamic` has no `loading` placeholder, so going from `/` to a translated page in the app
+  shows the button late and shifts the Units toggle and hub nav (CLS). Add a same-width placeholder.
+  _Refs:_ `apps/web/src/components/i18n/language-picker-gate.tsx` · _Status:_ open — backlog-6 review, 2026-11-21
 - **[BL-49] G1 re-lays out the template on every drag move** — `dragFrame` calls `framesOf` per
   pointer move; pass the frames the view already has. No visible lag at 12 frames yet.
   _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`dragFrame`) · _Status:_ deferred — lag on a slow phone
@@ -91,6 +95,14 @@ when to add and when to fold items in.
 
 ## Chrome extension
 
+- **[BL-82] A link's try is titled after the page, not the print** — on a link, `readPage` takes the
+  title from the page's `h1` and the sizes from the whole page, so on a category grid the try reads
+  "Wall Art" and lists every product's sizes. Prefer the link's text, `aria-label` or the image's alt.
+  _Refs:_ `apps/extension/src/read-page.ts`, `apps/extension/src/background.ts` · _Status:_ gated — spec says "the page's title"; backlog-6 review, 2026-11-21
+- **[BL-83] The toolbar tooltip stays English** — `action.default_title` in `manifest.json` is a
+  literal while the name and description are now `__MSG_` keys. Set it to `__MSG_appName__`
+  (edits `manifest.test.ts`).
+  _Refs:_ `apps/extension/public/manifest.json`, `apps/extension/src/__tests__/manifest.test.ts` · _Status:_ open — backlog-6 review, 2026-11-21
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
