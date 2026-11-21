@@ -66,7 +66,7 @@ describe("the saved check", () => {
 });
 
 describe("a rotated screen", () => {
-  /** {@link openspec/specs/actual-size/spec.md#requirement-a-check-is-kept-on-the-device-for-the-same-screen} */
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-turned-phone} */
   it("keeps the check when the width and height swap", () => {
     saveCheck({ scale: 156.2, method: "card" }, SCREEN);
     forgetCheck();

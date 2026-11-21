@@ -1,5 +1,5 @@
 import { CHECK_OBJECTS, type Unit } from "@framesizes/sizes";
-import { type Dispatch, useState } from "react";
+import { type Dispatch, useCallback, useId, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { U } from "@/components/ui/u";
@@ -66,12 +66,16 @@ export function Slider({
 export function Diagonals({
   state,
   phone,
+  coarse,
   guess,
   screen,
   dispatch,
 }: {
   state: ViewerState;
+  /** A phone's screen: the phone sizes and wording. */
   phone: boolean;
+  /** A touch screen: the scale must stay in the touch slider's range. */
+  coarse: boolean;
   guess: number;
   screen: { w: number; h: number };
   dispatch: Dispatch<ViewerAction>;
@@ -79,6 +83,8 @@ export function Diagonals({
   const list = phone ? PHONE_DIAGONALS : DESK_DIAGONALS;
   // The field shows what was typed, and follows a picked chip.
   const [draft, setDraft] = useState(state.diagonal === null ? "" : String(state.diagonal));
+  const range = coarse ? SCALE_RANGE.phone : SCALE_RANGE.desk;
+  const errorId = useId();
   return (
     <>
       <p className="as-step">
@@ -94,7 +100,7 @@ export function Diagonals({
             aria-pressed={state.diagonal === d}
             onClick={() => {
               setDraft(String(d));
-              dispatch({ type: "diagonal", value: d, ...screen });
+              dispatch({ type: "diagonal", value: d, ...screen, range });
             }}
           >
             <span className="fs-chip-main">{d} in</span>
@@ -111,13 +117,20 @@ export function Diagonals({
           min={3}
           max={100}
           value={draft}
+          aria-invalid={state.badDiagonal}
+          aria-describedby={state.badDiagonal ? errorId : undefined}
           onChange={(e) => {
             setDraft(e.target.value);
-            dispatch({ type: "diagonal", value: e.target.value, ...screen });
+            dispatch({ type: "diagonal", value: e.target.value, ...screen, range });
           }}
         />
         <span>in</span>
       </label>
+      {state.badDiagonal ? (
+        <p id={errorId} className="as-error" role="alert">
+          That size does not fit this screen. Check the number.
+        </p>
+      ) : null}
     </>
   );
 }
@@ -255,6 +268,12 @@ export function PhoneLines({
   const edge = ruler ? rulerInches(true, unit) : CHECK_OBJECTS.card.short;
   const start = narrow ? 8 : 16;
   const gap = lineGap(state.scale, edge);
+  // On the narrowest phones the right line can pass the screen's edge before it matches.
+  const [stripWidth, setStripWidth] = useState(0);
+  const measure = useCallback((el: HTMLDivElement | null) => {
+    if (el) setStripWidth(el.clientWidth);
+  }, []);
+  const offEdge = stripWidth > 0 && start + gap > stripWidth - 2;
   return (
     <>
       <div className="as-how">
@@ -279,6 +298,7 @@ export function PhoneLines({
       </div>
       <div className="as-bleed">
         <div
+          ref={measure}
           className="as-strip"
           style={{ height: state.scale }}
           role="img"
@@ -298,6 +318,11 @@ export function PhoneLines({
           </div>
         </div>
       </div>
+      {offEdge ? (
+        <p className="as-error" role="status">
+          The right line is past the edge of your screen. Pick your screen size instead.
+        </p>
+      ) : null}
       <Slider
         scale={state.scale}
         coarse={coarse}

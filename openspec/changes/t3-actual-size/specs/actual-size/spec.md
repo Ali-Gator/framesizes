@@ -148,12 +148,17 @@ Before any check the viewer SHALL draw sizes at a guessed scale, show "Scale is 
 
 ### Requirement: A check is kept on the device for the same screen
 
-A check SHALL be saved in the browser with the screen's CSS width and height and its device pixel ratio, and SHALL be used on a later visit only while all three are the same. Nothing about the check SHALL leave the device.
+A check SHALL be saved in the browser with the screen's CSS width and height and its device pixel ratio, and SHALL be used on a later visit only while the screen's shorter side, longer side and pixel ratio are the same, so turning a phone keeps it. Nothing about the check SHALL leave the device.
 
 #### Scenario: The same phone tomorrow
 
 - **WHEN** the visitor returns on the same screen
 - **THEN** the viewer opens with the saved scale and "Checked with a card"
+
+#### Scenario: A turned phone
+
+- **WHEN** the check was made at 393 × 852 CSS px and the screen now reports 852 × 393 at the same pixel ratio
+- **THEN** the viewer opens with the saved scale
 
 #### Scenario: A new pixel ratio
 

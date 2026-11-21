@@ -87,13 +87,16 @@ export interface ScreenInfo {
   coarse: boolean;
 }
 
+/** A phone's screen: its shorter side is at most 500 CSS px. */
+export const isPhoneScreen = ({ w, h }: Size) => Math.min(w, h) <= 500;
+
 /**
  * The diagonal to assume before any check.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-screens-scale-has-a-first-guess}
  */
 export function guessDiagonal({ w, h, coarse }: ScreenInfo): number {
   const shorter = Math.min(w, h);
-  if (shorter <= 500) return 6.1;
+  if (isPhoneScreen({ w, h })) return 6.1;
   if (coarse && shorter <= 1100) return 11;
   if (Math.hypot(w, h) < 2200) return 14;
   return 23;

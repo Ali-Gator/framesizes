@@ -230,3 +230,50 @@ describe("the scale stays where the controls can show it", () => {
     expect(run([...picked, { type: "done" }], guessed).diagonal).toBe(27);
   });
 });
+
+describe("a typed size the screen cannot have", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-length-that-is-not-a-number} */
+  it("is flagged, keeps the scale, and blocks Done until fixed", () => {
+    const screen = { w: 1920, h: 1080 };
+    const picked = run(
+      [
+        { type: "open", method: "screen" },
+        { type: "diagonal", value: 27, ...screen },
+        { type: "diagonal", value: "50", ...screen },
+      ],
+      guessed,
+    );
+    expect(picked.badDiagonal).toBe(true);
+    expect(picked.diagonal).toBe(27);
+    expect(run([{ type: "done" }], picked).mode).toBe("screen");
+    const fixed = run([{ type: "diagonal", value: "24", ...screen }, { type: "done" }], picked);
+    expect(fixed.check).toBe("screen");
+    expect(fixed.diagonal).toBe(24);
+    expect(fixed.badDiagonal).toBe(false);
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#requirement-the-screen-size-can-set-the-scale} */
+  it("on a touch screen, must give a scale inside 100–200", () => {
+    const s = run(
+      [{ type: "diagonal", value: "4", w: 393, h: 852, range: SCALE_RANGE.phone }],
+      guessed,
+    );
+    expect(s.badDiagonal).toBe(true);
+    expect(s.scale).toBe(150);
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#requirement-the-screen-size-can-set-the-scale} */
+  it("drops a picked diagonal when another method finishes the check", () => {
+    const s = run(
+      [
+        { type: "open", method: "screen" },
+        { type: "diagonal", value: 27, w: 1920, h: 1080 },
+        { type: "open", method: "card" },
+        { type: "done" },
+      ],
+      guessed,
+    );
+    expect(s.check).toBe("card");
+    expect(s.diagonal).toBeNull();
+  });
+});

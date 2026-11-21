@@ -33,6 +33,8 @@ export interface ViewerState {
   check: Method | null;
   /** The picked or typed screen diagonal in inches. */
   diagonal: number | null;
+  /** The typed diagonal gives no scale the slider can show; the check cannot finish on it. */
+  badDiagonal: boolean;
   sheet: Sheet;
 }
 
@@ -48,7 +50,7 @@ export type ViewerAction =
    * A picked or typed diagonal for a screen of `w` × `h` CSS px; ignored unless it is a positive
    * number whose scale is inside the widest slider range (a half-typed "1" is not a screen).
    */
-  | { type: "diagonal"; value: number | string; w: number; h: number }
+  | { type: "diagonal"; value: number | string; w: number; h: number; range?: Range }
   | { type: "sheet"; sheet: Sheet }
   | { type: "done" }
   | { type: "skip" }
@@ -72,6 +74,7 @@ export const initialState: ViewerState = {
   prevScale: 0,
   check: null,
   diagonal: null,
+  badDiagonal: false,
   sheet: "letter",
 };
 
@@ -88,8 +91,14 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
     case "open":
       // Switching tabs keeps the scale to restore and where to go next.
       return isMethod(state.mode)
-        ? { ...state, mode: action.method }
-        : { ...state, mode: action.method, next: "view", prevScale: state.scale };
+        ? { ...state, mode: action.method, badDiagonal: false }
+        : {
+            ...state,
+            mode: action.method,
+            next: "view",
+            prevScale: state.scale,
+            badDiagonal: false,
+          };
     case "see":
       return state.check
         ? { ...state, mode: "full" }
@@ -102,16 +111,25 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
       return { ...state, scale: clamp(state.scale + action.by, action.range) };
     case "diagonal": {
       const value = typeof action.value === "number" ? action.value : Number(action.value);
-      const scale = action.value === "" ? null : scaleFromDiagonal(action.w, action.h, value);
-      if (scale === null || clamp(scale) !== scale) return state;
-      return { ...state, diagonal: value, scale };
+      if (action.value === "") return { ...state, badDiagonal: false };
+      const scale = scaleFromDiagonal(action.w, action.h, value);
+      if (scale === null || clamp(scale, action.range) !== scale) {
+        return { ...state, badDiagonal: true };
+      }
+      return { ...state, diagonal: value, scale, badDiagonal: false };
     }
     case "sheet":
       return { ...state, sheet: action.sheet };
     case "done":
-      return isMethod(state.mode)
-        ? { ...state, check: state.mode, mode: state.next, next: "view" }
-        : state;
+      if (!isMethod(state.mode) || (state.mode === "screen" && state.badDiagonal)) return state;
+      return {
+        ...state,
+        check: state.mode,
+        mode: state.next,
+        next: "view",
+        // A diagonal stays only when it set the scale.
+        diagonal: state.mode === "screen" ? state.diagonal : null,
+      };
     case "skip":
       return {
         ...state,
@@ -119,6 +137,7 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
         next: "view",
         scale: state.prevScale,
         diagonal: null,
+        badDiagonal: false,
       };
     case "cancel":
       return {
@@ -128,6 +147,7 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
         scale: isMethod(state.mode) ? state.prevScale : state.scale,
         // A diagonal picked and then cancelled is not the screen's.
         diagonal: isMethod(state.mode) ? null : state.diagonal,
+        badDiagonal: false,
       };
     case "close":
       return { ...state, mode: "view" };

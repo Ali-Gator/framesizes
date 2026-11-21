@@ -6,6 +6,7 @@ import {
   CHECK_OBJECTS,
   guessDiagonal,
   guessScale,
+  isPhoneScreen,
   scaleFromDiagonal,
   type Unit,
   writeActual,
@@ -101,7 +102,8 @@ function PhoneAnswer({
   seeRef: React.RefObject<HTMLButtonElement | null>;
 }) {
   const size = sizeOf(state);
-  const ready = screen !== null && state.scale > 0;
+  // Only a phone's screen is "your phone": a narrow desktop window gets no comparison with it.
+  const ready = screen !== null && state.scale > 0 && isPhoneScreen(screen);
   const glass = ready ? { w: screen.w / state.scale, h: screen.h / state.scale } : null;
   return (
     <div className="as-phone">
@@ -119,7 +121,7 @@ function PhoneAnswer({
             height={PHONE_MAP.h}
             label={`The whole ${size.id} drawn smaller, next to the outline of your phone`}
           />
-        ) : (
+        ) : screen && !isPhoneScreen(screen) ? null : (
           <div className="as-map-box" style={{ maxWidth: PHONE_MAP.w, height: PHONE_MAP.h }} />
         )}
       </figure>
@@ -231,6 +233,12 @@ function Desk({
   const checking = isMethod(state.mode);
   const part = visiblePart(size, box, state.scale || 1);
   const open = (method: Method) => dispatch({ type: "open", method });
+  // A box that narrows mid-check can no longer hold the sheet: fall back to the card.
+  useEffect(() => {
+    if (state.mode === "sheet" && box.w > 0 && !sheetOk) {
+      dispatch({ type: "open", method: "card" });
+    }
+  }, [state.mode, box.w, sheetOk, dispatch]);
   return (
     <div className="as-desk">
       {checking ? (
@@ -285,6 +293,7 @@ function Desk({
             <Diagonals
               state={state}
               phone={false}
+              coarse={false}
               guess={guessDiagonal(screen)}
               screen={screen}
               dispatch={dispatch}
@@ -293,7 +302,7 @@ function Desk({
             <Slider scale={state.scale} coarse={false} label="Outline size" dispatch={dispatch} />
           )}
           <div className="as-acts">
-            <Button onClick={onDone}>
+            <Button onClick={onDone} disabled={state.mode === "screen" && state.badDiagonal}>
               {state.mode === "screen" ? "Use this size" : "Done, it matches"}
             </Button>
             <Button variant="ghost" onClick={() => dispatch({ type: "cancel" })}>
@@ -445,6 +454,7 @@ export function ActualSizeViewer() {
 
   const done = () => {
     if (!screen || !isMethod(state.mode)) return;
+    if (state.mode === "screen" && state.badDiagonal) return;
     let scale = state.scale;
     // The screen-size check saves the picked diagonal's scale, or the guessed diagonal's.
     if (state.mode === "screen") {
@@ -481,7 +491,8 @@ export function ActualSizeViewer() {
             <>
               <Diagonals
                 state={state}
-                phone={screen.coarse}
+                phone={isPhoneScreen(screen)}
+                coarse={screen.coarse}
                 guess={guessDiagonal(screen)}
                 screen={screen}
                 dispatch={dispatch}
@@ -489,7 +500,11 @@ export function ActualSizeViewer() {
               <p className="as-why">
                 A card is more exact. Screen size works when the page isn&apos;t zoomed.
               </p>
-              <Button className="fs-btn-lg fs-btn-block" onClick={done}>
+              <Button
+                className="fs-btn-lg fs-btn-block"
+                onClick={done}
+                disabled={state.badDiagonal}
+              >
                 Use {state.diagonal ?? guessDiagonal(screen)} in
               </Button>
               <div className="as-links">
