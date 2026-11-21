@@ -40,8 +40,8 @@ Before 1.1, confirm with the user that the address reads "B, G/F, 322 Shanghai S
 
 ## 7. Gates
 
-- [ ] 7.1 Run `pnpm fix`, then `pnpm test`, then the e2e suite; all green.
-- [ ] 7.2 Walk the On-page SEO guide's pre-publish checklist for A1–A5 on a local production build and record the result in the PR description.
+- [x] 7.1 Run `pnpm fix`, then `pnpm test`, then the e2e suite; all green.
+- [x] 7.2 Walk the On-page SEO guide's pre-publish checklist for A1–A5 on a local production build and record the result in the PR description.
 
 ## Workflow follow-up
 
