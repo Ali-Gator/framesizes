@@ -72,15 +72,15 @@ export interface MenuApi {
     create(props: {
       id: string;
       title: string;
-      contexts: ["image"];
+      contexts: ["image", "link"];
       documentUrlPatterns: string[];
     }): void;
   };
   scripting: {
     executeScript(injection: {
       target: { tabId: number; frameIds?: number[] };
-      func: (srcUrl: string) => PageRead;
-      args: [string];
+      func: (srcUrl: string, linkUrl: string) => PageRead;
+      args: [string, string];
     }): Promise<{ result?: unknown }[]>;
   };
   tabs: { captureVisibleTab(windowId: number, options: { format: "png" }): Promise<string> };
@@ -107,7 +107,7 @@ export async function registerMenu(api: MenuApi): Promise<void> {
   api.contextMenus.create({
     id: MENU_ID,
     title: "Try on my wall",
-    contexts: ["image"],
+    contexts: ["image", "link"],
     documentUrlPatterns: ["http://*/*", "https://*/*"],
   });
 }
@@ -121,7 +121,13 @@ export async function registerMenu(api: MenuApi): Promise<void> {
 export async function onMenuClick(
   api: MenuApi,
   io: TryIo,
-  info: { menuItemId: string | number; frameId?: number; srcUrl?: string; pageUrl?: string },
+  info: {
+    menuItemId: string | number;
+    frameId?: number;
+    srcUrl?: string;
+    linkUrl?: string;
+    pageUrl?: string;
+  },
   tab: { id?: number; windowId?: number; title?: string } | undefined,
 ): Promise<void> {
   if (info.menuItemId !== MENU_ID || tab?.id === undefined || tab.windowId === undefined) return;
@@ -132,7 +138,7 @@ export async function onMenuClick(
     .executeScript({
       target: { tabId: tab.id, frameIds: [frameId] },
       func: readPage,
-      args: [srcUrl],
+      args: [srcUrl, info.linkUrl ?? ""],
     })
     .then((results) => (results[0]?.result as PageRead | undefined) ?? null)
     .catch(() => null);
@@ -145,7 +151,9 @@ export async function onMenuClick(
   void io.clearTry().catch(() => undefined);
 
   const page = await read;
-  let image = await io.fetchImage(srcUrl);
+  // On a link, the picture is the one the page read found inside it, if any.
+  const url = srcUrl || page?.url;
+  let image = url ? await io.fetchImage(url) : null;
   if (!image && page?.rect) {
     const screenshot = await shot;
     if (screenshot) image = await io.crop(screenshot, page.rect);
