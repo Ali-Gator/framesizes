@@ -20,7 +20,7 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
 ## 3. Viewer state (`components/actual-size/state.ts`)
 
-- [ ] 3.1 Write `state.test.ts` for the reducer:
+- [x] 3.1 Write `state.test.ts` for the reducer:
   - opens on 8x10 in `view`;
   - `pick`;
   - `see` unchecked goes to the card with `next: "full"`; `see` checked goes to `full`;
@@ -36,7 +36,7 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
   Implement `state.ts` (design decision 2). Verify the tests pass.
 
-- [ ] 3.2 Write tests for `loadCheck`/`saveCheck`:
+- [x] 3.2 Write tests for `loadCheck`/`saveCheck`:
   - a round trip;
   - a mismatched `w`, `h` or `dpr` returns nothing;
   - a throwing `localStorage` keeps the check for the page view.
