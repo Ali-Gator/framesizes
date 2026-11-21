@@ -6,8 +6,10 @@ import {
   absoluteUrl,
   breadcrumbJsonLd,
   breadcrumbTrail,
+  companyPageJsonLd,
   jsonLdScript,
   localizedMetadata,
+  organizationJsonLd,
   pageMetadata,
   siteJsonLd,
   sitemapEntries,
@@ -265,5 +267,50 @@ describe("translated versions", () => {
       ["Inicio", "https://framesizes.app"],
       ["Extensión", X1_URL],
     ]);
+  });
+});
+
+/** {@link openspec/specs/company-pages/spec.md#requirement-about-and-contact-describe-the-organization-in-structured-data} */
+describe("organizationJsonLd", () => {
+  it("is the home page's organization with the operator's legal details", () => {
+    const org = organizationJsonLd();
+    expect(org["@type"]).toBe("Organization");
+    expect(org["@id"]).toBe("https://framesizes.app#organization");
+    expect(org.name).toBe("Frame Sizes");
+    expect(org.legalName).toBe("Soft Divisions Limited");
+    expect(org.email).toBe("care@framesizes.app");
+    expect(org.address["@type"]).toBe("PostalAddress");
+    expect(org.address.addressCountry).toBe("HK");
+    expect(org["@id"]).toBe(siteJsonLd()["@graph"][1]?.["@id"]);
+  });
+});
+
+/** {@link openspec/specs/company-pages/spec.md#scenario-the-about-pages-json-ld} */
+describe("companyPageJsonLd", () => {
+  it("puts the About page, its breadcrumbs and the organization in one graph", () => {
+    const data = companyPageJsonLd(livePage("A1"), "AboutPage");
+    expect(data["@context"]).toBe("https://schema.org");
+    expect(data["@graph"].map((node) => node["@type"])).toEqual([
+      "AboutPage",
+      "BreadcrumbList",
+      "Organization",
+    ]);
+    expect(data["@graph"][0]).toMatchObject({
+      url: "https://framesizes.app/about",
+      about: { "@id": "https://framesizes.app#organization" },
+    });
+  });
+
+  it("gives the Contact page a ContactPage whose main entity is the organization", () => {
+    const data = companyPageJsonLd(livePage("A2"), "ContactPage");
+    expect(data["@graph"].map((node) => node["@type"])).toEqual([
+      "ContactPage",
+      "BreadcrumbList",
+      "Organization",
+    ]);
+    expect(data["@graph"][0]).toMatchObject({
+      url: "https://framesizes.app/contact",
+      mainEntity: { "@id": "https://framesizes.app#organization" },
+    });
   });
 });

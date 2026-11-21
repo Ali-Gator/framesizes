@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { SITE_URL } from "@/lib/seo";
-import { footerGroups, navHubs } from "@/lib/site-map";
+import { companyLinks, footerGroups, navHubs } from "@/lib/site-map";
 
 import "./globals.css";
 
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <SiteHeader hubs={navHubs()} />
         <main>{children}</main>
-        <SiteFooter groups={footerGroups()} />
+        <SiteFooter groups={footerGroups()} company={companyLinks()} />
       </body>
     </html>
   );

@@ -7,11 +7,13 @@ import {
   TRANSLATED_LOCALES,
   translatedPage,
 } from "./locales";
+import { COMPANY } from "./company";
 import {
   BRAND,
   type BuiltPage,
   fullTitle,
   HUBS,
+  type LivePage,
   livePages,
   page,
   PAGES,
@@ -107,6 +109,54 @@ export function siteJsonLd() {
         url,
         logo: absoluteUrl("/brand/logo-mark-512.png"),
       },
+    ],
+  };
+}
+
+/**
+ * The home page's `Organization` (same `@id`) with the operator's legal name, email and address.
+ * {@link openspec/specs/company-pages/spec.md#requirement-about-and-contact-describe-the-organization-in-structured-data}
+ */
+export function organizationJsonLd() {
+  const url = absoluteUrl("/");
+  const { address } = COMPANY;
+  return {
+    "@type": "Organization",
+    "@id": `${url}#organization`,
+    name: BRAND,
+    url,
+    logo: absoluteUrl("/brand/logo-mark-512.png"),
+    legalName: COMPANY.legalName,
+    email: COMPANY.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: address.street,
+      addressLocality: address.locality,
+      addressRegion: address.region,
+      addressCountry: address.countryCode,
+    },
+  };
+}
+
+/**
+ * About or Contact: the page, its `BreadcrumbList` and the organization in one `@graph`.
+ * {@link openspec/specs/company-pages/spec.md#requirement-about-and-contact-describe-the-organization-in-structured-data}
+ */
+export function companyPageJsonLd(target: LivePage, type: "AboutPage" | "ContactPage") {
+  const org = organizationJsonLd();
+  const { "@context": _context, ...breadcrumbs } = breadcrumbJsonLd(target);
+  const link = { "@id": org["@id"] };
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": type,
+        name: target.seo.h1,
+        url: absoluteUrl(target.path),
+        ...(type === "AboutPage" ? { about: link } : { mainEntity: link }),
+      },
+      breadcrumbs,
+      org,
     ],
   };
 }
