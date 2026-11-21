@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-80**
+_Next id:_ **BL-81**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -141,6 +141,9 @@ when to add and when to fold items in.
   the Extensions menu sit at the top left, but the drawing stays the left-to-right Chrome (the
   Arabic text says "top left"). Draw a mirrored variant for `/ar/`.
   _Refs:_ `apps/web/src/components/extension/pin-picture.tsx`, `copy/ar.ts` · _Status:_ open — t25 apply, 2026-11-20
+- **[BL-80] Mirrored right-click menu figure for Arabic** — `MenuFigure` draws Chrome's context menu
+  left to right on `/ar/` too, like the pin picture before BL-76. Mirror it the same way.
+  _Refs:_ `apps/web/src/components/extension/figures.tsx` (`MenuFigure`) · _Status:_ open — backlog-6 triage, 2026-11-21
 - **[BL-78] `<html lang>` stays English on translated pages** — only X1's content wrapper carries
   `lang`/`dir`, so assistive tech announces the translated `<title>` and the document as English.
   Fix with a per-language root layout (route groups) when the shell is translated.
