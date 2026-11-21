@@ -33,8 +33,6 @@ export interface ViewerState {
   check: Method | null;
   /** The picked or typed screen diagonal in inches. */
   diagonal: number | null;
-  /** The typed diagonal gives no scale the slider can show; the check cannot finish on it. */
-  badDiagonal: boolean;
   sheet: Sheet;
 }
 
@@ -50,9 +48,10 @@ export type ViewerAction =
    * A picked or typed diagonal for a screen of `w` × `h` CSS px; ignored unless it is a positive
    * number whose scale is inside the widest slider range (a half-typed "1" is not a screen).
    */
-  | { type: "diagonal"; value: number | string; w: number; h: number; range?: Range }
+  | { type: "diagonal"; value: number | string; w: number; h: number }
   | { type: "sheet"; sheet: Sheet }
-  | { type: "done" }
+  /** `scale` is the one saved, when the component worked it out (the screen-size check). */
+  | { type: "done"; scale?: number }
   | { type: "skip" }
   | { type: "cancel" }
   | { type: "close" };
@@ -74,7 +73,6 @@ export const initialState: ViewerState = {
   prevScale: 0,
   check: null,
   diagonal: null,
-  badDiagonal: false,
   sheet: "letter",
 };
 
@@ -91,14 +89,8 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
     case "open":
       // Switching tabs keeps the scale to restore and where to go next.
       return isMethod(state.mode)
-        ? { ...state, mode: action.method, badDiagonal: false }
-        : {
-            ...state,
-            mode: action.method,
-            next: "view",
-            prevScale: state.scale,
-            badDiagonal: false,
-          };
+        ? { ...state, mode: action.method }
+        : { ...state, mode: action.method, next: "view", prevScale: state.scale };
     case "see":
       return state.check
         ? { ...state, mode: "full" }
@@ -111,19 +103,17 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
       return { ...state, scale: clamp(state.scale + action.by, action.range) };
     case "diagonal": {
       const value = typeof action.value === "number" ? action.value : Number(action.value);
-      if (action.value === "") return { ...state, badDiagonal: false };
-      const scale = scaleFromDiagonal(action.w, action.h, value);
-      if (scale === null || clamp(scale, action.range) !== scale) {
-        return { ...state, badDiagonal: true };
-      }
-      return { ...state, diagonal: value, scale, badDiagonal: false };
+      const scale = action.value === "" ? null : scaleFromDiagonal(action.w, action.h, value);
+      if (scale === null || clamp(scale) !== scale) return state;
+      return { ...state, diagonal: value, scale };
     }
     case "sheet":
       return { ...state, sheet: action.sheet };
     case "done":
-      if (!isMethod(state.mode) || (state.mode === "screen" && state.badDiagonal)) return state;
+      if (!isMethod(state.mode)) return state;
       return {
         ...state,
+        scale: action.scale ?? state.scale,
         check: state.mode,
         mode: state.next,
         next: "view",
@@ -137,7 +127,6 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
         next: "view",
         scale: state.prevScale,
         diagonal: null,
-        badDiagonal: false,
       };
     case "cancel":
       return {
@@ -147,7 +136,6 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
         scale: isMethod(state.mode) ? state.prevScale : state.scale,
         // A diagonal picked and then cancelled is not the screen's.
         diagonal: isMethod(state.mode) ? null : state.diagonal,
-        badDiagonal: false,
       };
     case "close":
       return { ...state, mode: "view" };
@@ -192,11 +180,11 @@ export function rulerInches(phone: boolean, unit: Unit): number {
  * How many phone screens wide and tall a size is.
  * {@link openspec/specs/actual-size/spec.md#requirement-the-phone-answer-step-comes-first}
  */
-export function phonesLine(size: Size, screen: Size, scale: number): string {
+export function phonesLine(size: Size, screen: Size, scale: number, phone = true): string {
   const wide = size.w / (screen.w / scale);
   const tall = size.h / (screen.h / scale);
-  if (wide <= 1 && tall <= 1) return "It fits on your phone's screen.";
-  return `About ${oneDecimal(wide)} phone screens wide and ${oneDecimal(tall)} tall.`;
+  if (wide <= 1 && tall <= 1) return `It fits on your ${phone ? "phone's " : ""}screen.`;
+  return `About ${oneDecimal(wide)} ${phone ? "phone " : ""}screens wide and ${oneDecimal(tall)} tall.`;
 }
 
 /** The rulers' width along the box's top and left, px. */

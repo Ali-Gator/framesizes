@@ -232,10 +232,10 @@ describe("the scale stays where the controls can show it", () => {
 });
 
 describe("a typed size the screen cannot have", () => {
-  /** {@link openspec/specs/actual-size/spec.md#scenario-a-length-that-is-not-a-number} */
-  it("is flagged, keeps the scale, and blocks Done until fixed", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-size-the-screen-cannot-have} */
+  it("is ignored, so the picked size and its scale stay", () => {
     const screen = { w: 1920, h: 1080 };
-    const picked = run(
+    const s = run(
       [
         { type: "open", method: "screen" },
         { type: "diagonal", value: 27, ...screen },
@@ -243,23 +243,21 @@ describe("a typed size the screen cannot have", () => {
       ],
       guessed,
     );
-    expect(picked.badDiagonal).toBe(true);
-    expect(picked.diagonal).toBe(27);
-    expect(run([{ type: "done" }], picked).mode).toBe("screen");
-    const fixed = run([{ type: "diagonal", value: "24", ...screen }, { type: "done" }], picked);
-    expect(fixed.check).toBe("screen");
-    expect(fixed.diagonal).toBe(24);
-    expect(fixed.badDiagonal).toBe(false);
+    expect(s.diagonal).toBe(27);
+    expect(s.scale).toBeCloseTo(Math.hypot(1920, 1080) / 27, 6);
   });
 
-  /** {@link openspec/specs/actual-size/spec.md#requirement-the-screen-size-can-set-the-scale} */
-  it("on a touch screen, must give a scale inside 100–200", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-61-in-phone} */
+  it("finishes a check at the scale the component saved", () => {
     const s = run(
-      [{ type: "diagonal", value: "4", w: 393, h: 852, range: SCALE_RANGE.phone }],
+      [
+        { type: "open", method: "screen" },
+        { type: "done", scale: 255 },
+      ],
       guessed,
     );
-    expect(s.badDiagonal).toBe(true);
-    expect(s.scale).toBe(150);
+    expect(s.check).toBe("screen");
+    expect(s.scale).toBe(255);
   });
 
   /** {@link openspec/specs/actual-size/spec.md#requirement-the-screen-size-can-set-the-scale} */
@@ -275,5 +273,17 @@ describe("a typed size the screen cannot have", () => {
     );
     expect(s.check).toBe("card");
     expect(s.diagonal).toBeNull();
+  });
+});
+
+describe("a screen that is not a phone's", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-screen-that-is-not-a-phones} */
+  it("counts screens, not phone screens", () => {
+    expect(phonesLine(sizeOf(initialState), { w: 744, h: 1133 }, 163, false)).toBe(
+      "About 1.8 screens wide and 1.4 tall.",
+    );
+    expect(phonesLine({ w: 4, h: 6 }, { w: 744, h: 1133 }, 100, false)).toBe(
+      "It fits on your screen.",
+    );
   });
 });

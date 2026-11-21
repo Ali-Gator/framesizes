@@ -72,6 +72,11 @@ On a phone the viewer SHALL first show, on one screen: the size buttons, the pic
 - **WHEN** a size fits inside the phone's screen both ways
 - **THEN** the line says "It fits on your phone's screen."
 
+#### Scenario: A screen that is not a phone's
+
+- **WHEN** the phone layout shows 8x10 on a screen whose shorter side is over 500 CSS px, such as a 744 × 1133 tablet at 163 px per inch
+- **THEN** the line counts screens instead of phone screens ("About 1.8 screens wide and 1.4 tall.") and the map's outline reads "Your screen"
+
 ### Requirement: The first look at actual size asks for a check
 
 On a phone, tapping "See <size> at actual size" while the scale is unchecked SHALL open the check step first and SHALL open the actual-size view after the check is done or skipped. With a checked scale it SHALL open the actual-size view at once.
@@ -100,6 +105,11 @@ The card check SHALL draw two vertical lines a credit card's short edge apart (5
 - **WHEN** the card check is open at 360 × 740 with the viewer's title at the top of the screen
 - **THEN** the picture, the two lines, the slider and "Done, it matches" are all inside the screen
 
+#### Scenario: A phone too narrow for the line
+
+- **WHEN** the right line passes the strip's right edge
+- **THEN** the strip says "The line is past your screen's edge. Pick your screen size." without moving the slider or "Done, it matches", and the step offers the screen size
+
 ### Requirement: A ruler can check the scale
 
 The check SHALL offer a ruler: on a phone as "Have a ruler? Use it instead" under the card step, on a desktop as a tab. It SHALL draw two lines whose distance is 2 in or 5 cm on a phone and 5 in or 12 cm on a desktop, in the visitor's unit, with the same slider and "Done, it matches".
@@ -123,6 +133,11 @@ The check SHALL let the visitor pick the screen's diagonal from a list or type i
 - **WHEN** the visitor types "abc" or 0 as the screen size
 - **THEN** the scale stays as it was
 
+#### Scenario: A size the screen cannot have
+
+- **WHEN** the typed size gives a scale outside 60 to 240 px per inch, such as 50 in on a 1920 × 1080 screen
+- **THEN** the scale and the picked size stay as they were, and the button that finishes the check names the size it uses ("Use 27 in")
+
 ### Requirement: A sheet of paper is offered only where it fits
 
 On a desktop the check SHALL offer a Letter or A4 sheet matched along its short edge (8.5 in or 210 mm) only when that edge fits across the box at the guessed scale. A phone SHALL never offer the sheet.
@@ -136,6 +151,11 @@ On a desktop the check SHALL offer a Letter or A4 sheet matched along its short 
 
 - **WHEN** the box is 1,038 px wide and the guessed scale is 125.2 px per inch
 - **THEN** no "Sheet of paper" tab is offered, and the card and ruler tabs are
+
+#### Scenario: The box narrows during a sheet check
+
+- **WHEN** the sheet check is open and the box narrows until the sheet no longer fits, or the viewer switches to the phone layout
+- **THEN** the check switches to the card
 
 ### Requirement: The scale is a guess until checked
 

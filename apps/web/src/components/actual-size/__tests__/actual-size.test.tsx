@@ -272,3 +272,53 @@ describe("the phone steps", () => {
     expect(host.querySelector("dialog")?.textContent).toContain("Zoomed in, the size is off");
   });
 });
+
+describe("beyond phones and monitors", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-screen-that-is-not-a-phones} */
+  it("calls a tablet in the phone layout your screen", () => {
+    stubScreen({ w: 744, h: 1133, phone: true });
+    mount();
+    expect(host.querySelector(".as-phones")?.textContent).toMatch(/^About .* screens wide/);
+    expect(host.querySelector(".as-phones")?.textContent).not.toContain("phone");
+    expect(host.textContent).toContain("Your screen");
+    expect(host.textContent).not.toContain("Your phone");
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-phone-too-narrow-for-the-line} */
+  it("says when the right line is past the screen's edge", () => {
+    stubScreen({ w: 320, h: 568, phone: true });
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(320);
+    mount();
+    click(button("See 8x10 at actual size"));
+    const edge = () => host.querySelector(".as-edge")?.textContent;
+    expect(edge()).toBe("");
+    const slider = host.querySelector<HTMLInputElement>('input[type="range"]');
+    act(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(
+        slider,
+        "200",
+      );
+      slider?.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    expect(edge()).toBe("The line is past your screen's edge. Pick your screen size.");
+    expect(button("No card? Pick your screen size")).toBeTruthy();
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-size-the-screen-cannot-have} */
+  it("names the screen size it uses, and ignores one the screen cannot have", () => {
+    stubScreen({ w: 1920, h: 1080, phone: false });
+    mount();
+    click(button("Screen size"));
+    expect(button("Use 23 in")).toBeTruthy();
+    click(button("27 in"));
+    const field = host.querySelector<HTMLInputElement>('input[type="number"]');
+    act(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(field, "50");
+      field?.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    click(button("Use 27 in"));
+    expect(host.querySelector(".fs-badge")?.textContent).toBe("Checked with screen size");
+    const frame = host.querySelector<HTMLElement>('[data-testid="frame"]');
+    expect(px(frame?.style.width)).toBeCloseTo((8 * Math.hypot(1920, 1080)) / 27, 3);
+  });
+});

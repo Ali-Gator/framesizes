@@ -631,13 +631,14 @@
 .f3-t tr.is-cur td {
   background: var(--tape-soft);
 }
-.as-error {
+.as-edge {
+  position: absolute;
+  left: 24px;
+  right: 8px;
+  top: 6px;
   margin: 0;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 16px;
   font-weight: 600;
   color: var(--poor);
-}
-.as .fs-input[aria-invalid="true"] {
-  border-color: var(--poor);
 }

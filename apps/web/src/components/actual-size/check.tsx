@@ -1,5 +1,5 @@
 import { CHECK_OBJECTS, type Unit } from "@framesizes/sizes";
-import { type Dispatch, useCallback, useId, useState } from "react";
+import { type Dispatch, useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { U } from "@/components/ui/u";
@@ -66,7 +66,6 @@ export function Slider({
 export function Diagonals({
   state,
   phone,
-  coarse,
   guess,
   screen,
   dispatch,
@@ -74,8 +73,6 @@ export function Diagonals({
   state: ViewerState;
   /** A phone's screen: the phone sizes and wording. */
   phone: boolean;
-  /** A touch screen: the scale must stay in the touch slider's range. */
-  coarse: boolean;
   guess: number;
   screen: { w: number; h: number };
   dispatch: Dispatch<ViewerAction>;
@@ -83,8 +80,6 @@ export function Diagonals({
   const list = phone ? PHONE_DIAGONALS : DESK_DIAGONALS;
   // The field shows what was typed, and follows a picked chip.
   const [draft, setDraft] = useState(state.diagonal === null ? "" : String(state.diagonal));
-  const range = coarse ? SCALE_RANGE.phone : SCALE_RANGE.desk;
-  const errorId = useId();
   return (
     <>
       <p className="as-step">
@@ -100,7 +95,7 @@ export function Diagonals({
             aria-pressed={state.diagonal === d}
             onClick={() => {
               setDraft(String(d));
-              dispatch({ type: "diagonal", value: d, ...screen, range });
+              dispatch({ type: "diagonal", value: d, ...screen });
             }}
           >
             <span className="fs-chip-main">{d} in</span>
@@ -117,20 +112,13 @@ export function Diagonals({
           min={3}
           max={100}
           value={draft}
-          aria-invalid={state.badDiagonal}
-          aria-describedby={state.badDiagonal ? errorId : undefined}
           onChange={(e) => {
             setDraft(e.target.value);
-            dispatch({ type: "diagonal", value: e.target.value, ...screen, range });
+            dispatch({ type: "diagonal", value: e.target.value, ...screen });
           }}
         />
         <span>in</span>
       </label>
-      {state.badDiagonal ? (
-        <p id={errorId} className="as-error" role="alert">
-          That size does not fit this screen. Check the number.
-        </p>
-      ) : null}
     </>
   );
 }
@@ -271,7 +259,13 @@ export function PhoneLines({
   // On the narrowest phones the right line can pass the screen's edge before it matches.
   const [stripWidth, setStripWidth] = useState(0);
   const measure = useCallback((el: HTMLDivElement | null) => {
-    if (el) setStripWidth(el.clientWidth);
+    if (!el) return;
+    const read = () => setStripWidth(el.clientWidth);
+    read();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(read);
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
   const offEdge = stripWidth > 0 && start + gap > stripWidth - 2;
   return (
@@ -316,13 +310,12 @@ export function PhoneLines({
           <div className="as-vline" data-testid="line-end" style={{ left: start + gap }}>
             <div className="as-grip" />
           </div>
+          {/* Over the strip, so nothing under the slider moves when it shows. */}
+          <p className="as-edge" aria-live="polite">
+            {offEdge ? "The line is past your screen's edge. Pick your screen size." : ""}
+          </p>
         </div>
       </div>
-      {offEdge ? (
-        <p className="as-error" role="status">
-          The right line is past the edge of your screen. Pick your screen size instead.
-        </p>
-      ) : null}
       <Slider
         scale={state.scale}
         coarse={coarse}
@@ -338,15 +331,13 @@ export function PhoneLines({
             Use a card instead
           </Button>
         ) : (
-          <>
-            <Button variant="ghost" onClick={() => dispatch({ type: "open", method: "ruler" })}>
-              Have a ruler? Use it instead
-            </Button>
-            <Button variant="ghost" onClick={() => dispatch({ type: "open", method: "screen" })}>
-              No card? Pick your screen size
-            </Button>
-          </>
+          <Button variant="ghost" onClick={() => dispatch({ type: "open", method: "ruler" })}>
+            Have a ruler? Use it instead
+          </Button>
         )}
+        <Button variant="ghost" onClick={() => dispatch({ type: "open", method: "screen" })}>
+          {ruler ? "No ruler? Pick your screen size" : "No card? Pick your screen size"}
+        </Button>
         <Button variant="ghost" onClick={() => dispatch({ type: "skip" })}>
           Skip, use the guess
         </Button>

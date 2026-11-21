@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-92**
+_Next id:_ **BL-94**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -169,6 +169,15 @@ when to add and when to fold items in.
 
 ## Widgets
 
+- **[BL-92] F3 screen sizes for tablets** — a tablet gets the desktop list (13.3 to 32 in) while its
+  guess is 11 in, so the visitor has to type the size. Add a tablet list (about 8 to 13 in) once the
+  spec names one (t3 phase review).
+  _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`Diagonals`) · _Status:_ open
+- **[BL-93] F3 screen size outside the touch slider's range** — a typed size whose scale is inside
+  60–240 px/in but outside the touch slider's 100–200 (4 in on a phone gives 234) is accepted; a later
+  card or ruler check then starts with the slider pinned at its end. Clamp the scale to the touch range
+  when switching method (t3 phase review).
+  _Refs:_ `apps/web/src/components/actual-size/state.ts` (`diagonal`, `open`) · _Status:_ open
 - **[BL-91] F3 says "Saved on this device." when storage is blocked** — with `localStorage` throwing,
   `saveCheck` keeps the scale check for the page view only, yet the desktop status still says it is
   saved, and the next visit starts on the guess. Have `saveCheck` report whether it stored the check
