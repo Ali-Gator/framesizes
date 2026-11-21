@@ -132,9 +132,11 @@ export function SizeStep({
       <div className="x-stack">
         <Button
           className="x-block"
-          disabled={reason !== null}
+          aria-disabled={reason !== null || undefined}
           aria-describedby={reason ? `${id}-why` : undefined}
-          onClick={() => dispatch({ type: "hang" })}
+          onClick={() => {
+            if (reason === null) dispatch({ type: "hang" });
+          }}
         >
           Hang it on my wall
         </Button>

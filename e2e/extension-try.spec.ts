@@ -153,6 +153,28 @@ test("several sizes: nothing picked, the button waits and says why", async ({
   await expect(hangButton(page)).toBeEnabled();
 });
 
+/** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-waiting-button-keeps-focus-and-says-why} */
+test("a waiting Hang button keeps focus and Enter does nothing", async ({
+  context,
+  extensionId,
+}) => {
+  const page = await openPanel(context, extensionId);
+  await seedTry(page, THREE);
+  await hangButton(page).focus();
+  await expect(hangButton(page)).toBeFocused();
+  await expect(hangButton(page)).toBeDisabled();
+  await expect(hangButton(page)).toHaveAccessibleDescription(
+    "Pick a size first: this page lists three.",
+  );
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "What size is it?" })).toBeVisible();
+  await expect(hangButton(page)).toBeFocused();
+  // The press left nothing behind: picking a size now still waits on the size step.
+  await chips(page).getByRole("button", { name: "24 × 36 in" }).click();
+  await expect(hangButton(page)).toBeEnabled();
+  await expect(distance(page, "To the ceiling")).toHaveCount(0);
+});
+
 /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-one-size-found} */
 test("one size is picked and the button is ready", async ({ context, extensionId }) => {
   const page = await openPanel(context, extensionId);
@@ -375,6 +397,32 @@ test("a full layout cannot take the print", async ({ context, extensionId }) => 
   const add = page.getByRole("button", { name: "Add to my layout" });
   await expect(add).toBeDisabled();
   await expect(add).toHaveAccessibleDescription("That's 12 frames, the most the planner holds.");
+});
+
+/** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-full-layouts-button-does-nothing} */
+test("a full layout's Add button keeps focus and Enter does nothing", async ({
+  context,
+  extensionId,
+}) => {
+  const page = await openPanel(context, extensionId);
+  for (let n = 5; n < 12; n++) {
+    await planner(page).getByRole("button", { name: "Add a frame" }).click();
+    await planner(page)
+      .getByRole("button", { name: /^Add \d/ })
+      .click();
+  }
+  await expect(planner(page).locator(".wf-hit")).toHaveCount(12);
+  await hang(page);
+  const add = page.getByRole("button", { name: "Add to my layout" });
+  await add.focus();
+  await expect(add).toBeFocused();
+  await expect(add).toBeDisabled();
+  await expect(add).toHaveAccessibleDescription("That's 12 frames, the most the planner holds.");
+  await page.keyboard.press("Enter");
+  await expect(distance(page, "To the ceiling")).toBeVisible();
+  await expect(add).toBeFocused();
+  await page.getByRole("button", { name: "Back to my layout" }).click();
+  await expect(planner(page).locator(".wf-hit")).toHaveCount(12);
 });
 
 /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-trying-on-a-new-wall-photo} */

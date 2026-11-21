@@ -301,7 +301,12 @@ p.x-saved {
   height: 100%;
 }
 /* A waiting button reads as waiting; the line under it says why. */
-.x-pbody .fs-btn:disabled {
+.x-pbody .fs-btn:disabled,
+.x-pbody .fs-btn[aria-disabled="true"] {
   opacity: 0.45;
   cursor: not-allowed;
+}
+/* It keeps focus (aria-disabled), so it must not press in either. */
+.x-pbody .fs-btn[aria-disabled="true"]:active {
+  transform: none;
 }
