@@ -91,11 +91,6 @@ when to add and when to fold items in.
 
 ## Chrome extension
 
-- **[BL-73] Frames from "Add a frame" can share an id across pages** — `state.ts` still gives them
-  `a${nextId}`, so two stale extension pages can each make the same id for different frames, and the
-  kept selection or a hanger entry (`hangers.byFrame`) lands on the wrong frame. Make every added id
-  unique per page, as BL-64 did for prints.
-  _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`applyPicker`), `apps/extension/src/use-wall.ts` · _Status:_ open — backlog-5 review, 2026-11-20
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
@@ -106,10 +101,6 @@ when to add and when to fold items in.
   after `sidePanel.open` narrows the page, so the crop can be off. Measure what happens on real shops
   (task 9.2 ran on Society6, whose picture came from the fetch, so the crop is still unmeasured) and, if it bites, capture before opening or crop from the box measured after the reflow.
   _Refs:_ `apps/extension/src/background.ts` (`onMenuClick`), `apps/extension/src/read-page.ts` · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
-- **[BL-63] A waiting button leaves the Tab order** — "Hang it on my wall" and "Add to my layout" use
-  native `disabled`, so keyboard users never land on them to hear the reason (now a `role="status"`
-  line). Consider `aria-disabled` with a no-op click so the reason is read on focus.
-  _Refs:_ `apps/extension/src/try/size-step.tsx`, `apps/extension/src/try/hang-view.tsx` · _Status:_ open — t23-try-on-my-wall review, 2026-11-19
 - **[BL-65] Every load reads every print picture** — `readWall` reads all `art:` Blobs on each load
   (twice when a journal is replayed), though a page reuses the URLs it holds. Read only the ids it has
   no URL for.
@@ -120,11 +111,6 @@ when to add and when to fold items in.
   local runs on macOS did not reproduce it. Suspect an IndexedDB transaction from the closing page
   holding the store; reproduce on Linux (Playwright Docker image) before changing code.
   _Refs:_ `apps/extension/src/use-wall.ts` (`load`, `flush`), `apps/extension/src/store.ts` (`transact`), `e2e/extension-try.spec.ts` · _Status:_ open — CI flake, 2026-11-20
-- **[BL-67] No "Try on my wall" where the print is not an `<img>`** — Desenio draws its product picture
-  as a CSS background on a `div` inside a link, so Chrome shows the link menu and the "image" context
-  item never appears. Decide whether to also register the item on `link`/`page` and find the image
-  under the pointer in `readPage`.
-  _Refs:_ `apps/extension/src/background.ts` (`contextMenus.create`), `apps/extension/src/read-page.ts` · _Status:_ open — task 9.2, 2026-11-20
 - **[BL-68] A reload after the self-switch shows the pin steps again** — once the poll sees the button
   pinned, the page switches to usage but the URL keeps `?pinned=0`, so a reload opens pin mode until
   the first reply. Consider `history.replaceState` dropping `pinned` on the switch.
@@ -137,10 +123,6 @@ when to add and when to fold items in.
   computer), so a cropped phone variant of the menu is optional. Translated labels are longer:
   the menu's grey lines shrink below 11.5 px in Hungarian, Greek and Russian (t25).
   _Refs:_ `apps/web/src/components/extension/pin-picture.tsx` · _Status:_ open — t24 apply, 2026-11-20
-- **[BL-76] Mirrored pin picture for Arabic Chrome** — in right-to-left Chrome the puzzle piece and
-  the Extensions menu sit at the top left, but the drawing stays the left-to-right Chrome (the
-  Arabic text says "top left"). Draw a mirrored variant for `/ar/`.
-  _Refs:_ `apps/web/src/components/extension/pin-picture.tsx`, `copy/ar.ts` · _Status:_ open — t25 apply, 2026-11-20
 - **[BL-80] Mirrored right-click menu figure for Arabic** — `MenuFigure` draws Chrome's context menu
   left to right on `/ar/` too, like the pin picture before BL-76. Mirror it the same way.
   _Refs:_ `apps/web/src/components/extension/figures.tsx` (`MenuFigure`) · _Status:_ open — backlog-6 triage, 2026-11-21
@@ -148,10 +130,6 @@ when to add and when to fold items in.
   `lang`/`dir`, so assistive tech announces the translated `<title>` and the document as English.
   Fix with a per-language root layout (route groups) when the shell is translated.
   _Refs:_ `apps/web/src/app/layout.tsx`, `components/extension/how-to.tsx` · _Status:_ deferred — whole-site translation (t25 review)
-- **[BL-79] The language picker ships on every page** — `SiteHeader` mounts the client island
-  site-wide, so F1, F2 and G1 load and hydrate the picker, its 28-language strings and CSS only to
-  render nothing. Mount it only on routes with translations, or split it with a dynamic import.
-  _Refs:_ `apps/web/src/components/site/site-header.tsx`, `components/i18n/language-picker.tsx` · _Status:_ open — t25 review, 2026-11-21
 - **[BL-77] Translated OG image alt** — the 27 translated X1 versions re-export the English social
   image, so `og:image:alt` stays English; the OG font lacks most of their scripts. Translate the alt
   (and, with a wider font, the image text) when the whole site is translated.
