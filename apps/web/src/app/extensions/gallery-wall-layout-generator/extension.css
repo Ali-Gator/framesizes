@@ -27,7 +27,7 @@ html[data-ext-mode="pin"] .ext-usage {
 
 .ext-pin-picture {
   display: block;
-  /* The drawings picture Chrome, drawn once left to right; they never mirror. */
+  /* Each drawing places its own text; a right-to-left page gets its own pin picture, never a mirror. */
   direction: ltr;
   width: 100%;
   max-width: 880px;

@@ -113,7 +113,7 @@ export function ExtensionHowTo({ copy, locale }: { copy: ExtensionCopy; locale: 
           {copy.pin.title}
         </h2>
         <p className="max-w-prose">{rich(copy.pin.text)}</p>
-        <PinPicture label={copy.pin.picture} chrome={copy.chrome} />
+        <PinPicture label={copy.pin.picture} chrome={copy.chrome} dir={lang.dir} />
         <p>
           {`${copy.pin.pinned} `}
           <a href="#usage">{copy.pin.showUsage}</a>

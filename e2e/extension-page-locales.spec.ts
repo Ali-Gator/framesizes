@@ -87,6 +87,42 @@ test("the German pin picture uses Chrome's German labels and keeps the extension
   await expect(picture).toHaveAttribute("aria-label", /^Die Chrome-Symbolleiste/);
 });
 
+/** Whether an element of the pin picture lies wholly in the drawing's left or right half. */
+async function half(page: Page, selector: string) {
+  const picture = await page.locator("svg.ext-pin-picture").boundingBox();
+  const box = await page.locator("svg.ext-pin-picture").locator(selector).first().boundingBox();
+  if (!picture || !box) return null;
+  const middle = picture.x + picture.width / 2;
+  return box.x + box.width <= middle ? "left" : box.x >= middle ? "right" : "both";
+}
+
+// The puzzle-piece button's ring (marker 1's target) and the Extensions menu's card.
+const RING_1 = "circle.pp-tape-stroke";
+const MENU = 'rect[filter="url(#pp-shadow)"]';
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-the-arabic-pin-picture} */
+test("the Arabic pin picture puts the puzzle piece and the menu on the left", async ({ page }) => {
+  await page.goto(`/ar${PATH}?pinned=0`);
+  const picture = page.locator("svg.ext-pin-picture");
+  await expect(picture).toHaveCount(1);
+  await expect(picture).toBeVisible();
+  expect(await half(page, RING_1)).toBe("left");
+  expect(await half(page, MENU)).toBe("left");
+  await expect(picture.locator("text", { hasText: /^الإضافات$/ })).toHaveCount(1);
+  await expect(
+    picture.locator("text", { hasText: "Gallery Wall Layout Generator" }).first(),
+  ).toBeAttached();
+  await expect(picture).toHaveAttribute("aria-label", /^شريط أدوات Chrome/);
+});
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-a-left-to-right-version-keeps-its-drawing} */
+test("the German pin picture keeps the puzzle piece on the right", async ({ page }) => {
+  await page.goto(`/de${PATH}?pinned=0`);
+  await expect(page.locator("svg.ext-pin-picture")).toHaveCount(1);
+  await expect(page.locator("svg.ext-pin-picture")).toBeVisible();
+  expect(await half(page, RING_1)).toBe("right");
+});
+
 /** {@link openspec/specs/extension-site/spec.md#scenario-the-french-answer-paragraph} */
 test("the French answer paragraph keeps Try on my wall in English", async ({ page }) => {
   const english = await serverDoc(page, `/fr${PATH}`, (doc) => {

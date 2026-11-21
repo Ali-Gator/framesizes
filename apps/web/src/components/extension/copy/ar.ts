@@ -1,6 +1,9 @@
 import type { ExtensionCopy } from "./en";
 
-/** In right-to-left Chrome the puzzle-piece button sits at the top left, so the pin steps say so. */
+/**
+ * In right-to-left Chrome the puzzle-piece button sits at the top left, so the pin steps say so and
+ * the pin picture draws it there.
+ */
 export const ar = {
   seo: {
     title: "Gallery Wall Layout Generator لمتصفح Chrome",
