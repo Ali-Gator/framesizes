@@ -73,6 +73,9 @@ const samePhoto = (a: SavedPhoto | null | undefined, b: SavedPhoto | null | unde
 /** In the upload or a scale step: the visitor is mid-task there. */
 const inFlow = (p: PlannerState) => p.mode !== "sample" && p.mode !== "photo";
 
+/** A frame id unique to this page: another page's wall may not have reached this one yet (BL-64, BL-73). */
+const freshId = (nextId: number) => `a${nextId}-${crypto.randomUUID().slice(0, 8)}`;
+
 /**
  * G1's planner on the wall saved on this device: read on start, written 300 ms after a change
  * (at once when the page is hidden), and read again when the other page (the panel or the tab)
@@ -284,7 +287,15 @@ export function useWall() {
     };
   }, [wall.ready, wall.planner, write]);
 
-  const dispatch: Dispatch = useCallback((action: Action) => send(action), []);
+  const dispatch: Dispatch = useCallback(
+    (action: Action) =>
+      send(
+        action.type === "applyPicker" && current.current.picker?.mode === "add"
+          ? { ...action, id: freshId(current.current.nextId) }
+          : action,
+      ),
+    [],
+  );
 
   /** The "Wall" select: the sample room, or the saved photo (the upload step with none saved). */
   const chooseWall = useCallback(
@@ -301,8 +312,7 @@ export function useWall() {
    * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-try-ends-by-adding-the-print-or-going-back}
    */
   const addPrint = useCallback((print: Print, picture: Blob | null) => {
-    // Unique to this page: another page's wall may not have reached this one yet (BL-64).
-    const id = `a${current.current.nextId}-${crypto.randomUUID().slice(0, 8)}`;
+    const id = freshId(current.current.nextId);
     // A print the wall refuses (no room, or 12 frames) keeps no picture under a fresh key.
     const probe: Action = { type: "addPrint", print, id };
     if (reducer(current.current, probe) === current.current) return;

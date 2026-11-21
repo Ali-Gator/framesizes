@@ -97,3 +97,21 @@ describe("a saved photo put back", () => {
     expect(distancesOf(back).below?.value).toBeCloseTo(8);
   });
 });
+
+/** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-stale-page-adds-a-frame} */
+describe("an added frame's id", () => {
+  const opened = run([{ type: "openPicker", mode: "add" }]);
+
+  it("is the id the extension gives, and the next id still moves on", () => {
+    const added = reducer(opened, { type: "applyPicker", id: "a1-0badf00d" });
+    expect(added.added.map((a) => a.id)).toEqual(["a1-0badf00d"]);
+    expect(added.selected).toBe("a1-0badf00d");
+    expect(added.nextId).toBe(opened.nextId + 1);
+  });
+
+  it("is a<next id> when none is given, as on the site", () => {
+    const added = reducer(opened, { type: "applyPicker" });
+    expect(added.added.map((a) => a.id)).toEqual([`a${opened.nextId}`]);
+    expect(added.nextId).toBe(opened.nextId + 1);
+  });
+});
