@@ -57,7 +57,7 @@ None.
 
 ## Impact
 
-- BL-91: `apps/web/src/components/actual-size/saved.ts` (`saveCheck` returns a boolean; `loadCheck` says whether the check came from storage or memory), `actual-size.tsx` (init effect, `done`, `Desk` status).
+- BL-91: `apps/web/src/components/actual-size/saved.ts` (`saveCheck` returns a boolean; new `checkStored()`; `loadCheck` unchanged), `actual-size.tsx` (init effect, `done`, `Desk` status).
 - BL-92: `packages/sizes/src/screen.ts` (`isTabletScreen`, used by `guessDiagonal`), `packages/sizes/src/index.ts`, `apps/web/src/components/actual-size/check.tsx` (`TABLET_DIAGONALS`, `Diagonals` takes a tablet flag), `actual-size.tsx:296-302, 498-504`.
 - BL-95: `apps/web/src/components/actual-size/__tests__/actual-size.test.tsx` (new test only).
 - BL-84: `apps/web/src/components/i18n/language-picker-gate.tsx`; `e2e/extension-page-locales.spec.ts` (new test).
