@@ -15,5 +15,12 @@ if (token) {
     cookieless_mode: "always",
     autocapture: false,
     disable_session_recording: true,
+    // Pinned here, not left to the project's remote settings, so the Privacy Policy stays true
+    // whatever the PostHog dashboard says (t26 review).
+    enable_heatmaps: false,
+    capture_dead_clicks: false,
+    capture_exceptions: false,
+    disable_surveys: true,
+    disable_scroll_properties: true,
   });
 }

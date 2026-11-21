@@ -1,5 +1,4 @@
 import { CHECK } from "@framesizes/sizes";
-import Link from "next/link";
 
 import { CompanyPage, Section } from "@/components/company/company-page";
 import { PageLink } from "@/components/site/page-link";
@@ -78,7 +77,7 @@ export default function AboutPage() {
         </p>
         <p>
           Email us at <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>, or see the{" "}
-          <Link href="/contact">contact page</Link> for what to include.
+          <PageLink id="A2">contact page</PageLink> for what to include.
         </p>
       </Section>
     </CompanyPage>

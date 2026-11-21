@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-85**
+_Next id:_ **BL-89**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -45,6 +45,25 @@ when to add and when to fold items in.
 
 ## Site
 
+- **[BL-85] Name the mailbox provider in the Privacy Policy** — `/privacy-policy` names Porkbun as
+  the forwarder of mail to framesizes.app but not the mailbox it forwards to. If that is Gmail,
+  Outlook or similar, add it to the data table, "Who we share data with" and "Data outside your
+  country".
+  _Refs:_ `apps/web/src/app/privacy-policy/page.tsx` · _Status:_ gated — the owner names the mailbox provider (t26 review, 2026-11-21)
+- **[BL-86] Guard the "no IP address, no location" claim in code** — the Privacy Policy relies on
+  the PostHog project's "Discard client IP data" setting (`anonymize_ips`); turning it off makes
+  the legal page false and no test fails. Drop `$ip` in a `before_send` hook or add a check of
+  the stored events.
+  _Refs:_ `apps/web/src/instrumentation-client.ts`, `openspec/specs/company-pages/spec.md` · _Status:_ open — t26 review, 2026-11-21
+- **[BL-87] Write the company-page widget exemption into CLAUDE.md** — CLAUDE.md says every page
+  carries its own widget; A1–A5 carry none by design (t26 proposal and design). Add the exemption
+  to its Conventions so a later review does not flag it.
+  _Refs:_ `CLAUDE.md`, `openspec/specs/company-pages/spec.md` · _Status:_ open — owner's file, t26 review, 2026-11-21
+- **[BL-88] Retire the "home page, F2 and G1 are live" sitemap scenario** — no test cites it since
+  t26 moved the sitemap test to "The live tools and the company pages", and it no longer describes
+  the site. OpenSpec refuses to drop a scenario from a MODIFIED block, so a later seo-base change
+  rewrites it.
+  _Refs:_ `openspec/specs/seo-base/spec.md#scenario-the-home-page-f2-and-g1-are-live` · _Status:_ open — t26 review, 2026-11-21
 - **[BL-84] The language button pops in on a client-side move** — `LanguagePickerGate`'s
   `next/dynamic` has no `loading` placeholder, so going from `/` to a translated page in the app
   shows the button late and shifts the Units toggle and hub nav (CLS). Add a same-width placeholder.

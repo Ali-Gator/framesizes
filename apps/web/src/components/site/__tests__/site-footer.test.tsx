@@ -39,7 +39,7 @@ describe("SiteFooter's company row", () => {
     const hubs = doc.querySelector('nav[aria-label="Footer"]');
     expect([...(hubs?.querySelectorAll("h2") ?? [])].map((h) => h.textContent)).toEqual(["Frames"]);
     const text = doc.querySelector("footer")?.textContent ?? "";
-    expect(text).toContain("Soft Divisions Limited");
+    expect(text).toContain(`© ${new Date().getFullYear()} Soft Divisions Limited`);
     expect(text).toContain("B, G/F, 322 Shanghai Street, Yau Ma Tei, Kowloon, Hong Kong");
     const company = doc.querySelector('nav[aria-label="Company"]');
     expect(

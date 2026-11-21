@@ -153,16 +153,24 @@ test("the privacy policy names each extension permission", async ({ page }) => {
 /** {@link openspec/specs/company-pages/spec.md#scenario-the-governing-law-section} */
 test("the Terms of Use are numbered and governed by Hong Kong law", async ({ page }) => {
   const html = await serverHtml(page, "/terms-of-use");
+  expect(html.h2s.length).toBeGreaterThanOrEqual(10);
   html.h2s.forEach((h2, i) => expect(h2).toMatch(new RegExp(`^${i + 1}\\. `)));
   expect(html.h2s.some((h2) => h2?.includes("Governing law"))).toBe(true);
   expect(await section(page, "/terms-of-use", "Governing law")).toContain("Hong Kong");
+  expect(await section(page, "/terms-of-use", "1. Who provides")).toContain(
+    "Soft Divisions Limited",
+  );
+  expect(await section(page, "/terms-of-use", "What the service is")).toMatch(
+    /sizes are nominal.*measure/i,
+  );
 });
 
 /** {@link openspec/specs/company-pages/spec.md#scenario-the-refund-promise} */
 test("the Refund Policy covers a free product and a future paid feature", async ({ page }) => {
   const html = await serverHtml(page, "/refund-policy");
-  expect(html.mainText).toMatch(/free/i);
+  expect(html.mainText).toMatch(/extension are free\. We charge nothing/);
   expect(html.mainText).toMatch(/full refund within 14 days/i);
+  expect(html.mainText).toMatch(/is not us/);
   expect(html.mailtos).toContain(MAILTO);
 });
 
@@ -193,23 +201,47 @@ test("a policy page's JSON-LD is its breadcrumbs only", async ({ page }) => {
 });
 
 /** {@link openspec/specs/company-pages/spec.md#scenario-the-terms-of-use-social-image} */
-test("the Terms of Use social image is a small PNG", async ({ page }) => {
-  const html = await serverHtml(page, "/terms-of-use");
-  expect(html.ogImageAlt).toBe("Terms of Use");
-  const image = new URL(html.ogImage ?? "");
-  const response = await page.request.get(image.pathname + image.search);
-  expect(response.status()).toBe(200);
-  expect(response.headers()["content-type"]).toBe("image/png");
-  expect((await response.body()).length).toBeLessThan(300 * 1024);
+test("each company page's social image is a small 1200 × 630 PNG with its h1 as alt", async ({
+  page,
+}) => {
+  for (const p of PAGES) {
+    const html = await serverHtml(page, p.path);
+    expect(html.ogImageAlt, p.path).toBe(p.h1);
+    const image = new URL(html.ogImage ?? "");
+    const response = await page.request.get(image.pathname + image.search);
+    expect(response.status(), p.path).toBe(200);
+    expect(response.headers()["content-type"], p.path).toBe("image/png");
+    const body = await response.body();
+    expect(body.length, p.path).toBeLessThan(300 * 1024);
+    // PNG IHDR: width and height are the big-endian words at bytes 16 and 20.
+    expect([body.readUInt32BE(16), body.readUInt32BE(20)], p.path).toEqual([1200, 630]);
+  }
+});
+
+/** {@link openspec/specs/company-pages/spec.md#scenario-the-privacy-promises} */
+test("the Privacy Policy states no cookies, no uploaded photos and nothing sent by the extension", async ({
+  page,
+}) => {
+  const html = await serverHtml(page, "/privacy-policy");
+  expect(html.mainText).toContain("The site sets no cookies");
+  expect(html.mainText).toContain("The photo is never uploaded");
+  expect(html.mainText).toContain("The extension itself sends nothing to us");
 });
 
 /** {@link openspec/specs/company-pages/spec.md#requirement-the-five-company-pages-exist-at-their-own-urls} */
 for (const p of PAGES) {
-  test(`no WCAG 2.2 AA violations on ${p.path}`, async ({ page }) => {
-    await page.goto(p.path);
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_22_AA).analyze();
-    expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual(
-      [],
-    );
+  test(`no WCAG 2.2 AA violations on ${p.path}, phone and desktop`, async ({ page }) => {
+    for (const viewport of [
+      { width: 375, height: 812 },
+      { width: 1280, height: 800 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto(p.path);
+      const { violations } = await new AxeBuilder({ page }).withTags(WCAG_22_AA).analyze();
+      expect(
+        violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`),
+        `${p.path} at ${viewport.width}px`,
+      ).toEqual([]);
+    }
   });
 }

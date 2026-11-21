@@ -1,7 +1,8 @@
 import { companyOgImage } from "@/components/company/og-image";
+import { livePage } from "@/lib/site-map";
 
 // The page's h1 (the guide's alt for the company pages).
-export const alt = "Privacy Policy";
+export const alt = livePage("A3").seo.h1;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

@@ -57,6 +57,11 @@ The Privacy Policy SHALL name the operator and its address, and hold a table wit
 - **WHEN** `/privacy-policy` is requested
 - **THEN** the HTML holds a `table` whose header cells read "Data", "Where it is kept", "Who can see it" and "How long", with rows for visit counts, server logs, the unit choice, wall photos, the extension's saved wall and prints, and email
 
+#### Scenario: The privacy promises
+
+- **WHEN** `/privacy-policy` is requested
+- **THEN** its main text says the site sets no cookies, that a wall photo is never uploaded, and that the extension itself sends nothing to the operator
+
 #### Scenario: The extension section
 
 - **WHEN** `/privacy-policy` is requested

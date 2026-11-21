@@ -95,6 +95,18 @@ function headTags(
   };
 }
 
+/** The home page's `Organization`; About and Contact extend it (`organizationJsonLd`). */
+function organizationNode() {
+  const url = absoluteUrl("/");
+  return {
+    "@type": "Organization",
+    "@id": `${url}#organization`,
+    name: BRAND,
+    url,
+    logo: absoluteUrl("/brand/logo-mark-512.png"),
+  };
+}
+
 /** {@link openspec/specs/seo-base/spec.md#requirement-the-home-page-describes-the-site-in-structured-data} */
 export function siteJsonLd() {
   const url = absoluteUrl("/");
@@ -102,13 +114,7 @@ export function siteJsonLd() {
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "WebSite", "@id": `${url}#website`, name: BRAND, url },
-      {
-        "@type": "Organization",
-        "@id": `${url}#organization`,
-        name: BRAND,
-        url,
-        logo: absoluteUrl("/brand/logo-mark-512.png"),
-      },
+      organizationNode(),
     ],
   };
 }
@@ -118,14 +124,9 @@ export function siteJsonLd() {
  * {@link openspec/specs/company-pages/spec.md#requirement-about-and-contact-describe-the-organization-in-structured-data}
  */
 export function organizationJsonLd() {
-  const url = absoluteUrl("/");
   const { address } = COMPANY;
   return {
-    "@type": "Organization",
-    "@id": `${url}#organization`,
-    name: BRAND,
-    url,
-    logo: absoluteUrl("/brand/logo-mark-512.png"),
+    ...organizationNode(),
     legalName: COMPANY.legalName,
     email: COMPANY.email,
     address: {

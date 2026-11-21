@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { CompanyPage, Section } from "@/components/company/company-page";
+import { PageLink } from "@/components/site/page-link";
 import { addressLine, COMPANY } from "@/lib/company";
 import { pageMetadata } from "@/lib/seo";
 import { livePage } from "@/lib/site-map";
@@ -72,7 +71,7 @@ export default function TermsOfUsePage() {
       body: (
         <p>
           The site and the extension are free. If we ever add a paid feature, we will show its price
-          before you pay, and our <Link href="/refund-policy">refund policy</Link> will apply.
+          before you pay, and our <PageLink id="A5">refund policy</PageLink> will apply.
         </p>
       ),
     },
@@ -81,8 +80,8 @@ export default function TermsOfUsePage() {
       body: (
         <p>
           Wall photos you add stay on your device; we do not receive them. You need the right to use
-          any photo you add. The <Link href="/privacy-policy">privacy policy</Link> explains what
-          data we handle.
+          any photo you add. The <PageLink id="A3">privacy policy</PageLink> explains what data we
+          handle.
         </p>
       ),
     },

@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { CompanyPage, Section } from "@/components/company/company-page";
+import { PageLink } from "@/components/site/page-link";
 import { addressLine, COMPANY } from "@/lib/company";
 import { pageMetadata } from "@/lib/seo";
 import { livePage } from "@/lib/site-map";
@@ -17,7 +16,7 @@ const MAILTO = `mailto:${COMPANY.email}`;
  */
 const DATA = [
   {
-    data: "Visit counts: the page you open and when you leave it, the site that sent you, your browser, device type and screen size, and page speed (Web Vitals). No IP address and no location",
+    data: "Visit counts: the address of the page you open (with any tool settings in it) and when you leave it, the site that sent you, your browser, device type and screen size, and page speed (Web Vitals). No IP address and no location",
     where: "PostHog, on its EU servers, through framesizes.app's own address",
     who: "Us, and PostHog as our processor",
     long: "Up to 2 years",
@@ -57,14 +56,17 @@ const DATA = [
 /** The extension's permissions, in manifest order, in plain words. */
 const PERMISSIONS = [
   ["sidePanel", "Opens the planner in Chrome's side panel."],
-  ["contextMenus", "Adds “Try on my wall” to the menu you get when you right-click an image."],
+  [
+    "contextMenus",
+    "Adds “Try on my wall” to the menu you get when you right-click an image or a link.",
+  ],
   [
     "activeTab",
-    "Gives the extension the tab you right-clicked, and only after you choose “Try on my wall”. It takes a screenshot of the visible part of that tab so it can cut out the picture if the picture cannot be downloaded. The rest of the screenshot is thrown away.",
+    "Gives the extension the tab you right-clicked, and only after you choose “Try on my wall”. Each time, it takes a screenshot of the visible part of that tab. If the picture cannot be downloaded, it cuts the picture out of the screenshot; the rest of the screenshot is thrown away and never stored.",
   ],
   [
     "scripting",
-    "Runs a short script once in that tab to read the page title, the picture's address and any sizes in the page text. Nothing else on the site is read.",
+    "Runs a short script once in that tab. The script reads the page's text and headings to find the title and any sizes, and looks through the page's pictures for the one you clicked.",
   ],
 ] as const;
 
@@ -80,7 +82,8 @@ export default function PrivacyPolicyPage() {
       lead={
         <p className="max-w-prose md:body-lg">
           We collect as little as we can. The site sets no cookies, your wall photos never leave
-          your device, and the Chrome extension sends nothing to us.
+          your device, and the Chrome extension sends nothing to us: your wall stays on your
+          computer.
         </p>
       }
     >
@@ -94,7 +97,13 @@ export default function PrivacyPolicyPage() {
 
       <section className="flex flex-col gap-4">
         <h2 className="h2">What we collect, where it is kept and for how long</h2>
-        <div className="max-w-full overflow-x-auto">
+        {/* Focusable so a keyboard can scroll it on a narrow screen. */}
+        <div
+          className="max-w-full overflow-x-auto"
+          tabIndex={0}
+          role="region"
+          aria-label="Data table, scrolls sideways"
+        >
           <table className="w-full min-w-[640px] border-collapse text-left text-sm">
             <caption className="sr-only">
               Each kind of data, where it is kept, who can see it and how long
@@ -148,20 +157,24 @@ export default function PrivacyPolicyPage() {
       <Section title="The Chrome extension">
         <p>
           The Gallery Wall Layout Generator keeps your wall, its photo and your prints on your
-          computer, in the extension&apos;s own storage. It sends nothing to us and has no
-          analytics.
+          computer, in the extension&apos;s own storage. The extension itself sends nothing to us
+          and has no analytics. Right after you install it, it opens our how-to page once; that
+          visit is counted like any other, and the page address says whether you have pinned the
+          extension.
         </p>
         <p>
-          When you right-click a picture and choose &ldquo;Try on my wall&rdquo;, it reads that one
-          tab once: the page title, the picture and any sizes in the page text. It downloads the
-          picture without your cookies for that site, so the shop cannot tell it is you. While you
-          try a print on, the extension keeps its picture, the page title, the site name and the
-          sizes it found. If you add the print, your wall keeps only its picture and size; if you go
-          back, all of it is deleted.
+          When you right-click a picture or a link and choose &ldquo;Try on my wall&rdquo;, it reads
+          that one tab once. It reads the page&apos;s text to find sizes, then keeps only the page
+          title, the picture and the sizes it found; the page text itself is never stored. It
+          downloads the picture without your cookies for that site. Like any picture your browser
+          loads, the shop&apos;s server still sees your IP address. While you try a print on, the
+          extension keeps its picture, the page title, the site name and the sizes it found. If you
+          add the print, your wall keeps only its picture and size; if you go back, all of it is
+          deleted.
         </p>
         <p>
           framesizes.app can ask the extension whether it is installed and pinned, to show the right
-          instructions. It can ask nothing else.
+          instructions. The extension answers with that and its version number, and nothing else.
         </p>
         <p>The permissions it asks Chrome for:</p>
         <dl className="flex flex-col gap-3">
@@ -225,7 +238,7 @@ export default function PrivacyPolicyPage() {
         <p>
           Most of what we hold cannot be tied to you: visit counts carry no name, and the
           extension&apos;s data never reaches us. To make a request, email{" "}
-          <a href={MAILTO}>{COMPANY.email}</a>. The <Link href="/contact">contact page</Link> says
+          <a href={MAILTO}>{COMPANY.email}</a>. The <PageLink id="A2">contact page</PageLink> says
           what to include.
         </p>
       </Section>

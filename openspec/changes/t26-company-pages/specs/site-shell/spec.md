@@ -4,7 +4,7 @@
 
 ### Requirement: The footer lists the live pages by hub
 
-The footer SHALL list every live page as a link, grouped under its hub's name, and SHALL leave out pages that are not live and hubs with no live page. It SHALL carry the note that sizes are nominal and that the visitor should measure the frame's opening before ordering a print. Below the groups, a company row SHALL show "©", the current year and the operator's legal name, its postal address, and a `nav` named "Company" linking each live page that has no hub, in site map order.
+The footer SHALL list every live page as a link, grouped under its hub's name, and SHALL leave out pages that are not live and hubs with no live page. It SHALL carry the note that sizes are nominal and that the visitor should measure the frame's opening before ordering a print. Below the groups, a company row SHALL show "©", the year the site was built and the operator's legal name, its postal address, and a `nav` named "Company" linking each live page that has no hub, in site map order.
 
 #### Scenario: One page is live
 
