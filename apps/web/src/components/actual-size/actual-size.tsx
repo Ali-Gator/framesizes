@@ -481,7 +481,7 @@ export function ActualSizeViewer() {
             <>
               <Diagonals
                 state={state}
-                phone
+                phone={screen.coarse}
                 guess={guessDiagonal(screen)}
                 screen={screen}
                 dispatch={dispatch}
