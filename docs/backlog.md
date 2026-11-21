@@ -192,7 +192,6 @@ when to add and when to fold items in.
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
 
-
 От Олега:
 
 1. После одобрения расширения в хроме, проверить, что с локализаций попадаем на СООТВЕТСТВУЮЩУЮ локализованную:
