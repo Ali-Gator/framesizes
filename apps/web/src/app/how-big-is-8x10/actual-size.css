@@ -418,6 +418,7 @@
   line-height: 21px;
 }
 .as-bleed {
+  position: relative;
   margin: 0 -16px;
 }
 .as-strip {
@@ -633,6 +634,7 @@
 }
 .as-edge {
   position: absolute;
+  z-index: 1;
   left: 24px;
   right: 8px;
   top: 6px;

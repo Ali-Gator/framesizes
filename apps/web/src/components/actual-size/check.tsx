@@ -310,11 +310,11 @@ export function PhoneLines({
           <div className="as-vline" data-testid="line-end" style={{ left: start + gap }}>
             <div className="as-grip" />
           </div>
-          {/* Over the strip, so nothing under the slider moves when it shows. */}
-          <p className="as-edge" aria-live="polite">
-            {offEdge ? "The line is past your screen's edge. Pick your screen size." : ""}
-          </p>
         </div>
+        {/* Over the strip, outside its picture, so nothing under the slider moves when it shows. */}
+        <p className="as-edge" aria-live="polite">
+          {offEdge ? "The line is past your screen's edge. Pick your screen size." : ""}
+        </p>
       </div>
       <Slider
         scale={state.scale}
