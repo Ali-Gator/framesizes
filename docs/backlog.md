@@ -141,11 +141,6 @@ when to add and when to fold items in.
   the Extensions menu sit at the top left, but the drawing stays the left-to-right Chrome (the
   Arabic text says "top left"). Draw a mirrored variant for `/ar/`.
   _Refs:_ `apps/web/src/components/extension/pin-picture.tsx`, `copy/ar.ts` · _Status:_ open — t25 apply, 2026-11-20
-- **[BL-81] Translated store descriptions run past 132 characters** — `shortDesc` in 19 locales
-  (de, el, es, et, fi, fil, fr, hr, hu, id, it, nl, pl, pt_BR, pt_PT, ru, th, tr, uk; up to 189)
-  exceeds the manifest's 132-character limit, so the store may refuse the package. Shorten them,
-  then check every locale in `manifest.test.ts` (today it checks `en` only).
-  _Refs:_ `apps/extension/public/_locales/*/messages.json`, `apps/extension/src/__tests__/manifest.test.ts` · _Status:_ open — backlog-6, 2026-11-21
 - **[BL-80] Mirrored right-click menu figure for Arabic** — `MenuFigure` draws Chrome's context menu
   left to right on `/ar/` too, like the pin picture before BL-76. Mirror it the same way.
   _Refs:_ `apps/web/src/components/extension/figures.tsx` (`MenuFigure`) · _Status:_ open — backlog-6 triage, 2026-11-21

@@ -36,7 +36,7 @@ describe("the manifest", () => {
     expect(manifest.externally_connectable).toEqual({ matches: ["https://framesizes.app/*"] });
     expect(manifest.side_panel).toEqual({ default_path: "sidepanel.html" });
     expect(manifest.background).toEqual({ service_worker: "background.js", type: "module" });
-    // The store's limit for the short description (other languages: BL-81).
+    // The store's limit for the short description.
     expect(manifest.description).toBe("__MSG_shortDesc__");
     expect(messages("en").shortDesc.message.length).toBeLessThanOrEqual(132);
   });

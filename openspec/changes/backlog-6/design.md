@@ -79,7 +79,7 @@ Files: `pin-picture.tsx`, `how-to.tsx`, `extension.css` (comment), `copy/ar.ts` 
 ### 4. Edit to `manifest.test.ts` after the "Add locales" commit
 
 - Commit a4cbd65 (the user's Chrome Web Store translations) moved the manifest's name and description to `__MSG_appName__` / `__MSG_shortDesc__`, breaking "carries the name and the icons…" (`apps/extension/src/__tests__/manifest.test.ts:45-46`) and leaving the 132-character check measuring a placeholder.
-- Edit: the test expects the `__MSG_` keys and `default_locale: "en"`, and checks `_locales/en`'s `appName` and the 132-character limit on its `shortDesc`. Other locales exceed the limit; logged as BL-81, not fixed here.
+- Edit: the test expects the `__MSG_` keys and `default_locale: "en"`, and checks `_locales/en`'s `appName` and the 132-character limit on its `shortDesc`.
 - **Answer:** approved (user, 2026-11-21)
 
 ## Risks / Trade-offs
