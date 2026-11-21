@@ -387,6 +387,11 @@ The related tools section SHALL list the live pages of the page's own hub and th
 - **WHEN** `/` is requested while only the home page, F2 and G1 are live
 - **THEN** the response HTML has a "See it on my wall" link, a "Related tools" heading with two cards, linking to `/frame-sizes-on-wall` and `/gallery-wall-planner`, and no `href` that starts with `#`
 
+#### Scenario: F2, F3 and G1 are live besides the home page
+
+- **WHEN** `/` is requested while only the home page, F2, F3, G1 and the company pages are live
+- **THEN** the response HTML has a "See it on my wall" link, a "Related tools" heading with three cards, linking to `/frame-sizes-on-wall`, `/how-big-is-8x10` and `/gallery-wall-planner` in that order, and no `href` that starts with `#`
+
 ### Requirement: The description's sizes are the catalog's
 
 Every size named in the page's meta description SHALL be a catalog size, and the range it states SHALL run from the smallest to the largest rectangular size.

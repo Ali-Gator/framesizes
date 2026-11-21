@@ -1,4 +1,5 @@
 import { CENTRE_LINE, DOOR, REFERENCES, SOFA, wallScene, type Rect } from "./scene";
+import { CHECK_OBJECTS } from "./screen";
 import { CM_PER_INCH, toWholeCm, type Size, type Unit } from "./units";
 
 /*
@@ -22,8 +23,6 @@ export interface KnownThing {
   edge: string;
   length: KnownLength;
 }
-
-const MM_PER_INCH = 25.4;
 
 /**
  * The things a visitor can mark to set a photo's scale, in the order the page lists them.
@@ -53,19 +52,19 @@ export const KNOWN_THINGS: readonly KnownThing[] = [
     id: "letter",
     name: "A Letter sheet",
     edge: "The long edge",
-    length: { kind: "fixed", inches: 11 },
+    length: { kind: "fixed", inches: CHECK_OBJECTS.letter.long },
   },
   {
     id: "a4",
     name: "An A4 sheet",
     edge: "The long edge",
-    length: { kind: "fixed", inches: 297 / MM_PER_INCH },
+    length: { kind: "fixed", inches: CHECK_OBJECTS.a4.long },
   },
   {
     id: "card",
     name: "A credit card",
     edge: "The long edge",
-    length: { kind: "fixed", inches: 85.6 / MM_PER_INCH },
+    length: { kind: "fixed", inches: CHECK_OBJECTS.card.long },
   },
 ];
 

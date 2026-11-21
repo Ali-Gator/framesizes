@@ -71,7 +71,14 @@ const PAGE_LIST = [
     hub: "frames",
     name: "How big is 8x10",
     card: { question: "How big is 8x10, 11x14 or A4 really?", ratio: [4, 5] },
-    live: false,
+    live: true,
+    seo: {
+      title: "How Big Is 8x10? See It at Actual Size",
+      h1: "How Big Is 8x10?",
+      description:
+        "An 8x10 is 8 by 10 inches (20.3 x 25.4 cm). See it at actual size on your screen, then compare it with 11x14, 16x20, A4 and A3 frames.",
+      lastModified: "2026-11-21",
+    },
   },
   {
     id: "F4",

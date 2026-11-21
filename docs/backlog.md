@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-89**
+_Next id:_ **BL-96**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -101,6 +101,12 @@ when to add and when to fold items in.
 - **[BL-40] Rich Results Test for F2** — run the live F2 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
   _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-89] F3 preview card in a chat app** — paste `https://framesizes.app/how-big-is-8x10` into a
+  chat app or a preview tool and check the card shows the nested-sizes comparison image (guide checklist 7).
+  _Refs:_ `apps/web/src/app/how-big-is-8x10/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+- **[BL-90] Rich Results Test for F3** — run the live F3 URL through the Rich Results Test and confirm
+  its `BreadcrumbList` validates (guide checklist 15).
+  _Refs:_ `apps/web/src/app/how-big-is-8x10/page.tsx`, pre-publish checklist 15 · _Status:_ gated — DNS live
 
 - **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
@@ -163,6 +169,24 @@ when to add and when to fold items in.
 
 ## Widgets
 
+- **[BL-94] F3 says nothing when a typed screen size is ignored** — a size whose scale the slider
+  cannot show leaves the field holding it while the check uses the picked size or the guess; only the
+  button's "Use N in" changes, and that change is not announced. Add a polite note beside the field,
+  in space kept for it so nothing moves (t3 phase review).
+  _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`Diagonals`) · _Status:_ open
+- **[BL-95] F3 edge hint's re-measure is untested** — the card step's strip is re-measured through a
+  `ResizeObserver` in a callback ref, but jsdom has none, so no test runs a resize. Stub one in the DOM
+  test and check the hint after the width changes (t3 phase review).
+  _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`PhoneLines`), `__tests__/actual-size.test.tsx` · _Status:_ open
+- **[BL-92] F3 screen sizes for tablets** — a tablet gets the desktop list (13.3 to 32 in) while its
+  guess is 11 in, so the visitor has to type the size. Add a tablet list (about 8 to 13 in) once the
+  spec names one (t3 phase review).
+  _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`Diagonals`) · _Status:_ open
+- **[BL-91] F3 says "Saved on this device." when storage is blocked** — with `localStorage` throwing,
+  `saveCheck` keeps the scale check for the page view only, yet the desktop status still says it is
+  saved, and the next visit starts on the guess. Have `saveCheck` report whether it stored the check
+  and say "Kept for this visit" when it did not (t3 phase re-review, finding H).
+  _Refs:_ `apps/web/src/components/actual-size/saved.ts`, `actual-size.tsx` (`Desk` status) · _Status:_ open
 - **[BL-74] `ScalePreview` keeps an unused `unit` prop** — since BL-61 the preview holds both units
   and the `data-unit` CSS picks one, so the prop is never read; drop it from the type and from
   `frame-chart.tsx` and the unit test's call sites (an existing-test edit).
