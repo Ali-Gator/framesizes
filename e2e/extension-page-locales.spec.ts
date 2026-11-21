@@ -239,6 +239,51 @@ test("the home page header has no language button", async ({ page }) => {
   await expect(page.locator("header button[aria-haspopup=dialog]")).toHaveCount(0);
 });
 
+/** {@link openspec/specs/site-shell/spec.md#scenario-a-page-without-translations-loads-no-picker-code} */
+test("the home page loads none of the picker's styles or script", async ({ page }) => {
+  const bodies: Promise<{ type: string; url: string; text: string }>[] = [];
+  page.on("response", (r) => {
+    const type = r.request().resourceType();
+    if (type === "stylesheet" || type === "script") {
+      bodies.push(r.text().then((text) => ({ type, url: r.url(), text })));
+    }
+  });
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  const inline = await page.evaluate(() =>
+    [...document.querySelectorAll("style, script:not([src])")].map((el) => ({
+      type: el.tagName === "STYLE" ? "stylesheet" : "script",
+      url: "inline",
+      text: el.textContent ?? "",
+    })),
+  );
+  const loaded = [...(await Promise.all(bodies)), ...inline];
+  expect(loaded.filter((b) => b.type === "stylesheet").length).toBeGreaterThan(0);
+  // A rule whose selector starts with the class; the header's own `:has(.lp-trig)` utilities don't count.
+  const defines = /(^|[{},/])\s*\.lp-(trig|dlg)\b/;
+  const styles = loaded.filter((b) => b.type === "stylesheet" && defines.test(b.text));
+  const scripts = loaded.filter((b) => b.type === "script" && b.text.includes("Choose a language"));
+  expect.soft(styles.map((b) => b.url)).toEqual([]);
+  expect(scripts.map((b) => b.url)).toEqual([]);
+});
+
+/** {@link openspec/specs/site-shell/spec.md#scenario-the-extension-pages-header} */
+test("the English and Russian extension pages hold the language button in the server HTML", async ({
+  page,
+}) => {
+  for (const [path, name] of [
+    [PATH, "English"],
+    [`/ru${PATH}`, "Русский"],
+  ] as const) {
+    const label = await serverDoc(
+      page,
+      path,
+      (doc) => doc.querySelector("header button[aria-haspopup=dialog]")?.textContent ?? null,
+    );
+    expect(label, path).toContain(name);
+  }
+});
+
 /** {@link openspec/specs/site-shell/spec.md#requirement-the-header-offers-the-language-picker-on-translated-pages} */
 for (const code of ["ru", "de", "fi"]) {
   test(`/${code}/ has no side scroll at 320px`, async ({ page }) => {
