@@ -17,6 +17,13 @@ const INFO = {
   srcUrl: "https://cdn.shop.example/print.jpg",
   pageUrl: "https://www.shop.example/p/blue-hour",
 };
+/** A right-click on a link: Chrome sends its URL and no image URL. */
+const LINK_INFO = {
+  menuItemId: MENU_ID,
+  frameId: 0,
+  linkUrl: "https://www.shop.example/p/blue-hour",
+  pageUrl: "https://www.shop.example/c/prints",
+};
 const TAB = { id: 7, windowId: 3, title: "Blue Hour – Shop" };
 
 /** A fake `chrome` and I/O that record every call, in order. */
@@ -80,7 +87,7 @@ describe("the Try on my wall menu", () => {
       `create ${JSON.stringify({
         id: "try-on-my-wall",
         title: "Try on my wall",
-        contexts: ["image"],
+        contexts: ["image", "link"],
         documentUrlPatterns: ["http://*/*", "https://*/*"],
       })}`,
     ]);
@@ -142,6 +149,41 @@ describe("the Try on my wall menu", () => {
     await onMenuClick(api, io, INFO, TAB);
     expect(calls).toContain("open 3");
     expect(saved[0]).toMatchObject({ sizes: [], title: "Blue Hour – Shop", image: BLOB });
+  });
+
+  /** A fake whose page read returns `result`, recording the arguments the read was given. */
+  function onLink(result: object, options: Parameters<typeof fake>[0] = {}) {
+    const f = fake(options);
+    const args: unknown[] = [];
+    f.api.scripting.executeScript = async (injection) => {
+      args.push(injection.args);
+      return [{ result }];
+    };
+    return { ...f, args };
+  }
+
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-print-drawn-as-a-links-background} */
+  it("on a link, reads the link and fetches the picture the page read found", async () => {
+    const url = "https://cdn.shop.example/print-bg.jpg";
+    const { api, io, calls, saved, args } = onLink({ ...PAGE, url, shape: null });
+    await onMenuClick(api, io, LINK_INFO, TAB);
+    expect(args).toEqual([["", LINK_INFO.linkUrl]]);
+    expect(calls).toContain(`fetch ${url}`);
+    expect(saved[0]).toMatchObject({ image: BLOB, shape: null, title: "Blue Hour Print" });
+
+    const crop = onLink({ ...PAGE, url, shape: null }, { fetched: null });
+    await onMenuClick(crop.api, crop.io, LINK_INFO, TAB);
+    expect(crop.saved[0]?.image).toBe(CROP);
+  });
+
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-link-with-no-picture} */
+  it("on a link with no picture, opens the try with no picture and the page's sizes", async () => {
+    const { api, io, calls, saved } = onLink({ ...PAGE, url: null, rect: null, shape: null });
+    await onMenuClick(api, io, LINK_INFO, TAB);
+    expect(calls).toContain("open 3");
+    expect(calls.some((c) => c.startsWith("fetch") || c.startsWith("crop"))).toBe(false);
+    expect(saved[0]?.image).toBeNull();
+    expect(saved[0]?.sizes.map((s) => s.label)).toEqual(["24 × 36 in", "18 × 24 in"]);
   });
 
   it("ignores another menu item", async () => {

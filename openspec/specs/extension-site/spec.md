@@ -45,7 +45,7 @@ Go-live is one edit: `EXTENSION_ID` set and X1 `live: true` with its `lastModifi
 
 The section's call to action and the "You have it" line share one grid cell; `ExtensionStatus` asks once after hydration and hides the other line with `visibility: hidden`, so the cell keeps its height. `@media (hover: none) and (pointer: coarse)` shows the phone line instead of "Add to Chrome".
 
-Every language renders through `ExtensionHowTo`. Its wrapper carries the language's `lang`, `dir` and, for scripts Schibsted lacks, the system font stack. `rich()` marks each "Gallery Wall Layout Generator" and "Try on my wall" in a sentence with `lang="en"` and fills `{door}` with the door height in both units. Breadcrumb names come from the dictionary by position (Home, hub, page); English reads them from the site map. Only English shows Related tools. The drawings stay left to right (`direction: ltr` in `extension.css`); the pin picture's grey lines shrink below 11.5 px when a translation is wider than about 46 Latin characters.
+Every language renders through `ExtensionHowTo`. Its wrapper carries the language's `lang`, `dir` and, for scripts Schibsted lacks, the system font stack. `rich()` marks each "Gallery Wall Layout Generator" and "Try on my wall" in a sentence with `lang="en"` and fills `{door}` with the door height in both units. Breadcrumb names come from the dictionary by position (Home, hub, page); English reads them from the site map. Only English shows Related tools. Each drawing places its own text (`direction: ltr` in `extension.css`): the pin picture follows the page's direction (`PinPicture dir`; Arabic gets the right-to-left drawing), the right-click figure stays left to right (BL-80); the pin picture's grey lines shrink below 11.5 px when a translation is wider than about 46 Latin characters.
 
 ## Edge Cases
 
@@ -54,7 +54,6 @@ Every language renders through `ExtensionHowTo`. Its wrapper carries the languag
 - After the self-switch the URL keeps `?pinned=0`, so a reload opens pin mode until the first reply (BL-68).
 - A hidden tab: the poll timer keeps running but sends nothing (BL-69).
 - Figures draw the current flat sample room; BL-51 swaps it with F2 and G1.
-- Arabic Chrome puts the puzzle piece at the top left; the Arabic text says so, the drawing stays left to right (BL-76).
 - Translated versions share the English social image and its English alt (BL-77).
 
 ## Requirements
@@ -293,3 +292,17 @@ Every translated version SHALL be built while X1 is built. It SHALL carry `noind
 - **GIVEN** X1 is not live
 - **WHEN** `/pl/extensions/gallery-wall-layout-generator` is requested
 - **THEN** it answers 200 with a robots meta tag holding `noindex`
+
+### Requirement: The Arabic pin picture shows right-to-left Chrome
+
+On a right-to-left version, the pin picture SHALL show Chrome as it looks in that language, with the puzzle-piece button and the Extensions menu at the top left, as the text above it says. Text, the extension's mark, the puzzle-piece icon and the numbers 1 and 2 SHALL NOT be mirrored. Left-to-right versions SHALL keep today's drawing. A page SHALL hold one pin picture.
+
+#### Scenario: The Arabic pin picture
+
+- **WHEN** `/ar/extensions/gallery-wall-layout-generator?pinned=0` is opened
+- **THEN** the page holds one pin picture, its puzzle-piece button marked 1 and its Extensions menu sit in the drawing's left half, its menu title is Chrome's Arabic "الإضافات", it still names "Gallery Wall Layout Generator", and its accessible name is in Arabic
+
+#### Scenario: A left-to-right version keeps its drawing
+
+- **WHEN** `/de/extensions/gallery-wall-layout-generator?pinned=0` is opened
+- **THEN** the page holds one pin picture, and its puzzle-piece button marked 1 sits in the drawing's right half

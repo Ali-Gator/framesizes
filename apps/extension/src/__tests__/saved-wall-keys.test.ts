@@ -147,6 +147,18 @@ describe("the saved wall's keys", () => {
     expect(back && framesOf(back).at(-1)?.print).toEqual({ ...PRINT, art: "blob:art-a1" });
   });
 
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-an-older-saved-frame} */
+  it("loads a frame saved under an older id, and selecting it selects it", () => {
+    const added = run([{ type: "openPicker", mode: "add" }, { type: "applyPicker" }]);
+    expect(added.added.map((a) => a.id)).toEqual(["a1"]);
+    const { current } = toStored(wall(added), null, stamp);
+    const back = fromSaved(clone(current), () => "blob:never", { photo: null, art: {} });
+    const f = back && framesOf(back).at(-1);
+    expect(f?.id).toBe("a1");
+    expect(f?.letter).toBe("F");
+    expect(back && reducer(back, { type: "select", id: "a1" }).selected).toBe("a1");
+  });
+
   it("journals a closing write only when no new photo bytes are waiting", () => {
     const state = run(ON_SOFA);
     const fresh = toStored(wall(state, savedPhoto(state, null, BLOB)), null, stamp);

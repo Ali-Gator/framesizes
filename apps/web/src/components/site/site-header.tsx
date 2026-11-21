@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { LanguagePicker } from "@/components/i18n/language-picker";
+import { LanguagePickerGate } from "@/components/i18n/language-picker-gate";
 import type { HubLink } from "@/lib/site-map";
 
 import { HubNav } from "./hub-nav";
@@ -45,7 +45,7 @@ export function SiteHeader({ hubs }: { hubs: HubLink[] }) {
         </Link>
         {/* The language button shows only on pages with translations, before the Units toggle. */}
         <div className="order-2 ml-auto flex shrink-0 items-center gap-1 max-[359px]:[&_[role=radio]]:px-2 max-[599px]:has-[.lp-trig]:[&_[role=radio]]:px-2 min-[600px]:gap-3 min-[900px]:order-3">
-          <LanguagePicker />
+          <LanguagePickerGate />
           <UnitToggle />
         </div>
         {hubs.length >= 2 && <HubNav links={hubs} />}

@@ -290,9 +290,11 @@ export function HangView({
       <div className="x-stack">
         <Button
           className="x-block"
-          disabled={full}
+          aria-disabled={full || undefined}
           aria-describedby={full ? `${id}-full` : undefined}
-          onClick={() => onAdd({ w: turned.w, h: turned.h, label, framed: state.framed })}
+          onClick={() => {
+            if (!full) onAdd({ w: turned.w, h: turned.h, label, framed: state.framed });
+          }}
         >
           Add to my layout
         </Button>

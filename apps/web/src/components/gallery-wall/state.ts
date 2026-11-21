@@ -427,7 +427,7 @@ export type Action =
   | { type: "pickerOrientation"; orientation: Orientation }
   | { type: "pickerSize"; size: string }
   | { type: "pickerAll"; all: boolean }
-  | { type: "applyPicker" }
+  | { type: "applyPicker"; id?: string }
   | { type: "closePicker" }
   | { type: "addPrint"; print: Print; id?: string }
   | { type: "hangerFor"; for: "all" | string }
@@ -691,7 +691,7 @@ export function reducer(state: PlannerState, action: Action): PlannerState {
       if (picker.mode === "add") {
         const rect = previewRect(state);
         if (!rect || framesOf(state).length >= MAX_FRAMES) return state;
-        const id = `a${state.nextId}`;
+        const id = action.id ?? `a${state.nextId}`;
         const at = shift(rect, { dx: -state.group.dx, dy: -state.group.dy });
         return changed(state, {
           added: [...state.added, { id, size: picker.size, x: at.x, y: at.y }],

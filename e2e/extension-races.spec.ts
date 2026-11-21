@@ -140,3 +140,56 @@ test("the Wall select reads New wall photo in the upload step and goes back", as
   );
   await expect(field(page, "Below")).toHaveValue("8");
 });
+
+/** The saved wall's added frames: each frame id and size, read in the page; null before any write. */
+const storedAdded = (page: Page) =>
+  page.evaluate(
+    () =>
+      new Promise<{ id: string; size: string }[] | null>((resolve) => {
+        const request = indexedDB.open("gallery-wall", 1);
+        request.onsuccess = () => {
+          const get = request.result.transaction("wall").objectStore("wall").get("current");
+          get.onsuccess = () => {
+            request.result.close();
+            // No record yet: null, so a wait for the first write can tell.
+            const added: { id: string; size: string }[] | undefined = get.result?.planner?.added;
+            resolve(added?.map(({ id, size }) => ({ id, size })) ?? null);
+          };
+        };
+      }),
+  );
+
+/** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-stale-page-adds-a-frame} */
+test("a stale page's added frame gets its own id", async ({ context, extensionId }) => {
+  const first = await open(context, extensionId, "sidepanel");
+  const second = await open(context, extensionId, "sidepanel");
+  await planner(second).getByRole("button", { name: "Use my wall photo" }).click();
+  // The second page's first write lands before the first page adds anything.
+  await expect.poll(() => storedAdded(first)).toEqual([]);
+
+  // F1: the picker's first size, added on the first page.
+  await planner(first).getByRole("button", { name: "Add a frame" }).click();
+  await planner(first)
+    .getByRole("button", { name: /^Add \d/ })
+    .click();
+  await expect.poll(() => storedAdded(first)).toHaveLength(1);
+  const [f1] = (await storedAdded(first)) ?? [];
+
+  // F2: the second page backs out of the upload without saving, so its wall is stale, and adds
+  // another size, so its write is told apart from the first page's.
+  await wallSelect(second).selectOption("sample");
+  await planner(second).getByRole("button", { name: "Add a frame" }).click();
+  await planner(second)
+    .getByRole("group", { name: "Frame size" })
+    .getByRole("button")
+    .last()
+    .click();
+  await planner(second)
+    .getByRole("button", { name: /^Add \d/ })
+    .click();
+  await expect
+    .poll(async () => (await storedAdded(second))?.map((a) => a.size !== f1?.size))
+    .toEqual([true]);
+  const [f2] = (await storedAdded(second)) ?? [];
+  expect(f2?.id).not.toBe(f1?.id);
+});

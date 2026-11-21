@@ -15,6 +15,8 @@ export interface ImageRect {
 export interface PageRead {
   text: string;
   title: string;
+  /** The picture's URL: the clicked image's, or the one found inside a clicked link. */
+  url: string | null;
   rect: ImageRect | null;
   /** The image's natural size: its shape, whatever part of it is on screen. */
   shape: { w: number; h: number } | null;
@@ -24,9 +26,11 @@ export interface PageRead {
  * Injected into the clicked frame by `scripting.executeScript`, which sends only the function's
  * source: it must use nothing from this module. Returns the page text (cut at 100,000 characters),
  * the product title (the first `h1`, else `og:title`, else the document's, cut at 80) and the
- * clicked image's box.
+ * picture with its box: the clicked image, or with only `linkUrl`, the largest `<img>` or CSS
+ * background image in the largest link to it.
+ * {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-print-drawn-as-a-links-background}
  */
-export function readPage(srcUrl: string): PageRead {
+export function readPage(srcUrl: string, linkUrl = ""): PageRead {
   const clean = (s: string | null | undefined) => (s ?? "").replace(/\s+/g, " ").trim();
   const text = (document.body?.innerText ?? "").slice(0, 100000);
   const title = (
@@ -34,19 +38,56 @@ export function readPage(srcUrl: string): PageRead {
     clean(document.querySelector('meta[property="og:title"]')?.getAttribute("content")) ||
     clean(document.title)
   ).slice(0, 80);
-  const image = Array.from(document.images).find(
-    (img) => img.currentSrc === srcUrl || img.src === srcUrl,
-  );
-  const box = image?.getBoundingClientRect();
+  let found: Element | undefined;
+  let url: string | null = null;
+  if (srcUrl) {
+    found = Array.from(document.images).find(
+      (img) => img.currentSrc === srcUrl || img.src === srcUrl,
+    );
+    url = srcUrl;
+  } else if (linkUrl) {
+    const area = (el: Element) => {
+      const b = el.getBoundingClientRect();
+      return b.width * b.height;
+    };
+    // A malformed address on the page must not stop the read.
+    const abs = (href: string) => {
+      try {
+        return new URL(href, document.baseURI).href;
+      } catch {
+        return "";
+      }
+    };
+    // `href` resolved by hand: on an SVG `<a>` it is an SVGAnimatedString, not the address.
+    const link = Array.from(document.querySelectorAll("a"))
+      .filter((a) => abs(a.getAttribute("href") ?? "") === linkUrl)
+      .sort((a, b) => area(b) - area(a))[0];
+    // The largest picture in the link, so an arrow icon or a "Sale" badge never wins over the print.
+    let best = 0;
+    for (const el of link ? [link, ...Array.from(link.querySelectorAll("*"))] : []) {
+      const bg = /url\(\s*(['"]?)(.*?)\1\s*\)/.exec(getComputedStyle(el).backgroundImage);
+      const src =
+        el instanceof HTMLImageElement
+          ? el.currentSrc || el.src
+          : (bg?.[2] ?? "").replace(/\\(.)/g, "$1");
+      if (src && abs(src) && area(el) > best) {
+        best = area(el);
+        found = el;
+        url = abs(src);
+      }
+    }
+  }
+  const box = found?.getBoundingClientRect();
   const rect =
     box && box.width > 0 && box.height > 0
       ? { x: box.x, y: box.y, w: box.width, h: box.height, dpr: window.devicePixelRatio || 1 }
       : null;
+  // A background's natural size is unknown: the panel takes the loaded picture's.
   const shape =
-    image && image.naturalWidth > 0 && image.naturalHeight > 0
-      ? { w: image.naturalWidth, h: image.naturalHeight }
+    found instanceof HTMLImageElement && found.naturalWidth > 0 && found.naturalHeight > 0
+      ? { w: found.naturalWidth, h: found.naturalHeight }
       : null;
-  return { text, title, rect, shape };
+  return { text, title, url, rect, shape };
 }
 
 /** The right-clicked image's bytes: `http`, `https` and `data:` only, and only an image. */

@@ -87,6 +87,42 @@ test("the German pin picture uses Chrome's German labels and keeps the extension
   await expect(picture).toHaveAttribute("aria-label", /^Die Chrome-Symbolleiste/);
 });
 
+/** Whether an element of the pin picture lies wholly in the drawing's left or right half. */
+async function half(page: Page, selector: string) {
+  const picture = await page.locator("svg.ext-pin-picture").boundingBox();
+  const box = await page.locator("svg.ext-pin-picture").locator(selector).first().boundingBox();
+  if (!picture || !box) return null;
+  const middle = picture.x + picture.width / 2;
+  return box.x + box.width <= middle ? "left" : box.x >= middle ? "right" : "both";
+}
+
+// The puzzle-piece button's ring (marker 1's target) and the Extensions menu's card.
+const RING_1 = "circle.pp-tape-stroke";
+const MENU = 'rect[filter="url(#pp-shadow)"]';
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-the-arabic-pin-picture} */
+test("the Arabic pin picture puts the puzzle piece and the menu on the left", async ({ page }) => {
+  await page.goto(`/ar${PATH}?pinned=0`);
+  const picture = page.locator("svg.ext-pin-picture");
+  await expect(picture).toHaveCount(1);
+  await expect(picture).toBeVisible();
+  expect(await half(page, RING_1)).toBe("left");
+  expect(await half(page, MENU)).toBe("left");
+  await expect(picture.locator("text", { hasText: /^الإضافات$/ })).toHaveCount(1);
+  await expect(
+    picture.locator("text", { hasText: "Gallery Wall Layout Generator" }).first(),
+  ).toBeAttached();
+  await expect(picture).toHaveAttribute("aria-label", /^شريط أدوات Chrome/);
+});
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-a-left-to-right-version-keeps-its-drawing} */
+test("the German pin picture keeps the puzzle piece on the right", async ({ page }) => {
+  await page.goto(`/de${PATH}?pinned=0`);
+  await expect(page.locator("svg.ext-pin-picture")).toHaveCount(1);
+  await expect(page.locator("svg.ext-pin-picture")).toBeVisible();
+  expect(await half(page, RING_1)).toBe("right");
+});
+
 /** {@link openspec/specs/extension-site/spec.md#scenario-the-french-answer-paragraph} */
 test("the French answer paragraph keeps Try on my wall in English", async ({ page }) => {
   const english = await serverDoc(page, `/fr${PATH}`, (doc) => {
@@ -237,6 +273,51 @@ test("on a phone the language button is a globe named Русский, with no si
 test("the home page header has no language button", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("header button[aria-haspopup=dialog]")).toHaveCount(0);
+});
+
+/** {@link openspec/specs/site-shell/spec.md#scenario-a-page-without-translations-loads-no-picker-code} */
+test("the home page loads none of the picker's styles or script", async ({ page }) => {
+  const bodies: Promise<{ type: string; url: string; text: string }>[] = [];
+  page.on("response", (r) => {
+    const type = r.request().resourceType();
+    if (type === "stylesheet" || type === "script") {
+      bodies.push(r.text().then((text) => ({ type, url: r.url(), text })));
+    }
+  });
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  const inline = await page.evaluate(() =>
+    [...document.querySelectorAll("style, script:not([src])")].map((el) => ({
+      type: el.tagName === "STYLE" ? "stylesheet" : "script",
+      url: "inline",
+      text: el.textContent ?? "",
+    })),
+  );
+  const loaded = [...(await Promise.all(bodies)), ...inline];
+  expect(loaded.filter((b) => b.type === "stylesheet").length).toBeGreaterThan(0);
+  // A rule whose selector starts with the class; the header's own `:has(.lp-trig)` utilities don't count.
+  const defines = /(^|[{},/])\s*\.lp-(trig|dlg)\b/;
+  const styles = loaded.filter((b) => b.type === "stylesheet" && defines.test(b.text));
+  const scripts = loaded.filter((b) => b.type === "script" && b.text.includes("Choose a language"));
+  expect.soft(styles.map((b) => b.url)).toEqual([]);
+  expect(scripts.map((b) => b.url)).toEqual([]);
+});
+
+/** {@link openspec/specs/site-shell/spec.md#scenario-the-extension-pages-header} */
+test("the English and Russian extension pages hold the language button in the server HTML", async ({
+  page,
+}) => {
+  for (const [path, name] of [
+    [PATH, "English"],
+    [`/ru${PATH}`, "Русский"],
+  ] as const) {
+    const label = await serverDoc(
+      page,
+      path,
+      (doc) => doc.querySelector("header button[aria-haspopup=dialog]")?.textContent ?? null,
+    );
+    expect(label, path).toContain(name);
+  }
 });
 
 /** {@link openspec/specs/site-shell/spec.md#requirement-the-header-offers-the-language-picker-on-translated-pages} */
