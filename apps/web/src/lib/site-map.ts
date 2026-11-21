@@ -19,7 +19,8 @@ export interface PageSeo {
 interface PageBase {
   id: string;
   path: string;
-  hub: HubId;
+  /** None for a company page (A1–A5): it sits in the footer's company row, not in a hub. */
+  hub?: HubId;
   /** Short name: footer, cards. */
   name: string;
   /** Related-tools card: the question the page answers and the drawing's ratio (width, height). */
@@ -33,7 +34,7 @@ export type LivePage = Extract<SitePage, { live: true }>;
 /** A page with head values, live or not: one whose route can be built. */
 export type BuiltPage = PageBase & { live: boolean; seo: PageSeo };
 
-export const PAGES = [
+const PAGE_LIST = [
   {
     id: "F1",
     path: "/",
@@ -224,9 +225,77 @@ export const PAGES = [
       lastModified: "2026-11-20",
     },
   },
+  // Company pages: no hub, no widget, linked from the footer's company row.
+  {
+    id: "A1",
+    path: "/about",
+    name: "About",
+    live: true,
+    seo: {
+      title: "About Frame Sizes",
+      h1: "About Frame Sizes",
+      description:
+        "Frame Sizes is a free set of true-scale tools for frames, posters and gallery walls, run by Soft Divisions Limited. Who we are and how we check sizes.",
+      lastModified: "2026-11-21",
+    },
+  },
+  {
+    id: "A2",
+    path: "/contact",
+    name: "Contact",
+    live: true,
+    seo: {
+      title: "Contact Us",
+      h1: "Contact Us",
+      description:
+        "Email Frame Sizes at care@framesizes.app about a wrong size, a bug, the Gallery Wall Layout Generator extension or your data, and find our postal address.",
+      lastModified: "2026-11-21",
+    },
+  },
+  {
+    id: "A3",
+    path: "/privacy-policy",
+    name: "Privacy policy",
+    live: true,
+    seo: {
+      title: "Privacy Policy",
+      h1: "Privacy Policy",
+      description:
+        "What Frame Sizes and its Chrome extension collect: cookieless visit counts and server logs. Wall photos and saved walls stay on your device, never with us.",
+      lastModified: "2026-11-21",
+    },
+  },
+  {
+    id: "A4",
+    path: "/terms-of-use",
+    name: "Terms of use",
+    live: true,
+    seo: {
+      title: "Terms of Use",
+      h1: "Terms of Use",
+      description:
+        "The rules for using Frame Sizes and the Gallery Wall Layout Generator extension: free use, nominal sizes you should measure, liability and Hong Kong law.",
+      lastModified: "2026-11-21",
+    },
+  },
+  {
+    id: "A5",
+    path: "/refund-policy",
+    name: "Refund policy",
+    live: true,
+    seo: {
+      title: "Refund Policy",
+      h1: "Refund Policy",
+      description:
+        "Frame Sizes and its Chrome extension are free, so there is nothing to refund. If we add a paid feature, you get a full refund within 14 days, no reason.",
+      lastModified: "2026-11-21",
+    },
+  },
 ] as const satisfies readonly SitePage[];
 
-export type PageId = (typeof PAGES)[number]["id"];
+export type PageId = (typeof PAGE_LIST)[number]["id"];
+/** Widened to `SitePage` so optional fields (`hub`, `card`) read on every entry. */
+export const PAGES: readonly (SitePage & { id: PageId })[] = PAGE_LIST;
 
 /** Hubs in header order, each with its head page (not always its first page: Print quality's is Q2). */
 export const HUBS = [
@@ -313,6 +382,16 @@ export function footerGroups(pages: readonly SitePage[] = PAGES): FooterGroup[] 
     const links = live.filter((p) => p.hub === hub.id).map((p) => ({ href: p.path, name: p.name }));
     return links.length ? [{ name: hub.name, links }] : [];
   });
+}
+
+/**
+ * Live pages with no hub (the company pages), in site map order: the footer's company row.
+ * {@link openspec/specs/site-shell/spec.md#requirement-the-footer-lists-the-live-pages-by-hub}
+ */
+export function companyLinks(pages: readonly SitePage[] = PAGES): FooterGroup["links"] {
+  return livePages(pages)
+    .filter((p) => !p.hub)
+    .map((p) => ({ href: p.path, name: p.name }));
 }
 
 export const BRAND = "Frame Sizes";

@@ -71,12 +71,13 @@ The social image is prerendered at build time with `ImageResponse` and a committ
 
 ### Requirement: The site map is the single record of pages
 
-The site SHALL declare each page once, with its id, path, hub, short name and whether it is live. A live page SHALL also declare its title, `h1`, description and the date its content last changed; a page that is not live MAY declare them ahead of go-live. No two pages SHALL share an id or a path, and no two pages that declare head values SHALL share a title or a description. Every declared title SHALL be 60 characters or fewer including any suffix, and every declared description 130 to 155 characters.
+The site SHALL declare each page once, with its id, path, hub (none for a company page), short name and whether it is live. A live page SHALL also declare its title, `h1`, description and the date its content last changed; a page that is not live MAY declare them ahead of go-live. No two pages SHALL share an id or a path, and no two pages that declare head values SHALL share a title or a description. Every declared title SHALL be 60 characters or fewer including any suffix, and every declared description 130 to 155 characters.
 
 #### Scenario: The launch pages are declared
 
 - **WHEN** the site map is read
-- **THEN** it holds 20 pages, the 19 launch pages and the extension page X1, with unique ids and unique paths, every path is lowercase with no trailing slash (the home page is `/`), and the home page, id F1, is live
+- **THEN** it holds 25 pages, the 19 launch pages, the extension page X1 and the five company pages A1 to A5, with unique ids and unique paths, every path is lowercase with no trailing slash (the home page is `/`), and the home page, id F1, is live
+- **AND** the five company pages are live and belong to no hub
 
 #### Scenario: A live page breaks a head limit
 
@@ -217,6 +218,11 @@ The HTML the server returns for the home page SHALL hold one JSON-LD script whos
 
 - **WHEN** `/sitemap.xml` is requested while only the home page, F2 and G1 are live
 - **THEN** it holds three `url` entries, the home page's canonical URL, `https://framesizes.app/frame-sizes-on-wall` and `https://framesizes.app/gallery-wall-planner`, each with its own content date as `lastmod`, and no `priority` or `changefreq` element
+
+#### Scenario: The live tools and the company pages
+
+- **WHEN** `/sitemap.xml` is requested while the home page, F2, G1 and the five company pages are live
+- **THEN** it holds eight `url` entries: the home page's canonical URL, `https://framesizes.app/frame-sizes-on-wall`, `https://framesizes.app/gallery-wall-planner`, and `/about`, `/contact`, `/privacy-policy`, `/terms-of-use` and `/refund-policy` on `https://framesizes.app`, each with its own content date as `lastmod`, and no `priority` or `changefreq` element
 
 #### Scenario: A live page with translations
 
