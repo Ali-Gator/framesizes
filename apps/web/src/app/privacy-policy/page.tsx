@@ -47,8 +47,9 @@ const DATA = [
   },
   {
     data: "Email you send us: your address, your message and any attachments",
-    where: "Our mailbox; our domain provider, Porkbun, forwards mail sent to framesizes.app",
-    who: "Us, and Porkbun while it forwards the message",
+    where:
+      "Our Gmail mailbox; our domain provider, Porkbun, forwards mail sent to framesizes.app there",
+    who: "Us, Google as our mail provider, and Porkbun while it forwards the message",
     long: "As long as we need it to answer you; ask us and we delete it",
   },
 ] as const;
@@ -198,9 +199,9 @@ export default function PrivacyPolicyPage() {
 
       <Section title="Who we share data with">
         <p>
-          We do not sell your data or share it for advertising. Three companies process it for us:
-          PostHog (visit counts), Vercel (hosting and server logs) and Porkbun (email forwarding).
-          We may also disclose data when the law requires it.
+          We do not sell your data or share it for advertising. Four companies process it for us:
+          PostHog (visit counts), Vercel (hosting and server logs), Porkbun (email forwarding) and
+          Google (our Gmail mailbox). We may also disclose data when the law requires it.
         </p>
       </Section>
 
@@ -208,8 +209,9 @@ export default function PrivacyPolicyPage() {
         <p>
           We are based in Hong Kong. PostHog keeps our visit counts in the EU. Vercel serves the
           site from data centres around the world and is based in the United States, so a server log
-          can be handled outside your country. These providers protect data under their own
-          contracts and policies.
+          can be handled outside your country. Email you send us is kept in Gmail, which Google runs
+          from data centres around the world. These providers protect data under their own contracts
+          and policies.
         </p>
       </Section>
 
