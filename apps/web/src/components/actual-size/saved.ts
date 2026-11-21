@@ -54,7 +54,7 @@ export function loadCheck(screen: ScreenKey): Check | null {
 }
 
 export function saveCheck(check: Check, screen: ScreenKey) {
-  memory = { ...check, ...screen };
+  memory = { ...check, w: screen.w, h: screen.h, dpr: screen.dpr };
   try {
     window.localStorage.setItem(KEY, JSON.stringify(memory));
   } catch {

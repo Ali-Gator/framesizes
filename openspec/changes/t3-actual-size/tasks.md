@@ -45,7 +45,7 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
 ## 4. The viewer (`components/actual-size/`)
 
-- [ ] 4.1 Write a markup test (`renderToStaticMarkup`) of the server render:
+- [x] 4.1 Write a markup test (`renderToStaticMarkup`) of the server render:
   - the title "8x10 at actual size";
   - seven size buttons with only "8×10" pressed, and no Turn;
   - "8 × 10 in" and "20.3 × 25.4 cm";
@@ -54,8 +54,8 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
   Build the shared shell, the size grid (4 columns below 640 px), the readout and the status from the canvas. Verify the test passes.
 
-- [ ] 4.2 Build the desktop box, rulers, `SizeMap`, the inline check panel and its four tabs. The sheet tab follows the box's measured width (design decisions 6 and 7). Verify with a DOM test that the box's frame is `8 × scale` wide and that the ruler counts in the picked unit. Check by hand in `pnpm dev` at 1280.
-- [ ] 4.3 Build the phone steps:
+- [x] 4.2 Build the desktop box, rulers, `SizeMap`, the inline check panel and its four tabs. The sheet tab follows the box's measured width (design decisions 6 and 7). Verify with a DOM test that the box's frame is `8 × scale` wide and that the ruler counts in the picked unit. Check by hand in `pnpm dev` at 1280.
+- [x] 4.3 Build the phone steps:
   - the answer step with the phone-outline map;
   - the card step with its picture and three steps;
   - the ruler step (2 in / 5 cm);
@@ -72,7 +72,7 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
 ## 5. The page (`app/how-big-is-8x10/`)
 
-- [ ] 5.1 Set F3 live in `site-map.ts` with the SEO guide's values:
+- [x] 5.1 Set F3 live in `site-map.ts` with the SEO guide's values:
   - title "How Big Is 8x10? See It at Actual Size";
   - `h1` "How Big Is 8x10?";
   - the guide's description;
