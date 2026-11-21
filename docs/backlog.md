@@ -191,3 +191,10 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
+
+
+От Олега:
+
+1. После одобрения расширения в хроме, проверить, что с локализаций попадаем на СООТВЕТСТВУЮЩУЮ локализованную:
+   https://framesizes.app/tl/extensions/gallery-wall-layout-generator#usage
+   См.: Language codes: Google accepts only two-letter language codes, so Filipino is tl (not fil) and Chinese Simplified is zh-Hans. Norwegian is no.
