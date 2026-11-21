@@ -137,12 +137,12 @@ test("robots.txt allows everything and names the sitemap", async ({ request }) =
   expect(body).toContain("Sitemap: https://framesizes.app/sitemap.xml");
 });
 
-/** {@link openspec/specs/seo-base/spec.md#scenario-the-live-tools-and-the-company-pages} */
-test("sitemap.xml lists the home page, F2, G1 and the company pages", async ({ request }) => {
+/** {@link openspec/specs/seo-base/spec.md#scenario-the-live-tools-with-f3-and-the-company-pages} */
+test("sitemap.xml lists the home page, F2, F3, G1 and the company pages", async ({ request }) => {
   const response = await request.get("/sitemap.xml");
   expect(response.status()).toBe(200);
   const body = await response.text();
-  expect(body.match(/<url>/g)).toHaveLength(8);
+  expect(body.match(/<url>/g)).toHaveLength(9);
   for (const id of ["A1", "A2", "A3", "A4", "A5"] as const) {
     const company = livePage(id);
     expect(body).toContain(
@@ -153,6 +153,8 @@ test("sitemap.xml lists the home page, F2, G1 and the company pages", async ({ r
   expect(body).toContain(`<lastmod>${HOME.seo.lastModified}</lastmod>`);
   expect(body).toContain(`<loc>${CANONICAL}/frame-sizes-on-wall</loc>`);
   expect(body).toContain(`<lastmod>${livePage("F2").seo.lastModified}</lastmod>`);
+  expect(body).toContain(`<loc>${CANONICAL}/how-big-is-8x10</loc>`);
+  expect(body).toContain(`<lastmod>${livePage("F3").seo.lastModified}</lastmod>`);
   expect(body).toContain(`<loc>${CANONICAL}/gallery-wall-planner</loc>`);
   expect(body).toContain(`<lastmod>${livePage("G1").seo.lastModified}</lastmod>`);
   expect(body).not.toMatch(/<priority>|<changefreq>/);

@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-89**
+_Next id:_ **BL-91**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -101,6 +101,12 @@ when to add and when to fold items in.
 - **[BL-40] Rich Results Test for F2** — run the live F2 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
   _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-89] F3 preview card in a chat app** — paste `https://framesizes.app/how-big-is-8x10` into a
+  chat app or a preview tool and check the card shows the nested-sizes comparison image (guide checklist 7).
+  _Refs:_ `apps/web/src/app/how-big-is-8x10/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+- **[BL-90] Rich Results Test for F3** — run the live F3 URL through the Rich Results Test and confirm
+  its `BreadcrumbList` validates (guide checklist 15).
+  _Refs:_ `apps/web/src/app/how-big-is-8x10/page.tsx`, pre-publish checklist 15 · _Status:_ gated — DNS live
 
 - **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a

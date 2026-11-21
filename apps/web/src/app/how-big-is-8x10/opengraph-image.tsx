@@ -70,7 +70,7 @@ export default function Image() {
             />
           );
         })}
-        {NESTED.filter((s) => ["16x20", "11x14", "8x10"].includes(s.id)).map((s) => (
+        {NESTED.filter((s) => ["16x20", "A3", "11x14", "A4", "8x10"].includes(s.id)).map((s) => (
           <div
             key={`l-${s.id}`}
             style={{

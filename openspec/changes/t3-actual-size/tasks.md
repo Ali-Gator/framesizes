@@ -64,7 +64,7 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
   Verify with DOM tests: Close and Escape return focus to the "See" button, and a `visualViewport.scale` of 2 shows "Zoomed in, the size is off".
 
-- [ ] 4.4 Add `e2e/actual-size.spec.ts`:
+- [x] 4.4 Add `e2e/actual-size.spec.ts`:
   - at 360 × 740, no size button overflows; the card step's picture, lines and "Done, it matches" are inside the screen; the first "See 8x10 at actual size" opens the card step, then the full view after "Done, it matches"; a reload keeps "Checked with a card";
   - at 1280, the box draws 8x10 at the saved scale, and the sheet tab follows the scale.
 
@@ -80,7 +80,7 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
   Verify `checkSiteMap` passes.
 
-- [ ] 5.2 Add `e2e/actual-size-content.spec.ts`:
+- [x] 5.2 Add `e2e/actual-size-content.spec.ts`:
   - the outline;
   - the answer paragraph;
   - the comparison table rows and multiples;
@@ -92,12 +92,12 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
   Build `page.tsx`, the comparison drawing and table from `ACTUAL_SIZES`, and the six questions (design decision 8). Verify the tests pass.
 
-- [ ] 5.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts` and the alt from the proposal. Verify `pnpm build` prerenders it at 1200 × 630.
-- [ ] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, labels, alts, `aria-label`s, title and description. Keep every size, fact and SEO-guide keyword. Verify the content e2e still passes.
+- [x] 5.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts` and the alt from the proposal. Verify `pnpm build` prerenders it at 1200 × 630.
+- [x] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, labels, alts, `aria-label`s, title and description. Keep every size, fact and SEO-guide keyword. Verify the content e2e still passes.
 
 ## 6. Live-page counts elsewhere (approved test edits only)
 
-- [ ] 6.1 Re-point three tests to their new scenarios, each adding only the F3 card or URL:
+- [x] 6.1 Re-point three tests to their new scenarios, each adding only the F3 card or URL:
   - `e2e/frame-chart-content.spec.ts` "links to F2 and G1…" → `frame-size-chart` "F2, F3 and G1 are live besides the home page";
   - `e2e/frames-on-wall-content.spec.ts` "links only to live pages" → `frames-on-wall` "F1, F2, F3 and G1 are live";
   - `e2e/seo-home.spec.ts` sitemap test → `seo-base` "The live tools with F3 and the company pages" (nine URLs).
@@ -106,8 +106,8 @@ Branch `t3-actual-size`, cut from `main`. Inside every group the order is tests 
 
 ## 7. Gate
 
-- [ ] 7.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
-- [ ] 7.2 Run the SEO guide's pre-publish checklist for F3: items 1–17 that can run before go-live. Log the ones that need the live URL (preview card, Rich Results Test) as backlog items gated on deploy.
+- [x] 7.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
+- [x] 7.2 Run the SEO guide's pre-publish checklist for F3: items 1–17 that can run before go-live. Log the ones that need the live URL (preview card, Rich Results Test) as backlog items gated on deploy.
 
 ## Workflow follow-up
 

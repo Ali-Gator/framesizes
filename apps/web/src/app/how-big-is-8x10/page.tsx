@@ -76,7 +76,7 @@ const THINGS = [
     size: A4_SHEET,
     text: (
       <>
-        Almost as wide as an 8x10 but <Len inches={A4_SHEET.h - EIGHT_TEN.h} /> longer, so an A4
+        A little wider than an 8x10 and <Len inches={A4_SHEET.h - EIGHT_TEN.h} /> longer, so an A4
         print does not fit an 8x10 frame.
       </>
     ),
@@ -191,9 +191,9 @@ const QUESTIONS = [
     q: "How exact is the actual size view?",
     a: (
       <p>
-        As exact as your check. Once a card or a sheet lines up with the outline, the sizes match
-        it. Keep the page zoom at 100%. Before a check the page guesses from your screen, and the
-        guess can be well off, so the box says the scale is not checked yet.
+        It depends on your check. Once a card or a sheet lines up with the outline, the sizes match
+        it, as long as the page zoom stays at 100%. Before a check the page guesses from your
+        screen. That guess can be well off, so the box says the scale is not checked yet.
       </p>
     ),
   },
