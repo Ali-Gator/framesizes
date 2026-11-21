@@ -10,6 +10,10 @@ import { describe, expect, it } from "vitest";
 const PUBLIC = path.resolve(import.meta.dirname, "../../public");
 const manifest = JSON.parse(fs.readFileSync(path.join(PUBLIC, "manifest.json"), "utf8"));
 const NAME = "Gallery Wall Layout Generator";
+/** Chrome reads the name and description from `_locales/<lang>/messages.json` (default `en`). */
+const LOCALES = path.join(PUBLIC, "_locales");
+const messages = (lang: string) =>
+  JSON.parse(fs.readFileSync(path.join(LOCALES, lang, "messages.json"), "utf8"));
 const SIZES = ["16", "32", "48", "128"];
 
 /** A PNG's width and height, from its IHDR chunk. */
@@ -32,8 +36,9 @@ describe("the manifest", () => {
     expect(manifest.externally_connectable).toEqual({ matches: ["https://framesizes.app/*"] });
     expect(manifest.side_panel).toEqual({ default_path: "sidepanel.html" });
     expect(manifest.background).toEqual({ service_worker: "background.js", type: "module" });
-    // The store's limit for the short description.
-    expect(manifest.description.length).toBeLessThanOrEqual(132);
+    // The store's limit for the short description (other languages: BL-81).
+    expect(manifest.description).toBe("__MSG_shortDesc__");
+    expect(messages("en").shortDesc.message.length).toBeLessThanOrEqual(132);
   });
 
   /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-install-and-browser-start-set-the-panel-behaviour} */
@@ -43,7 +48,9 @@ describe("the manifest", () => {
 
   /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-name-and-icons-in-the-build} */
   it("carries the name and the icons at 16, 32, 48 and 128 px", () => {
-    expect(manifest.name).toBe(NAME);
+    expect(manifest.name).toBe("__MSG_appName__");
+    expect(manifest.default_locale).toBe("en");
+    expect(messages("en").appName.message).toBe(NAME);
     expect(manifest.action.default_title).toBe(NAME);
     for (const set of [manifest.icons, manifest.action.default_icon]) {
       expect(Object.keys(set).sort()).toEqual([...SIZES].sort());
