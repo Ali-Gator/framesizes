@@ -247,7 +247,7 @@ describe("a typed size the screen cannot have", () => {
     expect(s.scale).toBeCloseTo(Math.hypot(1920, 1080) / 27, 6);
   });
 
-  /** {@link openspec/specs/actual-size/spec.md#scenario-a-61-in-phone} */
+  /** {@link openspec/specs/actual-size/spec.md#requirement-the-screen-size-can-set-the-scale} */
   it("finishes a check at the scale the component saved", () => {
     const s = run(
       [
@@ -285,5 +285,29 @@ describe("a screen that is not a phone's", () => {
     expect(phonesLine({ w: 4, h: 6 }, { w: 744, h: 1133 }, 100, false)).toBe(
       "It fits on your screen.",
     );
+  });
+});
+
+describe("the touch slider's range", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-size-the-screen-cannot-have} */
+  it("on a touch screen, ignores a size whose scale is outside 100–200", () => {
+    const s = run(
+      [{ type: "diagonal", value: "4", w: 393, h: 852, range: SCALE_RANGE.phone }],
+      guessed,
+    );
+    expect(s.scale).toBe(150);
+    expect(s.diagonal).toBeNull();
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#requirement-the-screen-size-can-set-the-scale} */
+  it("keeps the guessed size the check finished with", () => {
+    const s = run(
+      [
+        { type: "open", method: "screen" },
+        { type: "done", scale: 95.8, diagonal: 23 },
+      ],
+      guessed,
+    );
+    expect(s.diagonal).toBe(23);
   });
 });

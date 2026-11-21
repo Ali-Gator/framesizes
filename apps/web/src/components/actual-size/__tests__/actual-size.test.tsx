@@ -322,3 +322,41 @@ describe("beyond phones and monitors", () => {
     expect(px(frame?.style.width)).toBeCloseTo((8 * Math.hypot(1920, 1080)) / 27, 3);
   });
 });
+
+describe("switching between checks", () => {
+  /** {@link openspec/specs/actual-size/spec.md#requirement-the-screen-size-can-set-the-scale} */
+  it("saves the named size's scale even after a slider moved on another tab", () => {
+    stubScreen({ w: 1920, h: 1080, phone: false });
+    mount();
+    click(button("Screen size"));
+    click(button("27 in"));
+    click(button("Credit card"));
+    const slider = host.querySelector<HTMLInputElement>('input[type="range"]');
+    act(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(
+        slider,
+        "130",
+      );
+      slider?.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    click(button("Screen size"));
+    click(button("Use 27 in"));
+    const frame = host.querySelector<HTMLElement>('[data-testid="frame"]');
+    expect(px(frame?.style.width)).toBeCloseTo((8 * Math.hypot(1920, 1080)) / 27, 3);
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#scenario-the-box-narrows-during-a-sheet-check} */
+  it("turns a sheet check into the card when the phone layout takes over", () => {
+    stubScreen({ w: 1920, h: 1080, phone: false });
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(1038);
+    mount();
+    click(button("Sheet of paper"));
+    expect(host.textContent).toContain("Your Letter sheet");
+    stubScreen({ w: 1920, h: 1080, phone: true });
+    act(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+    expect(host.querySelector("h2")?.textContent).toBe("Check your screen");
+    expect(host.textContent).toContain("Stand a credit card upright on the screen.");
+  });
+});

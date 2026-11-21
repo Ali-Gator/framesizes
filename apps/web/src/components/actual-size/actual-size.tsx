@@ -7,6 +7,7 @@ import {
   guessDiagonal,
   guessScale,
   isPhoneScreen,
+  scaleFromDiagonal,
   type Unit,
   writeActual,
 } from "@framesizes/sizes";
@@ -295,6 +296,7 @@ function Desk({
             <Diagonals
               state={state}
               phone={false}
+              coarse={false}
               guess={guessDiagonal(screen)}
               screen={screen}
               dispatch={dispatch}
@@ -458,11 +460,16 @@ export function ActualSizeViewer() {
 
   const done = () => {
     if (!screen || !isMethod(state.mode)) return;
-    // The screen-size check saves the picked diagonal's scale (already the state's), else the guess.
+    // The screen-size check saves the scale of the size its button names: the picked one or the
+    // guess, worked out again, since a slider on another tab may have moved the scale since.
+    const diagonal =
+      state.mode === "screen" ? (state.diagonal ?? guessDiagonal(screen)) : undefined;
     const scale =
-      state.mode === "screen" && state.diagonal === null ? guessScale(screen) : state.scale;
+      diagonal === undefined
+        ? state.scale
+        : (scaleFromDiagonal(screen.w, screen.h, diagonal) ?? state.scale);
     saveCheck({ scale, method: state.mode }, screen);
-    dispatch({ type: "done", scale });
+    dispatch({ type: "done", scale, diagonal });
   };
 
   const size = sizeOf(state);
@@ -491,6 +498,7 @@ export function ActualSizeViewer() {
               <Diagonals
                 state={state}
                 phone={isPhoneScreen(screen)}
+                coarse={screen.coarse}
                 guess={guessDiagonal(screen)}
                 screen={screen}
                 dispatch={dispatch}

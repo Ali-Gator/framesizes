@@ -66,6 +66,7 @@ export function Slider({
 export function Diagonals({
   state,
   phone,
+  coarse,
   guess,
   screen,
   dispatch,
@@ -73,6 +74,8 @@ export function Diagonals({
   state: ViewerState;
   /** A phone's screen: the phone sizes and wording. */
   phone: boolean;
+  /** A touch screen: a size must give a scale the touch slider can show. */
+  coarse: boolean;
   guess: number;
   screen: { w: number; h: number };
   dispatch: Dispatch<ViewerAction>;
@@ -80,10 +83,11 @@ export function Diagonals({
   const list = phone ? PHONE_DIAGONALS : DESK_DIAGONALS;
   // The field shows what was typed, and follows a picked chip.
   const [draft, setDraft] = useState(state.diagonal === null ? "" : String(state.diagonal));
+  const range = coarse ? SCALE_RANGE.phone : SCALE_RANGE.desk;
   return (
     <>
       <p className="as-step">
-        Pick your {phone ? "phone's" : "screen's"} screen size, measured corner to corner. Our guess
+        Pick your {phone ? "phone's screen" : "screen"} size, measured corner to corner. Our guess
         is {guess} in.
       </p>
       <div className="as-diags" role="group" aria-label="Screen size">
@@ -95,7 +99,7 @@ export function Diagonals({
             aria-pressed={state.diagonal === d}
             onClick={() => {
               setDraft(String(d));
-              dispatch({ type: "diagonal", value: d, ...screen });
+              dispatch({ type: "diagonal", value: d, ...screen, range });
             }}
           >
             <span className="fs-chip-main">{d} in</span>
@@ -114,7 +118,7 @@ export function Diagonals({
           value={draft}
           onChange={(e) => {
             setDraft(e.target.value);
-            dispatch({ type: "diagonal", value: e.target.value, ...screen });
+            dispatch({ type: "diagonal", value: e.target.value, ...screen, range });
           }}
         />
         <span>in</span>

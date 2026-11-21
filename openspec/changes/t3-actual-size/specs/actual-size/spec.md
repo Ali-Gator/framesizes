@@ -135,7 +135,7 @@ The check SHALL let the visitor pick the screen's diagonal from a list or type i
 
 #### Scenario: A size the screen cannot have
 
-- **WHEN** the typed size gives a scale outside 60 to 240 px per inch, such as 50 in on a 1920 × 1080 screen
+- **WHEN** the typed size gives a scale outside 60 to 240 px per inch (100 to 200 on a touch screen), such as 50 in on a 1920 × 1080 screen
 - **THEN** the scale and the picked size stay as they were, and the button that finishes the check names the size it uses ("Use 27 in")
 
 ### Requirement: A sheet of paper is offered only where it fits

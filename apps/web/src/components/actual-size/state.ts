@@ -48,10 +48,10 @@ export type ViewerAction =
    * A picked or typed diagonal for a screen of `w` × `h` CSS px; ignored unless it is a positive
    * number whose scale is inside the widest slider range (a half-typed "1" is not a screen).
    */
-  | { type: "diagonal"; value: number | string; w: number; h: number }
+  | { type: "diagonal"; value: number | string; w: number; h: number; range?: Range }
   | { type: "sheet"; sheet: Sheet }
   /** `scale` is the one saved, when the component worked it out (the screen-size check). */
-  | { type: "done"; scale?: number }
+  | { type: "done"; scale?: number; diagonal?: number }
   | { type: "skip" }
   | { type: "cancel" }
   | { type: "close" };
@@ -104,7 +104,7 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
     case "diagonal": {
       const value = typeof action.value === "number" ? action.value : Number(action.value);
       const scale = action.value === "" ? null : scaleFromDiagonal(action.w, action.h, value);
-      if (scale === null || clamp(scale) !== scale) return state;
+      if (scale === null || clamp(scale, action.range) !== scale) return state;
       return { ...state, diagonal: value, scale };
     }
     case "sheet":
@@ -118,7 +118,7 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
         mode: state.next,
         next: "view",
         // A diagonal stays only when it set the scale.
-        diagonal: state.mode === "screen" ? state.diagonal : null,
+        diagonal: state.mode === "screen" ? (action.diagonal ?? state.diagonal) : null,
       };
     case "skip":
       return {
