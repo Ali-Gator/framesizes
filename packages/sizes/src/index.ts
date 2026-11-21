@@ -58,6 +58,15 @@ export { SNAP, snapFrame, type SnapLines } from "./wall";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-new-frame-is-placed-beside-the-selected-one} */
 export { PLACE_GAP, placeBeside } from "./wall";
 
+/** {@link openspec/specs/size-engine/spec.md#requirement-the-actual-size-viewer-has-seven-sizes} */
+export { ACTUAL_SIZES, oneDecimal, writeActual, type ActualSize } from "./screen";
+/** {@link openspec/specs/size-engine/spec.md#requirement-the-things-that-check-a-scale-have-both-edges} */
+export { CHECK_OBJECTS, type Edges as CheckEdges } from "./screen";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-screens-diagonal-gives-its-scale} */
+export { scaleFromDiagonal } from "./screen";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-screens-scale-has-a-first-guess} */
+export { guessDiagonal, guessScale, type ScreenInfo } from "./screen";
+
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-gallery-wall-planner-offers-five-templates} */
 export { TEMPLATES, type Stack, type Template } from "./gallery";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-template-is-laid-out-with-one-gap-between-neighbours} */
