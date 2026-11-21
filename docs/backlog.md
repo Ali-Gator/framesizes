@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-96**
+_Next id:_ **BL-98**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -50,6 +50,11 @@ when to add and when to fold items in.
   the legal page false and no test fails. Drop `$ip` in a `before_send` hook or add a check of
   the stored events.
   _Refs:_ `apps/web/src/instrumentation-client.ts`, `openspec/specs/company-pages/spec.md` · _Status:_ open — t26 review, 2026-11-21
+- **[BL-97] Check PostHog stores no IP for site events** — no browser setting can stop PostHog
+  keeping the request IP (`ip: false` is a dead option, `$ip` is set server-side); the Privacy Policy's
+  "no IP address" rests on cookieless mode plus the project's "Discard client IP data". Query
+  stored events for `$ip` once real traffic exists (BL-86 pinned the "no location" half in code).
+  _Refs:_ PostHog project 344498, `apps/web/src/app/privacy-policy/page.tsx` · _Status:_ gated — DNS live (backlog-7 triage, 2026-11-21)
 - **[BL-87] Write the company-page widget exemption into CLAUDE.md** — CLAUDE.md says every page
   carries its own widget; A1–A5 carry none by design (t26 proposal and design). Add the exemption
   to its Conventions so a later review does not flag it.
@@ -123,6 +128,11 @@ when to add and when to fold items in.
   literal while the name and description are now `__MSG_` keys. Set it to `__MSG_appName__`
   (edits `manifest.test.ts`).
   _Refs:_ `apps/extension/public/manifest.json`, `apps/extension/src/__tests__/manifest.test.ts` · _Status:_ open — backlog-6 review, 2026-11-21
+- **[BL-96] Translated listings land on the matching X1 page** — once the store approves the
+  extension, open it from each store language and check it lands on the same language's page, e.g.
+  `https://framesizes.app/tl/extensions/gallery-wall-layout-generator#usage`. Google takes only
+  two-letter codes, so Filipino is `tl` (not `fil`), Chinese Simplified is `zh-Hans`, Norwegian is `no`.
+  _Refs:_ `apps/extension/src/background.ts`, `apps/web/src/lib/locales.ts` · _Status:_ gated — Chrome Web Store approval (owner's note, 2026-11-21)
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
@@ -229,9 +239,3 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
-
-От Олега:
-
-1. После одобрения расширения в хроме, проверить, что с локализаций попадаем на СООТВЕТСТВУЮЩУЮ локализованную:
-   https://framesizes.app/tl/extensions/gallery-wall-layout-generator#usage
-   См.: Language codes: Google accepts only two-letter language codes, so Filipino is tl (not fil) and Chinese Simplified is zh-Hans. Norwegian is no.
