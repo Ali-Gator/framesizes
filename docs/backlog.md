@@ -45,11 +45,6 @@ when to add and when to fold items in.
 
 ## Site
 
-- **[BL-85] Name the mailbox provider in the Privacy Policy** — `/privacy-policy` names Porkbun as
-  the forwarder of mail to framesizes.app but not the mailbox it forwards to. If that is Gmail,
-  Outlook or similar, add it to the data table, "Who we share data with" and "Data outside your
-  country".
-  _Refs:_ `apps/web/src/app/privacy-policy/page.tsx` · _Status:_ gated — the owner names the mailbox provider (t26 review, 2026-11-21)
 - **[BL-86] Guard the "no IP address, no location" claim in code** — the Privacy Policy relies on
   the PostHog project's "Discard client IP data" setting (`anonymize_ips`); turning it off makes
   the legal page false and no test fails. Drop `$ip` in a `before_send` hook or add a check of
