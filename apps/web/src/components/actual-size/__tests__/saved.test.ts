@@ -64,3 +64,12 @@ describe("the saved check", () => {
     expect(loadCheck({ ...SCREEN, dpr: 3 })).toBeNull();
   });
 });
+
+describe("a rotated screen", () => {
+  /** {@link openspec/specs/actual-size/spec.md#requirement-a-check-is-kept-on-the-device-for-the-same-screen} */
+  it("keeps the check when the width and height swap", () => {
+    saveCheck({ scale: 156.2, method: "card" }, SCREEN);
+    forgetCheck();
+    expect(loadCheck({ w: 852, h: 393, dpr: 2 })).toEqual({ scale: 156.2, method: "card" });
+  });
+});

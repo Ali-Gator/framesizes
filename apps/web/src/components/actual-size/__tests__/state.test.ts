@@ -7,6 +7,7 @@ import {
   phonesLine,
   reducer,
   rulerInches,
+  SCALE_RANGE,
   sheetFits,
   sizeOf,
   statusText,
@@ -199,5 +200,33 @@ describe("what the viewer says", () => {
     expect(rulerInches(true, "cm")).toBeCloseTo(5 / 2.54, 10);
     expect(rulerInches(false, "in")).toBe(5);
     expect(rulerInches(false, "cm")).toBeCloseTo(12 / 2.54, 10);
+  });
+});
+
+describe("the scale stays where the controls can show it", () => {
+  /** {@link openspec/specs/actual-size/spec.md#requirement-the-card-check-matches-one-edge-of-a-credit-card} */
+  it("keeps a phone's slide and nudge inside 100–200", () => {
+    const phone = SCALE_RANGE.phone;
+    const at200 = run([{ type: "slide", scale: 200, range: phone }], guessed);
+    expect(run([{ type: "nudge", by: 0.2, range: phone }], at200).scale).toBe(200);
+    expect(run([{ type: "slide", scale: 80, range: phone }], guessed).scale).toBe(100);
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-length-that-is-not-a-number} */
+  it("ignores a half-typed diagonal whose scale no screen has", () => {
+    const s = run([{ type: "diagonal", value: "1", w: 1920, h: 1080 }], guessed);
+    expect(s.scale).toBe(150);
+    expect(s.diagonal).toBeNull();
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#requirement-the-screen-size-can-set-the-scale} */
+  it("forgets a diagonal picked in a check that was cancelled or skipped", () => {
+    const picked: ViewerAction[] = [
+      { type: "open", method: "screen" },
+      { type: "diagonal", value: 27, w: 1920, h: 1080 },
+    ];
+    expect(run([...picked, { type: "cancel" }], guessed).diagonal).toBeNull();
+    expect(run([...picked, { type: "skip" }], guessed).diagonal).toBeNull();
+    expect(run([...picked, { type: "done" }], guessed).diagonal).toBe(27);
   });
 });

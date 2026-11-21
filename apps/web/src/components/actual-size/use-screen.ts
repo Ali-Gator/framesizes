@@ -11,7 +11,8 @@ export interface ScreenSnap {
   phone: boolean;
 }
 
-const PHONE = "(max-width: 767px)";
+// The same query as actual-size.css, so JS and CSS pick the same layout at any font size.
+const PHONE = "(width < 48rem)";
 const COARSE = "(pointer: coarse)";
 
 let cached: ScreenSnap | null = null;

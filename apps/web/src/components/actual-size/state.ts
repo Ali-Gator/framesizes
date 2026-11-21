@@ -41,9 +41,13 @@ export type ViewerAction =
   | { type: "pick"; size: string }
   | { type: "open"; method: Method }
   | { type: "see" }
-  | { type: "slide"; scale: number }
-  | { type: "nudge"; by: number }
-  /** A picked or typed diagonal for a screen of `w` × `h` CSS px; ignored unless it is a positive number. */
+  /** `range` is the slider's, so the scale never leaves what the slider can show. */
+  | { type: "slide"; scale: number; range?: Range }
+  | { type: "nudge"; by: number; range?: Range }
+  /**
+   * A picked or typed diagonal for a screen of `w` × `h` CSS px; ignored unless it is a positive
+   * number whose scale is inside the widest slider range (a half-typed "1" is not a screen).
+   */
   | { type: "diagonal"; value: number | string; w: number; h: number }
   | { type: "sheet"; sheet: Sheet }
   | { type: "done" }
@@ -51,9 +55,14 @@ export type ViewerAction =
   | { type: "cancel" }
   | { type: "close" };
 
-/** The slider's widest range, px per inch: 60–240 on a desktop, 100–200 on a phone. */
-export const SCALE_RANGE = { desk: [60, 240], phone: [100, 200] } as const;
-const clamp = (n: number) => Math.min(SCALE_RANGE.desk[1], Math.max(SCALE_RANGE.desk[0], n));
+export type Range = readonly [min: number, max: number];
+
+/** The slider's range, px per inch: 60–240 on a desktop, 100–200 on a touch screen. */
+export const SCALE_RANGE = { desk: [60, 240], phone: [100, 200] } as const satisfies Record<
+  string,
+  Range
+>;
+const clamp = (n: number, [min, max]: Range = SCALE_RANGE.desk) => Math.min(max, Math.max(min, n));
 
 export const initialState: ViewerState = {
   size: "8x10",
@@ -86,13 +95,16 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
         ? { ...state, mode: "full" }
         : { ...state, mode: "card", next: "full", prevScale: state.scale };
     case "slide":
-      return Number.isFinite(action.scale) ? { ...state, scale: clamp(action.scale) } : state;
+      return Number.isFinite(action.scale)
+        ? { ...state, scale: clamp(action.scale, action.range) }
+        : state;
     case "nudge":
-      return { ...state, scale: clamp(state.scale + action.by) };
+      return { ...state, scale: clamp(state.scale + action.by, action.range) };
     case "diagonal": {
       const value = typeof action.value === "number" ? action.value : Number(action.value);
       const scale = action.value === "" ? null : scaleFromDiagonal(action.w, action.h, value);
-      return scale === null ? state : { ...state, diagonal: value, scale };
+      if (scale === null || clamp(scale) !== scale) return state;
+      return { ...state, diagonal: value, scale };
     }
     case "sheet":
       return { ...state, sheet: action.sheet };
@@ -101,13 +113,21 @@ export function reducer(state: ViewerState, action: ViewerAction): ViewerState {
         ? { ...state, check: state.mode, mode: state.next, next: "view" }
         : state;
     case "skip":
-      return { ...state, mode: state.next, next: "view", scale: state.prevScale };
+      return {
+        ...state,
+        mode: state.next,
+        next: "view",
+        scale: state.prevScale,
+        diagonal: null,
+      };
     case "cancel":
       return {
         ...state,
         mode: "view",
         next: "view",
         scale: isMethod(state.mode) ? state.prevScale : state.scale,
+        // A diagonal picked and then cancelled is not the screen's.
+        diagonal: isMethod(state.mode) ? null : state.diagonal,
       };
     case "close":
       return { ...state, mode: "view" };

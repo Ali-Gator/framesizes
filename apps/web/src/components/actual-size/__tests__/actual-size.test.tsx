@@ -76,7 +76,7 @@ function stubScreen({ w, h, phone }: { w: number; h: number; phone: boolean }) {
   vi.spyOn(window.screen, "width", "get").mockReturnValue(w);
   vi.spyOn(window.screen, "height", "get").mockReturnValue(h);
   vi.stubGlobal("matchMedia", (query: string) => ({
-    matches: query.includes("max-width") ? phone : query.includes("coarse") ? phone : false,
+    matches: query.includes("width <") ? phone : query.includes("coarse") ? phone : false,
     media: query,
     addEventListener: () => {},
     removeEventListener: () => {},

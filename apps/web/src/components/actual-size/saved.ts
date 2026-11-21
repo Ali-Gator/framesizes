@@ -25,7 +25,10 @@ type Stored = Check & ScreenKey;
 /** The check made in this page view; it outlives a storage that throws. */
 let memory: Stored | null = null;
 
-const same = (a: ScreenKey, b: ScreenKey) => a.w === b.w && a.h === b.h && a.dpr === b.dpr;
+/** A screen by its shorter and longer side and its pixel ratio: rotating a phone keeps its key. */
+export const screenKey = ({ w, h, dpr }: ScreenKey) => `${Math.min(w, h)}x${Math.max(w, h)}@${dpr}`;
+
+const same = (a: ScreenKey, b: ScreenKey) => screenKey(a) === screenKey(b);
 
 function parse(text: string | null): Stored | null {
   if (!text) return null;
@@ -40,7 +43,7 @@ function parse(text: string | null): Stored | null {
   }
 }
 
-/** The saved check, only while the screen's width, height and pixel ratio are the ones it was made on. */
+/** The saved check, only while the screen's sides and pixel ratio are the ones it was made on. */
 export function loadCheck(screen: ScreenKey): Check | null {
   let stored = memory;
   if (!stored) {

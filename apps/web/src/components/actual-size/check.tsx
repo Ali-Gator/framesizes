@@ -1,5 +1,5 @@
 import { CHECK_OBJECTS, type Unit } from "@framesizes/sizes";
-import type { Dispatch } from "react";
+import { type Dispatch, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { U } from "@/components/ui/u";
@@ -16,23 +16,25 @@ export const DESK_DIAGONALS = [13.3, 14, 15.6, 21.5, 23, 24, 27, 32] as const;
 
 export function Slider({
   scale,
-  phone,
+  coarse,
   label,
   dispatch,
 }: {
   scale: number;
-  phone: boolean;
+  /** A touch screen gets the narrower range; a desktop in a narrow window keeps the wide one. */
+  coarse: boolean;
   label: string;
   dispatch: Dispatch<ViewerAction>;
 }) {
-  const [min, max] = phone ? SCALE_RANGE.phone : SCALE_RANGE.desk;
+  const range = coarse ? SCALE_RANGE.phone : SCALE_RANGE.desk;
+  const [min, max] = range;
   return (
     <div className="as-slide">
       <button
         type="button"
         className="fs-btn fs-btn-secondary as-sq"
         aria-label="Smaller"
-        onClick={() => dispatch({ type: "nudge", by: -0.2 })}
+        onClick={() => dispatch({ type: "nudge", by: -0.2, range })}
       >
         −
       </button>
@@ -43,13 +45,13 @@ export function Slider({
         step={0.1}
         value={scale}
         aria-label={label}
-        onChange={(e) => dispatch({ type: "slide", scale: Number(e.target.value) })}
+        onChange={(e) => dispatch({ type: "slide", scale: Number(e.target.value), range })}
       />
       <button
         type="button"
         className="fs-btn fs-btn-secondary as-sq"
         aria-label="Bigger"
-        onClick={() => dispatch({ type: "nudge", by: 0.2 })}
+        onClick={() => dispatch({ type: "nudge", by: 0.2, range })}
       >
         +
       </button>
@@ -75,6 +77,8 @@ export function Diagonals({
   dispatch: Dispatch<ViewerAction>;
 }) {
   const list = phone ? PHONE_DIAGONALS : DESK_DIAGONALS;
+  // The field shows what was typed, and follows a picked chip.
+  const [draft, setDraft] = useState(state.diagonal === null ? "" : String(state.diagonal));
   return (
     <>
       <p className="as-step">
@@ -88,7 +92,10 @@ export function Diagonals({
             type="button"
             className="fs-chip as-chip"
             aria-pressed={state.diagonal === d}
-            onClick={() => dispatch({ type: "diagonal", value: d, ...screen })}
+            onClick={() => {
+              setDraft(String(d));
+              dispatch({ type: "diagonal", value: d, ...screen });
+            }}
           >
             <span className="fs-chip-main">{d} in</span>
           </button>
@@ -103,8 +110,11 @@ export function Diagonals({
           step={0.1}
           min={3}
           max={100}
-          defaultValue={state.diagonal ?? ""}
-          onChange={(e) => dispatch({ type: "diagonal", value: e.target.value, ...screen })}
+          value={draft}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            dispatch({ type: "diagonal", value: e.target.value, ...screen });
+          }}
         />
         <span>in</span>
       </label>
@@ -229,11 +239,13 @@ export function PhoneLines({
   state,
   unit,
   narrow,
+  coarse,
   dispatch,
   onDone,
 }: {
   state: ViewerState;
   unit: Unit;
+  coarse: boolean;
   /** Under 380 px of width the lines start 8 px in, not 16. */
   narrow: boolean;
   dispatch: Dispatch<ViewerAction>;
@@ -286,7 +298,12 @@ export function PhoneLines({
           </div>
         </div>
       </div>
-      <Slider scale={state.scale} phone label="Distance between the lines" dispatch={dispatch} />
+      <Slider
+        scale={state.scale}
+        coarse={coarse}
+        label="Distance between the lines"
+        dispatch={dispatch}
+      />
       <Button className="fs-btn-lg fs-btn-block" onClick={onDone}>
         Done, it matches
       </Button>

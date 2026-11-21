@@ -40,8 +40,11 @@ export function ticks(length: number, scale: number, unit: Unit): Tick[] {
  * {@link openspec/specs/actual-size/spec.md#requirement-every-size-shows-in-the-visitors-unit}
  */
 function Rulers({ w, h, scale, unit }: { w: number; h: number; scale: number; unit: Unit }) {
+  // In this order: the corner, then the top ruler, then the left one. Each is sticky to its edge of
+  // the scrolling box, so the scale stays readable and the part on screen starts after the rulers.
   return (
     <>
+      <div className="as-rc" />
       <svg className="as-rx" width={w} height={RULER} aria-hidden="true" data-axis="x">
         {ticks(w, scale, unit).map((t) => (
           <g key={t.at}>
@@ -66,7 +69,6 @@ function Rulers({ w, h, scale, unit }: { w: number; h: number; scale: number; un
           </g>
         ))}
       </svg>
-      <div className="as-rc" />
     </>
   );
 }

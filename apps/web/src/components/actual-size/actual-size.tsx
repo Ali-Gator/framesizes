@@ -18,7 +18,7 @@ import { useUnit } from "@/lib/unit";
 import { Diagonals, PhoneLines, RulerMark, Slider } from "./check";
 import { Dims, SizeMap, Stage } from "./drawing";
 import { FullView } from "./full-view";
-import { loadCheck, saveCheck } from "./saved";
+import { loadCheck, saveCheck, screenKey } from "./saved";
 import {
   initialState,
   type Method,
@@ -290,7 +290,7 @@ function Desk({
               dispatch={dispatch}
             />
           ) : (
-            <Slider scale={state.scale} phone={false} label="Outline size" dispatch={dispatch} />
+            <Slider scale={state.scale} coarse={false} label="Outline size" dispatch={dispatch} />
           )}
           <div className="as-acts">
             <Button onClick={onDone}>
@@ -310,7 +310,12 @@ function Desk({
               : "Sizes are a guess until you check once on this device."}
           </p>
           {state.check ? (
-            <Button variant="ghost" onClick={() => open(state.check ?? "card")}>
+            <Button
+              variant="ghost"
+              onClick={() =>
+                open(!state.check || (state.check === "sheet" && !sheetOk) ? "card" : state.check)
+              }
+            >
               Check again
             </Button>
           ) : (
@@ -410,8 +415,12 @@ export function ActualSizeViewer() {
   const see = useRef<HTMLButtonElement>(null);
 
   // The scale is known only in the browser: the saved check for this screen, else the guess.
+  // Again only when the screen itself changes (a new pixel ratio), not when the window crosses the
+  // phone breakpoint or a phone rotates, so a check in progress keeps its slider.
+  const initFor = useRef<string | null>(null);
   useEffect(() => {
-    if (!screen) return;
+    if (!screen || initFor.current === screenKey(screen)) return;
+    initFor.current = screenKey(screen);
     const saved = loadCheck(screen);
     dispatch({
       type: "init",
@@ -424,6 +433,11 @@ export function ActualSizeViewer() {
   const checking = isMethod(state.mode);
   const phoneCheck = phone === true && checking;
 
+  // The full view exists only in the phone layout: leaving it closes the view.
+  useEffect(() => {
+    if (phone === false && state.mode === "full") dispatch({ type: "close" });
+  }, [phone, state.mode]);
+
   // A phone's check step starts with the viewer's title at the top of the screen.
   useEffect(() => {
     if (phoneCheck) head.current?.scrollIntoView?.({ block: "start" });
@@ -432,8 +446,9 @@ export function ActualSizeViewer() {
   const done = () => {
     if (!screen || !isMethod(state.mode)) return;
     let scale = state.scale;
-    if (state.mode === "screen" && state.diagonal === null) {
-      const d = guessDiagonal(screen);
+    // The screen-size check saves the picked diagonal's scale, or the guessed diagonal's.
+    if (state.mode === "screen") {
+      const d = state.diagonal ?? guessDiagonal(screen);
       scale = scaleFromDiagonal(screen.w, screen.h, d) ?? scale;
       dispatch({ type: "diagonal", value: d, w: screen.w, h: screen.h });
     }
@@ -488,6 +503,7 @@ export function ActualSizeViewer() {
               state={state}
               unit={unit}
               narrow={window.innerWidth < 380}
+              coarse={screen.coarse}
               dispatch={dispatch}
               onDone={done}
             />
