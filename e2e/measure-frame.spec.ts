@@ -52,6 +52,7 @@ test.describe("on a phone", () => {
     await fitsWidth(page);
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-a-phone-shows-one-step-per-screen} */
   test("Back returns to the choice", async ({ page }) => {
     await open(page);
     await press(page, "Enter the sizes");

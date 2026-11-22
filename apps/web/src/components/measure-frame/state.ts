@@ -77,7 +77,8 @@ type Read = { empty: true } | { bad: true } | { inches: number };
 
 function read({ text, eighths }: FieldState, unit: Unit): Read {
   const t = text.trim();
-  const extra = unit === "in" ? eighths / 8 : 0;
+  // The eighths add to a whole number only; a typed fraction or decimal replaces them on blur.
+  const extra = unit === "in" && /^\d*$/.test(t) ? eighths / 8 : 0;
   if (!t && !extra) return { empty: true };
   const n = t ? readLength(t) : 0;
   if (n === undefined) return { bad: true };

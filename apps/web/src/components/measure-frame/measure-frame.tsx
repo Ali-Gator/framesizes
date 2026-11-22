@@ -2,7 +2,7 @@
 
 import { inEighths, LIP, MAT_OVERLAP, toCm, type Unit } from "@framesizes/sizes";
 import Link from "next/link";
-import { type ReactNode, useEffect, useId, useReducer, useRef } from "react";
+import { type ReactNode, useEffect, useId, useLayoutEffect, useReducer, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -103,8 +103,9 @@ export function MeasureFrame() {
   const field = (f: Field) => `${id}-${f}`;
 
   // {@link openspec/specs/measure-frame/spec.md#requirement-switching-the-unit-converts-the-numbers-already-typed}
+  // A layout effect: the render that reads the fields in the old unit is never painted or announced.
   const lastUnit = useRef(unit);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (lastUnit.current === unit) return;
     dispatch({ type: "unit", from: lastUnit.current, to: unit });
     lastUnit.current = unit;
@@ -117,9 +118,10 @@ export function MeasureFrame() {
     if (!focusStep.current) return;
     focusStep.current = false;
     headings.current[state.step]?.focus();
-  }, [state.step]);
+  }, [state]);
+  // Check where to measure and Measure another frame remove the focused button on every screen.
   const go = (action: Action) => {
-    focusStep.current = isPhone();
+    focusStep.current = isPhone() || action.type === "checkSpot" || action.type === "reset";
     dispatch(action);
   };
 
@@ -278,7 +280,9 @@ export function MeasureFrame() {
                         onBlur={() => dispatch({ type: "blur", field: f, unit })}
                       />
                       <span className="mf-suf" aria-hidden="true">
-                        {eighths ? <b className="u-in">{GLYPHS[eighths]}</b> : null}
+                        {eighths && /^\s*\d*\s*$/.test(state.fields[f].text) ? (
+                          <b className="u-in">{GLYPHS[eighths]}</b>
+                        ) : null}
                         <U in="in" cm="cm" />
                       </span>
                     </div>

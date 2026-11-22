@@ -42,6 +42,7 @@ describe("moving through the steps", () => {
     expect(found.submitted).toBe(true);
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-a-phone-shows-one-step-per-screen} */
   it("goes back to the choice from the fields", () => {
     expect(run({ type: "enter" }, { type: "back" }).step).toBe("pick");
   });
@@ -75,12 +76,14 @@ describe("moving through the steps", () => {
     expect(reducer(found, { type: "reset" })).toEqual(INITIAL);
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-bad-input-marks-the-field-and-gets-no-answer} */
   it("stays on the fields when Find meets an error", () => {
     const found = run({ type: "enter" }, { type: "find", unit: "in" });
     expect(found.step).toBe("enter");
     expect(found.submitted).toBe(true);
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-the-sizes-take-whole-inches-and-eighths-or-centimetres} */
   it("moves the eighths row off the moulding when the choice drops it", () => {
     const s = run({ type: "pick", kind: "outside" }, { type: "focus", field: "f" });
     expect(reducer(s, { type: "pick", kind: "inside" }).active).toBe("w");
@@ -95,6 +98,7 @@ describe("the eighths", () => {
     expect(fieldValue(s, "w", "in")).toBe(8.125);
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-the-sizes-take-whole-inches-and-eighths-or-centimetres} */
   it("sets the field in use", () => {
     const s = run({ type: "focus", field: "h" }, { type: "eighth", eighths: 4 });
     expect(s.fields.h.eighths).toBe(4);
@@ -128,6 +132,22 @@ describe("the eighths", () => {
   });
 });
 
+describe("a typed fraction over pressed eighths", () => {
+  /** {@link openspec/specs/measure-frame/spec.md#scenario-other-typed-forms} */
+  it("reads 8.25 as typed, not plus the ½ still pressed", () => {
+    const s = run(
+      { type: "type", field: "w", text: "8" },
+      { type: "eighth", eighths: 4 },
+      { type: "type", field: "w", text: "8.25" },
+    );
+    expect(fieldValue(s, "w", "in")).toBe(8.25);
+    expect(reducer(s, { type: "blur", field: "w", unit: "in" }).fields.w).toEqual({
+      text: "8",
+      eighths: 2,
+    });
+  });
+});
+
 describe("switching the unit", () => {
   /** {@link openspec/specs/measure-frame/spec.md#scenario-inches-to-centimetres-and-back} */
   it("turns 8⅛ in into 20.6 cm and back", () => {
@@ -140,6 +160,7 @@ describe("switching the unit", () => {
     });
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-switching-the-unit-converts-the-numbers-already-typed} */
   it("leaves empty and unreadable fields as they are", () => {
     const s = run(
       { type: "type", field: "h", text: "abc" },
@@ -164,6 +185,7 @@ describe("bad input", () => {
     expect(errors(run(...typed("0", "10")), "cm").w).toBe("Enter a width above 0 cm.");
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-bad-input-marks-the-field-and-gets-no-answer} */
   it("asks for the moulding width on the outside", () => {
     expect(errors(run({ type: "pick", kind: "outside" }, ...typed("10", "12"))).f).toBe(
       "Enter the moulding width.",
@@ -186,6 +208,7 @@ describe("bad input", () => {
 });
 
 describe("the answer", () => {
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-the-outside-choice-asks-for-the-moulding-width} */
   it("gives the measured size in inches, and the moulding on the outside", () => {
     const o = outcome(run({ type: "pick", kind: "outside" }, ...typed("10", "12", "1 1/4")), "in");
     expect(o).toMatchObject({ measured: { w: 10, h: 12 }, face: 1.25 });

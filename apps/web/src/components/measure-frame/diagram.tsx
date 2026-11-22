@@ -1,4 +1,12 @@
-import { inEighths, LIP, MAT_OVERLAP, MOULDING, toCm } from "@framesizes/sizes";
+import {
+  CATALOG,
+  type Frame,
+  frameMeasurements,
+  inEighths,
+  LIP,
+  MAT_OVERLAP,
+  toCm,
+} from "@framesizes/sizes";
 import type { ReactNode } from "react";
 
 export type DiagramKind =
@@ -12,7 +20,9 @@ const Len = ({ inches }: { inches: number }) => (
   </>
 );
 
-const FACE = MOULDING + LIP;
+const FACE = frameMeasurements(CATALOG[0] as Frame).face;
+/** A length for an accessible name, which CSS cannot switch: both units. */
+const both = (inches: number) => `${inEighths(inches)} in (${toCm(inches).toFixed(1)} cm)`;
 
 /** The drawing's accessible name, the Diagrams board's aria-labels. */
 export const DIAGRAM_LABELS: Record<DiagramKind, string> = {
@@ -25,7 +35,7 @@ export const DIAGRAM_LABELS: Record<DiagramKind, string> = {
     "Front of a frame. One tape runs above the frame from outer edge to outer edge. A short tape runs across the moulding on the left, from the outer edge to the glass.",
   back: "Back of a frame lying face down, with the bent tabs that hold the backing board.",
   result: "A frame with the answer 8 × 10 in.",
-  xsec: `Cross-section through one edge of a frame, front at the top. From the outside in: the outer edge; the recess wall under the lip, where the inside is measured; the edge of the lip, where the front opening is measured; the cut edge of the mat, where the mat opening is measured. The moulding seen from the front is ${inEighths(FACE)} in, the lip covers ${inEighths(LIP)} in of the picture and the mat covers ${inEighths(MAT_OVERLAP)} in of the print.`,
+  xsec: `Cross-section through one edge of a frame, front at the top. From the outside in: the outer edge; the recess wall under the lip, where the inside is measured; the edge of the lip, where the front opening is measured; the cut edge of the mat, where the mat opening is measured. The moulding seen from the front is ${both(FACE)}, the lip covers ${both(LIP)} of the picture and the mat covers ${both(MAT_OVERLAP)} of the print.`,
   round:
     "Cross-section of a frame with a rounded edge. Measure the moulding flat, as seen from the front, from the outermost point to the edge of the lip. Do not run the tape around the curve.",
 };

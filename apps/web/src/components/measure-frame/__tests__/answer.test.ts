@@ -21,6 +21,7 @@ const say = (kind: Kind, unit: Unit, w: string, h: string, f?: string) =>
   describe(result(kind, unit, w, h, f), kind, unit);
 
 group("articles", () => {
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-a-standard-size-answer-says-how-it-was-found} */
   it("use an before 8, 11, 18 and A, and a before the rest", () => {
     expect(
       ["8x10", "11x14", "18x24", "A4", "80 cm", "5x7", "110 cm", "16x20"].map(article),
@@ -139,6 +140,7 @@ group("a custom size", () => {
     ]);
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-a-custom-size-answer-names-the-closest-standard-sizes} */
   it("says the same width rather than 0 in narrower", () => {
     expect(say("inside", "in", "8", "13").nearest?.[0]).toEqual({
       id: "8x10",
@@ -194,6 +196,7 @@ group("the drawing", () => {
     expect(d.legend).toEqual([]);
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-the-answer-is-announced-and-drawn} */
   it("labels the tapes with what was typed", () => {
     expect(drawing("inside", "cm", { w: 8.125, h: 10 }).tapes.map((t) => t.text)).toEqual([
       "20.6 cm",
@@ -211,6 +214,7 @@ group("the drawing", () => {
     ]);
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-the-answer-is-announced-and-drawn} */
   it("marks the mat opening and says which frame it is drawn as", () => {
     const r = result("mat", "in", "15 1/2", "19 1/2");
     const d = drawing("mat", "in", { w: 15.5, h: 19.5 }, r);
@@ -218,6 +222,7 @@ group("the drawing", () => {
     expect(d.legend.find((g) => g.on)?.name).toBe("Mat opening");
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-the-answer-is-announced-and-drawn} */
   it("keeps every box on the stage", () => {
     for (const kind of ["inside", "front", "mat", "outside"] as const) {
       const d = drawing(kind, "in", {});

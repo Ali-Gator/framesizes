@@ -1,11 +1,12 @@
 import {
+  CATALOG,
   type Frame,
+  frameMeasurements,
   type Identified,
   inEighths,
   LIP,
   MAT_OVERLAP,
   MEASURE_TOLERANCE,
-  MOULDING,
   type Size,
   toCm,
   type Unit,
@@ -207,7 +208,8 @@ const NAMES: Record<Kind, string> = {
   mat: "the mat opening",
   outside: "the outside edges and the moulding",
 };
-const FACE = MOULDING + LIP;
+/** The example moulding seen from the front, the same on every catalog frame. */
+const FACE = frameMeasurements(CATALOG[0] as Frame).face;
 
 /**
  * The live drawing: the frame from the back (inside) or the front, the yellow tape where the

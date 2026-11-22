@@ -67,6 +67,7 @@ describe("the wizard in the server HTML", () => {
     );
   });
 
+  /** {@link openspec/specs/measure-frame/spec.md#requirement-the-wizard-offers-four-measurements-inside-first} */
   it("names every control", () => {
     const controls = [...server.querySelectorAll("button, input")];
     expect(controls.length).toBeGreaterThan(10);
@@ -182,5 +183,16 @@ describe("the wizard in use", () => {
     type(field("Height"), "14");
     expect(host?.querySelector(".mf-res-h")?.textContent).toBe("Your frame is an 11x14.");
     expect(host?.querySelector(".mf-holds a")?.getAttribute("href")).toBe("/?size=11x14");
+  });
+
+  /** {@link openspec/specs/measure-frame/spec.md#scenario-check-where-to-measure} */
+  it("moves focus to the first step on Check where to measure", () => {
+    mount();
+    type(field("Width"), "9");
+    type(field("Height"), "12");
+    click(button("Find my frame size"));
+    click(button("Check where to measure"));
+    expect(document.activeElement?.tagName).toBe("LEGEND");
+    expect(field("Width").value).toBe("9");
   });
 });

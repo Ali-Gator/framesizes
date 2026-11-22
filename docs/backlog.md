@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-110**
+_Next id:_ **BL-111**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -26,6 +26,11 @@ and defects or gaps found along the way that are worth fixing later. CLAUDE.md (
 when to add and when to fold items in.
 
 ## Tooling
+
+- **[BL-110] One eighths split in the size engine** — F4's `toEighths` in `state.ts` repeats the
+  nearest-eighth rounding of `inEighths`; export the whole-and-eighths split from `units.ts` and use
+  it in both, so a field and its written length can never round apart.
+  _Refs:_ `apps/web/src/components/measure-frame/state.ts`, `packages/sizes/src/units.ts` · _Status:_ open — t4-measure-picture-frame review, 2026-11-22
 
 - **[BL-75] One shared IndexedDB reader for the extension e2e** — `storedKeys`, `storedPrints` and the
   copies in `extension.spec.ts` and `extension-races.spec.ts` each open `gallery-wall` v1 with no

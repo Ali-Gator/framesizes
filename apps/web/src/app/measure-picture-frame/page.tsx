@@ -3,14 +3,13 @@ import {
   frameMeasurements,
   LIP,
   MAT_OVERLAP,
-  MOULDING,
   type Size,
   writeSize,
 } from "@framesizes/sizes";
 import type { ReactNode } from "react";
 
 import { RelatedTools } from "@/components/frame-chart/related-tools";
-import { writeIn } from "@/components/measure-frame/answer";
+import { article, writeIn } from "@/components/measure-frame/answer";
 import { Diagram } from "@/components/measure-frame/diagram";
 import { MeasureFrame } from "@/components/measure-frame/measure-frame";
 import { writeLength } from "@/components/measure-frame/state";
@@ -39,13 +38,31 @@ const S = ({ size }: { size: Size }) => (
     <U in={writeIn(size, "in")} cm={writeIn(size, "cm")} />
   </span>
 );
+/** A size in both units with its article: "an 8 × 10 in", "a 20.3 × 25.4 cm". */
+const AS = ({ size }: { size: Size }) => {
+  const [inches, cm] = [writeIn(size, "in"), writeIn(size, "cm")];
+  return (
+    <U
+      in={
+        <>
+          {article(inches)} <span className="font-mono">{inches}</span>
+        </>
+      }
+      cm={
+        <>
+          {article(cm)} <span className="font-mono">{cm}</span>
+        </>
+      }
+    />
+  );
+};
 /** A length in both units. */
 const L = ({ inches }: { inches: number }) => (
   <U in={writeLength(inches, "in")} cm={writeLength(inches, "cm")} />
 );
 
 const EIGHT_TEN = frameMeasurements(frame("8x10"));
-const FACE = MOULDING + LIP;
+const FACE = EIGHT_TEN.face;
 const TABLE = ["4x6", "5x7", "8x10", "11x14", "16x20", "24x36"].map((id) => ({
   id,
   m: frameMeasurements(frame(id)),
@@ -94,8 +111,8 @@ const QUESTIONS = [
     q: "Is frame size measured inside or outside?",
     a: (
       <p>
-        Inside. An 8x10 frame holds an <S size={EIGHT_TEN.inside} /> picture. The outside is bigger
-        by the moulding: about <S size={EIGHT_TEN.outside} /> with a <L inches={FACE} /> moulding.
+        Inside. An 8x10 frame holds <AS size={EIGHT_TEN.inside} /> picture. The outside is bigger by
+        the moulding: about <S size={EIGHT_TEN.outside} /> with a <L inches={FACE} /> moulding.
       </p>
     ),
   },
@@ -227,11 +244,10 @@ export default function MeasurePictureFrame() {
           }))}
         />
         <p className="max-w-prose">
-          Frame dimensions are always the inside: an 8x10 frame holds an{" "}
-          <S size={EIGHT_TEN.inside} /> print. The front opening is <L inches={2 * LIP} /> smaller
-          because the lip overlaps the picture, and the outside depends on the moulding. A frame
-          with a mat shows less again: the mat opening is <L inches={2 * MAT_OVERLAP} /> smaller
-          than the print it holds.
+          Frame dimensions are always the inside: an 8x10 frame holds <AS size={EIGHT_TEN.inside} />{" "}
+          print. The front opening is <L inches={2 * LIP} /> smaller because the lip overlaps the
+          picture, and the outside depends on the moulding. A frame with a mat shows less again: the
+          mat opening is <L inches={2 * MAT_OVERLAP} /> smaller than the print it holds.
         </p>
       </Section>
 
