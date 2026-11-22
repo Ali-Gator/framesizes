@@ -148,14 +148,24 @@ The engine SHALL take a mat's opening as the print size less the mat's overlap o
 
 ### Requirement: A measurement that gives no size gets no answer
 
-The engine SHALL give no answer when a side, a moulding width, a lip or an overlap is not a positive finite number, or when the frame size an outside measurement gives is not positive.
+The engine SHALL give no answer when a side, a moulding width, a lip or an overlap is not a positive finite number, when an outside measurement's moulding width is no wider than its lip, or when the frame size an outside measurement gives is not positive.
 
 #### Scenario: A side that is not a positive number
 
 - **WHEN** a side measured inside is 0, negative or not a number
 - **THEN** there is no answer
 
+#### Scenario: A lip, overlap or moulding width of 0
+
+- **WHEN** a front opening is given with a lip of 0, an outside with a lip or moulding width of 0, or a mat opening with an overlap of 0
+- **THEN** there is no answer
+
 #### Scenario: Mouldings wider than the frame
 
 - **WHEN** a frame is 4 by 6 inches outside and its moulding is 3 inches wide from the front
+- **THEN** there is no answer
+
+#### Scenario: A moulding no wider than its lip
+
+- **WHEN** a frame is 13 by 16 inches outside and its moulding is ¼ inch or 0.1 inch wide from the front, with the ¼ inch lip
 - **THEN** there is no answer

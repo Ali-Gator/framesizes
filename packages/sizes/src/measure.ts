@@ -70,10 +70,12 @@ const upright = ({ w, h }: Size): Size => (w <= h ? { w, h } : { w: h, h: w });
 const gap = (a: Size, b: Size) => Math.max(Math.abs(a.w - b.w), Math.abs(a.h - b.h));
 
 /** An upright catalog frame turned to the measured orientation; a square stays square. */
-const turn = (frame: Frame, landscape: boolean): Frame =>
-  landscape && frame.orientation !== "square"
-    ? (findFrame(`${frame.h}x${frame.w}`) ?? frame)
-    : frame;
+function turn(frame: Frame, landscape: boolean): Frame {
+  if (!landscape || frame.orientation === "square") return frame;
+  const turned = findFrame(`${frame.h}x${frame.w}`);
+  if (!turned) throw new Error(`${frame.id} has no landscape entry`);
+  return turned;
+}
 
 function closest<T extends Size>(list: readonly T[], up: Size): { item: T; d: number } | undefined {
   let best: { item: T; d: number } | undefined;
@@ -144,7 +146,7 @@ export function identifyFrame(m: Measurement): Identified | undefined {
   if (!positive(lip)) return undefined;
   let grow = 2 * lip;
   if (m.kind === "outside") {
-    if (!positive(m.face)) return undefined;
+    if (!positive(m.face) || m.face <= lip) return undefined;
     grow -= 2 * m.face;
   }
   const size = { w: w + grow, h: h + grow };

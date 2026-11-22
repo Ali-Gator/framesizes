@@ -97,7 +97,7 @@ All per side, in inches:
 
 ### 8. Validation
 
-Every side, the face width, the lip and the overlap must be finite and positive (a lip or overlap of 0 is refused too: no real frame or mat has none, and a 0 would hide a typing slip). After the arithmetic, a frame size that is not positive (outside path) is no answer.
+Every side, the face width, the lip and the overlap must be finite and positive (a lip or overlap of 0 is refused too: no real frame or mat has none, and a 0 would hide a typing slip). On the outside path a face no wider than the lip is refused: the face includes the lip, so such a face would give a frame size as big as the outside or bigger (phase review). After the arithmetic, a frame size that is not positive (outside path) is no answer.
 
 ## Risks / Trade-offs
 

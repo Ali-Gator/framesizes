@@ -227,7 +227,7 @@ describe("no answer", () => {
     }
   });
 
-  /** {@link openspec/specs/size-engine/spec.md#requirement-a-measurement-that-gives-no-size-gets-no-answer} */
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-lip-overlap-or-moulding-width-of-0} */
   it("for a lip, overlap or face width of 0", () => {
     const size = { w: 8, h: 10 };
     expect(identifyFrame({ kind: "front", size, lip: 0 })).toBeUndefined();
@@ -240,5 +240,12 @@ describe("no answer", () => {
   /** {@link openspec/specs/size-engine/spec.md#scenario-mouldings-wider-than-the-frame} */
   it("for a 4 by 6 outside with a 3 in face", () => {
     expect(identifyFrame({ kind: "outside", size: { w: 4, h: 6 }, face: 3 })).toBeUndefined();
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-moulding-no-wider-than-its-lip} */
+  it("for a face no wider than the lip", () => {
+    const size = { w: 13, h: 16 };
+    expect(identifyFrame({ kind: "outside", size, face: 0.25 })).toBeUndefined();
+    expect(identifyFrame({ kind: "outside", size, face: 0.1 })).toBeUndefined();
   });
 });
