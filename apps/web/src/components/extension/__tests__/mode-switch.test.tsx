@@ -170,6 +170,17 @@ describe("ModeSwitch", () => {
     expect(document.activeElement?.textContent).toBe("What you can do in the side panel");
   });
 
+  /** {@link openspec/specs/extension-site/spec.md#scenario-the-address-after-the-self-switch} */
+  it("drops pinned from the address when it switches itself, without a history entry", async () => {
+    fakeExtension(false, true);
+    await mount(`${PATH}?pinned=0&utm_source=store`);
+    const entries = history.length;
+    await wait(2000);
+    expect(mode()).toBe("usage");
+    expect(location.search).toBe("?utm_source=store");
+    expect(history.length).toBe(entries);
+  });
+
   it("clears the mode when it leaves the page", async () => {
     await mount(`${PATH}?pinned=0`, "");
     expect(mode()).toBe("pin");
