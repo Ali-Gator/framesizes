@@ -94,4 +94,16 @@ describe("whether the check is stored", () => {
     expect(loadCheck(SCREEN)).toEqual({ scale: 150, method: "card" });
     expect(checkStored()).toBe(true);
   });
+
+  /** {@link openspec/specs/actual-size/spec.md#scenario-storage-is-blocked} */
+  it("drops an older stored check when a new one cannot be stored", () => {
+    expect(saveCheck({ scale: 150, method: "card" }, SCREEN)).toBe(true);
+    const blocked = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("full");
+    });
+    expect(saveCheck({ scale: 140, method: "ruler" }, SCREEN)).toBe(false);
+    blocked.mockRestore();
+    forgetCheck(); // a new page view opens on the guess, not on the older check
+    expect(loadCheck(SCREEN)).toBeNull();
+  });
 });

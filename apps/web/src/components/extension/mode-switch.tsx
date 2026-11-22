@@ -13,8 +13,8 @@ const POLL_MS = 2000;
  * Keeps `<html data-ext-mode>` in step with the URL: on mount (a client-side visit runs no inline
  * script) and on `hashchange`, which also moves focus to the shown section's heading. In pin mode
  * from `?pinned=0` with no hash, it asks the extension every 2 s while the tab is visible and
- * switches to usage on the first pinned reply, then drops `pinned` from the address in place (hash,
- * other parameters and `history.state` kept), so a reload stays in usage mode. This one component
+ * switches to usage on the first pinned reply, then drops `pinned` from the address in place (hash and
+ * other parameters kept), so a reload stays in usage mode. This one component
  * serves the English and every translated route. Renders nothing.
  * {@link openspec/specs/extension-site/spec.md#requirement-each-mode-links-to-the-other}
  * {@link openspec/specs/extension-site/spec.md#requirement-pin-mode-switches-itself-once-the-button-is-pinned}
@@ -43,8 +43,8 @@ export function ModeSwitch({ extensionId }: { extensionId: string }) {
           html.dataset.extMode = "usage";
           const url = new URL(location.href);
           url.searchParams.delete("pinned");
-          // Keep history.state: the App Router keeps its tree there.
-          history.replaceState(history.state, "", url);
+          // null, not history.state: Next then copies its own state in and updates the router.
+          history.replaceState(null, "", url);
           // The pin section is about to vanish under the focus; carry it to the shown heading.
           if (hadFocus) heading("usage")?.focus();
           return;

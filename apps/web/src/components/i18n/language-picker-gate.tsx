@@ -20,7 +20,9 @@ function PickerPlaceholder() {
       className="lp-trig invisible box-border inline-flex h-11 flex-none items-center gap-2 border-[1.5px] ps-3 pe-3.5 font-sans text-[15px] leading-5 font-semibold whitespace-nowrap max-[599px]:w-11 max-[599px]:justify-center max-[599px]:p-0"
     >
       <span className="size-[18px] flex-none" />
-      <span className="max-[599px]:hidden">{current && fullNative(current)}</span>
+      <span className="max-[599px]:hidden" lang={current?.hreflang} dir="auto">
+        {current && fullNative(current)}
+      </span>
       <span className="size-4 flex-none max-[599px]:hidden" />
     </span>
   );

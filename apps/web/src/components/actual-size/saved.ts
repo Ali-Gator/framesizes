@@ -67,6 +67,12 @@ export function saveCheck(check: Check, screen: ScreenKey): boolean {
     fromStorage = true;
   } catch {
     fromStorage = false;
+    // An older check must not outlive this one: the next page load opens on the guess.
+    try {
+      window.localStorage.removeItem(KEY);
+    } catch {
+      // Storage refuses even that.
+    }
   }
   return fromStorage;
 }

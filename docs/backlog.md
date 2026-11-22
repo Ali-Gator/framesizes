@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-98**
+_Next id:_ **BL-100**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -32,6 +32,9 @@ when to add and when to fold items in.
   `onerror`, so a schema bump missed in one copy hangs that test until timeout. Move them to one
   helper in `e2e/fixtures` (edits existing tests).
   _Refs:_ `e2e/extension-try.spec.ts`, `e2e/extension.spec.ts`, `e2e/extension-races.spec.ts` · _Status:_ open — backlog-5 review, 2026-11-20
+- **[BL-99] One import from `../saved` in saved.test.ts** — backlog-7 added `checkStored` on a
+  second import line; merge it into the first next time the file's tests may be edited.
+  _Refs:_ `apps/web/src/components/actual-size/__tests__/saved.test.ts` · _Status:_ deferred — an approved edit there (backlog-7 review, 2026-11-22)
 - **[BL-1] Drop the TypeScript 6 alias** — `typescript` is aliased to `@typescript/typescript6` only because
   typescript-eslint lacks TS 7 support; once it ships, depend on plain `typescript@^7` and remove
   `@typescript/native`, so `tsc`, Next.js and eslint use one compiler.
@@ -162,6 +165,11 @@ when to add and when to fold items in.
 
 ## Widgets
 
+- **[BL-98] F3 chips a small screen cannot use** — on a 7 in tablet in the phone layout (Fire 7,
+  600 × 1024) the tablet chips from 12.4 in give under 100 px per inch, so the touch slider ignores
+  them; a tap fills "Other size" with 13 while no chip is pressed and the button still says "Use
+  11 in" (a small laptop does the same with 32 in). Hide such chips or say why, with BL-94's note.
+  _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`Diagonals`) · _Status:_ open — backlog-7 review, 2026-11-22
 - **[BL-94] F3 says nothing when a typed screen size is ignored** — a size whose scale the slider
   cannot show leaves the field holding it while the check uses the picked size or the guess; only the
   button's "Use N in" changes, and that change is not announced. Add a polite note beside the field,
