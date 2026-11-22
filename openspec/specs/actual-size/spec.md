@@ -346,6 +346,11 @@ Related tools SHALL list the live Frames pages other than F3, then PH1, Q2 and G
 - **WHEN** `/how-big-is-8x10` is requested while only F1, F2, F3, G1 and the company pages are live
 - **THEN** Related tools holds three cards, linking to `/`, `/frame-sizes-on-wall` and `/gallery-wall-planner`; no link points to `/photo-print-sizes` or `/dpi-checker`; and no `href` starts with `#`
 
+#### Scenario: F1, F2, F3, F4 and G1 are live
+
+- **WHEN** `/how-big-is-8x10` is requested while only F1, F2, F3, F4, G1 and the company pages are live
+- **THEN** Related tools holds four cards, linking to `/`, `/frame-sizes-on-wall`, `/measure-picture-frame` and `/gallery-wall-planner` in that order; no link points to `/photo-print-sizes` or `/dpi-checker`; and no `href` starts with `#`
+
 ### Requirement: The page carries its head values and breadcrumbs
 
 The page SHALL take its title, `h1`, description and content date from its site map entry, carry breadcrumbs Home › How big is 8x10 with a matching `BreadcrumbList`, and send its own 1200 × 630 social image with the alt "8x10 frame compared with 11x14, 16x20, A4 and A3 frames at the same scale".
