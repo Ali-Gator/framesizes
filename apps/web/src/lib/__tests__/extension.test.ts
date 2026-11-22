@@ -37,6 +37,15 @@ describe("the go-live gate", () => {
     expect(STORE_URL).toBe(storeUrl(EXTENSION_ID));
     expect(storeUrl(ID)).toBe(`https://chromewebstore.google.com/detail/${ID}`);
   });
+
+  /** {@link openspec/specs/extension-site/spec.md#scenario-the-published-listing} */
+  it("holds the published listing's id with the extension page live", () => {
+    expect(EXTENSION_ID).toBe("khapjkonaofjfljdakdcmodaclkmffgn");
+    expect(page("X1").live).toBe(true);
+    expect(STORE_URL).toBe(
+      "https://chromewebstore.google.com/detail/khapjkonaofjfljdakdcmodaclkmffgn",
+    );
+  });
 });
 
 describe("askExtension", () => {

@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-100**
+_Next id:_ **BL-105**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -57,11 +57,6 @@ when to add and when to fold items in.
   carries its own widget; A1–A5 carry none by design (t26 proposal and design). Add the exemption
   to its Conventions so a later review does not flag it.
   _Refs:_ `CLAUDE.md`, `openspec/specs/company-pages/spec.md` · _Status:_ open — owner's file, t26 review, 2026-11-21
-- **[BL-88] Retire the "home page, F2 and G1 are live" sitemap scenario** — no test cites it since
-  t26 moved the sitemap test to "The live tools and the company pages", and it no longer describes
-  the site. OpenSpec refuses to drop a scenario from a MODIFIED block, so a later seo-base change
-  rewrites it.
-  _Refs:_ `openspec/specs/seo-base/spec.md#scenario-the-home-page-f2-and-g1-are-live` · _Status:_ open — t26 review, 2026-11-21
 - **[BL-49] G1 re-lays out the template on every drag move** — `dragFrame` calls `framesOf` per
   pointer move; pass the frames the view already has. No visible lag at 12 frames yet.
   _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`dragFrame`) · _Status:_ deferred — lag on a slow phone
@@ -111,6 +106,16 @@ when to add and when to fold items in.
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
   system colour once a second hub makes the nav visible.
   _Refs:_ `apps/web/src/components/site/hub-nav.tsx` · _Status:_ gated — a second live hub (backlog-3 triage, 2026-11-15)
+- **[BL-103] Check X1's live head on production** — Rich Results Test on the live X1 URL
+  (BreadcrumbList valid), a preview card in a chat app, `www.` and trailing-slash URLs reach the
+  canonical in one hop, and no `X-Robots-Tag` on the response.
+  _Refs:_ `openspec/specs/extension-site/spec.md` · _Status:_ open — after the t24-go-live deploy
+
+- **[BL-104] A translated X1's last breadcrumb item is the English URL** — on `/ru/…` the
+  BreadcrumbList's last `item` is `https://framesizes.app/extensions/gallery-wall-layout-generator`,
+  not the page's own canonical. Google reads the last item as the current page; point it at the
+  translated URL (or drop its `item`) and amend the spec's "crumb links point to the English pages".
+  _Refs:_ `openspec/specs/extension-site/spec.md#requirement-a-translated-versions-breadcrumbs-are-translated`, `apps/web/src/lib/seo.ts` · _Status:_ open — t24-go-live pre-publish check, 2026-11-22
 
 ## Chrome extension
 
@@ -118,11 +123,18 @@ when to add and when to fold items in.
   title from the page's `h1` and the sizes from the whole page, so on a category grid the try reads
   "Wall Art" and lists every product's sizes. Prefer the link's text, `aria-label` or the image's alt.
   _Refs:_ `apps/extension/src/read-page.ts`, `apps/extension/src/background.ts` · _Status:_ gated — spec says "the page's title"; backlog-6 review, 2026-11-21
-- **[BL-96] Translated listings land on the matching X1 page** — once the store approves the
-  extension, open it from each store language and check it lands on the same language's page, e.g.
-  `https://framesizes.app/tl/extensions/gallery-wall-layout-generator#usage`. Google takes only
-  two-letter codes, so Filipino is `tl` (not `fil`), Chinese Simplified is `zh-Hans`, Norwegian is `no`.
-  _Refs:_ `apps/extension/src/background.ts`, `apps/web/src/lib/locales.ts` · _Status:_ gated — Chrome Web Store approval (owner's note, 2026-11-21)
+- **[BL-100] Check the pin switch on production** — install from the store with the button
+  unpinned: the tab opens `?pinned=0`; pin it and the page switches to usage mode within 2 s with
+  `pinned` gone from the address. The published extension talks only to `https://framesizes.app/*`.
+  _Refs:_ `openspec/changes/archive/*-t24-go-live/tasks.md` (After deploy) · _Status:_ open — after the t24-go-live deploy
+- **[BL-101] Check G1's extension section on production** — with the extension installed, G1 reads
+  "You have it…" at the same height as with it disabled; on a 390 px touch phone it shows "Chrome on
+  phones doesn't run extensions…" and no "Add to Chrome".
+  _Refs:_ `apps/web/src/components/extension/` · _Status:_ open — after the t24-go-live deploy
+- **[BL-102] Check the install tab in Chrome's language** — upload 0.1.1
+  (`pnpm --filter extension zip`); once the store passes it, a first install in Chrome set to
+  Russian opens `/ru/…`, and in Filipino `/tl/…`.
+  _Refs:_ `apps/extension/src/background.ts` `howToUrl` · _Status:_ gated — store review of 0.1.1
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third

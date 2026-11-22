@@ -11,21 +11,21 @@ Branch `t24-go-live` from `main` at `f11df8f`. Owner approved these existing-tes
 
 ## 2. Go-live: tests first
 
-- [ ] 2.1 `apps/web/src/lib/__tests__/extension.test.ts`: add a new `it` for "The published listing": `EXTENSION_ID` is `khapjkonaofjfljdakdcmodaclkmffgn`, `page("X1").live` is true, and `STORE_URL` is `https://chromewebstore.google.com/detail/khapjkonaofjfljdakdcmodaclkmffgn`. Cite {@link openspec/specs/extension-site/spec.md#scenario-the-published-listing}. Leave the existing gate cases as they are. Verify it fails.
-- [ ] 2.2 `apps/web/src/lib/__tests__/seo.test.ts` (approved edits):
+- [x] 2.1 `apps/web/src/lib/__tests__/extension.test.ts`: add a new `it` for "The published listing": `EXTENSION_ID` is `khapjkonaofjfljdakdcmodaclkmffgn`, `page("X1").live` is true, and `STORE_URL` is `https://chromewebstore.google.com/detail/khapjkonaofjfljdakdcmodaclkmffgn`. Cite {@link openspec/specs/extension-site/spec.md#scenario-the-published-listing}. Leave the existing gate cases as they are. Verify it fails.
+- [x] 2.2 `apps/web/src/lib/__tests__/seo.test.ts` (approved edits):
   - "lists no translated URL while the page is not live" builds from `sitemapEntries(withLive("F1", "G1"))`.
   - "keeps a translated version out of the index while X1 is not live" uses `{ ...X1, live: false }`.
   - Both keep their titles and citations, and both pass before and after the flip.
-- [ ] 2.3 `seo.test.ts`, BL-88: add two new `it` cases, each built with `withLive`:
+- [x] 2.3 `seo.test.ts`, BL-88: add two new `it` cases, each built with `withLive`:
   - "The home page, F2 and G1 are live": 3 entries.
   - "The live tools and the company pages": 8 entries with the five company paths.
   - Cite each at its `seo-base` anchor (`#scenario-the-home-page-f2-and-g1-are-live`, `#scenario-the-live-tools-and-the-company-pages`). They pass now (fixtures).
-- [ ] 2.4 e2e edits (approved). Verify that each fails now:
+- [x] 2.4 e2e edits (approved). Verify that each fails now:
   - `e2e/gallery-wall-content.spec.ts` and `e2e/frames-on-wall-content.spec.ts`: add `"h2 Plan on any shop's page"` right after `"h2 Gallery wall layout generator"` (G1) and `"h2 Frame visualizer"` (F2), the positions the 2026-11-22 dry run rendered.
   - `e2e/gallery-wall-content.spec.ts` "links only to live pages": `relatedGroups` becomes `["Frames", "Gallery wall"]` (groups follow `HUBS`) and `related` becomes `["/", "/frame-sizes-on-wall", "/extensions/gallery-wall-layout-generator"]`. Confirm the `related` order against the built HTML; the dry run stopped at the groups.
   - `e2e/seo-home.spec.ts` sitemap test: 37 `<url>`s, plus `<loc>${CANONICAL}/extensions/gallery-wall-layout-generator</loc>` and `/ru/…` with X1's `lastModified`.
   - `e2e/extension-page-locales.spec.ts:170`: add `test.skip(X1.live, "X1 is live: …")` (its unit twin in 2.2 keeps the scenario proven).
-- [ ] 2.5 `e2e/extension-page.spec.ts`: add a new test "the extension page once live" with `test.skip(!X1.live, …)`. Cite {@link openspec/specs/extension-site/spec.md#scenario-the-extension-page-once-live}. It checks:
+- [x] 2.5 `e2e/extension-page.spec.ts`: add a new test "the extension page once live" with `test.skip(!X1.live, …)`. Cite {@link openspec/specs/extension-site/spec.md#scenario-the-extension-page-once-live}. It checks:
   - robots metas hold no `noindex`;
   - `footerLinks` contains the path;
   - one store link with `href` `STORE_URL`, `target="_blank"` and `rel="noopener"`;
@@ -35,36 +35,36 @@ Branch `t24-go-live` from `main` at `f11df8f`. Owner approved these existing-tes
 
 ## 3. Go-live: the edit
 
-- [ ] 3.1 Make the flip:
+- [x] 3.1 Make the flip:
   - `apps/web/src/lib/extension.ts`: `EXTENSION_ID = "khapjkonaofjfljdakdcmodaclkmffgn"`; update the doc comment (no longer "empty until").
   - `apps/web/src/lib/site-map.ts` X1: `live: true`, `lastModified` set to the apply date; drop the "linked from nowhere" comment.
   - Verify `pnpm test:unit` and every test from section 2 pass. The pre-go-live e2e cases (`before go-live…`, `no Chrome Web Store link…`, `no extension section…`, Polish noindex) report skipped.
 
 ## 4. BL-96: install tab in Chrome's language
 
-- [ ] 4.1 `apps/extension/src/__tests__/background.test.ts`: add new cases only, with a fake that adds `i18n: { getUILanguage: () => tag }`. The existing fake and cases stay unedited. Verify they fail.
+- [x] 4.1 `apps/extension/src/__tests__/background.test.ts`: add new cases only, with a fake that adds `i18n: { getUILanguage: () => tag }`. The existing fake and cases stay unedited. Verify they fail.
   - "A fresh install in another language": `ru`, `de-AT`, `fil`, `zh-CN`, `pt-BR`, `pt-PT`, `nb` open `/<code>/extensions/gallery-wall-layout-generator?pinned=1` with `ru`, `de`, `tl`, `zh-hans`, `pt-br`, `pt-pt`, `no`.
   - "A fresh install in a language the site lacks": `zh-TW`, `ca`, `en-GB`, `""` and no `i18n` open the English `HOW_TO`.
   - Cite both scenarios at `openspec/specs/gallery-wall-extension/spec.md`.
-- [ ] 4.2 `apps/extension/src/background.ts`:
+- [x] 4.2 `apps/extension/src/background.ts`:
   - `Api.i18n?: { getUILanguage(): string }`.
   - A pure `howToUrl(uiLanguage, pinned)`, following design decision 5 with `localeByCode` and `localizedPath` from `@/lib/locales`; `onInstalled` uses it.
   - Verify 4.1 and every existing `background.test.ts` case pass.
   - Verify `pnpm --filter extension build` succeeds.
   - `e2e/extension.spec.ts` (approved 2026-11-22): add `--lang=en-US` to the shared launch `args`, so "a first install opens one how-to tab with pinned=0" stays English on Linux and Windows whatever the machine's language. Chromium ignores `--lang` on macOS (probed 2026-11-22: it always reported the system's `en-GB`), so on a Mac the test reads the system language; `en-*` maps to English. Verify it passes.
   - Verify `grep -rn "extensions/gallery-wall-layout-generator" apps/extension/src` lists only `background.ts` and its test, so no other tab opens the English page.
-- [ ] 4.3 `e2e/extension.spec.ts`: add a new test, "a first install in Russian opens the Russian how-to". It cites {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-in-another-language}.
+- [x] 4.3 `e2e/extension.spec.ts`: add a new test, "a first install in Russian opens the Russian how-to". It cites {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-in-another-language}.
   - It uses its own persistent context with the same args, but `--lang=ru`.
   - It expects exactly one tab, `https://framesizes.app/ru/extensions/gallery-wall-layout-generator?pinned=0`.
   - It has `test.skip(process.platform === "darwin", "Chromium ignores --lang on macOS")`.
   - Verify it in the CI `e2e` job (ubuntu-latest), or locally in the `mcr.microsoft.com/playwright:v1.65.0-noble` image with Docker running.
   - If Linux Chromium also reports English (no `ru` locale pack), drop the test, keep the unit cases from 4.1 as the proof, and log a BL item.
-- [ ] 4.4 `apps/extension/public/manifest.json` `version` to `0.1.1`; verify `manifest.test.ts` passes.
+- [x] 4.4 `apps/extension/public/manifest.json` `version` to `0.1.1`; verify `manifest.test.ts` passes.
 
 ## 5. Gates and pre-publish checklist
 
-- [ ] 5.1 `pnpm fix`, then `pnpm test`; `openspec validate --all --no-interactive` passes.
-- [ ] 5.2 The On-page SEO guide's pre-publish checklist. Build locally (`pnpm build && pnpm start`) and check view-source of `/extensions/gallery-wall-layout-generator` and `/ru/extensions/gallery-wall-layout-generator`:
+- [x] 5.1 `pnpm fix`, then `pnpm test`; `openspec validate --all --no-interactive` passes.
+- [x] 5.2 The On-page SEO guide's pre-publish checklist. Build locally (`pnpm build && pnpm start`) and check view-source of `/extensions/gallery-wall-layout-generator` and `/ru/extensions/gallery-wall-layout-generator`:
   - 200;
   - no `noindex`;
   - one absolute self-canonical;

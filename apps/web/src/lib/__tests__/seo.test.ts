@@ -109,6 +109,31 @@ describe("sitemapEntries over the launch pages", () => {
       "https://framesizes.app/frame-sizes-on-wall",
     ]);
   });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-the-home-page-f2-and-g1-are-live} */
+  it("holds the home page, F2 and G1, each with its own date", () => {
+    expect(sitemapEntries(withLive("F1", "F2", "G1"))).toEqual([
+      { url: "https://framesizes.app", lastModified: "2026-11-11" },
+      { url: "https://framesizes.app/frame-sizes-on-wall", lastModified: "2026-11-11" },
+      { url: "https://framesizes.app/gallery-wall-planner", lastModified: "2026-11-11" },
+    ]);
+  });
+
+  /** {@link openspec/specs/seo-base/spec.md#scenario-the-live-tools-and-the-company-pages} */
+  it("holds the live tools and the five company pages", () => {
+    const entries = sitemapEntries(withLive("F1", "F2", "G1", "A1", "A2", "A3", "A4", "A5"));
+    expect(entries.map((e) => e.url)).toEqual([
+      "https://framesizes.app",
+      "https://framesizes.app/frame-sizes-on-wall",
+      "https://framesizes.app/gallery-wall-planner",
+      "https://framesizes.app/about",
+      "https://framesizes.app/contact",
+      "https://framesizes.app/privacy-policy",
+      "https://framesizes.app/terms-of-use",
+      "https://framesizes.app/refund-policy",
+    ]);
+    expect(entries.every((e) => e.lastModified === "2026-11-11")).toBe(true);
+  });
 });
 
 describe("breadcrumbJsonLd", () => {
@@ -247,13 +272,15 @@ describe("translated versions", () => {
   /** {@link openspec/specs/seo-base/spec.md#scenario-translations-of-a-page-that-is-not-live} */
   it("lists no translated URL while the page is not live", () => {
     expect(
-      sitemapEntries().some((e) => e.url.includes("/extensions/gallery-wall-layout-generator")),
+      sitemapEntries(withLive("F1", "G1")).some((e) =>
+        e.url.includes("/extensions/gallery-wall-layout-generator"),
+      ),
     ).toBe(false);
   });
 
   /** {@link openspec/specs/extension-site/spec.md#scenario-a-translated-version-before-go-live} */
   it("keeps a translated version out of the index while X1 is not live", () => {
-    expect(localizedMetadata(X1, "pl", RU).robots).toEqual({ index: false });
+    expect(localizedMetadata({ ...X1, live: false }, "pl", RU).robots).toEqual({ index: false });
     expect(localizedMetadata({ ...X1, live: true }, "pl", RU).robots).toBeUndefined();
   });
 

@@ -104,6 +104,7 @@ test("the server HTML follows the approved outline", async ({ page }) => {
   expect(headings.filter((h) => !h.startsWith("h3"))).toEqual([
     "h1 Gallery Wall Layout Planner",
     "h2 Gallery wall layout generator",
+    "h2 Plan on any shop's page",
     "h2 How to use the gallery wall planner",
     "h2 Gallery wall templates",
     "h2 Spacing and height",
@@ -173,8 +174,12 @@ test("the default layout is in the server HTML", async ({ page }) => {
 /** {@link openspec/specs/gallery-wall-planner/spec.md#scenario-the-planner-with-f1-f2-and-g1-live} */
 test("links only to live pages", async ({ page }) => {
   const { related, relatedGroups, hrefs } = await serverHtml(page);
-  expect(relatedGroups).toEqual(["Frames"]);
-  expect(related).toEqual(["/", "/frame-sizes-on-wall"]);
+  expect(relatedGroups).toEqual(["Frames", "Gallery wall"]);
+  expect(related).toEqual([
+    "/",
+    "/frame-sizes-on-wall",
+    "/extensions/gallery-wall-layout-generator",
+  ]);
   for (const path of [
     "/how-high-to-hang-pictures",
     "/gallery-wall-ideas",

@@ -88,3 +88,41 @@ describe("the service worker", () => {
     expect(replies).toEqual([]);
   });
 });
+
+describe("the install tab's language", () => {
+  /** The `fake` above with Chrome's interface language; `undefined` leaves `i18n` out. */
+  function inLanguage(tag: string | undefined) {
+    const { api, calls } = fake(true);
+    const withI18n: Api = tag === undefined ? api : { ...api, i18n: { getUILanguage: () => tag } };
+    return { api: withI18n, calls };
+  }
+
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-in-another-language} */
+  it("opens the how-to in Chrome's language", async () => {
+    const cases: [string, string][] = [
+      ["ru", "ru"],
+      ["de-AT", "de"],
+      ["fil", "tl"],
+      ["zh-CN", "zh-hans"],
+      ["pt-BR", "pt-br"],
+      ["pt-PT", "pt-pt"],
+      ["nb", "no"],
+    ];
+    for (const [tag, code] of cases) {
+      const { api, calls } = inLanguage(tag);
+      await onInstalled(api, { reason: "install" });
+      expect(calls.filter((c) => c.startsWith("tab"))).toEqual([
+        `tab https://framesizes.app/${code}/extensions/gallery-wall-layout-generator?pinned=1`,
+      ]);
+    }
+  });
+
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-in-a-language-the-site-lacks} */
+  it("opens the English how-to for a language the site lacks or none", async () => {
+    for (const tag of ["zh-TW", "ca", "en-GB", "", undefined]) {
+      const { api, calls } = inLanguage(tag);
+      await onInstalled(api, { reason: "install" });
+      expect(calls.filter((c) => c.startsWith("tab"))).toEqual([`tab ${HOW_TO}?pinned=1`]);
+    }
+  });
+});
