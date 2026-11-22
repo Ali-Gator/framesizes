@@ -31,13 +31,14 @@ The design is always its own step, done outside the code. `/opsx:propose t<N>` f
    - the widget's steps and the engine's rules, with real numbers;
    - every state to draw: each result, custom or empty, bad input, back;
    - desktop 1280 and phone 390 boards, and the page sections;
-   - the open product questions, recommendation first.
+   - the open product questions, recommendation first;
+   - plain copy: short sentences, no marketing tone, every fact and keyword kept, since it is humanized later (step 4).
 
    A page with no engine work skips the change: the prompt only.
 
 2. **Design.** The user brings back the canvas. Check it against the phase 1 change and ask for approval of the canvas and its answers to the open questions. Then record its link under "Design source".
-3. **Phase 1 implementation.** Fold what the canvas changed in the engine into the phase 1 change (`/opsx:update`), then `/opsx:apply` it.
-4. **Phase 2 change and implementation.** Propose `t<N>-<slug>` (the UI, copy, SEO and the page going live), then apply it.
+3. **Phase 1 implementation.** Fold what the canvas changed in the engine into the phase 1 change (`/opsx:update`), then `/opsx:apply` it. Phase 1 usually has no visitor-facing text; if it adds some (labels, names), the humanizer rule under "Conventions" applies to it too.
+4. **Phase 2 change and implementation.** Propose `t<N>-<slug>` (the UI, copy, SEO and the page going live), then apply it. The proposal takes the copy from the canvas, and its tasks include a humanizer step. During `/opsx:apply`, Claude runs `humanizer:humanizer` over all of the page's visitor-facing text before the commit that adds it: the canvas copy, the FAQ, labels and alt text ("Conventions"). The title, `h1` and description come verbatim from the SEO guide and are not reworded. A rewording that changes what the approved canvas says goes to the user first.
 
 ### Exempt from the spec hook
 
