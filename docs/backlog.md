@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-106**
+_Next id:_ **BL-107**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -182,6 +182,11 @@ when to add and when to fold items in.
 
 ## Widgets
 
+- **[BL-106] F4 nearest sizes skip squares for a near-square custom size** — a size counts as
+  square only with its sides within ⅜ in, so 9 × 9.5 in gets 5x7 below and 11x14 above while the
+  8x8 and 10x10 are much closer. Decide whether a near-square size should also offer the nearest
+  squares (product question; the spec says ⅜ in today).
+  _Refs:_ `openspec/specs/size-engine/spec.md` (custom size names the nearest sizes), `packages/sizes/src/measure.ts` (`nearest`) · _Status:_ gated — owner decision; t4-measure-engine review, 2026-11-22
 - **[BL-98] F3 chips a small screen cannot use** — on a 7 in tablet in the phone layout (Fire 7,
   600 × 1024) the tablet chips from 12.4 in give under 100 px per inch, so the touch slider ignores
   them; a tap fills "Other size" with 13 while no chip is pressed and the button still says "Use

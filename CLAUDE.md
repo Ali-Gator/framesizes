@@ -21,6 +21,25 @@ Work is an OpenSpec change under `openspec/changes/t<N>-<slug>/` (`T<N>` = its T
 - A change touching only exempt paths (below) sets `skip_specs: true` in its `.openspec.yaml` instead of inventing a requirement.
 - `openspec validate --changes` runs in CI, not in the pre-commit hook: a half-planned change stays committable.
 
+### A page with no approved design yet
+
+The design is always its own step, done outside the code. `/opsx:propose t<N>` for a page with no design link under "Design source" runs by default in two phases (T4 ran this way; T7 and T11 split the same way):
+
+1. **Phase 1 change and designer prompt, in one turn.** Propose `t<N>-<slug>-engine`: the pure math in `packages/<name>`, no UI and no page. Its proposal records the page's SEO-guide rows and the questions the canvas must settle. In the same turn, give the user a self-contained prompt for an AI designer. It names:
+   - the design system and the closest approved sibling canvas;
+   - the page's head values from the SEO guide, verbatim;
+   - the widget's steps and the engine's rules, with real numbers;
+   - every state to draw: each result, custom or empty, bad input, back;
+   - desktop 1280 and phone 390 boards, and the page sections;
+   - the open product questions, recommendation first;
+   - plain copy: short sentences, no marketing tone, every fact and keyword kept, since it is humanized later (step 4).
+
+   A page with no engine work skips the change: the prompt only.
+
+2. **Design.** The user brings back the canvas. Check it against the phase 1 change and ask for approval of the canvas and its answers to the open questions. Then record its link under "Design source".
+3. **Phase 1 implementation.** Fold what the canvas changed in the engine into the phase 1 change (`/opsx:update`), then `/opsx:apply` it. Phase 1 usually has no visitor-facing text; if it adds some (labels, names), the humanizer rule under "Conventions" applies to it too.
+4. **Phase 2 change and implementation.** Propose `t<N>-<slug>` (the UI, copy, SEO and the page going live), then apply it. The proposal takes the copy from the canvas, and its tasks include a humanizer step. During `/opsx:apply`, Claude runs `humanizer:humanizer` over all of the page's visitor-facing text before the commit that adds it: the canvas copy, the FAQ, labels and alt text ("Conventions"). The title, `h1` and description come verbatim from the SEO guide and are not reworded. A rewording that changes what the approved canvas says goes to the user first.
+
 ### Exempt from the spec hook
 
 Tests (`__tests__`, `*.test.*`, `*.spec.*`), docs and markdown, config files (`*.config.*`, `tsconfig*.json`, `package.json`), `apps/*/src/components/ui/**`, `apps/*/src/app/globals.css`, `scripts/**`, `apps/*/public/**`, any `*.json` / `*.yaml` / `*.yml` / `*.css`, `.claude/**`, `.env*`, `.gitignore`.
@@ -71,6 +90,7 @@ Read by the global `backlog-batch`, `backlog-fix` and `phase-review` skills (`~/
   - T25 language picker (X1 header trigger, dialog, phone sheet, RTL): https://claude.ai/artifact/DkYgEZL6NprbwHUPYdoL5G, approved 2026-11-20 (phone: option A, globe-only button).
   - BL-76 mirrored pin picture for Arabic Chrome (board "m-rtl", variant of T23 board m; 375 and 1280 previews): https://claude.ai/artifact/XHTeX8iuNAKsHAZY7XqzoZ, approved 2026-11-21.
   - F3 How big is 8x10 (`/how-big-is-8x10`, T3): https://claude.ai/artifact/274YEEAkh69NAuaRf4vk6C, version 18, approved 2026-11-21 (sheet of paper offered only where it fits across the box).
+  - F4 Measure a picture frame (`/measure-picture-frame`, T4): https://claude.ai/artifact/SqK52EoyyoLLXzRPPKSUkB, approved 2026-11-22 (all four measurements; a custom size names the nearest sizes below and above; metric frames A4, A3, 30x40, 40x50 and 50x70 cm, the closer size wins; a rounded moulding is measured flat from the front).
   - Design system: https://claude.ai/artifact/SFXVU5PvBaHDquyEefVDd5
 - **Chrome Web Store listing (T23):** https://docs.google.com/document/d/1TMWz0VdN7widrUj8JASdWACttfJeCHBb8QQ2QbOwbL0/edit?tab=t.0 (Google Doc: name, short and long description, keyword tables with Times used). The only copy; the Tracker's "Chrome extension and wall tool" section links to it.
 - **Importance order (backlog-batch pass 1):** a wrong size or broken widget a visitor sees; then SEO defects on a live page (indexing, titles, canonical, Core Web Vitals); then ads/affiliate revenue leaks; then anything the next hub launch needs; then internal correctness and test gaps; polish last.
