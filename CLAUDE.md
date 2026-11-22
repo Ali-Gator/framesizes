@@ -23,11 +23,21 @@ Work is an OpenSpec change under `openspec/changes/t<N>-<slug>/` (`T<N>` = its T
 
 ### A page with no approved design yet
 
-`/opsx:propose t<N>` for a page with no design link under "Design source" splits the Tracker row into two changes (T7, T11 and T4 ran this way):
+The design is always its own step, done outside the code. `/opsx:propose t<N>` for a page with no design link under "Design source" runs by default in two phases (T4 ran this way; T7 and T11 split the same way):
 
-1. **Engine now.** Propose `t<N>-<slug>-engine`: the pure math in `packages/<name>`, no UI and no page. Its proposal records the page's SEO-guide rows and the questions the canvas must settle, so the page change starts from them. Apply it while the design is drawn.
-2. **Designer prompt in the same turn.** Give the user a self-contained prompt for an AI designer. It names the design system and the closest approved sibling canvas, the page's head values from the SEO guide (verbatim), the widget's steps and the engine's rules with real numbers, every state to draw (each result, custom or empty, bad input, back), desktop 1280 and phone 390 boards, the page sections, and the open product questions, recommendation first.
-3. **Page after approval.** When the user approves the canvas, record its link under "Design source", then propose `t<N>-<slug>`: the UI, copy, SEO and the page going live. Anything the canvas changes in the engine is an ADDED or MODIFIED requirement there.
+1. **Phase 1 change and designer prompt, in one turn.** Propose `t<N>-<slug>-engine`: the pure math in `packages/<name>`, no UI and no page. Its proposal records the page's SEO-guide rows and the questions the canvas must settle. In the same turn, give the user a self-contained prompt for an AI designer. It names:
+   - the design system and the closest approved sibling canvas;
+   - the page's head values from the SEO guide, verbatim;
+   - the widget's steps and the engine's rules, with real numbers;
+   - every state to draw: each result, custom or empty, bad input, back;
+   - desktop 1280 and phone 390 boards, and the page sections;
+   - the open product questions, recommendation first.
+
+   A page with no engine work skips the change: the prompt only.
+
+2. **Design.** The user brings back the canvas. Check it against the phase 1 change and ask for approval of the canvas and its answers to the open questions. Then record its link under "Design source".
+3. **Phase 1 implementation.** Fold what the canvas changed in the engine into the phase 1 change (`/opsx:update`), then `/opsx:apply` it.
+4. **Phase 2 change and implementation.** Propose `t<N>-<slug>` (the UI, copy, SEO and the page going live), then apply it.
 
 ### Exempt from the spec hook
 
