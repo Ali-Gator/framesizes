@@ -38,7 +38,7 @@ See `proposal.md` for the motivation and the two-change split. What this change 
 type Measurement =
   | { kind: "inside"; size: Size }
   | { kind: "front"; size: Size; lip?: number }
-  | { kind: "outside"; size: Size; moulding: number; lip?: number }
+  | { kind: "outside"; size: Size; face: number; lip?: number }
   | { kind: "mat"; size: Size; overlap?: number };
 
 interface Identified {
@@ -59,14 +59,14 @@ function identifyFrame(m: Measurement): Identified | undefined; // undefined = n
 
 All per side, in inches:
 
-| Kind    | Frame or print size              | Why                                                                        |
-| ------- | -------------------------------- | -------------------------------------------------------------------------- |
-| inside  | as measured                      | the glass, backing or recess is the frame size                             |
-| front   | opening + 2 × lip                | the lip covers the picture's edge                                          |
-| outside | outside − 2 × moulding + 2 × lip | the moulding seen from the front includes the lip; `frameAnatomy` inverted |
-| mat     | opening + 2 × overlap → print    | `frameAnatomy`'s mat opening inverted                                      |
+| Kind    | Frame or print size           | Why                                                                                 |
+| ------- | ----------------------------- | ----------------------------------------------------------------------------------- |
+| inside  | as measured                   | the glass, backing or recess is the frame size                                      |
+| front   | opening + 2 × lip             | the lip covers the picture's edge                                                   |
+| outside | outside − 2 × face + 2 × lip  | `face`, the moulding seen from the front, includes the lip; `frameAnatomy` inverted |
+| mat     | opening + 2 × overlap → print | `frameAnatomy`'s mat opening inverted                                               |
 
-`LIP = 0.25` is a new export beside `MAT_OVERLAP`. `frameAnatomy`'s `moulding` is the width beyond the frame size, which on a real frame is the face width less the lip; the scenario "13 by 16 outside, 1¼ in moulding → 11x14" ties the two together (the anatomy scenario's 11x14 has a 1 in moulding beyond the frame size, 13 by 16 outside).
+`LIP = 0.25` is a new export beside `MAT_OVERLAP`. `frameAnatomy`'s `moulding` is the width beyond the frame size, which on a real frame is `face` less the lip. The field is named `face`, not `moulding`, so passing `MOULDING` by mistake cannot look right; the scenario "13 by 16 outside, 1¼ in moulding → 11x14" ties the two together (the anatomy scenario's 11x14 has a 1 in moulding beyond the frame size, 13 by 16 outside).
 
 ### 4. Matching: upright, Chebyshev distance, ⅜ inch
 
@@ -83,7 +83,7 @@ All per side, in inches:
 
 ### 6. Validation
 
-Every side, the moulding, the lip and the overlap must be finite and positive (a lip or overlap of 0 is refused too: no real frame or mat has none, and a 0 would hide a typing slip). After the arithmetic, a frame size that is not positive (outside path) is no answer.
+Every side, the face width, the lip and the overlap must be finite and positive (a lip or overlap of 0 is refused too: no real frame or mat has none, and a 0 would hide a typing slip). After the arithmetic, a frame size that is not positive (outside path) is no answer.
 
 ## Risks / Trade-offs
 
