@@ -21,6 +21,14 @@ Work is an OpenSpec change under `openspec/changes/t<N>-<slug>/` (`T<N>` = its T
 - A change touching only exempt paths (below) sets `skip_specs: true` in its `.openspec.yaml` instead of inventing a requirement.
 - `openspec validate --changes` runs in CI, not in the pre-commit hook: a half-planned change stays committable.
 
+### A page with no approved design yet
+
+`/opsx:propose t<N>` for a page with no design link under "Design source" splits the Tracker row into two changes (T7, T11 and T4 ran this way):
+
+1. **Engine now.** Propose `t<N>-<slug>-engine`: the pure math in `packages/<name>`, no UI and no page. Its proposal records the page's SEO-guide rows and the questions the canvas must settle, so the page change starts from them. Apply it while the design is drawn.
+2. **Designer prompt in the same turn.** Give the user a self-contained prompt for an AI designer. It names the design system and the closest approved sibling canvas, the page's head values from the SEO guide (verbatim), the widget's steps and the engine's rules with real numbers, every state to draw (each result, custom or empty, bad input, back), desktop 1280 and phone 390 boards, the page sections, and the open product questions, recommendation first.
+3. **Page after approval.** When the user approves the canvas, record its link under "Design source", then propose `t<N>-<slug>`: the UI, copy, SEO and the page going live. Anything the canvas changes in the engine is an ADDED or MODIFIED requirement there.
+
 ### Exempt from the spec hook
 
 Tests (`__tests__`, `*.test.*`, `*.spec.*`), docs and markdown, config files (`*.config.*`, `tsconfig*.json`, `package.json`), `apps/*/src/components/ui/**`, `apps/*/src/app/globals.css`, `scripts/**`, `apps/*/public/**`, any `*.json` / `*.yaml` / `*.yml` / `*.css`, `.claude/**`, `.env*`, `.gitignore`.
