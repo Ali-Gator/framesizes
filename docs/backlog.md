@@ -126,7 +126,7 @@ when to add and when to fold items in.
 - **[BL-100] Check the pin switch on production** — install from the store with the button
   unpinned: the tab opens `?pinned=0`; pin it and the page switches to usage mode within 2 s with
   `pinned` gone from the address. The published extension talks only to `https://framesizes.app/*`.
-  _Refs:_ `openspec/changes/archive/*-t24-go-live/tasks.md` (After deploy) · _Status:_ gated — the t24-go-live deploy
+  _Refs:_ `openspec/changes/archive/2026-11-22-t24-go-live/tasks.md` (After deploy) · _Status:_ gated — the t24-go-live deploy
 - **[BL-101] Check G1's extension section on production** — with the extension installed, G1 reads
   "You have it…" at the same height as with it disabled; on a 390 px touch phone it shows "Chrome on
   phones doesn't run extensions…" and no "Add to Chrome".

@@ -8,7 +8,7 @@ What framesizes.app shows about the Chrome extension "Gallery Wall Layout Genera
 
 ```typescript
 // apps/web/src/lib/extension.ts
-const EXTENSION_ID: string; // the Chrome Web Store id; "" until go-live
+const EXTENSION_ID: string; // the published listing's id, "khapjkonaofjfljdakdcmodaclkmffgn"
 function storeUrl(id: string): string; // https://chromewebstore.google.com/detail/<id>
 const STORE_URL: string; // storeUrl(EXTENSION_ID)
 type ExtensionStatus = { installed: false } | { installed: true; pinned: boolean };
@@ -41,7 +41,7 @@ The extension (`apps/extension` `background.ts`) opens the page with `?pinned=0|
 
 The mode lives on `<html data-ext-mode>`. `MODE_SCRIPT` sets it before paint; `ModeSwitch` sets it again on mount (a client-side visit runs no inline script) and on every `hashchange`, moving focus to the shown section's `h2` only when the hash names a mode. CSS hides `.ext-pin` unless the mode is pin (or, with no JS, it is the `:target`) and hides `.ext-usage` in pin mode. In pin mode from the query, `ModeSwitch` asks every 2 s with a chained `setTimeout` while the tab is visible, restarts after a hash change that lands back on the query mode, and on a pinned reply switches to usage, carrying focus from the pin section to the usage heading.
 
-Go-live is one edit: `EXTENSION_ID` set and X1 `live: true` with its `lastModified`. A unit test fails when only one is done. `StoreLink` and `ExtensionSection` render nothing unless X1 is live and the id is set. The not-live tests use fixtures or skip once X1 is live.
+Go-live happened on 2026-11-22 (t24-go-live) in one edit: `EXTENSION_ID` set and X1 `live: true` with its `lastModified`. A unit test fails when only one is done, so a rollback is both lines: `EXTENSION_ID = ""` and X1 `live: false`. `StoreLink` and `ExtensionSection` render nothing unless X1 is live and the id is set. The not-live tests use fixtures or skip once X1 is live.
 
 The section's call to action and the "You have it" line share one grid cell; `ExtensionStatus` asks once after hydration and hides the other line with `visibility: hidden`, so the cell keeps its height. `@media (hover: none) and (pointer: coarse)` shows the phone line instead of "Add to Chrome".
 
@@ -222,12 +222,24 @@ When the extension answers that it is installed, the section SHALL replace its s
 
 ### Requirement: The extension page goes live only with a store id
 
-The extension page SHALL be live only when the extension's Chrome Web Store id is set, and the store id SHALL be 32 letters from a to p.
+The extension page SHALL be live only when the extension's Chrome Web Store id is set, and the store id SHALL be 32 letters from a to p. The published listing's id is `khapjkonaofjfljdakdcmodaclkmffgn`. Its store page SHALL be addressed as `https://chromewebstore.google.com/detail/<id>`, which the store redirects to the listing.
 
 #### Scenario: The go-live gate
 
 - **WHEN** the unit suite reads the site map and the store id
 - **THEN** the extension page is live exactly when the store id is set, and a set store id matches `^[a-p]{32}$`
+
+#### Scenario: The published listing
+
+- **WHEN** the unit suite reads the store id and the site map
+- **THEN** the store id is `khapjkonaofjfljdakdcmodaclkmffgn`, the extension page is live, and the store page is `https://chromewebstore.google.com/detail/khapjkonaofjfljdakdcmodaclkmffgn`
+
+#### Scenario: The extension page once live
+
+- **GIVEN** the extension page is live
+- **WHEN** `/extensions/gallery-wall-layout-generator` is requested
+- **THEN** it answers 200 with no robots meta tag holding `noindex`, the footer links to it, and one "Get it from the Chrome Web Store" link points to the store page
+- **AND** `/gallery-wall-planner` links to it from Related tools and holds the `h2` "Plan on any shop's page"
 
 ### Requirement: The extension page exists in every site language
 

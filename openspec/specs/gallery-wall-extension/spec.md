@@ -12,7 +12,9 @@ The Chrome extension "Gallery Wall Layout Generator": G1's gallery wall planner 
 //   side_panel.default_path "sidepanel.html", background.js (module), externally_connectable framesizes.app
 // apps/extension/src/background.ts — pure handlers over chrome-shaped Api / MenuApi, wired at the bottom
 const HOW_TO = "https://framesizes.app/extensions/gallery-wall-layout-generator";
-function onInstalled(api, details: { reason: string }): Promise<void>; // panel behaviour; install: HOW_TO?pinned=0|1
+function howToUrl(uiLanguage: string | undefined, pinned: boolean): string; // the how-to in Chrome's language, English when the site lacks it
+function onInstalled(api, details: { reason: string }): Promise<void>; // panel behaviour; install: howToUrl(api.i18n?.getUILanguage(), pinned)
+// Api.i18n?: { getUILanguage(): string } — optional; a Chrome that reports none reads as English
 function onStartup(api): Promise<void>;
 function onMessageExternal(api, message, sender: { origin? }, reply): boolean; // { type: "status" } only
 // reply: { installed: true; pinned: boolean; version: string }
@@ -266,11 +268,11 @@ A change made in the panel SHALL show in an open full-size tab without a reload,
 
 ### Requirement: The first install opens the how-to page
 
-On a first install, and only then, the extension SHALL open one tab on `https://framesizes.app/extensions/gallery-wall-layout-generator` with `?pinned=1` when its toolbar button is pinned and `?pinned=0` when it is not.
+On a first install, and only then, the extension SHALL open one tab on the how-to page in Chrome's interface language, with `?pinned=1` when its toolbar button is pinned and `?pinned=0` when it is not. The English page is `https://framesizes.app/extensions/gallery-wall-layout-generator`; a translated one sits under its site language code, such as `/ru/extensions/gallery-wall-layout-generator`. A language the site lacks, or one Chrome does not report, SHALL open the English page.
 
 #### Scenario: A fresh install with the button not pinned
 
-- **GIVEN** the toolbar button is not pinned
+- **GIVEN** the toolbar button is not pinned and Chrome's interface language is English
 - **WHEN** the extension is installed
 - **THEN** one tab opens on `https://framesizes.app/extensions/gallery-wall-layout-generator?pinned=0`
 
@@ -278,6 +280,17 @@ On a first install, and only then, the extension SHALL open one tab on `https://
 
 - **WHEN** the extension is updated or Chrome is updated
 - **THEN** no tab opens
+
+#### Scenario: A fresh install in another language
+
+- **GIVEN** the toolbar button is pinned
+- **WHEN** the extension is installed in Chrome whose interface language is `ru`, `de-AT`, `fil`, `zh-CN`, `pt-BR`, `pt-PT` or `nb`
+- **THEN** one tab opens on `https://framesizes.app/<code>/extensions/gallery-wall-layout-generator?pinned=1`, where `<code>` is `ru`, `de`, `tl`, `zh-hans`, `pt-br`, `pt-pt` or `no` in that order
+
+#### Scenario: A fresh install in a language the site lacks
+
+- **WHEN** the extension is installed in Chrome whose interface language is `zh-TW`, `ca` or `en-GB`, or Chrome reports no language
+- **THEN** the tab opens on the English page, `https://framesizes.app/extensions/gallery-wall-layout-generator`, with its `pinned` query
 
 ### Requirement: The site can ask whether the extension is installed and pinned
 

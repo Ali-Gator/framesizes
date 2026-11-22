@@ -75,7 +75,7 @@ Branch `t24-go-live` from `main` at `f11df8f`. Owner approved these existing-tes
 
   Record the result for the PR. The `www` / trailing-slash hop, the production `X-Robots-Tag` header, the Rich Results Test and the preview card go to After deploy.
 
-- [ ] 5.3 Backlog: delete BL-88 and BL-96 from `docs/backlog.md` (BL-96 is fixed in code; its live check runs after deploy). Add a `BL-nn` item, from `_Next id:_`, for each After-deploy check still open at archive, plus every review finding left unfixed. Verify `grep -cE "BL-(88|96)\]" docs/backlog.md` prints 0.
+- [x] 5.3 Backlog: delete BL-88 and BL-96 from `docs/backlog.md` (BL-96 is fixed in code; its live check runs after deploy). Add a `BL-nn` item, from `_Next id:_`, for each After-deploy check still open at archive, plus every review finding left unfixed. Verify `grep -cE "BL-(88|96)\]" docs/backlog.md` prints 0.
 
 ## After deploy (owner, on production; untracked, not blocking archive)
 
