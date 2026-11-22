@@ -59,6 +59,7 @@
 
 - **[The store build is not the version that maps languages until review passes]** → 0.1.0 keeps opening English, which is correct, just not localized. The site goes live first. BL-96's live check waits for 0.1.1 and is logged as a BL item if still pending at archive.
 - **[Rollup splits `locales.ts` into a chunk shared with the panel]** → a module service worker loads static imports. The e2e extension suite installs the real build and covers the install tab and status reply.
+- **[Chromium ignores `--lang` on macOS]** → probed 2026-11-22: the extension worker reported the system language (`en-GB`) with `--lang=ru` and `--lang=en-US`, and Playwright's `locale` does not reach it either. The real-browser Russian install test therefore runs on Linux only (CI), skipped on macOS; the language mapping itself is unit-tested with a fake `chrome.i18n`. If Linux Chromium ignores it too, the e2e is dropped and logged.
 - **[Post-deploy checks can't run in CI]** → `externally_connectable` ties the extension to production. These run on production by the owner after the Vercel deploy:
   - the pin switch;
   - the "You have it" height;

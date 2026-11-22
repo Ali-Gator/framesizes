@@ -1,6 +1,6 @@
 # Tasks
 
-Branch `t24-go-live` from `main` at `f11df8f`. Owner approved these existing-test edits: the G1 and F2 outline tests (2026-11-20), and on 2026-11-22 two cases in `seo.test.ts`, the Polish noindex e2e, G1 "links only to live pages" and the sitemap e2e. Every other existing test passes unedited.
+Branch `t24-go-live` from `main` at `f11df8f`. Owner approved these existing-test edits: the G1 and F2 outline tests (2026-11-20), and on 2026-11-22 two cases in `seo.test.ts`, the Polish noindex e2e, G1 "links only to live pages", the sitemap e2e and `--lang=en-US` in the extension e2e launch args. Every other existing test passes unedited.
 
 ## 1. Spec deltas
 
@@ -51,9 +51,15 @@ Branch `t24-go-live` from `main` at `f11df8f`. Owner approved these existing-tes
   - A pure `howToUrl(uiLanguage, pinned)`, following design decision 5 with `localeByCode` and `localizedPath` from `@/lib/locales`; `onInstalled` uses it.
   - Verify 4.1 and every existing `background.test.ts` case pass.
   - Verify `pnpm --filter extension build` succeeds.
-  - Verify `e2e/extension.spec.ts` ("a first install opens one how-to tab with pinned=0") passes. Its Chromium takes the system language, so on a non-English machine it would now open a translated page. If the owner approves, add `--lang=en-US` to its launch `args` (an edit to an existing test); without approval, leave it and run it on an English system and in CI.
+  - `e2e/extension.spec.ts` (approved 2026-11-22): add `--lang=en-US` to the shared launch `args`, so "a first install opens one how-to tab with pinned=0" stays English on Linux and Windows whatever the machine's language. Chromium ignores `--lang` on macOS (probed 2026-11-22: it always reported the system's `en-GB`), so on a Mac the test reads the system language; `en-*` maps to English. Verify it passes.
   - Verify `grep -rn "extensions/gallery-wall-layout-generator" apps/extension/src` lists only `background.ts` and its test, so no other tab opens the English page.
-- [ ] 4.3 `apps/extension/public/manifest.json` `version` to `0.1.1`; verify `manifest.test.ts` passes.
+- [ ] 4.3 `e2e/extension.spec.ts`: add a new test, "a first install in Russian opens the Russian how-to". It cites {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-in-another-language}.
+  - It uses its own persistent context with the same args, but `--lang=ru`.
+  - It expects exactly one tab, `https://framesizes.app/ru/extensions/gallery-wall-layout-generator?pinned=0`.
+  - It has `test.skip(process.platform === "darwin", "Chromium ignores --lang on macOS")`.
+  - Verify it in the CI `e2e` job (ubuntu-latest), or locally in the `mcr.microsoft.com/playwright:v1.65.0-noble` image with Docker running.
+  - If Linux Chromium also reports English (no `ru` locale pack), drop the test, keep the unit cases from 4.1 as the proof, and log a BL item.
+- [ ] 4.4 `apps/extension/public/manifest.json` `version` to `0.1.1`; verify `manifest.test.ts` passes.
 
 ## 5. Gates and pre-publish checklist
 
