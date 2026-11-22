@@ -73,6 +73,13 @@ export {
   type ScreenInfo,
 } from "./screen";
 
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-measured-frame-size-is-matched-to-a-standard-size} */
+export { identifyFrame, MEASURE_TOLERANCE, type Identified, type Measurement } from "./measure";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-front-opening-gives-the-frame-size} */
+export { LIP } from "./measure";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-metric-frame-size-is-named-when-it-is-closer-than-the-us-size} */
+export { METRIC_FRAMES } from "./measure";
+
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-gallery-wall-planner-offers-five-templates} */
 export { TEMPLATES, type Stack, type Template } from "./gallery";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-template-is-laid-out-with-one-gap-between-neighbours} */
