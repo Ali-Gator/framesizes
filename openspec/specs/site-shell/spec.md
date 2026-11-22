@@ -48,7 +48,7 @@ The unit is also on `<html data-unit>`, for CSS. The server renders "in"; a bloc
 
 Colours, radii, shadows and type styles come from the design system's light tokens in `globals.css`; fonts load through `next/font/google` and are served from the site's origin.
 
-PostHog runs with `cookieless_mode: "always"`, autocapture and session replay off, and `api_host: "/ingest"`. Web Vitals capture is a PostHog project setting.
+PostHog runs with `cookieless_mode: "always"`, autocapture and session replay off, `api_host: "/ingest"`, and a `before_send` that sets `$geoip_disable: true` on every event. Web Vitals capture is a PostHog project setting.
 
 ## Edge Cases
 
@@ -188,7 +188,7 @@ The shell SHALL pass an automated WCAG 2.2 A and AA check with no violations, on
 
 ### Requirement: Visits are measured without cookies
 
-Page views and Core Web Vitals field data SHALL be reported to the site's analytics without setting a cookie or writing to browser storage, so that the site needs no consent banner for measurement. Analytics requests SHALL go to the site's own origin.
+Page views and Core Web Vitals field data SHALL be reported to the site's analytics without setting a cookie or writing to browser storage, so that the site needs no consent banner for measurement. Analytics requests SHALL go to the site's own origin. Analytics SHALL run in cookieless mode and every event it sends SHALL ask for no location lookup.
 
 #### Scenario: A visit sets no cookie
 
@@ -204,6 +204,11 @@ Page views and Core Web Vitals field data SHALL be reported to the site's analyt
 
 - **WHEN** the site is built without an analytics token and a visitor opens `/`
 - **THEN** the page works, no analytics request is sent and no error is logged to the console
+
+#### Scenario: Analytics events ask for no location
+
+- **WHEN** analytics starts with a token
+- **THEN** it is set up with `cookieless_mode: "always"`, and every event it sends carries `$geoip_disable: true`
 
 ### Requirement: The page knows the unit before it paints
 
@@ -263,7 +268,7 @@ When the stored unit is centimetres, the root element SHALL carry a pending mark
 
 ### Requirement: The header offers the language picker on translated pages
 
-The header SHALL show the language picker's button, beside the Units toggle, on every version of a page that has translations, in both of the extension page's modes, and the button SHALL be in that page's server HTML. It SHALL NOT show the button on a page without translations, and such a page SHALL load none of the picker's script or styles. The button SHALL add no heading to the page. Its accessible name SHALL hold the current language's name in that language. From 600px wide the button SHALL show that name; below 600px it SHALL show a globe icon and no visible text.
+The header SHALL show the language picker's button, beside the Units toggle, on every version of a page that has translations, in both of the extension page's modes, and the button SHALL be in that page's server HTML. It SHALL NOT show the button on a page without translations, and such a page SHALL load none of the picker's script or styles. The button SHALL add no heading to the page. Its accessible name SHALL hold the current language's name in that language. From 600px wide the button SHALL show that name; below 600px it SHALL show a globe icon and no visible text. After an in-app move to a translated page, the header SHALL keep the button's space while the picker's code loads, so the Units toggle and the hub links do not move when the button appears.
 
 #### Scenario: The extension page's header
 
@@ -284,3 +289,9 @@ The header SHALL show the language picker's button, beside the Units toggle, on 
 
 - **WHEN** `/` is loaded in a browser
 - **THEN** none of the styles it loads define the language button or dialog, and none of the scripts it loads hold the picker's own words, such as "Choose a language"
+
+#### Scenario: An in-app move to a translated page keeps the header still
+
+- **GIVEN** `/` is open 375px and 1280px wide
+- **WHEN** the visitor moves in the app to `/extensions/gallery-wall-layout-generator` and the picker's code arrives late
+- **THEN** the Units toggle sits at the same place while the code loads and after the language button appears

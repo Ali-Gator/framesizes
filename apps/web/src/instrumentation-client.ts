@@ -22,5 +22,10 @@ if (token) {
     capture_exceptions: false,
     disable_surveys: true,
     disable_scroll_properties: true,
+    // Guards the Policy's "no location" in code: every event asks PostHog to skip the GeoIP lookup.
+    // The IP itself never comes from here (PostHog reads it off the request), so it stays a PostHog
+    // server setting (BL-97).
+    // {@link openspec/specs/site-shell/spec.md#scenario-analytics-events-ask-for-no-location}
+    before_send: (e) => e && { ...e, properties: { ...e.properties, $geoip_disable: true } },
   });
 }

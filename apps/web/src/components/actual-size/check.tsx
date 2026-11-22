@@ -12,6 +12,7 @@ import { lineGap, rulerInches, SCALE_RANGE, type ViewerAction, type ViewerState 
  */
 
 export const PHONE_DIAGONALS = [5.4, 6.1, 6.3, 6.7, 6.9] as const;
+export const TABLET_DIAGONALS = [8.3, 10.2, 10.9, 11, 12.4, 12.9, 13] as const;
 export const DESK_DIAGONALS = [13.3, 14, 15.6, 21.5, 23, 24, 27, 32] as const;
 
 export function Slider({
@@ -66,6 +67,7 @@ export function Slider({
 export function Diagonals({
   state,
   phone,
+  tablet = false,
   coarse,
   guess,
   screen,
@@ -74,13 +76,15 @@ export function Diagonals({
   state: ViewerState;
   /** A phone's screen: the phone sizes and wording. */
   phone: boolean;
+  /** A tablet's screen, in either layout: the tablet sizes, so the list holds the guess. */
+  tablet?: boolean;
   /** A touch screen: a size must give a scale the touch slider can show. */
   coarse: boolean;
   guess: number;
   screen: { w: number; h: number };
   dispatch: Dispatch<ViewerAction>;
 }) {
-  const list = phone ? PHONE_DIAGONALS : DESK_DIAGONALS;
+  const list = phone ? PHONE_DIAGONALS : tablet ? TABLET_DIAGONALS : DESK_DIAGONALS;
   // The field shows what was typed, and follows a picked chip.
   const [draft, setDraft] = useState(state.diagonal === null ? "" : String(state.diagonal));
   const range = coarse ? SCALE_RANGE.phone : SCALE_RANGE.desk;

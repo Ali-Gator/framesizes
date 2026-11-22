@@ -90,15 +90,18 @@ export interface ScreenInfo {
 /** A phone's screen: its shorter side is at most 500 CSS px. */
 export const isPhoneScreen = ({ w, h }: Size) => Math.min(w, h) <= 500;
 
+/** A tablet's screen: not a phone's, a coarse pointer, and a shorter side of at most 1,100 CSS px. */
+export const isTabletScreen = (screen: ScreenInfo) =>
+  !isPhoneScreen(screen) && screen.coarse && Math.min(screen.w, screen.h) <= 1100;
+
 /**
  * The diagonal to assume before any check.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-screens-scale-has-a-first-guess}
  */
-export function guessDiagonal({ w, h, coarse }: ScreenInfo): number {
-  const shorter = Math.min(w, h);
-  if (isPhoneScreen({ w, h })) return 6.1;
-  if (coarse && shorter <= 1100) return 11;
-  if (Math.hypot(w, h) < 2200) return 14;
+export function guessDiagonal(screen: ScreenInfo): number {
+  if (isPhoneScreen(screen)) return 6.1;
+  if (isTabletScreen(screen)) return 11;
+  if (Math.hypot(screen.w, screen.h) < 2200) return 14;
   return 23;
 }
 

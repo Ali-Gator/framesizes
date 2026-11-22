@@ -368,3 +368,53 @@ test("every language's version is built", async ({ page }) => {
     expect((await page.request.get(`/${l.code}${PATH}`)).status(), l.code).toBe(200);
   }
 });
+
+/**
+ * X1 is linked from nowhere yet, so the move goes through the App Router itself. Only the chunk
+ * holding the picker's words is held; the toggle is measured while it loads and again after the
+ * button appears, and the button must land where its placeholder stood.
+ * {@link openspec/specs/site-shell/spec.md#scenario-an-in-app-move-to-a-translated-page-keeps-the-header-still}
+ */
+for (const width of [375, 1280]) {
+  test(`an in-app move to the extension page keeps the Units toggle still at ${width}px`, async ({
+    page,
+  }) => {
+    type NextWindow = { next?: { router?: { push(href: string): void } } };
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/");
+    // Pushing before the router has mounted is dropped.
+    await page.waitForLoadState("networkidle");
+    await page.waitForFunction(() => !!(window as NextWindow).next?.router);
+
+    let release = () => {};
+    const released = new Promise<void>((resolve) => (release = resolve));
+    let requested = () => {};
+    const pickerRequested = new Promise<void>((resolve) => (requested = resolve));
+    await page.route("**/*.js", async (route) => {
+      const response = await route.fetch();
+      const body = await response.text();
+      if (body.includes("Choose a language")) {
+        requested();
+        await released;
+      }
+      await route.fulfill({ response, body });
+    });
+
+    await page.evaluate((path) => (window as NextWindow).next?.router?.push(path), PATH);
+    await pickerRequested;
+    await page.evaluate(
+      () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
+    );
+    const trigger = page.locator("header button[aria-haspopup=dialog]");
+    await expect(trigger).toHaveCount(0);
+    const toggle = page.getByRole("radiogroup", { name: "Units" });
+    const held = await toggle.boundingBox();
+    const stand = page.locator("header .lp-trig");
+    const placeholder = (await stand.count()) ? await stand.boundingBox() : null;
+
+    release();
+    await expect(trigger).toBeVisible();
+    expect(await toggle.boundingBox(), "the Units toggle").toEqual(held);
+    expect(await trigger.boundingBox(), "the language button's place").toEqual(placeholder);
+  });
+}

@@ -7,6 +7,7 @@ import {
   CHECK_OBJECTS,
   guessDiagonal,
   guessScale,
+  isTabletScreen,
   scaleFromDiagonal,
   writeActual,
 } from "../screen";
@@ -113,6 +114,18 @@ describe("the first guess", () => {
   it("guesses 11 in for a tablet with a coarse pointer", () => {
     expect(guessDiagonal({ w: 820, h: 1180, coarse: true })).toBe(11);
     expect(guessDiagonal({ w: 1180, h: 820, coarse: true })).toBe(11);
+  });
+});
+
+describe("a tablet's screen", () => {
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-tablet} */
+  it("is a coarse screen too wide for a phone, and gets the 11 in guess", () => {
+    const tablet = { w: 820, h: 1180, coarse: true };
+    expect(isTabletScreen(tablet)).toBe(true);
+    expect(guessDiagonal(tablet)).toBe(11);
+    expect(guessScale(tablet)).toBeCloseTo(130.6, 1);
+    expect(isTabletScreen({ ...tablet, coarse: false })).toBe(false);
+    expect(isTabletScreen({ w: 393, h: 852, coarse: true })).toBe(false);
   });
 });
 

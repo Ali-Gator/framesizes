@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-96**
+_Next id:_ **BL-100**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -32,6 +32,9 @@ when to add and when to fold items in.
   `onerror`, so a schema bump missed in one copy hangs that test until timeout. Move them to one
   helper in `e2e/fixtures` (edits existing tests).
   _Refs:_ `e2e/extension-try.spec.ts`, `e2e/extension.spec.ts`, `e2e/extension-races.spec.ts` · _Status:_ open — backlog-5 review, 2026-11-20
+- **[BL-99] One import from `../saved` in saved.test.ts** — backlog-7 added `checkStored` on a
+  second import line; merge it into the first next time the file's tests may be edited.
+  _Refs:_ `apps/web/src/components/actual-size/__tests__/saved.test.ts` · _Status:_ deferred — an approved edit there (backlog-7 review, 2026-11-22)
 - **[BL-1] Drop the TypeScript 6 alias** — `typescript` is aliased to `@typescript/typescript6` only because
   typescript-eslint lacks TS 7 support; once it ships, depend on plain `typescript@^7` and remove
   `@typescript/native`, so `tsc`, Next.js and eslint use one compiler.
@@ -45,11 +48,11 @@ when to add and when to fold items in.
 
 ## Site
 
-- **[BL-86] Guard the "no IP address, no location" claim in code** — the Privacy Policy relies on
-  the PostHog project's "Discard client IP data" setting (`anonymize_ips`); turning it off makes
-  the legal page false and no test fails. Drop `$ip` in a `before_send` hook or add a check of
-  the stored events.
-  _Refs:_ `apps/web/src/instrumentation-client.ts`, `openspec/specs/company-pages/spec.md` · _Status:_ open — t26 review, 2026-11-21
+- **[BL-97] Check PostHog stores no IP for site events** — no browser setting can stop PostHog
+  keeping the request IP (`ip: false` is a dead option, `$ip` is set server-side); the Privacy Policy's
+  "no IP address" rests on cookieless mode plus the project's "Discard client IP data". Query
+  stored events for `$ip` once real traffic exists (BL-86 pinned the "no location" half in code).
+  _Refs:_ PostHog project 344498, `apps/web/src/app/privacy-policy/page.tsx` · _Status:_ gated — DNS live (backlog-7 triage, 2026-11-21)
 - **[BL-87] Write the company-page widget exemption into CLAUDE.md** — CLAUDE.md says every page
   carries its own widget; A1–A5 carry none by design (t26 proposal and design). Add the exemption
   to its Conventions so a later review does not flag it.
@@ -59,10 +62,6 @@ when to add and when to fold items in.
   the site. OpenSpec refuses to drop a scenario from a MODIFIED block, so a later seo-base change
   rewrites it.
   _Refs:_ `openspec/specs/seo-base/spec.md#scenario-the-home-page-f2-and-g1-are-live` · _Status:_ open — t26 review, 2026-11-21
-- **[BL-84] The language button pops in on a client-side move** — `LanguagePickerGate`'s
-  `next/dynamic` has no `loading` placeholder, so going from `/` to a translated page in the app
-  shows the button late and shifts the Units toggle and hub nav (CLS). Add a same-width placeholder.
-  _Refs:_ `apps/web/src/components/i18n/language-picker-gate.tsx` · _Status:_ open — backlog-6 review, 2026-11-21
 - **[BL-49] G1 re-lays out the template on every drag move** — `dragFrame` calls `framesOf` per
   pointer move; pass the frames the view already has. No visible lag at 12 frames yet.
   _Refs:_ `apps/web/src/components/gallery-wall/state.ts` (`dragFrame`) · _Status:_ deferred — lag on a slow phone
@@ -119,10 +118,11 @@ when to add and when to fold items in.
   title from the page's `h1` and the sizes from the whole page, so on a category grid the try reads
   "Wall Art" and lists every product's sizes. Prefer the link's text, `aria-label` or the image's alt.
   _Refs:_ `apps/extension/src/read-page.ts`, `apps/extension/src/background.ts` · _Status:_ gated — spec says "the page's title"; backlog-6 review, 2026-11-21
-- **[BL-83] The toolbar tooltip stays English** — `action.default_title` in `manifest.json` is a
-  literal while the name and description are now `__MSG_` keys. Set it to `__MSG_appName__`
-  (edits `manifest.test.ts`).
-  _Refs:_ `apps/extension/public/manifest.json`, `apps/extension/src/__tests__/manifest.test.ts` · _Status:_ open — backlog-6 review, 2026-11-21
+- **[BL-96] Translated listings land on the matching X1 page** — once the store approves the
+  extension, open it from each store language and check it lands on the same language's page, e.g.
+  `https://framesizes.app/tl/extensions/gallery-wall-layout-generator#usage`. Google takes only
+  two-letter codes, so Filipino is `tl` (not `fil`), Chinese Simplified is `zh-Hans`, Norwegian is `no`.
+  _Refs:_ `apps/extension/src/background.ts`, `apps/web/src/lib/locales.ts` · _Status:_ gated — Chrome Web Store approval (owner's note, 2026-11-21)
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third
@@ -143,10 +143,6 @@ when to add and when to fold items in.
   local runs on macOS did not reproduce it. Suspect an IndexedDB transaction from the closing page
   holding the store; reproduce on Linux (Playwright Docker image) before changing code.
   _Refs:_ `apps/extension/src/use-wall.ts` (`load`, `flush`), `apps/extension/src/store.ts` (`transact`), `e2e/extension-try.spec.ts` · _Status:_ open — CI flake, 2026-11-20
-- **[BL-68] A reload after the self-switch shows the pin steps again** — once the poll sees the button
-  pinned, the page switches to usage but the URL keeps `?pinned=0`, so a reload opens pin mode until
-  the first reply. Consider `history.replaceState` dropping `pinned` on the switch.
-  _Refs:_ `apps/web/src/components/extension/mode-switch.tsx` · _Status:_ open — t24 phase review, 2026-11-20
 - **[BL-69] The pin poll wakes every 2 s in a hidden tab** — it sends nothing while hidden but keeps
   its timer running; pausing on `visibilitychange` would stop the wake-ups. Polish.
   _Refs:_ `apps/web/src/components/extension/mode-switch.tsx` · _Status:_ open — t24 phase review, 2026-11-20
@@ -169,24 +165,16 @@ when to add and when to fold items in.
 
 ## Widgets
 
+- **[BL-98] F3 chips a small screen cannot use** — on a 7 in tablet in the phone layout (Fire 7,
+  600 × 1024) the tablet chips from 12.4 in give under 100 px per inch, so the touch slider ignores
+  them; a tap fills "Other size" with 13 while no chip is pressed and the button still says "Use
+  11 in" (a small laptop does the same with 32 in). Hide such chips or say why, with BL-94's note.
+  _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`Diagonals`) · _Status:_ open — backlog-7 review, 2026-11-22
 - **[BL-94] F3 says nothing when a typed screen size is ignored** — a size whose scale the slider
   cannot show leaves the field holding it while the check uses the picked size or the guess; only the
   button's "Use N in" changes, and that change is not announced. Add a polite note beside the field,
   in space kept for it so nothing moves (t3 phase review).
   _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`Diagonals`) · _Status:_ open
-- **[BL-95] F3 edge hint's re-measure is untested** — the card step's strip is re-measured through a
-  `ResizeObserver` in a callback ref, but jsdom has none, so no test runs a resize. Stub one in the DOM
-  test and check the hint after the width changes (t3 phase review).
-  _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`PhoneLines`), `__tests__/actual-size.test.tsx` · _Status:_ open
-- **[BL-92] F3 screen sizes for tablets** — a tablet gets the desktop list (13.3 to 32 in) while its
-  guess is 11 in, so the visitor has to type the size. Add a tablet list (about 8 to 13 in) once the
-  spec names one (t3 phase review).
-  _Refs:_ `apps/web/src/components/actual-size/check.tsx` (`Diagonals`) · _Status:_ open
-- **[BL-91] F3 says "Saved on this device." when storage is blocked** — with `localStorage` throwing,
-  `saveCheck` keeps the scale check for the page view only, yet the desktop status still says it is
-  saved, and the next visit starts on the guess. Have `saveCheck` report whether it stored the check
-  and say "Kept for this visit" when it did not (t3 phase re-review, finding H).
-  _Refs:_ `apps/web/src/components/actual-size/saved.ts`, `actual-size.tsx` (`Desk` status) · _Status:_ open
 - **[BL-74] `ScalePreview` keeps an unused `unit` prop** — since BL-61 the preview holds both units
   and the `data-unit` CSS picks one, so the prop is never read; drop it from the type and from
   `frame-chart.tsx` and the unit test's call sites (an existing-test edit).
@@ -229,9 +217,3 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
-
-От Олега:
-
-1. После одобрения расширения в хроме, проверить, что с локализаций попадаем на СООТВЕТСТВУЮЩУЮ локализованную:
-   https://framesizes.app/tl/extensions/gallery-wall-layout-generator#usage
-   См.: Language codes: Google accepts only two-letter language codes, so Filipino is tl (not fil) and Chinese Simplified is zh-Hans. Norwegian is no.

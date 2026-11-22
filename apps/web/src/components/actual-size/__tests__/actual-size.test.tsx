@@ -304,6 +304,35 @@ describe("beyond phones and monitors", () => {
     expect(button("No card? Pick your screen size")).toBeTruthy();
   });
 
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-phone-too-narrow-for-the-line} */
+  it("measures the screen's edge again when the screen narrows and widens", () => {
+    const resized: Array<() => void> = [];
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: () => void) {
+          resized.push(callback);
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    stubScreen({ w: 320, h: 568, phone: true });
+    const width = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(320);
+    mount();
+    click(button("See 8x10 at actual size"));
+    const edge = () => host.querySelector(".as-edge")?.textContent;
+    const resize = (w: number) => {
+      width.mockReturnValue(w);
+      act(() => resized.forEach((callback) => callback()));
+    };
+    expect(edge()).toBe("");
+    resize(100);
+    expect(edge()).toBe("The line is past your screen's edge. Pick your screen size.");
+    resize(320);
+    expect(edge()).toBe("");
+  });
+
   /** {@link openspec/specs/actual-size/spec.md#scenario-a-size-the-screen-cannot-have} */
   it("names the screen size it uses, and ignores one the screen cannot have", () => {
     stubScreen({ w: 1920, h: 1080, phone: false });
@@ -358,5 +387,70 @@ describe("switching between checks", () => {
     });
     expect(host.querySelector("h2")?.textContent).toBe("Check your screen");
     expect(host.textContent).toContain("Stand a credit card upright on the screen.");
+  });
+});
+
+describe("the desktop status after a check", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-desktop-check-is-saved} */
+  it("says the check is saved when the browser stores it", () => {
+    stubScreen({ w: 1920, h: 1080, phone: false });
+    mount();
+    click(button("Check with a card"));
+    click(button("Done, it matches"));
+    expect(host.querySelector(".as-status")?.textContent).toContain("Saved on this device.");
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#scenario-storage-is-blocked} */
+  it("says the check is kept for this visit when storage is blocked", () => {
+    const blocked = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    stubScreen({ w: 1920, h: 1080, phone: false });
+    mount();
+    click(button("Check with a card"));
+    click(button("Done, it matches"));
+    const status = host.querySelector(".as-status")?.textContent;
+    expect(host.querySelector(".fs-badge")?.textContent).toBe("Checked with a card");
+    expect(status).toContain("Kept for this visit.");
+    expect(status).not.toContain("Saved on this device.");
+
+    // A new page load opens on the guess.
+    act(() => root?.unmount());
+    host.remove();
+    forgetCheck();
+    mount();
+    expect(host.querySelector(".fs-badge")?.textContent).toBe("Scale is a guess");
+    blocked.mockRestore();
+  });
+});
+
+describe("a tablet in the desktop layout", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-an-11-in-tablet} */
+  it("offers tablet screen sizes, and 10.9 in sets its scale", () => {
+    // Its own stub: a coarse pointer in the desktop layout. The file's afterEach undoes it.
+    vi.spyOn(window.screen, "width", "get").mockReturnValue(820);
+    vi.spyOn(window.screen, "height", "get").mockReturnValue(1180);
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query.includes("coarse"),
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    mount();
+    click(button("Screen size"));
+    expect(host.textContent).toContain("Our guess is 11 in.");
+    expect([...host.querySelectorAll(".as-diags button")].map((b) => b.textContent)).toEqual([
+      "8.3 in",
+      "10.2 in",
+      "10.9 in",
+      "11 in",
+      "12.4 in",
+      "12.9 in",
+      "13 in",
+    ]);
+    click(button("10.9 in"));
+    click(button("Use 10.9 in"));
+    const frame = host.querySelector<HTMLElement>('[data-testid="frame"]');
+    expect(px(frame?.style.width) / 8).toBeCloseTo(131.8, 1);
   });
 });

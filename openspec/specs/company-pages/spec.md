@@ -48,7 +48,7 @@ The Privacy Policy's data table and extension section describe only what the cod
 ## Edge Cases
 
 - A change that adds a tracker, ads or affiliate links edits the Privacy Policy's table in the same change (Tracker T21 note).
-- "No IP address and no location" rests on the PostHog project setting "Discard client IP data" (BL-86).
+- "No location" is pinned in code: cookieless mode and `$geoip_disable: true` on every event (`instrumentation-client.ts`). "No IP address" still rests on cookieless mode and the PostHog project setting "Discard client IP data", since PostHog reads the IP from the request (BL-97).
 - The mailbox provider behind Porkbun's forwarding is not named yet (BL-85).
 - The footer year is the build year: the pages are static and update on each deploy.
 
