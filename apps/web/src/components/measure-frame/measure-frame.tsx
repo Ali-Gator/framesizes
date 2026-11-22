@@ -50,7 +50,7 @@ const KIND: Record<Kind, { t: string; s: string; h: string; hint: ReactNode }> =
     h: "Measure the front opening",
     hint: (
       <>
-        From the frame&rsquo;s inner edge on one side to the other. The frame covers{" "}
+        From the frame&apos;s inner edge on one side to the other. The frame covers{" "}
         <L inches={LIP} /> of the picture on each side, so we add <L inches={2 * LIP} />.
       </>
     ),
@@ -68,7 +68,7 @@ const KIND: Record<Kind, { t: string; s: string; h: string; hint: ReactNode }> =
   },
   outside: {
     t: "Outside, edge to edge",
-    s: "Plus the moulding width seen from the front. For a frame you can’t open.",
+    s: "Plus the moulding width seen from the front. For a frame you can't open.",
     h: "Measure the outside and the moulding",
     hint: "Outside: outer edge to outer edge. Moulding: from the outer edge to the glass, seen from the front.",
   },

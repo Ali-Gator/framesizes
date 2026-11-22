@@ -70,11 +70,11 @@ Branch `t4-measure-picture-frame`, cut from `main`. In every group, tests come f
   Build `page.tsx`, the steps section, the table from `frameMeasurements` and the questions (design decision 8). Verify the tests pass.
 
 - [x] 5.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts`. Verify `pnpm build` prerenders it at 1200 × 630, under 300 KB.
-- [ ] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, labels, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword, and leave the title, `h1` and description verbatim. Verify the content e2e still passes.
+- [x] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, labels, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword, and leave the title, `h1` and description verbatim. Verify the content e2e still passes.
 
 ## 6. Live-page counts elsewhere (approved test edits only)
 
-- [ ] 6.1 Re-point four tests to their new scenarios, each adding only the F4 card or URL:
+- [x] 6.1 Re-point four tests to their new scenarios, each adding only the F4 card or URL:
   - `e2e/frame-chart-content.spec.ts` → `frame-size-chart` "F2, F3, F4 and G1 are live besides the home page";
   - `e2e/frames-on-wall-content.spec.ts` → `frames-on-wall` "F1, F2, F3, F4 and G1 are live";
   - `e2e/actual-size-content.spec.ts` → `actual-size` "F1, F2, F3, F4 and G1 are live";
