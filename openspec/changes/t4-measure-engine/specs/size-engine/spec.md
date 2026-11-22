@@ -31,10 +31,68 @@ The engine SHALL match a frame size in inches to the catalog size whose width an
 - **WHEN** a frame measured inside is 9 by 12 inches
 - **THEN** it matches no standard size, and the frame size given is 9 by 12 inches
 
-#### Scenario: A measurement matches at most one size
+#### Scenario: A measurement matches at most one catalog size
 
 - **WHEN** every pair of catalog sizes is compared, upright
-- **THEN** each pair differs by at least 1 inch in width or height, so no measurement is within ⅜ inch of two sizes
+- **THEN** each pair differs by at least 1 inch in width or height, so no measurement is within ⅜ inch of two catalog sizes
+
+### Requirement: A metric frame size is named when it is closer than the US size
+
+The engine SHALL also match a frame size against five metric frame sizes, A4 (21 × 29.7 cm), A3 (29.7 × 42 cm), 30 × 40 cm, 40 × 50 cm and 50 × 70 cm, within ⅜ inch on each side and in the measured orientation. It SHALL name the metric size only when its larger side difference is smaller than the US match's, and SHALL then name that US match as close too.
+
+#### Scenario: An A4 frame
+
+- **WHEN** a frame measured inside is 21 by 29.7 cm
+- **THEN** it is the metric A4, and no US size is close
+
+#### Scenario: A 30 × 40 cm frame
+
+- **WHEN** a frame measured inside is 30 by 40 cm
+- **THEN** it is the metric 30 × 40 cm, and the US 12x16 is named as close too
+
+#### Scenario: A 12x16 frame
+
+- **WHEN** a frame measured inside is 12 by 16 inches
+- **THEN** it is the standard 12x16, and no metric size is named
+
+#### Scenario: A landscape A4
+
+- **WHEN** a frame measured inside is 29.7 by 21 cm
+- **THEN** it is the metric A4, 29.7 cm wide and 21 cm high
+
+#### Scenario: A measurement matches at most one metric size
+
+- **WHEN** every pair of the five metric sizes is compared, upright
+- **THEN** each pair differs by more than ¾ inch in width or height
+
+### Requirement: A custom size names the nearest standard sizes below and above
+
+For a frame size that matches no standard or metric size, the engine SHALL name the catalog size of largest area that is no bigger on either side, and the catalog size of smallest area that is at least as big on both sides, in the measured orientation. A square size, its sides within ⅜ inch, SHALL be compared only with square catalog sizes, and any other only with rectangular ones. Either may be absent.
+
+#### Scenario: A 9 × 12 frame
+
+- **WHEN** a frame measured inside is 9 by 12 inches
+- **THEN** the size below is the 8.5x11 and the size above is the 11x14
+
+#### Scenario: A landscape custom frame
+
+- **WHEN** a frame measured inside is 12 by 9 inches
+- **THEN** the size below is the landscape 11x8.5 and the size above is the landscape 14x11
+
+#### Scenario: A square custom frame
+
+- **WHEN** a frame measured inside is 13 by 13 inches
+- **THEN** the size below is the 12x12 and the size above is the 16x16
+
+#### Scenario: Larger than every size
+
+- **WHEN** a frame measured inside is 30 by 44 inches
+- **THEN** the size below is the 27x40 and there is no size above
+
+#### Scenario: Smaller than every size
+
+- **WHEN** a frame measured inside is 3 by 5 inches
+- **THEN** there is no size below and the size above is the 4x6
 
 ### Requirement: A front opening gives the frame size
 

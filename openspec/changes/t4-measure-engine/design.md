@@ -6,21 +6,22 @@ See `proposal.md` for the motivation and the two-change split. What this change 
 
 - `packages/sizes/src/frames.ts` holds the catalog. It stores each size upright (`ENTRIES`), lists it in any orientation (`framesFor`, `findFrame`), and gives each size its common pre-cut mat (`mat`, turned with the frame). `frameAnatomy` already defines the two allowances this change inverts: the outside is the frame size plus the moulding on every side, and the mat opening is the image less `MAT_OVERLAP` (¼ in) on every side.
 - `packages/sizes/src/**` maps to `size-engine` in `openspec/specs/README.md`, so a new file there is gated by the existing spec. Vitest already runs the package's tests.
-- The consumer comes later: the F4 page, after its canvas is approved. Its steps and copy do not exist yet, so this change holds only the math the Tracker row and the SEO guide already fix ("inside / outside / opening → standard size").
+- `packages/sizes/src/screen.ts` holds `ACTUAL_SIZES`, whose A4 and A3 entries are built from millimetres for F3.
+- The consumer is the F4 page, drawn on the approved canvas (https://claude.ai/artifact/SqK52EoyyoLLXzRPPKSUkB). Its `Wizard` board runs the same arithmetic in its own script (`TOL`, `LIP`, `OVER`, `matchUS`, `matchMetric`, `nearest`); this change is that logic, tested.
 
 ## Goals / Non-Goals
 
 **Goals:**
 
 - One pure function turns any of the four measurements into the frame size (or print size) it points to and the standard sizes that match, tested in Node.
-- The match is never ambiguous: at most one frame per frame measurement.
+- The match is never ambiguous: at most one catalog size and one metric size per frame measurement, and a fixed rule picks between them.
 - No new package, dependency or README row.
 
 **Non-Goals:**
 
 - Centimetre input. The page converts with `CM_PER_INCH`, as F2 and F3 do; the engine stays in inches.
-- Metric frame sizes (A4, A3, 30x40 cm). The catalog is the US ready-made list; `ACTUAL_SIZES` holds A4 and A3 for F3 only. The canvas decides whether F4 needs them.
-- What a custom size result offers (nearest sizes, a custom frame order, the next size up). `nextSizeUp` exists for the page if the canvas wants it.
+- Metric sizes in the mat path. The catalog's mat pairings are US only, and the canvas matches mats against them alone.
+- Metric sizes as nearest sizes for a custom size. The canvas names US sizes only.
 - Rounding or labels. The page writes sizes with `writeSize`.
 
 ## Decisions
@@ -41,19 +42,20 @@ type Measurement =
   | { kind: "outside"; size: Size; face: number; lip?: number }
   | { kind: "mat"; size: Size; overlap?: number };
 
-interface Identified {
-  /** The frame size the numbers give, or for a mat the print size. */
-  size: Size;
-  /** Matching catalog frames in the measured orientation: at most one for a frame, any number for a mat. */
-  frames: readonly Frame[];
-}
+/** `size` is the frame size the numbers give, or for a mat the print size. */
+type Identified =
+  | { kind: "standard"; size: Size; frame: Frame }
+  | { kind: "metric"; size: Size; metric: ActualSize; close?: Frame }
+  | { kind: "custom"; size: Size; below?: Frame; above?: Frame }
+  | { kind: "mat"; size: Size; frames: readonly Frame[] }; // empty: no pre-cut mat for that print
 
 function identifyFrame(m: Measurement): Identified | undefined; // undefined = no answer
 ```
 
 - The wizard will hold the kind the visitor picked and call one function, so its reducer stays a switch on the step, not on the math.
 - Alternative: four functions (`frameFromInside`, `frameFromOutside`, …). Rejected: each would repeat the validation and the match, and the page would pick the function by kind anyway.
-- An empty `frames` is the custom-size answer. No separate flag: the spec's "matches none" is `frames.length === 0`.
+- The answer is tagged, so the page's result board is one switch over the canvas's results a to e (standard, metric, custom, mat with one or two frames, mat with none).
+- Alternative: one shape with optional fields (`frames`, `metric?`, `below?`). Rejected: the page would have to know which combinations can occur.
 
 ### 3. The arithmetic
 
@@ -81,7 +83,19 @@ All per side, in inches:
 - The same uniqueness test runs over the mat print sizes (8x10 against 8.5x11 and 8x12 against 8.5x11 are 1 in apart).
 - The answer's `size` is the computed print size, not the matched pairing, so the page shows what the visitor measured.
 
-### 6. Validation
+### 6. Metric frames: a short list beside the catalog, the closer one wins
+
+- `METRIC_FRAMES` in `measure.ts`: the A4 and A3 entries of `ACTUAL_SIZES` (one record of each, constitution: one mechanism per concern), then 30 × 40, 40 × 50 and 50 × 70 cm from centimetres, as `ActualSize` values (`id`, `label`, inches). It stays out of `CATALOG`, which F1 and F2 list in full as the US ready-made sizes.
+- A frame size is matched against both lists with the same tolerance. Each list matches at most once (tests pin the gaps: 1 in for the catalog, more than ¾ in for the metric list). Both can match: 30 × 40 cm is 0.25 in from 12x16, and 40 × 50 cm 0.32 in from 16x20.
+- The distance is the larger of the two side differences. The metric size wins only when strictly closer, so a measured 12 × 16 in stays the US 12x16 and a tie goes to the US size. A winning metric size carries the US match as `close`, which the canvas shows as "12x16 is close too, but 30 × 40 cm is closer".
+- The metric answer is turned to the measured orientation; its `id` stays as is (A4, 30x40 cm).
+
+### 7. Custom size: the nearest catalog sizes below and above
+
+- With no match, the engine scans the upright catalog within the same shape class: square when the measured sides are within the tolerance, rectangular otherwise. `below` is the entry of largest area no bigger on either side; `above` the entry of smallest area at least as big on both sides. An area tie goes to the earlier catalog entry. Both are turned to the measured orientation.
+- Alternative: `nextSizeUp`. Rejected: it walks from a catalog frame, and a custom size is not one (the canvas notes this); it also gives no size below.
+
+### 8. Validation
 
 Every side, the face width, the lip and the overlap must be finite and positive (a lip or overlap of 0 is refused too: no real frame or mat has none, and a 0 would hide a typing slip). After the arithmetic, a frame size that is not positive (outside path) is no answer.
 
@@ -90,7 +104,8 @@ Every side, the face width, the lip and the overlap must be finite and positive 
 - [The lip differs by maker] → ⅜ in absorbs ³⁄₁₆ to ⁵⁄₁₆ in; `lip` is a parameter, so the page can ask for it if the canvas shows a frame with an unusual lip. The source check (task 2.1) confirms ¼ in is the common figure.
 - [A visitor measures the front opening of a matted frame as "inside"] → the numbers then point to a size ½ in small, usually custom, or worse the wrong frame. The canvas must show where each measurement is taken; the engine cannot tell.
 - [BL-17: the 20x30 and 27x40 pairings may change] → the mat path reads the pairings, so a later data change flows through without code changes; the mat scenarios do not use those two sizes.
-- [The catalog grows a size within 1 in of another] → the uniqueness test fails, and the tolerance or the matching must be revisited in that change.
+- [The catalog grows a size within 1 in of another, or the metric list one within ¾ in] → the uniqueness test fails, and the tolerance or the matching must be revisited in that change.
+- [The canvas's script and the engine drift] → the page change replaces the canvas's inline math with `identifyFrame`; the canvas stays a picture of the behaviour, not a second implementation.
 
 ## Migration Plan
 
