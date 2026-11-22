@@ -21,8 +21,8 @@
 - [x] 2.9 BL-86 — `apps/web/src/instrumentation-client.ts:11-25`: `before_send` adding `$geoip_disable: true`, with a comment that it guards location and that the IP stays a PostHog server matter (BL-97); until 2.8 passes and `e2e/analytics.spec.ts` passes unedited
 - [x] 2.10 BL-68 — failing test, new in `apps/web/src/components/extension/__tests__/mode-switch.test.tsx`: start at `?pinned=0&utm_source=store`, reply not pinned then pinned; the page is in usage mode, `location.search` is `?utm_source=store`, `history.length` is unchanged ({@link openspec/specs/extension-site/spec.md#scenario-the-address-after-the-self-switch}); verify it fails
 - [x] 2.11 BL-68 — `apps/web/src/components/extension/mode-switch.tsx:41` (`history.replaceState(history.state, "", url)` with `pinned` deleted, hash and other params kept) and its doc comment `:12-16`; until 2.10 passes and every existing `mode-switch.test.tsx` test passes unedited
-- [ ] 2.12 BL-83 — APPROVED EXISTING-TEST EDIT (Decision 2): `apps/extension/src/__tests__/manifest.test.ts:54` expects `action.default_title` to be `"__MSG_appName__"`; plus a new `it` that every `public/_locales/*/messages.json` defines a non-empty `appName` ({@link openspec/specs/gallery-wall-extension/spec.md#scenario-every-language-names-the-extension}); verify `:54` fails. No other existing test changes
-- [ ] 2.13 BL-83 — `apps/extension/public/manifest.json:15`: `"default_title": "__MSG_appName__"`; do not rebuild `gallery-wall-layout-generator.zip`; until 2.12 passes
+- [x] 2.12 BL-83 — APPROVED EXISTING-TEST EDIT (Decision 2): `apps/extension/src/__tests__/manifest.test.ts:54` expects `action.default_title` to be `"__MSG_appName__"`; plus a new `it` that every `public/_locales/*/messages.json` defines a non-empty `appName` ({@link openspec/specs/gallery-wall-extension/spec.md#scenario-every-language-names-the-extension}); verify `:54` fails. No other existing test changes
+- [x] 2.13 BL-83 — `apps/extension/public/manifest.json:15`: `"default_title": "__MSG_appName__"`; do not rebuild `gallery-wall-layout-generator.zip`; until 2.12 passes
 
 ## 3. Verify, delete, review, archive, ship
 

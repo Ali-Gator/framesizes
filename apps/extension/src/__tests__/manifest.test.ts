@@ -51,13 +51,22 @@ describe("the manifest", () => {
     expect(manifest.name).toBe("__MSG_appName__");
     expect(manifest.default_locale).toBe("en");
     expect(messages("en").appName.message).toBe(NAME);
-    expect(manifest.action.default_title).toBe(NAME);
+    expect(manifest.action.default_title).toBe("__MSG_appName__");
     for (const set of [manifest.icons, manifest.action.default_icon]) {
       expect(Object.keys(set).sort()).toEqual([...SIZES].sort());
       for (const px of SIZES) {
         expect(set[px]).toMatch(/\.png$/);
         expect(pngSize(set[px])).toEqual([Number(px), Number(px)]);
       }
+    }
+  });
+
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-every-language-names-the-extension} */
+  it("names the extension in every language it ships", () => {
+    const langs = fs.readdirSync(LOCALES);
+    expect(langs).toHaveLength(28);
+    for (const lang of langs) {
+      expect(messages(lang).appName?.message?.trim(), lang).toBeTruthy();
     }
   });
 
