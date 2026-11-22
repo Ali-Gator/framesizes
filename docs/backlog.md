@@ -182,13 +182,6 @@ when to add and when to fold items in.
 
 ## Widgets
 
-- **[BL-106] F4 nearest sizes skip squares for a near-square custom size** — a size counts as
-  square only with its sides within ⅜ in, so 9 × 9.5 in gets 5x7 below and 11x14 above while the
-  8x8 and 10x10 are much closer. Owner decided (2026-11-22): offer the nearest squares too. A custom
-  size squarer than every catalog rectangle (long side under 1.2 × short side; 20x24 is the
-  squarest) also names the nearest squares below and above, beside the rectangles. Spec change to
-  the custom-size requirement; fold into the F4 page change.
-  _Refs:_ `openspec/specs/size-engine/spec.md` (custom size names the nearest sizes), `packages/sizes/src/measure.ts` (`nearest`) · _Status:_ open — owner decision 2026-11-22; t4-measure-engine review
 - **[BL-98] F3 chips a small screen cannot use** — on a 7 in tablet in the phone layout (Fire 7,
   600 × 1024) the tablet chips from 12.4 in give under 100 px per inch, so the touch slider ignores
   them; a tap fills "Other size" with 13 while no chip is pressed and the button still says "Use

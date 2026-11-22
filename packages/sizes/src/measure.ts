@@ -1,4 +1,4 @@
-import { CATALOG, findFrame, MAT_OVERLAP, type Frame } from "./frames";
+import { CATALOG, findFrame, frameAnatomy, MAT_OVERLAP, MOULDING, type Frame } from "./frames";
 import { ACTUAL_SIZES, type ActualSize } from "./screen";
 import { CM_PER_INCH, type Size } from "./units";
 
@@ -61,7 +61,15 @@ export type Measurement =
 export type Identified =
   | { kind: "standard"; size: Size; frame: Frame }
   | { kind: "metric"; size: Size; metric: ActualSize; close?: Frame }
-  | { kind: "custom"; size: Size; below?: Frame; above?: Frame }
+  /** `squareBelow` and `squareAbove` only for a near-square size (long side under 1.2 × short). */
+  | {
+      kind: "custom";
+      size: Size;
+      below?: Frame;
+      above?: Frame;
+      squareBelow?: Frame;
+      squareAbove?: Frame;
+    }
   /** `frames` is empty when no pre-cut mat is sold for that print. */
   | { kind: "mat"; size: Size; frames: readonly Frame[] };
 
@@ -86,8 +94,8 @@ function closest<T extends Size>(list: readonly T[], up: Size): { item: T; d: nu
   return best;
 }
 
-function nearest(up: Size, landscape: boolean): { below?: Frame; above?: Frame } {
-  const square = up.h - up.w <= MEASURE_TOLERANCE;
+/** The largest catalog size no bigger on either side and the smallest at least as big on both. */
+function bounds(up: Size, square: boolean): { below?: Frame; above?: Frame } {
   const area = (f: Frame) => f.w * f.h;
   let below: Frame | undefined;
   let above: Frame | undefined;
@@ -96,10 +104,31 @@ function nearest(up: Size, landscape: boolean): { below?: Frame; above?: Frame }
     if (f.w <= up.w && f.h <= up.h && (!below || area(f) > area(below))) below = f;
     if (f.w >= up.w && f.h >= up.h && (!above || area(f) < area(above))) above = f;
   }
-  return {
+  return { below, above };
+}
+
+/** Squarer than every catalog rectangle (20x24 is 1.2): BL-106. */
+const NEAR_SQUARE = 1.2;
+
+function nearest(
+  up: Size,
+  landscape: boolean,
+): Pick<
+  Extract<Identified, { kind: "custom" }>,
+  "below" | "above" | "squareBelow" | "squareAbove"
+> {
+  const square = up.h - up.w <= MEASURE_TOLERANCE;
+  const { below, above } = bounds(up, square);
+  const out: ReturnType<typeof nearest> = {
     below: below && turn(below, landscape),
     above: above && turn(above, landscape),
   };
+  if (!square && up.h < NEAR_SQUARE * up.w) {
+    const squares = bounds(up, true);
+    if (squares.below) out.squareBelow = squares.below;
+    if (squares.above) out.squareAbove = squares.above;
+  }
+  return out;
 }
 
 function match(size: Size): Identified {
@@ -120,36 +149,85 @@ function match(size: Size): Identified {
   return { kind: "custom", size, ...nearest(up, landscape) };
 }
 
+/** Why a measurement gives no size. */
+export type NoAnswer = "number" | "narrow" | "room";
+
+/** The frame size (or for a mat the print size) a measurement gives, or why it gives none. */
+function sizeOf(m: Measurement): Size | NoAnswer {
+  const { w, h } = m.size;
+  if (!positive(w) || !positive(h)) return "number";
+  if (m.kind === "mat") {
+    const overlap = m.overlap ?? MAT_OVERLAP;
+    if (!positive(overlap)) return "number";
+    return { w: w + 2 * overlap, h: h + 2 * overlap };
+  }
+  if (m.kind === "inside") return { w, h };
+  const lip = m.lip ?? LIP;
+  if (!positive(lip)) return "number";
+  let grow = 2 * lip;
+  if (m.kind === "outside") {
+    if (!positive(m.face)) return "number";
+    if (m.face <= lip) return "narrow";
+    grow -= 2 * m.face;
+  }
+  const size = { w: w + grow, h: h + grow };
+  return size.w > 0 && size.h > 0 ? size : "room";
+}
+
+/**
+ * Why a measurement gets no answer: a number that is not positive, a moulding no wider than its
+ * lip, or mouldings that leave no room; `undefined` when it gets one.
+ * {@link openspec/specs/size-engine/spec.md#requirement-a-measurement-with-no-answer-says-why}
+ */
+export function whyNoAnswer(m: Measurement): NoAnswer | undefined {
+  const size = sizeOf(m);
+  return typeof size === "string" ? size : undefined;
+}
+
 /**
  * The size a measurement gives and the standard, metric or custom size it is, or for a mat the
  * print and the frames sold with that mat; `undefined` when the numbers give no size.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-measured-frame-size-is-matched-to-a-standard-size}
  */
 export function identifyFrame(m: Measurement): Identified | undefined {
-  const { w, h } = m.size;
-  if (!positive(w) || !positive(h)) return undefined;
+  const size = sizeOf(m);
+  if (typeof size === "string") return undefined;
+  if (m.kind !== "mat") return match(size);
+  const print = upright(size);
+  const frames = CATALOG.filter((f) => f.mat && gap(f.mat, print) <= MEASURE_TOLERANCE).map((f) =>
+    turn(f, size.w > size.h),
+  );
+  return { kind: "mat", size, frames };
+}
 
-  if (m.kind === "mat") {
-    const overlap = m.overlap ?? MAT_OVERLAP;
-    if (!positive(overlap)) return undefined;
-    const size = { w: w + 2 * overlap, h: h + 2 * overlap };
-    const print = upright(size);
-    const frames = CATALOG.filter((f) => f.mat && gap(f.mat, print) <= MEASURE_TOLERANCE).map((f) =>
-      turn(f, size.w > size.h),
-    );
-    return { kind: "mat", size, frames };
-  }
+/** A catalog frame's four measurements, as F4's table lists them. */
+export interface FrameMeasurements {
+  /** The frame size. */
+  inside: Size;
+  /** The inside less two lips. */
+  front: Size;
+  /** With the example moulding. */
+  outside: Size;
+  /** The example moulding seen from the front: the moulding plus the lip. */
+  face: number;
+  /** Absent when no pre-cut mat is sold for the frame. */
+  mat?: { opening: Size; print: Size };
+}
 
-  if (m.kind === "inside") return match({ w, h });
-
-  const lip = m.lip ?? LIP;
-  if (!positive(lip)) return undefined;
-  let grow = 2 * lip;
-  if (m.kind === "outside") {
-    if (!positive(m.face) || m.face <= lip) return undefined;
-    grow -= 2 * m.face;
-  }
-  const size = { w: w + grow, h: h + grow };
-  if (size.w <= 0 || size.h <= 0) return undefined;
-  return match(size);
+/**
+ * A catalog frame's inside, front opening, outside with the example moulding, that moulding's
+ * width from the front, and its pre-cut mat's opening and print.
+ * {@link openspec/specs/size-engine/spec.md#requirement-a-standard-frames-measurements-are-listed}
+ */
+export function frameMeasurements(frame: Frame): FrameMeasurements {
+  const inside = { w: frame.w, h: frame.h };
+  const anatomy = frameAnatomy({ frame: inside, image: frame.mat ?? inside, moulding: MOULDING });
+  const out: FrameMeasurements = {
+    inside,
+    front: { w: frame.w - 2 * LIP, h: frame.h - 2 * LIP },
+    outside: anatomy.outside,
+    face: MOULDING + LIP,
+  };
+  if (frame.mat) out.mat = { opening: anatomy.matOpening, print: { ...frame.mat } };
+  return out;
 }

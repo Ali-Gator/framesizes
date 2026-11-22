@@ -12,9 +12,9 @@ Branch `t4-measure-picture-frame`, cut from `main`. In every group, tests come f
 
 ## 2. Size engine (`size-engine`)
 
-- [ ] 2.1 Add tests for `inEighths`, `writeEighths` and `readLength`, covering every scenario in "An inch length is written to the nearest eighth" and "A typed length is read with fractions". Implement them in `units.ts` and export them from `index.ts` with spec links. Verify the tests pass.
-- [ ] 2.2 Add tests for `frameMeasurements` (the 8x10 and the 4x6) and for `whyNoAnswer` (its four scenarios). Implement both in `measure.ts` (design decisions 1 and 2), sharing one private check with `identifyFrame`. Verify the tests pass and the existing measure tests pass unedited.
-- [ ] 2.3 Add tests for the three new custom-size scenarios: 9 × 9½, 9½ × 9 and 10 × 12. Add `squareBelow` and `squareAbove` to `nearest` (BL-106). Verify the five existing custom-size tests pass unedited. Delete BL-106 from `docs/backlog.md`.
+- [x] 2.1 Add tests for `inEighths`, `writeEighths` and `readLength`, covering every scenario in "An inch length is written to the nearest eighth" and "A typed length is read with fractions". Implement them in `units.ts` and export them from `index.ts` with spec links. Verify the tests pass.
+- [x] 2.2 Add tests for `frameMeasurements` (the 8x10 and the 4x6) and for `whyNoAnswer` (its four scenarios). Implement both in `measure.ts` (design decisions 1 and 2), sharing one private check with `identifyFrame`. Verify the tests pass and the existing measure tests pass unedited.
+- [x] 2.3 Add tests for the three new custom-size scenarios: 9 × 9½, 9½ × 9 and 10 × 12. Add `squareBelow` and `squareAbove` to `nearest` (BL-106). Verify the five existing custom-size tests pass unedited. Delete BL-106 from `docs/backlog.md`.
 
 ## 3. Wizard logic (`components/measure-frame/`)
 

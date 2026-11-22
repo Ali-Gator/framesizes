@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import { CATALOG, frameAnatomy, MOULDING } from "../frames";
 import {
+  frameMeasurements,
   identifyFrame,
   LIP,
   MEASURE_TOLERANCE,
   METRIC_FRAMES,
   type Identified,
   type Measurement,
+  whyNoAnswer,
 } from "../measure";
 import { ACTUAL_SIZES } from "../screen";
 import type { Size } from "../units";
@@ -142,6 +144,88 @@ describe("the nearest sizes to a custom size", () => {
   /** {@link openspec/specs/size-engine/spec.md#scenario-smaller-than-every-size} */
   it("have nothing below 3 by 5", () => {
     expect(nearest(3, 5)).toEqual([undefined, "4x6"]);
+  });
+
+  const squares = (w: number, h: number) => {
+    const answer = as(identifyFrame(inside(w, h)), "custom");
+    return [answer.squareBelow?.id, answer.squareAbove?.id];
+  };
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-near-square-custom-frame} */
+  it("add the 8x8 and the 10x10 for 9 by 9½", () => {
+    expect(nearest(9, 9.5)).toEqual(["5x7", "11x14"]);
+    expect(squares(9, 9.5)).toEqual(["8x8", "10x10"]);
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-landscape-near-square-custom-frame} */
+  it("add the same squares for a landscape 9½ by 9", () => {
+    expect(nearest(9.5, 9)).toEqual(["7x5", "14x11"]);
+    expect(squares(9.5, 9)).toEqual(["8x8", "10x10"]);
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-exactly-12-times-as-long} */
+  it("name no square for 10 by 12", () => {
+    expect(nearest(10, 12)).toEqual(["8.5x11", "11x14"]);
+    const answer = as(identifyFrame(inside(10, 12)), "custom");
+    expect("squareBelow" in answer || "squareAbove" in answer).toBe(false);
+  });
+});
+
+describe("a standard frame's measurements", () => {
+  const frame = (id: string) => {
+    const found = CATALOG.find((f) => f.id === id);
+    if (!found) throw new Error(id);
+    return found;
+  };
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-the-8x10} */
+  it("lists the 8x10's inside, front, outside and mat", () => {
+    expect(frameMeasurements(frame("8x10"))).toEqual({
+      inside: { w: 8, h: 10 },
+      front: { w: 7.5, h: 9.5 },
+      outside: { w: 10, h: 12 },
+      face: 1.25,
+      mat: { opening: { w: 4.5, h: 6.5 }, print: { w: 5, h: 7 } },
+    });
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-frame-with-no-pre-cut-mat} */
+  it("gives the 4x6 no mat", () => {
+    const m = frameMeasurements(frame("4x6"));
+    expect(m).toEqual({
+      inside: { w: 4, h: 6 },
+      front: { w: 3.5, h: 5.5 },
+      outside: { w: 6, h: 8 },
+      face: 1.25,
+    });
+    expect("mat" in m).toBe(false);
+  });
+});
+
+describe("a measurement with no answer", () => {
+  /** {@link openspec/specs/size-engine/spec.md#scenario-mouldings-that-leave-no-room} */
+  it("says the mouldings leave no room", () => {
+    const m: Measurement = { kind: "outside", size: { w: 10, h: 12 }, face: 6 };
+    expect(whyNoAnswer(m)).toBe("room");
+    expect(identifyFrame(m)).toBeUndefined();
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-moulding-no-wider-than-the-lip} */
+  it("says the moulding is no wider than the lip", () => {
+    const m: Measurement = { kind: "outside", size: { w: 13, h: 16 }, face: 0.25, lip: 0.25 };
+    expect(whyNoAnswer(m)).toBe("narrow");
+    expect(identifyFrame(m)).toBeUndefined();
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-side-of-0} */
+  it("says a side of 0 is not a positive number", () => {
+    expect(whyNoAnswer(inside(0, 10))).toBe("number");
+    expect(whyNoAnswer(inside(8, Number.NaN))).toBe("number");
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-measurement-with-an-answer} */
+  it("gives no reason when there is an answer", () => {
+    expect(whyNoAnswer(inside(8, 10))).toBeUndefined();
   });
 });
 
