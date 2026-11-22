@@ -85,7 +85,7 @@ Branch `t4-measure-picture-frame`, cut from `main`. In every group, tests come f
 ## 7. Gate
 
 - [ ] 7.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
-- [ ] 7.2 Run the SEO guide's pre-publish checklist for F4, on the checks that can run before go-live. Log the ones that need the live URL (preview card, Rich Results Test, URL Inspection) as backlog items gated on deploy.
+- [x] 7.2 Run the SEO guide's pre-publish checklist for F4, on the checks that can run before go-live. Log the ones that need the live URL (preview card, Rich Results Test, URL Inspection) as backlog items gated on deploy.
 
 ## Workflow follow-up
 

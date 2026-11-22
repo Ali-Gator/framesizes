@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-107**
+_Next id:_ **BL-110**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -101,6 +101,15 @@ when to add and when to fold items in.
 - **[BL-90] Rich Results Test for F3** — run the live F3 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
   _Refs:_ `apps/web/src/app/how-big-is-8x10/page.tsx`, pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-107] Preview card for F4** — paste the live F4 URL into a chat app or a preview tool and check
+  the card shows the 8x10 frame with its three measurements (guide checklist 7).
+  _Refs:_ `apps/web/src/app/measure-picture-frame/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+- **[BL-108] Rich Results Test for F4** — run the live F4 URL through the Rich Results Test and confirm
+  its `BreadcrumbList` validates (guide checklist 15).
+  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-109] URL Inspection for F4** — after launch, check `/measure-picture-frame` in Search Console's
+  URL Inspection: indexed, with its own canonical (guide, after launch).
+  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist · _Status:_ gated — DNS live
 
 - **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
