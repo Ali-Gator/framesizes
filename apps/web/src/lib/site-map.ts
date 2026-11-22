@@ -62,7 +62,7 @@ const PAGE_LIST = [
       h1: "Frame Sizes on Your Wall",
       description:
         "See all 19 standard frame sizes, 4x6 to 27x40, on your wall at true size: upload a photo and set the scale with a door, a sofa, a bed or a sheet of paper.",
-      lastModified: "2026-11-17",
+      lastModified: "2026-11-22",
     },
   },
   {
@@ -188,7 +188,7 @@ const PAGE_LIST = [
       h1: "Gallery Wall Layout Planner",
       description:
         "Plan a gallery wall layout with real frame sizes: pick a template, set the spacing, and get exact measurements and nail positions for your wall.",
-      lastModified: "2026-11-17",
+      lastModified: "2026-11-22",
     },
   },
   {

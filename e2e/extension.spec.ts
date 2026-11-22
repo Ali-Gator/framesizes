@@ -17,6 +17,8 @@ async function launch(lang: string) {
   const context = await chromium.launchPersistentContext("", {
     // Full Chromium in new headless mode: the headless shell loads no extensions.
     channel: "chromium",
+    // Linux Chromium may take its UI language from LANGUAGE as well as --lang.
+    env: { ...process.env, LANGUAGE: lang },
     args: [
       `--disable-extensions-except=${DIST}`,
       `--load-extension=${DIST}`,

@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-105**
+_Next id:_ **BL-106**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -109,7 +109,7 @@ when to add and when to fold items in.
 - **[BL-103] Check X1's live head on production** — Rich Results Test on the live X1 URL
   (BreadcrumbList valid), a preview card in a chat app, `www.` and trailing-slash URLs reach the
   canonical in one hop, and no `X-Robots-Tag` on the response.
-  _Refs:_ `openspec/specs/extension-site/spec.md` · _Status:_ open — after the t24-go-live deploy
+  _Refs:_ `openspec/specs/extension-site/spec.md` · _Status:_ gated — the t24-go-live deploy
 
 - **[BL-104] A translated X1's last breadcrumb item is the English URL** — on `/ru/…` the
   BreadcrumbList's last `item` is `https://framesizes.app/extensions/gallery-wall-layout-generator`,
@@ -126,15 +126,20 @@ when to add and when to fold items in.
 - **[BL-100] Check the pin switch on production** — install from the store with the button
   unpinned: the tab opens `?pinned=0`; pin it and the page switches to usage mode within 2 s with
   `pinned` gone from the address. The published extension talks only to `https://framesizes.app/*`.
-  _Refs:_ `openspec/changes/archive/*-t24-go-live/tasks.md` (After deploy) · _Status:_ open — after the t24-go-live deploy
+  _Refs:_ `openspec/changes/archive/*-t24-go-live/tasks.md` (After deploy) · _Status:_ gated — the t24-go-live deploy
 - **[BL-101] Check G1's extension section on production** — with the extension installed, G1 reads
   "You have it…" at the same height as with it disabled; on a 390 px touch phone it shows "Chrome on
   phones doesn't run extensions…" and no "Add to Chrome".
-  _Refs:_ `apps/web/src/components/extension/` · _Status:_ open — after the t24-go-live deploy
+  _Refs:_ `apps/web/src/components/extension/` · _Status:_ gated — the t24-go-live deploy
 - **[BL-102] Check the install tab in Chrome's language** — upload 0.1.1
   (`pnpm --filter extension zip`); once the store passes it, a first install in Chrome set to
   Russian opens `/ru/…`, and in Filipino `/tl/…`.
   _Refs:_ `apps/extension/src/background.ts` `howToUrl` · _Status:_ gated — store review of 0.1.1
+- **[BL-105] The English first-install e2e fails on a Mac set to another language** — Chromium
+  ignores `--lang` on macOS, so since 0.1.1 the install tab follows the system language and "a first
+  install opens one how-to tab with pinned=0" expects English. CI (Linux) passes; on darwin accept
+  any `/<code>/` prefix. Edits an existing test, so it needs the owner's yes.
+  _Refs:_ `e2e/extension.spec.ts` · _Status:_ open — t24-go-live review, 2026-11-22
 - **[BL-57] Extension imports apps/web internals** — the panel and the tab import G1, F2 and the unit
   toggle from `apps/web/src` through an alias; a moved file or a new Next-only import breaks the
   extension build, caught only by e2e. Move the shared planner code under `packages/` when a third

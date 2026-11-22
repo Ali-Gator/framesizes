@@ -138,7 +138,9 @@ test("robots.txt allows everything and names the sitemap", async ({ request }) =
 });
 
 /** {@link openspec/specs/seo-base/spec.md#scenario-the-live-tools-with-f3-and-the-company-pages} */
-test("sitemap.xml lists the home page, F2, F3, G1 and the company pages", async ({ request }) => {
+test("sitemap.xml lists the home page, F2, F3, G1, X1 with its translations and the company pages", async ({
+  request,
+}) => {
   const response = await request.get("/sitemap.xml");
   expect(response.status()).toBe(200);
   const body = await response.text();
