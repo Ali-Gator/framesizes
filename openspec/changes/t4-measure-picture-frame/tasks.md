@@ -18,7 +18,7 @@ Branch `t4-measure-picture-frame`, cut from `main`. In every group, tests come f
 
 ## 3. Wizard logic (`components/measure-frame/`)
 
-- [ ] 3.1 Write `state.test.ts` for the reducer and `outcome`:
+- [x] 3.1 Write `state.test.ts` for the reducer and `outcome`:
   - the first step;
   - pick, enter, back, change, checkSpot and reset, with numbers kept or cleared;
   - eighths on the active field;
@@ -28,7 +28,7 @@ Branch `t4-measure-picture-frame`, cut from `main`. In every group, tests come f
 
   Implement `state.ts` (design decision 3). Verify the tests pass.
 
-- [ ] 3.2 Write `answer.test.ts`, pinning every sentence in the standard, metric, custom, mat and drawing scenarios in both units. Implement `answer.ts` (design decision 4) from the engine's constants. Verify the tests pass.
+- [x] 3.2 Write `answer.test.ts`, pinning every sentence in the standard, metric, custom, mat and drawing scenarios in both units. Implement `answer.ts` (design decision 4) from the engine's constants. Verify the tests pass.
 
 ## 4. Wizard UI
 
