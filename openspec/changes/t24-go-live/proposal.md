@@ -10,7 +10,7 @@ The Chrome Web Store approved "Gallery Wall Layout Generator" (item `khapjkonaof
   - drops `noindex` from X1 and its 27 translations;
   - puts all 28 URLs in `/sitemap.xml` (9 entries become 37);
   - lists X1 in the footer's Gallery wall group;
-  - adds X1 to G1's Related tools as a new "Gallery wall" group before "Frames";
+  - adds X1 to G1's Related tools as a new "Gallery wall" group after "Frames" (groups follow the site's hub order);
   - shows the "Get it from the Chrome Web Store" link on every X1 version;
   - shows the "Plan on any shop's page" section on G1 and F2.
 - **Store URL:** `storeUrl` stays `https://chromewebstore.google.com/detail/<id>`. Checked 2026-11-22: that short form answers 301 to the listing's slug URL, which answers 200. The slug comes from the listing name and can change; the id cannot.
@@ -40,7 +40,7 @@ None.
 - `seo-base`: "The sitemap lists exactly the live pages":
   - the live-site scenario now counts X1 and its 27 translations;
   - the two scenarios no test cites (BL-88) and the not-live translations scenario become fixture checks.
-- `gallery-wall-planner`: "The planner links only to live pages" now expects the X1 card in Related tools.
+- `gallery-wall-planner`: "The planner links only to live pages" now expects the X1 card in Related tools. Its text said Gallery wall pages come before F1 and F2, which no build ever showed (no sibling was live). It now states the order the shared Related tools block renders: Frames first, in hub order.
 
 ## Impact
 

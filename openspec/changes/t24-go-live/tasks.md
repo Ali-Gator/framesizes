@@ -21,8 +21,8 @@ Branch `t24-go-live` from `main` at `f11df8f`. Owner approved these existing-tes
   - "The live tools and the company pages": 8 entries with the five company paths.
   - Cite each at its `seo-base` anchor (`#scenario-the-home-page-f2-and-g1-are-live`, `#scenario-the-live-tools-and-the-company-pages`). They pass now (fixtures).
 - [ ] 2.4 e2e edits (approved). Verify that each fails now:
-  - `e2e/gallery-wall-content.spec.ts` and `e2e/frames-on-wall-content.spec.ts`: add `"h2 Plan on any shop's page"` after the widget in each outline.
-  - `e2e/gallery-wall-content.spec.ts` "links only to live pages": `relatedGroups` becomes `["Gallery wall", "Frames"]` and `related` becomes `["/extensions/gallery-wall-layout-generator", "/", "/frame-sizes-on-wall"]`.
+  - `e2e/gallery-wall-content.spec.ts` and `e2e/frames-on-wall-content.spec.ts`: add `"h2 Plan on any shop's page"` right after `"h2 Gallery wall layout generator"` (G1) and `"h2 Frame visualizer"` (F2), the positions the 2026-11-22 dry run rendered.
+  - `e2e/gallery-wall-content.spec.ts` "links only to live pages": `relatedGroups` becomes `["Frames", "Gallery wall"]` (groups follow `HUBS`) and `related` becomes `["/", "/frame-sizes-on-wall", "/extensions/gallery-wall-layout-generator"]`. Confirm the `related` order against the built HTML; the dry run stopped at the groups.
   - `e2e/seo-home.spec.ts` sitemap test: 37 `<url>`s, plus `<loc>${CANONICAL}/extensions/gallery-wall-layout-generator</loc>` and `/ru/…` with X1's `lastModified`.
   - `e2e/extension-page-locales.spec.ts:170`: add `test.skip(X1.live, "X1 is live: …")` (its unit twin in 2.2 keeps the scenario proven).
 - [ ] 2.5 `e2e/extension-page.spec.ts`: add a new test "the extension page once live" with `test.skip(!X1.live, …)`. Cite {@link openspec/specs/extension-site/spec.md#scenario-the-extension-page-once-live}. It checks:
@@ -51,7 +51,7 @@ Branch `t24-go-live` from `main` at `f11df8f`. Owner approved these existing-tes
   - A pure `howToUrl(uiLanguage, pinned)`, following design decision 5 with `localeByCode` and `localizedPath` from `@/lib/locales`; `onInstalled` uses it.
   - Verify 4.1 and every existing `background.test.ts` case pass.
   - Verify `pnpm --filter extension build` succeeds.
-  - Verify `e2e/extension.spec.ts` ("a first install opens one how-to tab with pinned=0", Chromium in English) passes unedited.
+  - Verify `e2e/extension.spec.ts` ("a first install opens one how-to tab with pinned=0") passes. Its Chromium takes the system language, so on a non-English machine it would now open a translated page. If the owner approves, add `--lang=en-US` to its launch `args` (an edit to an existing test); without approval, leave it and run it on an English system and in CI.
   - Verify `grep -rn "extensions/gallery-wall-layout-generator" apps/extension/src` lists only `background.ts` and its test, so no other tab opens the English page.
 - [ ] 4.3 `apps/extension/public/manifest.json` `version` to `0.1.1`; verify `manifest.test.ts` passes.
 
