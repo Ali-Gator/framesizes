@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { forgetCheck, loadCheck, saveCheck } from "../saved";
+import { checkStored } from "../saved";
 
 const SCREEN = { w: 393, h: 852, dpr: 2 };
 
@@ -71,5 +72,26 @@ describe("a rotated screen", () => {
     saveCheck({ scale: 156.2, method: "card" }, SCREEN);
     forgetCheck();
     expect(loadCheck({ w: 852, h: 393, dpr: 2 })).toEqual({ scale: 156.2, method: "card" });
+  });
+});
+
+describe("whether the check is stored", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-storage-is-blocked} */
+  it("says so when storage takes the check, and not when it throws", () => {
+    const blocked = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    expect(saveCheck({ scale: 140, method: "ruler" }, SCREEN)).toBe(false);
+    expect(checkStored()).toBe(false);
+    // The viewer opens again from the page view's copy: still not stored.
+    expect(loadCheck(SCREEN)).toEqual({ scale: 140, method: "ruler" });
+    expect(checkStored()).toBe(false);
+    blocked.mockRestore();
+
+    expect(saveCheck({ scale: 150, method: "card" }, SCREEN)).toBe(true);
+    expect(checkStored()).toBe(true);
+    forgetCheck(); // a new page view: the check comes from storage
+    expect(loadCheck(SCREEN)).toEqual({ scale: 150, method: "card" });
+    expect(checkStored()).toBe(true);
   });
 });

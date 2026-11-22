@@ -360,3 +360,37 @@ describe("switching between checks", () => {
     expect(host.textContent).toContain("Stand a credit card upright on the screen.");
   });
 });
+
+describe("the desktop status after a check", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-desktop-check-is-saved} */
+  it("says the check is saved when the browser stores it", () => {
+    stubScreen({ w: 1920, h: 1080, phone: false });
+    mount();
+    click(button("Check with a card"));
+    click(button("Done, it matches"));
+    expect(host.querySelector(".as-status")?.textContent).toContain("Saved on this device.");
+  });
+
+  /** {@link openspec/specs/actual-size/spec.md#scenario-storage-is-blocked} */
+  it("says the check is kept for this visit when storage is blocked", () => {
+    const blocked = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    stubScreen({ w: 1920, h: 1080, phone: false });
+    mount();
+    click(button("Check with a card"));
+    click(button("Done, it matches"));
+    const status = host.querySelector(".as-status")?.textContent;
+    expect(host.querySelector(".fs-badge")?.textContent).toBe("Checked with a card");
+    expect(status).toContain("Kept for this visit.");
+    expect(status).not.toContain("Saved on this device.");
+
+    // A new page load opens on the guess.
+    act(() => root?.unmount());
+    host.remove();
+    forgetCheck();
+    mount();
+    expect(host.querySelector(".fs-badge")?.textContent).toBe("Scale is a guess");
+    blocked.mockRestore();
+  });
+});

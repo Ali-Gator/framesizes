@@ -11,7 +11,7 @@ import {
   type Unit,
   writeActual,
 } from "@framesizes/sizes";
-import { type Dispatch, useEffect, useId, useReducer, useRef } from "react";
+import { type Dispatch, useEffect, useId, useReducer, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useUnit } from "@/lib/unit";
@@ -19,7 +19,7 @@ import { useUnit } from "@/lib/unit";
 import { Diagonals, PhoneLines, RulerMark, Slider } from "./check";
 import { Dims, SizeMap, Stage } from "./drawing";
 import { FullView } from "./full-view";
-import { loadCheck, saveCheck, screenKey } from "./saved";
+import { checkStored, loadCheck, saveCheck, screenKey } from "./saved";
 import {
   initialState,
   type Method,
@@ -219,12 +219,14 @@ function Desk({
   state,
   unit,
   screen,
+  stored,
   dispatch,
   onDone,
 }: {
   state: ViewerState;
   unit: Unit;
   screen: ScreenSnap | null;
+  stored: boolean;
   dispatch: Dispatch<ViewerAction>;
   onDone: () => void;
 }) {
@@ -320,7 +322,9 @@ function Desk({
           <Badge check={state.check} />
           <p>
             {state.check
-              ? "Saved on this device."
+              ? stored
+                ? "Saved on this device."
+                : "Kept for this visit."
               : "Sizes are a guess until you check once on this device."}
           </p>
           {state.check ? (
@@ -424,6 +428,8 @@ export function ActualSizeViewer() {
   const unit = useUnit();
   const screen = useScreen();
   const [state, dispatch] = useReducer(reducer, initialState);
+  // Whether the check is in storage; false while it lasts only for this page view.
+  const [stored, setStored] = useState(false);
   const titleId = useId();
   const head = useRef<HTMLElement>(null);
   const see = useRef<HTMLButtonElement>(null);
@@ -436,6 +442,7 @@ export function ActualSizeViewer() {
     if (!screen || initFor.current === screenKey(screen)) return;
     initFor.current = screenKey(screen);
     const saved = loadCheck(screen);
+    setStored(checkStored());
     dispatch({
       type: "init",
       scale: saved?.scale ?? guessScale(screen),
@@ -468,7 +475,7 @@ export function ActualSizeViewer() {
       diagonal === undefined
         ? state.scale
         : (scaleFromDiagonal(screen.w, screen.h, diagonal) ?? state.scale);
-    saveCheck({ scale, method: state.mode }, screen);
+    setStored(saveCheck({ scale, method: state.mode }, screen));
     dispatch({ type: "done", scale, diagonal });
   };
 
@@ -529,7 +536,14 @@ export function ActualSizeViewer() {
           <SizeGrid state={state} dispatch={dispatch} />
         )}
         {phone !== true ? (
-          <Desk state={state} unit={unit} screen={screen} dispatch={dispatch} onDone={done} />
+          <Desk
+            state={state}
+            unit={unit}
+            screen={screen}
+            stored={stored}
+            dispatch={dispatch}
+            onDone={done}
+          />
         ) : null}
         {phone !== false && !phoneCheck ? (
           <PhoneAnswer state={state} screen={screen} dispatch={dispatch} seeRef={see} />

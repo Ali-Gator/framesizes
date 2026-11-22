@@ -24,6 +24,8 @@ type Stored = Check & ScreenKey;
 
 /** The check made in this page view; it outlives a storage that throws. */
 let memory: Stored | null = null;
+/** Whether the check last loaded or saved is in storage, not only in `memory`. */
+let fromStorage = false;
 
 /** A screen by its shorter and longer side and its pixel ratio: rotating a phone keeps its key. */
 export const screenKey = ({ w, h, dpr }: ScreenKey) => `${Math.min(w, h)}x${Math.max(w, h)}@${dpr}`;
@@ -52,20 +54,30 @@ export function loadCheck(screen: ScreenKey): Check | null {
     } catch {
       stored = null;
     }
+    fromStorage = stored !== null;
   }
   return stored && same(stored, screen) ? { scale: stored.scale, method: stored.method } : null;
 }
 
-export function saveCheck(check: Check, screen: ScreenKey) {
+/** Keeps the check; `false` when storage refused it and it lasts only for this page view. */
+export function saveCheck(check: Check, screen: ScreenKey): boolean {
   memory = { ...check, w: screen.w, h: screen.h, dpr: screen.dpr };
   try {
     window.localStorage.setItem(KEY, JSON.stringify(memory));
+    fromStorage = true;
   } catch {
-    // Storage blocked: the check lasts for this page view.
+    fromStorage = false;
   }
+  return fromStorage;
+}
+
+/** Whether the check `loadCheck` or `saveCheck` last handled is stored, so a later visit has it. */
+export function checkStored() {
+  return fromStorage;
 }
 
 /** Drops the page view's copy, as a new page view would. For tests. */
 export function forgetCheck() {
   memory = null;
+  fromStorage = false;
 }
