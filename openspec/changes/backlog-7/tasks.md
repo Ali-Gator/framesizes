@@ -26,7 +26,7 @@
 
 ## 3. Verify, delete, review, archive, ship
 
-- [ ] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
-- [ ] 3.2 Delete shipped bullets BL-68, BL-83, BL-84, BL-86, BL-91, BL-92, BL-95 from `docs/backlog.md`; verify `grep -cE "BL-(68|83|84|86|91|92|95)\]" docs/backlog.md` prints 0. BL-80, BL-94, BL-96, BL-97 stay
+- [x] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
+- [x] 3.2 Delete shipped bullets BL-68, BL-83, BL-84, BL-86, BL-91, BL-92, BL-95 from `docs/backlog.md`; verify `grep -cE "BL-(68|83|84|86|91|92|95)\]" docs/backlog.md` prints 0. BL-80, BL-94, BL-96, BL-97 stay
 - [ ] 3.3 `/code-review high` in a fresh subagent; fix, log the rest as new BL items from the `_Next id:_` counter
 - [ ] 3.4 Archive (`/opsx:archive` flow, no Tracker). After archive, edit the permanent specs' other sections: `openspec/specs/actual-size/spec.md` Interface (`:62`, `saveCheck` returns `boolean`; add `checkStored(): boolean`) and Edge Cases (`:83` drop "(BL-91: …)" and say the status reads "Kept for this visit."; `:88` the phone layout on a tablet offers the tablet sizes); `openspec/specs/size-engine/spec.md` Public Interface (`:213-214`, add `isTabletScreen`); `openspec/specs/extension-site/spec.md` Edge Cases (`:54`, delete the BL-68 bullet; keep BL-80 at `:48`); `openspec/specs/site-shell/spec.md` Behavior (`:51`, add the `before_send` that sets `$geoip_disable`); `openspec/specs/company-pages/spec.md:51` (location is pinned in code by cookieless mode and `$geoip_disable`; no IP still rests on cookieless mode and the project setting "Discard client IP data", BL-97 — never claim the IP half is code-guarded). Preflight (`pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `openspec validate --all --no-interactive`), push, PR to `main` (say the tooltip reaches users with the next store upload, and list BL-96 and BL-97 as added in triage), auto-merge with a merge commit
