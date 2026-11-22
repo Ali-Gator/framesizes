@@ -5,12 +5,32 @@
  * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-toolbar-button-opens-the-side-panel}
  */
 
+import { DEFAULT_LOCALE, localeByCode, localizedPath } from "@/lib/locales";
+
 import { findSizes } from "./find-sizes";
 import { cropShot, fetchImage, type ImageRect, type PageRead, readPage } from "./read-page";
 import { CHANNEL, deleteTry, type TryRecord, writeTry } from "./store";
 
 export const SITE = "https://framesizes.app";
-export const HOW_TO = `${SITE}/extensions/gallery-wall-layout-generator`;
+const HOW_TO_PATH = "/extensions/gallery-wall-layout-generator";
+export const HOW_TO = `${SITE}${HOW_TO_PATH}`;
+
+/** Chrome UI tags whose site code differs (lowercase). */
+const SITE_CODE: Record<string, string> = { fil: "tl", "zh-cn": "zh-hans", nb: "no", nn: "no" };
+
+/**
+ * The how-to page in Chrome's interface language: the whole tag, then its primary subtag, against
+ * the site's codes. A language the site lacks (`zh-tw`, bare `pt`), or none, gets English.
+ * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-first-install-opens-the-how-to-page}
+ */
+export function howToUrl(uiLanguage: string | undefined, pinned: boolean): string {
+  const tag = (uiLanguage ?? "").toLowerCase().replace(/_/g, "-");
+  const primary = tag.split("-")[0] ?? "";
+  const code =
+    [SITE_CODE[tag] ?? tag, SITE_CODE[primary] ?? primary].find((c) => localeByCode(c)) ??
+    DEFAULT_LOCALE;
+  return `${SITE}${localizedPath(code, HOW_TO_PATH)}?pinned=${pinned ? 1 : 0}`;
+}
 
 /** The parts of `chrome` the worker uses. */
 export interface Api {
@@ -18,13 +38,15 @@ export interface Api {
   action: { getUserSettings(): Promise<{ isOnToolbar: boolean }> };
   tabs: { create(props: { url: string }): Promise<unknown> };
   runtime: { getManifest(): { version: string } };
+  /** Optional: a Chrome that reports no language reads as English. */
+  i18n?: { getUILanguage(): string };
 }
 
 const panelOnClick = (api: Api) => api.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 
 /**
  * Every install, update and browser start sets the panel behaviour; a first install, and only
- * that, opens the how-to page with whether the button is pinned.
+ * that, opens the how-to page in Chrome's language with whether the button is pinned.
  * {@link openspec/specs/gallery-wall-extension/spec.md#requirement-the-first-install-opens-the-how-to-page}
  */
 export async function onInstalled(api: Api, details: { reason: string }): Promise<void> {
@@ -32,7 +54,13 @@ export async function onInstalled(api: Api, details: { reason: string }): Promis
   await panelOnClick(api).catch(() => undefined);
   if (details.reason !== "install") return;
   const pinned = await isPinned(api);
-  await api.tabs.create({ url: `${HOW_TO}?pinned=${pinned ? 1 : 0}` });
+  let language: string | undefined;
+  try {
+    language = api.i18n?.getUILanguage();
+  } catch {
+    // No language: English.
+  }
+  await api.tabs.create({ url: howToUrl(language, pinned) });
 }
 
 /** Whether the toolbar button is pinned; unknown counts as not pinned. */

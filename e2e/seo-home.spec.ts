@@ -138,11 +138,19 @@ test("robots.txt allows everything and names the sitemap", async ({ request }) =
 });
 
 /** {@link openspec/specs/seo-base/spec.md#scenario-the-live-tools-with-f3-and-the-company-pages} */
-test("sitemap.xml lists the home page, F2, F3, G1 and the company pages", async ({ request }) => {
+test("sitemap.xml lists the home page, F2, F3, G1, X1 with its translations and the company pages", async ({
+  request,
+}) => {
   const response = await request.get("/sitemap.xml");
   expect(response.status()).toBe(200);
   const body = await response.text();
-  expect(body.match(/<url>/g)).toHaveLength(9);
+  expect(body.match(/<url>/g)).toHaveLength(37);
+  const x1 = livePage("X1");
+  for (const prefix of ["", "/ru"]) {
+    expect(body).toContain(
+      `<url>\n<loc>${CANONICAL}${prefix}${x1.path}</loc>\n<lastmod>${x1.seo.lastModified}</lastmod>`,
+    );
+  }
   for (const id of ["A1", "A2", "A3", "A4", "A5"] as const) {
     const company = livePage(id);
     expect(body).toContain(

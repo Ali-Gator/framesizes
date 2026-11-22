@@ -93,6 +93,7 @@ test("the server HTML follows the approved outline", async ({ page }) => {
   expect(headings.filter((h) => !h.startsWith("h3"))).toEqual([
     "h1 Frame Sizes on Your Wall",
     "h2 Frame visualizer",
+    "h2 Plan on any shop's page",
     "h2 How to see frame sizes on your wall",
     "h2 Picture frame sizes on a wall: how big to go",
     "h2 Wall photo frame sizes",

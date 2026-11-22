@@ -2,8 +2,10 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 
 import { LOCALES } from "../apps/web/src/lib/locales";
+import { builtPage } from "../apps/web/src/lib/site-map";
 
 const PATH = "/extensions/gallery-wall-layout-generator";
+const X1 = builtPage("X1");
 const WCAG_22_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22a", "wcag22aa"];
 
 /** The raw server HTML of a path, parsed in the page: what a crawler gets, no JavaScript run. */
@@ -168,6 +170,7 @@ test("the Italian version has no Related tools", async ({ page }) => {
 
 /** {@link openspec/specs/extension-site/spec.md#scenario-a-translated-version-before-go-live} */
 test("the Polish version answers 200 with noindex while X1 is not live", async ({ page }) => {
+  test.skip(X1.live, "X1 is live: its unit twin in seo.test.ts keeps the scenario proven");
   const robots = await serverDoc(page, `/pl${PATH}`, (doc) =>
     [...doc.querySelectorAll('meta[name="robots"]')].map((m) => m.getAttribute("content")),
   );

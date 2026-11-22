@@ -12,22 +12,31 @@ const PHOTO = path.resolve(import.meta.dirname, "fixtures/wall-1200x900.png");
 const HOW_TO = "https://framesizes.app/extensions/gallery-wall-layout-generator";
 const WCAG_22_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22a", "wcag22aa"];
 
+/** A fresh profile with the extension, Chrome's interface in `lang` (ignored on macOS). */
+async function launch(lang: string) {
+  const context = await chromium.launchPersistentContext("", {
+    // Full Chromium in new headless mode: the headless shell loads no extensions.
+    channel: "chromium",
+    // Linux Chromium may take its UI language from LANGUAGE as well as --lang.
+    env: { ...process.env, LANGUAGE: lang },
+    args: [
+      `--disable-extensions-except=${DIST}`,
+      `--load-extension=${DIST}`,
+      // The install tab never reaches the live site, even before the route below is set.
+      "--host-resolver-rules=MAP framesizes.app 127.0.0.1:9",
+      `--lang=${lang}`,
+    ],
+  });
+  await context.route("https://framesizes.app/**", (route) =>
+    route.fulfill({ contentType: "text/html", body: "<title>How to use it</title>" }),
+  );
+  return context;
+}
+
 const test = base.extend<{ context: BrowserContext; extensionId: string }>({
   // eslint-disable-next-line no-empty-pattern
   context: async ({}, use) => {
-    const context = await chromium.launchPersistentContext("", {
-      // Full Chromium in new headless mode: the headless shell loads no extensions.
-      channel: "chromium",
-      args: [
-        `--disable-extensions-except=${DIST}`,
-        `--load-extension=${DIST}`,
-        // The install tab never reaches the live site, even before the route below is set.
-        "--host-resolver-rules=MAP framesizes.app 127.0.0.1:9",
-      ],
-    });
-    await context.route("https://framesizes.app/**", (route) =>
-      route.fulfill({ contentType: "text/html", body: "<title>How to use it</title>" }),
-    );
+    const context = await launch("en-US");
     await use(context);
     await context.close();
   },
@@ -103,6 +112,25 @@ test("a first install opens one how-to tab with pinned=0", async ({ context, ext
         .map((p) => p.url()),
     )
     .toEqual([`${HOW_TO}?pinned=0`]);
+});
+
+/** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-in-another-language} */
+base("a first install in Russian opens the Russian how-to", async () => {
+  base.skip(process.platform === "darwin", "Chromium ignores --lang on macOS");
+  const context = await launch("ru");
+  try {
+    const ru = "https://framesizes.app/ru/extensions/gallery-wall-layout-generator";
+    await expect
+      .poll(() =>
+        context
+          .pages()
+          .map((p) => p.url())
+          .filter((u) => u.startsWith("https://framesizes.app/")),
+      )
+      .toEqual([`${ru}?pinned=0`]);
+  } finally {
+    await context.close();
+  }
 });
 
 /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-the-panels-first-state} */

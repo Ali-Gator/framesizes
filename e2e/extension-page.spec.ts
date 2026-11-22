@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 
+import { STORE_URL } from "../apps/web/src/lib/extension";
 import { builtPage } from "../apps/web/src/lib/site-map";
 
 const X1 = builtPage("X1");
@@ -238,3 +239,26 @@ for (const path of ["/gallery-wall-planner", "/frame-sizes-on-wall"]) {
     expect(html.storeLinks).toBe(0);
   });
 }
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-the-extension-page-once-live} */
+test("the extension page once live", async ({ page }) => {
+  test.skip(!X1.live, "X1 is not live yet: the before-go-live scenarios hold");
+  const html = await serverHtml(page);
+  expect(html.robots.filter((r) => r?.includes("noindex"))).toEqual([]);
+  expect(html.footerLinks).toContain(PATH);
+
+  const source = await (await page.request.get(PATH)).text();
+  const storeLinks = await page.evaluate((s) => {
+    const doc = new DOMParser().parseFromString(s, "text/html");
+    return [...doc.querySelectorAll('a[href^="https://chromewebstore.google.com"]')].map((a) => ({
+      href: a.getAttribute("href"),
+      target: a.getAttribute("target"),
+      rel: a.getAttribute("rel"),
+    }));
+  }, source);
+  expect(storeLinks).toEqual([{ href: STORE_URL, target: "_blank", rel: "noopener" }]);
+
+  const g1 = await serverHtml(page, "/gallery-wall-planner");
+  expect(g1.relatedLinks).toContain(PATH);
+  expect(g1.shopHeadings).toBe(1);
+});

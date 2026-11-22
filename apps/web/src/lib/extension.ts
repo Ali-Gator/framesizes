@@ -4,11 +4,11 @@
  */
 
 /**
- * The extension's Chrome Web Store id: empty until the listing is approved. Setting it, together with
- * X1 `live: true` in site-map.ts, is the whole go-live edit; the unit suite refuses one without the other.
+ * The published listing's Chrome Web Store id. It goes with X1 `live: true` in site-map.ts: the unit
+ * suite refuses one without the other, so a rollback sets it to "" and X1 `live: false` together.
  * {@link openspec/specs/extension-site/spec.md#requirement-the-extension-page-goes-live-only-with-a-store-id}
  */
-export const EXTENSION_ID: string = "";
+export const EXTENSION_ID: string = "khapjkonaofjfljdakdcmodaclkmffgn";
 
 export const storeUrl = (id: string) => `https://chromewebstore.google.com/detail/${id}`;
 export const STORE_URL = storeUrl(EXTENSION_ID);
