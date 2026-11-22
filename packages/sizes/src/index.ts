@@ -65,7 +65,13 @@ export { CHECK_OBJECTS, type Edges as CheckEdges } from "./screen";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-screens-diagonal-gives-its-scale} */
 export { scaleFromDiagonal } from "./screen";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-screens-scale-has-a-first-guess} */
-export { guessDiagonal, guessScale, isPhoneScreen, type ScreenInfo } from "./screen";
+export {
+  guessDiagonal,
+  guessScale,
+  isPhoneScreen,
+  isTabletScreen,
+  type ScreenInfo,
+} from "./screen";
 
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-gallery-wall-planner-offers-five-templates} */
 export { TEMPLATES, type Stack, type Template } from "./gallery";

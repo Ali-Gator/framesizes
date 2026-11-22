@@ -7,6 +7,7 @@ import {
   guessDiagonal,
   guessScale,
   isPhoneScreen,
+  isTabletScreen,
   scaleFromDiagonal,
   type Unit,
   writeActual,
@@ -298,6 +299,7 @@ function Desk({
             <Diagonals
               state={state}
               phone={false}
+              tablet={isTabletScreen(screen)}
               coarse={false}
               guess={guessDiagonal(screen)}
               screen={screen}
@@ -505,6 +507,7 @@ export function ActualSizeViewer() {
               <Diagonals
                 state={state}
                 phone={isPhoneScreen(screen)}
+                tablet={isTabletScreen(screen)}
                 coarse={screen.coarse}
                 guess={guessDiagonal(screen)}
                 screen={screen}

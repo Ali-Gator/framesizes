@@ -394,3 +394,34 @@ describe("the desktop status after a check", () => {
     blocked.mockRestore();
   });
 });
+
+describe("a tablet in the desktop layout", () => {
+  /** {@link openspec/specs/actual-size/spec.md#scenario-an-11-in-tablet} */
+  it("offers tablet screen sizes, and 10.9 in sets its scale", () => {
+    // Its own stub: a coarse pointer in the desktop layout. The file's afterEach undoes it.
+    vi.spyOn(window.screen, "width", "get").mockReturnValue(820);
+    vi.spyOn(window.screen, "height", "get").mockReturnValue(1180);
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query.includes("coarse"),
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    mount();
+    click(button("Screen size"));
+    expect(host.textContent).toContain("Our guess is 11 in.");
+    expect([...host.querySelectorAll(".as-diags button")].map((b) => b.textContent)).toEqual([
+      "8.3 in",
+      "10.2 in",
+      "10.9 in",
+      "11 in",
+      "12.4 in",
+      "12.9 in",
+      "13 in",
+    ]);
+    click(button("10.9 in"));
+    click(button("Use 10.9 in"));
+    const frame = host.querySelector<HTMLElement>('[data-testid="frame"]');
+    expect(px(frame?.style.width) / 8).toBeCloseTo(131.8, 1);
+  });
+});
