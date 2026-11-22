@@ -62,7 +62,8 @@ function loadCheck(screen: {
 function saveCheck(
   check: { scale: number; method: Method },
   screen: { w: number; h: number; dpr: number },
-): void;
+): boolean; // false when storage refused it; an older stored check is then removed
+function checkStored(): boolean; // whether the check last loaded or saved is in storage
 function screenKey(screen: { w: number; h: number; dpr: number }): string; // shorter x longer @ dpr
 
 // use-screen.ts: useScreen(), the screen's CSS size, dpr, pointer and layout, null on the server;
@@ -80,12 +81,12 @@ The desktop box is a scrolling region with sticky rulers; the frame sits at `RUL
 
 ## Edge Cases
 
-- `localStorage` that throws keeps the check for the page view only (BL-91: the status still says it is saved).
+- `localStorage` that throws keeps the check for the page view only, and the desktop status reads "Kept for this visit." instead of "Saved on this device.".
 - A stored value that is not a check, or one from another screen key, is ignored.
 - A typed screen size that is empty, not a number, or gives a scale outside the range leaves the scale and the picked size as they were; the button names the size it uses (BL-94: no other feedback).
 - On the narrowest phones the card's or the ruler's right line can pass the strip's edge; the strip then says so and the step offers the screen size.
 - A box that narrows below the sheet's width, or a switch to the phone layout, turns a sheet check into the card; a switch to the desktop layout closes the full view.
-- On a screen whose shorter side is over 500 CSS px (a tablet, or a narrow desktop window), the phone layout talks about "your screen" and offers the desktop screen sizes (BL-92: no tablet list).
+- On a screen whose shorter side is over 500 CSS px (a tablet, or a narrow desktop window), the phone layout talks about "your screen" and offers the tablet sizes on a tablet (coarse pointer, shorter side at most 1,100 CSS px) and the desktop sizes otherwise. On a 7 in tablet the larger tablet sizes fall outside the touch slider's range and are ignored (BL-98).
 - Browser zoom changes `devicePixelRatio` in Chrome and Firefox, so a zoomed page drops a saved check; Safari keeps it, and the FAQ tells visitors to keep the zoom at 100%.
 
 ## Requirements
@@ -205,7 +206,7 @@ The check SHALL offer a ruler: on a phone as "Have a ruler? Use it instead" unde
 
 ### Requirement: The screen size can set the scale
 
-The check SHALL let the visitor pick the screen's diagonal from a list or type it, and SHALL set the scale to the screen's diagonal in CSS pixels divided by that length. The list SHALL be 5.4, 6.1, 6.3, 6.7 and 6.9 in on a phone and 13.3, 14, 15.6, 21.5, 23, 24, 27 and 32 in on a desktop.
+The check SHALL let the visitor pick the screen's diagonal from a list or type it, and SHALL set the scale to the screen's diagonal in CSS pixels divided by that length. The list SHALL be 5.4, 6.1, 6.3, 6.7 and 6.9 in on a phone; 8.3, 10.2, 10.9, 11, 12.4, 12.9 and 13 in on a tablet (a screen the size engine counts as a tablet, the one it guesses at 11 in); and 13.3, 14, 15.6, 21.5, 23, 24, 27 and 32 in on a desktop.
 
 #### Scenario: A 6.1 in phone
 
@@ -221,6 +222,12 @@ The check SHALL let the visitor pick the screen's diagonal from a list or type i
 
 - **WHEN** the typed size gives a scale outside 60 to 240 px per inch (100 to 200 on a touch screen), such as 50 in on a 1920 × 1080 screen
 - **THEN** the scale and the picked size stay as they were, and the button that finishes the check names the size it uses ("Use 27 in")
+
+#### Scenario: An 11 in tablet
+
+- **GIVEN** a screen of 820 × 1180 CSS px with a coarse pointer, shown in the desktop layout
+- **WHEN** the visitor opens the screen-size step
+- **THEN** it offers 8.3, 10.2, 10.9, 11, 12.4, 12.9 and 13 in, and picking 10.9 in sets the scale to √(820² + 1180²) ÷ 10.9 ≈ 131.8 px per inch
 
 ### Requirement: A sheet of paper is offered only where it fits
 
@@ -252,7 +259,7 @@ Before any check the viewer SHALL draw sizes at a guessed scale, show "Scale is 
 
 ### Requirement: A check is kept on the device for the same screen
 
-A check SHALL be saved in the browser with the screen's CSS width and height and its device pixel ratio, and SHALL be used on a later visit only while the screen's shorter side, longer side and pixel ratio are the same, so turning a phone keeps it. Nothing about the check SHALL leave the device.
+A check SHALL be saved in the browser with the screen's CSS width and height and its device pixel ratio, and SHALL be used on a later visit only while the screen's shorter side, longer side and pixel ratio are the same, so turning a phone keeps it. Nothing about the check SHALL leave the device. When the browser refuses to store it, the check SHALL still hold for the rest of the page view, and the desktop status SHALL say it is kept for this visit, never that it is saved.
 
 #### Scenario: The same phone tomorrow
 
@@ -268,6 +275,17 @@ A check SHALL be saved in the browser with the screen's CSS width and height and
 
 - **WHEN** the saved check was made at a pixel ratio of 2 and the page now runs at 3
 - **THEN** the viewer ignores it and shows "Scale is a guess"
+
+#### Scenario: A desktop check is saved
+
+- **WHEN** a desktop visitor finishes a check and the browser stores it
+- **THEN** the status reads "Saved on this device."
+
+#### Scenario: Storage is blocked
+
+- **GIVEN** the browser's `localStorage` throws on every write
+- **WHEN** a desktop visitor finishes a check
+- **THEN** the viewer uses the checked scale, the status reads "Kept for this visit." and not "Saved on this device.", and a new page load opens on the guess
 
 ### Requirement: The phone shows the size at 1:1 over the whole screen
 

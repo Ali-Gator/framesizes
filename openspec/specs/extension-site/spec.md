@@ -51,7 +51,6 @@ Every language renders through `ExtensionHowTo`. Its wrapper carries the languag
 
 - No JS with `#pin`: the pin steps show through `:target`, with the usage sections still below them.
 - A click on a switch link before hydration: the mode follows the hash on mount, without moving focus.
-- After the self-switch the URL keeps `?pinned=0`, so a reload opens pin mode until the first reply (BL-68).
 - A hidden tab: the poll timer keeps running but sends nothing (BL-69).
 - Figures draw the current flat sample room; BL-51 swaps it with F2 and G1.
 - Translated versions share the English social image and its English alt (BL-77).
@@ -119,7 +118,7 @@ Pin mode SHALL end with "Already pinned? See how to use it", linking to `#usage`
 
 ### Requirement: Pin mode switches itself once the button is pinned
 
-While the page is in pin mode because of `?pinned=0`, has no hash, and knows the extension's store id, it SHALL ask the extension for its status every 2 seconds while the tab is visible. When the reply says pinned, it SHALL switch to usage mode and stop asking. A mode picked by a hash SHALL never switch by itself.
+While the page is in pin mode because of `?pinned=0`, has no hash, and knows the extension's store id, it SHALL ask the extension for its status every 2 seconds while the tab is visible. When the reply says pinned, it SHALL switch to usage mode, stop asking, and drop `pinned` from the address without adding a history entry, keeping every other parameter and any hash, so a reload opens in usage mode. A mode picked by a hash SHALL never switch by itself.
 
 #### Scenario: The visitor pins the button
 
@@ -132,6 +131,12 @@ While the page is in pin mode because of `?pinned=0`, has no hash, and knows the
 - **GIVEN** the page is open at `#pin` and the extension replies pinned
 - **WHEN** 4 seconds pass
 - **THEN** the page is still in pin mode
+
+#### Scenario: The address after the self-switch
+
+- **GIVEN** the page is open at `?pinned=0&utm_source=store` and the extension replies not pinned
+- **WHEN** the extension's next reply says pinned
+- **THEN** the address's query is `?utm_source=store`, the history length is unchanged, and the page is in usage mode
 
 ### Requirement: The pin picture shows the two clicks
 
