@@ -86,7 +86,14 @@ const PAGE_LIST = [
     hub: "frames",
     name: "Measure a picture frame",
     card: { question: "Which size is my frame?", ratio: [5, 7] },
-    live: false,
+    live: true,
+    seo: {
+      title: "How to Measure Picture Frame Dimensions",
+      h1: "How to Measure a Picture Frame",
+      description:
+        "Measure the inside, the outside or the mat opening, enter the numbers, and the wizard names the standard frame size you have, in inches and cm.",
+      lastModified: "2026-11-22",
+    },
   },
   {
     id: "F5",

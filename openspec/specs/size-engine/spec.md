@@ -18,6 +18,9 @@ function toCm(inches: number): number; // one decimal
 function toWholeCm(inches: number): number;
 function writeSize(size: Size, form: SizeForm): string;
 function feetAndInches(inches: number): string; // "5 ft 9 in"
+function inEighths(inches: number): string; // nearest eighth: "7½", "¼", "10"
+function writeEighths(size: Size): string; // "7½ × 9½ in"
+function readLength(text: string): number | undefined; // "8", "8.125", "8,5", "3/4", "8 1/8", "8-1/8", "8⅛"
 
 type Orientation = "portrait" | "landscape" | "square";
 interface Frame extends Size {
@@ -228,9 +231,26 @@ type Identified =
   // size: the frame (or print) size the numbers give, as measured
   | { kind: "standard"; size: Size; frame: Frame }
   | { kind: "metric"; size: Size; metric: ActualSize; close?: Frame }
-  | { kind: "custom"; size: Size; below?: Frame; above?: Frame }
+  | {
+      kind: "custom";
+      size: Size;
+      below?: Frame;
+      above?: Frame;
+      squareBelow?: Frame; // only for a near-square size (BL-106)
+      squareAbove?: Frame;
+    }
   | { kind: "mat"; size: Size; frames: readonly Frame[] };
 function identifyFrame(m: Measurement): Identified | undefined;
+type NoAnswer = "number" | "narrow" | "room";
+function whyNoAnswer(m: Measurement): NoAnswer | undefined; // the rule identifyFrame refused on
+interface FrameMeasurements {
+  inside: Size; // the frame size
+  front: Size; // inside less two LIPs
+  outside: Size; // frameAnatomy with MOULDING
+  face: number; // MOULDING + LIP, seen from the front
+  mat?: { opening: Size; print: Size }; // absent with no pre-cut mat
+}
+function frameMeasurements(frame: Frame): FrameMeasurements;
 ```
 
 `apps/web` depends on it with `workspace:*` and lists it in `transpilePackages`. There is no build step.
@@ -247,7 +267,7 @@ The wall tool (`wall.ts`) works in inches with `y` up from the bottom; pixels ap
 
 The gallery wall (`gallery.ts`) uses the same coordinates. A template is a tree of rows and columns of catalog ids. `layoutTemplate` measures the tree (a row's width is its children's widths plus the gaps, its height the tallest child; a column swaps the axes), then places it: a row centres its children on its middle, a column centres them across. Frames come out depth first. The group is centred on the furniture with its bottom `ABOVE_SOFA` above it, else centred across the usable area with its centre at `CENTRE_LINE` above a known floor or in the bounds' middle. `nailMarks` puts one nail at the centre or two D-ring nails `inset` in from each side, `drop` below the top edge; the engine holds no default for either. `measureGroup` sorts nails highest first: the highest unlisted nail starts a row, every nail 4 in or less below it joins, and each row reads left to right. `groupDistances` and `setGroupDistance` run `frameDistances` and `setDistance` on the group's box with only the furniture as an obstacle; `centreGroup` moves the group across to the usable area's middle.
 
-The measure engine (`measure.ts`) works in inches; the page converts centimetres first. A front opening grows by two lips, an outside shrinks by two faces and grows by two lips, and a mat opening grows by two `MAT_OVERLAP`s to the print. The frame size is made upright and matched against `CATALOG` and `METRIC_FRAMES` by the larger side difference, within `MEASURE_TOLERANCE`; each list matches at most once (pinned gaps: 1 in and over ¾ in). The metric size wins only when strictly closer and carries the US match as `close`. With no match, `below` and `above` come from the upright catalog in the same shape class (square when the sides are within the tolerance), largest area below and smallest above, an area tie to the earlier entry. A mat print is matched against the catalog's mat pairings, US only, and lists every frame sold with it in catalog order. Every answer is turned to the measured orientation; a metric answer keeps its upright `id` and `label`. The allowances are checked in `openspec/changes/archive/2026-11-22-t4-measure-engine/verification.md`.
+The measure engine (`measure.ts`) works in inches; the page converts centimetres first. A front opening grows by two lips, an outside shrinks by two faces and grows by two lips, and a mat opening grows by two `MAT_OVERLAP`s to the print. The frame size is made upright and matched against `CATALOG` and `METRIC_FRAMES` by the larger side difference, within `MEASURE_TOLERANCE`; each list matches at most once (pinned gaps: 1 in and over ¾ in). The metric size wins only when strictly closer and carries the US match as `close`. With no match, `below` and `above` come from the upright catalog in the same shape class (square when the sides are within the tolerance), largest area below and smallest above, an area tie to the earlier entry. A rectangle whose long side is under 1.2 × its short side (squarer than every catalog rectangle; 20x24 is 1.2) also gets `squareBelow` and `squareAbove` from the squares, by the same rule; the keys are absent otherwise. `identifyFrame` and `whyNoAnswer` share one private check, so each refusal rule lives once. `readLength` matches whole forms only: a decimal with a point or comma, a glyph after an optional whole number, or a fraction after an optional whole number and a space or hyphen. A mat print is matched against the catalog's mat pairings, US only, and lists every frame sold with it in catalog order. Every answer is turned to the measured orientation; a metric answer keeps its upright `id` and `label`. The allowances are checked in `openspec/changes/archive/2026-11-22-t4-measure-engine/verification.md`.
 
 ## Edge Cases
 
@@ -271,7 +291,9 @@ The measure engine (`measure.ts`) works in inches; the page converts centimetres
 - A hanger with a missing or non-finite drop or inset, a drop below 0 or not less than the frame's height, or an inset not above 0 or not below half its width gives no nail, and `measureGroup` lists the frame in `missing`.
 - No items: `measureGroup` returns `null`, `groupDistances` gives all `null`, and the moves return the rects unchanged.
 - `identifyFrame` returns `undefined` for a side, lip, face or overlap that is 0, negative or not finite, a face no wider than its lip, or an outside whose frame size comes out not positive.
-- A near-square custom size (sides more than ⅜ in apart) is compared only with rectangular sizes, so 9 × 9.5 gets 5x7 and 11x14, not 8x8 and 10x10 (BL-106).
+- A near-square custom size (sides more than ⅜ in apart, long side under 1.2 × short) names the rectangles and the squares: 9 × 9.5 gets 5x7 and 11x14, plus 8x8 and 10x10. Exactly 1.2 (10 × 12) names no square.
+- `readLength` gives `undefined` for empty text, a minus sign, a unit (`8 in`), a division by 0 and anything else; it reads `0` as 0, so a page can say "above 0".
+- `inEighths` rounds to the nearest eighth: 8.04 reads "8", 8.07 reads "8⅛".
 
 ## Requirements
 
@@ -990,7 +1012,7 @@ The engine SHALL also match a frame size against five metric frame sizes, A4 (21
 
 ### Requirement: A custom size names the nearest standard sizes below and above
 
-For a frame size that matches no standard or metric size, the engine SHALL name the catalog size of largest area that is no bigger on either side, and the catalog size of smallest area that is at least as big on both sides, in the measured orientation. A square size, its sides within ⅜ inch, SHALL be compared only with square catalog sizes, and any other only with rectangular ones. Either may be absent.
+For a frame size that matches no standard or metric size, the engine SHALL name the catalog size of largest area that is no bigger on either side, and the catalog size of smallest area that is at least as big on both sides, in the measured orientation. A square size, its sides within ⅜ inch, SHALL be compared only with square catalog sizes, and any other only with rectangular ones. A size whose long side is under 1.2 times its short side, but that is not square, SHALL also name the nearest square sizes below and above in the same way. Any of these may be absent.
 
 #### Scenario: A 9 × 12 frame
 
@@ -1016,6 +1038,21 @@ For a frame size that matches no standard or metric size, the engine SHALL name 
 
 - **WHEN** a frame measured inside is 3 by 5 inches
 - **THEN** there is no size below and the size above is the 4x6
+
+#### Scenario: A near-square custom frame
+
+- **WHEN** a frame measured inside is 9 by 9½ inches
+- **THEN** the size below is the 5x7 and the size above is the 11x14, and the square below is the 8x8 and the square above is the 10x10
+
+#### Scenario: A landscape near-square custom frame
+
+- **WHEN** a frame measured inside is 9½ by 9 inches
+- **THEN** the size below is the landscape 7x5 and the size above is the landscape 14x11, and the squares are the 8x8 and the 10x10
+
+#### Scenario: Exactly 1.2 times as long
+
+- **WHEN** a frame measured inside is 10 by 12 inches
+- **THEN** the size below is the 8.5x11 and the size above is the 11x14, and no square size is named
 
 ### Requirement: A front opening gives the frame size
 
@@ -1092,3 +1129,74 @@ The engine SHALL give no answer when a side, a moulding width, a lip or an overl
 
 - **WHEN** a frame is 13 by 16 inches outside and its moulding is ¼ inch or 0.1 inch wide from the front, with the ¼ inch lip
 - **THEN** there is no answer
+
+### Requirement: An inch length is written to the nearest eighth
+
+The engine SHALL write a length in inches rounded to the nearest eighth, as a whole number followed by a fraction glyph (⅛, ¼, ⅜, ½, ⅝, ¾, ⅞), the glyph alone under one inch, and a whole number with no glyph when the eighths are 0. A size SHALL be written as its two lengths joined by " × " with " in" after them; its centimetre form stays the one-decimal form.
+
+#### Scenario: Lengths in eighths
+
+- **WHEN** 7.5, 0.25, 8.125, 1.25, 10 and 8.04 inches are written
+- **THEN** they read "7½", "¼", "8⅛", "1¼", "10" and "8"
+
+#### Scenario: A size in eighths
+
+- **WHEN** the size 7.5 by 9.5 inches is written in eighths
+- **THEN** it reads "7½ × 9½ in", and its centimetre form reads "19.1 × 24.1 cm"
+
+### Requirement: A typed length is read with fractions
+
+The engine SHALL read a typed length as a whole number, a decimal with a point or a comma, a fraction, a whole number and a fraction separated by a space or a hyphen, or a whole number followed by a fraction glyph. Text that is empty, holds anything else, starts with a minus sign or divides by 0 SHALL give no number.
+
+#### Scenario: Forms of eight and an eighth
+
+- **WHEN** "8 1/8", "8-1/8", "8⅛", "8.125" and " 8.125 " are read
+- **THEN** each gives 8.125
+
+#### Scenario: Other forms
+
+- **WHEN** "8,5", "½", "3/4" and "12" are read
+- **THEN** they give 8.5, 0.5, 0.75 and 12
+
+#### Scenario: Text that is not a length
+
+- **WHEN** "", "abc", "8 1/0", "-2" and "8 in" are read
+- **THEN** each gives no number
+
+### Requirement: A standard frame's measurements are listed
+
+For a catalog frame the engine SHALL give its inside (the frame size), its front opening (the inside less two lips), its outside with the example moulding, the example moulding's width seen from the front (the moulding plus the lip), and, when a pre-cut mat is sold for it, the mat's opening and the print it holds.
+
+#### Scenario: The 8x10
+
+- **WHEN** the measurements of the 8x10 are listed
+- **THEN** the inside is 8 × 10 in, the front opening 7½ × 9½ in, the outside 10 × 12 in with a moulding 1¼ in wide from the front, and the mat opening 4½ × 6½ in for a 5x7 print
+
+#### Scenario: A frame with no pre-cut mat
+
+- **WHEN** the measurements of the 4x6 are listed
+- **THEN** the inside is 4 × 6 in, the front opening 3½ × 5½ in, the outside 6 × 8 in, and there is no mat
+
+### Requirement: A measurement with no answer says why
+
+For a measurement that gets no answer the engine SHALL say which rule refused it: a number that is not a positive finite number, a moulding no wider than its lip, or mouldings that leave no room for a picture. A measurement that gets an answer SHALL have no reason.
+
+#### Scenario: Mouldings that leave no room
+
+- **WHEN** a frame is 10 by 12 inches outside with a moulding 6 inches wide
+- **THEN** the reason is that the mouldings leave no room
+
+#### Scenario: A moulding no wider than the lip
+
+- **WHEN** a frame is 13 by 16 inches outside with a moulding ¼ inch wide and the ¼ inch lip
+- **THEN** the reason is that the moulding is no wider than the lip
+
+#### Scenario: A side of 0
+
+- **WHEN** a side measured inside is 0
+- **THEN** the reason is a number that is not positive
+
+#### Scenario: A measurement with an answer
+
+- **WHEN** a frame measured inside is 8 by 10 inches
+- **THEN** there is no reason

@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-107**
+_Next id:_ **BL-111**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -26,6 +26,11 @@ and defects or gaps found along the way that are worth fixing later. CLAUDE.md (
 when to add and when to fold items in.
 
 ## Tooling
+
+- **[BL-110] One eighths split in the size engine** — F4's `toEighths` in `state.ts` repeats the
+  nearest-eighth rounding of `inEighths`; export the whole-and-eighths split from `units.ts` and use
+  it in both, so a field and its written length can never round apart.
+  _Refs:_ `apps/web/src/components/measure-frame/state.ts`, `packages/sizes/src/units.ts` · _Status:_ open — t4-measure-picture-frame review, 2026-11-22
 
 - **[BL-75] One shared IndexedDB reader for the extension e2e** — `storedKeys`, `storedPrints` and the
   copies in `extension.spec.ts` and `extension-races.spec.ts` each open `gallery-wall` v1 with no
@@ -101,6 +106,15 @@ when to add and when to fold items in.
 - **[BL-90] Rich Results Test for F3** — run the live F3 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
   _Refs:_ `apps/web/src/app/how-big-is-8x10/page.tsx`, pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-107] Preview card for F4** — paste the live F4 URL into a chat app or a preview tool and check
+  the card shows the 8x10 frame with its three measurements (guide checklist 7).
+  _Refs:_ `apps/web/src/app/measure-picture-frame/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+- **[BL-108] Rich Results Test for F4** — run the live F4 URL through the Rich Results Test and confirm
+  its `BreadcrumbList` validates (guide checklist 15).
+  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-109] URL Inspection for F4** — after launch, check `/measure-picture-frame` in Search Console's
+  URL Inspection: indexed, with its own canonical (guide, after launch).
+  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist · _Status:_ gated — DNS live
 
 - **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
@@ -182,13 +196,6 @@ when to add and when to fold items in.
 
 ## Widgets
 
-- **[BL-106] F4 nearest sizes skip squares for a near-square custom size** — a size counts as
-  square only with its sides within ⅜ in, so 9 × 9.5 in gets 5x7 below and 11x14 above while the
-  8x8 and 10x10 are much closer. Owner decided (2026-11-22): offer the nearest squares too. A custom
-  size squarer than every catalog rectangle (long side under 1.2 × short side; 20x24 is the
-  squarest) also names the nearest squares below and above, beside the rectangles. Spec change to
-  the custom-size requirement; fold into the F4 page change.
-  _Refs:_ `openspec/specs/size-engine/spec.md` (custom size names the nearest sizes), `packages/sizes/src/measure.ts` (`nearest`) · _Status:_ open — owner decision 2026-11-22; t4-measure-engine review
 - **[BL-98] F3 chips a small screen cannot use** — on a 7 in tablet in the phone layout (Fire 7,
   600 × 1024) the tablet chips from 12.4 in give under 100 px per inch, so the touch slider ignores
   them; a tap fills "Other size" with 13 while no chip is pressed and the button still says "Use

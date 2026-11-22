@@ -112,10 +112,15 @@ test("no affiliate links", async ({ page }) => {
   expect(headings.join()).not.toContain("Where to buy");
 });
 
-/** {@link openspec/specs/actual-size/spec.md#scenario-f1-f2-f3-and-g1-are-live} */
+/** {@link openspec/specs/actual-size/spec.md#scenario-f1-f2-f3-f4-and-g1-are-live} */
 test("links only to live pages", async ({ page }) => {
   const { related, hrefs } = await serverHtml(page);
-  expect(related).toEqual(["/", "/frame-sizes-on-wall", "/gallery-wall-planner"]);
+  expect(related).toEqual([
+    "/",
+    "/frame-sizes-on-wall",
+    "/measure-picture-frame",
+    "/gallery-wall-planner",
+  ]);
   expect(hrefs).not.toContain("/photo-print-sizes");
   expect(hrefs).not.toContain("/dpi-checker");
   expect(hrefs.filter((h) => h.startsWith("#"))).toEqual([]);

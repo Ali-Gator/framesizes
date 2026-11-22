@@ -7,6 +7,10 @@
 export { CM_PER_INCH, feetAndInches, toCm, toWholeCm, writeSize } from "./units";
 /** {@link openspec/specs/size-engine/spec.md#requirement-inches-convert-to-centimetres-at-one-decimal} */
 export type { Size, SizeForm, Unit } from "./units";
+/** {@link openspec/specs/size-engine/spec.md#requirement-an-inch-length-is-written-to-the-nearest-eighth} */
+export { inEighths, writeEighths } from "./units";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-typed-length-is-read-with-fractions} */
+export { readLength } from "./units";
 
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-catalog-lists-the-us-ready-made-frame-sizes} */
 export { CATALOG, commonFrames, findFrame, framesFor, nextSizeUp } from "./frames";
@@ -79,6 +83,10 @@ export { identifyFrame, MEASURE_TOLERANCE, type Identified, type Measurement } f
 export { LIP } from "./measure";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-metric-frame-size-is-named-when-it-is-closer-than-the-us-size} */
 export { METRIC_FRAMES } from "./measure";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-standard-frames-measurements-are-listed} */
+export { frameMeasurements, type FrameMeasurements } from "./measure";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-measurement-with-no-answer-says-why} */
+export { whyNoAnswer, type NoAnswer } from "./measure";
 
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-gallery-wall-planner-offers-five-templates} */
 export { TEMPLATES, type Stack, type Template } from "./gallery";

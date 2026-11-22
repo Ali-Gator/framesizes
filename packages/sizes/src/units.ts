@@ -33,6 +33,44 @@ export function writeSize({ w, h }: Size, form: SizeForm): string {
   return `${w} × ${h} in`;
 }
 
+const EIGHTHS = ["", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞"] as const;
+
+/**
+ * A length in inches to the nearest eighth: `7½`, `¼`, `10`.
+ * {@link openspec/specs/size-engine/spec.md#requirement-an-inch-length-is-written-to-the-nearest-eighth}
+ */
+export function inEighths(inches: number): string {
+  const eighths = Math.round(inches * 8);
+  const whole = Math.floor(eighths / 8);
+  const glyph = EIGHTHS[eighths - whole * 8];
+  return whole && glyph ? `${whole}${glyph}` : glyph || String(whole);
+}
+
+/** A size in inches to the nearest eighth: `7½ × 9½ in`. */
+export function writeEighths({ w, h }: Size): string {
+  return `${inEighths(w)} × ${inEighths(h)} in`;
+}
+
+const GLYPH = /^(?:(\d+) ?)?([⅛¼⅜½⅝¾⅞])$/;
+const FRACTION = /^(?:(\d+)(?: +|-))?(\d+)\/(\d+)$/;
+const DECIMAL = /^\d+(?:[.,]\d+)?$/;
+
+/**
+ * A typed length: `8`, `8.125`, `8,5`, `3/4`, `8 1/8`, `8-1/8`, `8⅛`. `undefined` for anything else,
+ * a minus sign or a division by 0.
+ * {@link openspec/specs/size-engine/spec.md#requirement-a-typed-length-is-read-with-fractions}
+ */
+export function readLength(text: string): number | undefined {
+  const t = text.trim();
+  if (DECIMAL.test(t)) return Number(t.replace(",", "."));
+  const glyph = GLYPH.exec(t);
+  if (glyph)
+    return Number(glyph[1] ?? 0) + (EIGHTHS as readonly string[]).indexOf(glyph[2] ?? "") / 8;
+  const fraction = FRACTION.exec(t);
+  if (!fraction || Number(fraction[3]) === 0) return undefined;
+  return Number(fraction[1] ?? 0) + Number(fraction[2]) / Number(fraction[3]);
+}
+
 /** A length in inches as feet and inches: `8 ft`, `5 ft 9 in`. */
 export function feetAndInches(inches: number): string {
   const feet = Math.floor(inches / 12);
