@@ -304,6 +304,35 @@ describe("beyond phones and monitors", () => {
     expect(button("No card? Pick your screen size")).toBeTruthy();
   });
 
+  /** {@link openspec/specs/actual-size/spec.md#scenario-a-phone-too-narrow-for-the-line} */
+  it("measures the screen's edge again when the screen narrows and widens", () => {
+    const resized: Array<() => void> = [];
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: () => void) {
+          resized.push(callback);
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    stubScreen({ w: 320, h: 568, phone: true });
+    const width = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(320);
+    mount();
+    click(button("See 8x10 at actual size"));
+    const edge = () => host.querySelector(".as-edge")?.textContent;
+    const resize = (w: number) => {
+      width.mockReturnValue(w);
+      act(() => resized.forEach((callback) => callback()));
+    };
+    expect(edge()).toBe("");
+    resize(100);
+    expect(edge()).toBe("The line is past your screen's edge. Pick your screen size.");
+    resize(320);
+    expect(edge()).toBe("");
+  });
+
   /** {@link openspec/specs/actual-size/spec.md#scenario-a-size-the-screen-cannot-have} */
   it("names the screen size it uses, and ignores one the screen cannot have", () => {
     stubScreen({ w: 1920, h: 1080, phone: false });
