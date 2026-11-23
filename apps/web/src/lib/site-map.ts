@@ -101,7 +101,14 @@ const PAGE_LIST = [
     hub: "frames",
     name: "Frame and mat calculator",
     card: { question: "What frame and mat fit my print?", ratio: [11, 14] },
-    live: false,
+    live: true,
+    seo: {
+      title: "Picture Frame & Mat Calculator",
+      h1: "Frame and Mat Size Calculator",
+      description:
+        "Enter your print size and mat width to get the frame size and mat opening. Works in reverse too: start from a frame and find the print that fits.",
+      lastModified: "2026-11-23",
+    },
   },
   {
     id: "F6",

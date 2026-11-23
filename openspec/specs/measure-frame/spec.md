@@ -369,6 +369,11 @@ Related tools SHALL list the live Frames pages other than F4, then PH1 when live
 - **WHEN** `/measure-picture-frame` is requested while only F1, F2, F3, F4, G1 and the company pages are live
 - **THEN** Related tools holds three cards, linking to `/`, `/frame-sizes-on-wall` and `/how-big-is-8x10` in that order; no link points to `/photo-print-sizes`; and no `href` starts with `#`
 
+#### Scenario: F1, F2, F3, F4, F5 and G1 are live
+
+- **WHEN** `/measure-picture-frame` is requested while only F1, F2, F3, F4, F5, G1 and the company pages are live
+- **THEN** Related tools holds four cards, linking to `/`, `/frame-sizes-on-wall`, `/how-big-is-8x10` and `/frame-mat-calculator` in that order; no link points to `/photo-print-sizes`; and no `href` starts with `#`
+
 ### Requirement: The page carries its head values and breadcrumbs
 
 The page SHALL take its title, `h1`, description and content date from its site map entry, carry breadcrumbs Home › Measure a picture frame with a matching `BreadcrumbList`, and send its own 1200 × 630 social image with the alt "8x10 picture frame with its inside, front opening and outside measured".

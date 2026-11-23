@@ -267,9 +267,10 @@ interface MatAnswer {
   preCut: readonly Frame[]; // preCutFrames(print)
 }
 function matSizes(q: MatQuestion): MatAnswer | undefined;
-type NoMat = "number" | "room"; // Exclude<NoAnswer, "narrow">
+type NoMat = NoAnswer; // "number" | "narrow" | "room"
 function whyNoMat(q: MatQuestion): NoMat | undefined;
 function matBorders(frame: Size, print: Size, overlap?: number): { side: number; top: number };
+const DIPLOMA: { readonly print: Size; readonly frame: Frame }; // 8½ × 11 in, the catalog 11x14
 ```
 
 `apps/web` depends on it with `workspace:*` and lists it in `transpilePackages`. There is no build step.
@@ -288,7 +289,7 @@ The gallery wall (`gallery.ts`) uses the same coordinates. A template is a tree 
 
 The measure engine (`measure.ts`) works in inches; the page converts centimetres first. A front opening grows by two lips, an outside shrinks by two faces and grows by two lips, and a mat opening grows by two `MAT_OVERLAP`s to the print. The frame size is made upright and matched against `CATALOG` and `METRIC_FRAMES` by the larger side difference, within `MEASURE_TOLERANCE`; each list matches at most once (pinned gaps: 1 in and over ¾ in). The metric size wins only when strictly closer and carries the US match as `close`. With no match, `below` and `above` come from the upright catalog in the same shape class (square when the sides are within the tolerance), largest area below and smallest above, an area tie to the earlier entry. A rectangle whose long side is under 1.2 × its short side (squarer than every catalog rectangle; 20x24 is 1.2) also gets `squareBelow` and `squareAbove` from the squares, by the same rule; the keys are absent otherwise. `identifyFrame` and `whyNoAnswer` share one private check, so each refusal rule lives once. `readLength` matches whole forms only: a decimal with a point or comma, a glyph after an optional whole number, or a fraction after an optional whole number and a space or hyphen. A mat print is matched against the catalog's mat pairings, US only, and lists every frame sold with it in catalog order. Every answer is turned to the measured orientation; a metric answer keeps its upright `id` and `label`. The allowances are checked in `openspec/changes/archive/2026-11-22-t4-measure-engine/verification.md`.
 
-The mat calculator (`mat.ts`) works in inches, per side and in the input's orientation, with no upright turn. From a print the opening is the print less two overlaps and the frame is the opening plus two mat widths; from a frame the opening is the frame less two mat widths and the print is the opening plus two overlaps. The mat width is the board cut on each side; the ¼ in the lip hides is not subtracted. Both sizes are matched with `identifyFrame` on an inside size, so F4 and F5 never disagree, and `preCutFrames` is the same filter `identifyFrame`'s mat branch calls. `matSizes` and `whyNoMat` share one private check. `matBorders` is plain arithmetic: (frame − print + 2 × overlap) ÷ 2 on each axis.
+The mat calculator (`mat.ts`) works in inches, per side and in the input's orientation, with no upright turn. From a print the opening is the print less two overlaps and the frame is the opening plus two mat widths; from a frame the opening is the frame less two mat widths and the print is the opening plus two overlaps. The mat width is the board cut on each side; the ¼ in the lip hides is not subtracted. Both sizes are matched with `identifyFrame` on an inside size, so F4 and F5 never disagree, and `preCutFrames` is the same filter `identifyFrame`'s mat branch calls. `matSizes` and `whyNoMat` share one private check. `matBorders` is plain arithmetic: (frame − print + 2 × overlap) ÷ 2 on each axis. `matSizes` adds `DIPLOMA.frame` (turned to the print) to `preCut` for a print within the tolerance of the diploma, in catalog order; `preCutFrames`, and so F4, are unchanged. The diploma data was checked against retail listings in the archived t5-frame-mat-calculator change (`verification.md`).
 
 ## Edge Cases
 
@@ -315,7 +316,7 @@ The mat calculator (`mat.ts`) works in inches, per side and in the input's orien
 - A near-square custom size (sides more than ⅜ in apart, long side under 1.2 × short) names the rectangles and the squares: 9 × 9.5 gets 5x7 and 11x14, plus 8x8 and 10x10. Exactly 1.2 (10 × 12) names no square.
 - `readLength` gives `undefined` for empty text, a minus sign, a unit (`8 in`), a division by 0 and anything else; it reads `0` as 0, so a page can say "above 0".
 - `inEighths` rounds to the nearest eighth: 8.04 reads "8", 8.07 reads "8⅛".
-- `matSizes` returns `undefined` (`whyNoMat` "number") for a side, width or overlap that is 0, negative or not finite, and for a width so large a size overflows to Infinity; "room" when the opening has a side of 0 or less (a 4x6 frame with a 2 in mat).
+- `matSizes` returns `undefined` (`whyNoMat` "number") for a side, width or overlap that is 0, negative or not finite, and for a width so large a size overflows to Infinity; "narrow" for a width no wider than the overlap (it would give a frame no bigger than the print); "room" when the opening has a side of 0 or less (a 4x6 frame with a 2 in mat).
 - A mat width at or below the overlap still answers, with a frame smaller than the print or a print bigger than the frame (BL-111).
 - `matBorders` checks nothing: a print too big for the frame gives a negative border, a `NaN` side gives `NaN`. Pass it sizes from `matSizes` or the catalog.
 - From a frame, `preCut` is often empty: the largest print rarely lands within ⅜ in of a mat pairing (11x14 with a 2 in mat gives 7½ × 10½).
@@ -1400,7 +1401,7 @@ The engine SHALL give the mat widths the calculator offers as presets, 1½, 2, 2
 
 ### Requirement: A mat question that gives no size says why
 
-The engine SHALL give no answer, and SHALL say which rule refused it, when a print or frame side, a mat width or an overlap is not a positive finite number, or when the mat or the overlap leaves no opening. A question that gets an answer SHALL have no reason.
+The engine SHALL give no answer, and SHALL say which rule refused it, when a print or frame side, a mat width or an overlap is not a positive finite number, when the mat width is no wider than the overlap, or when the mat or the overlap leaves no opening. A question that gets an answer SHALL have no reason.
 
 #### Scenario: A number that is not positive
 
@@ -1417,7 +1418,46 @@ The engine SHALL give no answer, and SHALL say which rule refused it, when a pri
 - **WHEN** a ½ by 6 inch print gets a mat 2 inches wide with the ¼ inch overlap
 - **THEN** there is no answer, and the reason is that the mat leaves no room
 
+#### Scenario: A mat no wider than its overlap
+
+- **WHEN** an 8 by 10 inch print gets a mat 0.1 inch or ¼ inch wide, or an 11 by 14 inch frame gets a mat 0.2 inch wide, each with the ¼ inch overlap
+- **THEN** there is no answer, and the reason is that the mat is too narrow
+
+#### Scenario: A mat just wider than its overlap
+
+- **WHEN** an 8 by 10 inch print gets a mat ⅜ inch wide with the ¼ inch overlap
+- **THEN** there is no reason, and the frame is 8¼ by 10¼ inches
+
 #### Scenario: A question with an answer
 
 - **WHEN** an 8 by 10 inch print gets a mat 2 inches wide
 - **THEN** there is no reason
+
+### Requirement: The engine names the frame sold for a diploma
+
+The engine SHALL give the usual US diploma size, 8½ by 11 inches, and the frame sold for it with a mat cut for that size, 11 by 14 inches, as checked against retail listings. A mat question whose print is the diploma size SHALL list that frame among the frames sold with a pre-cut mat for it, in catalog order; the pre-cut lookup that F4 uses SHALL NOT change.
+
+#### Scenario: The diploma and its frame
+
+- **WHEN** the diploma size and its frame are asked for
+- **THEN** the diploma is 8½ by 11 inches and the frame is 11 by 14 inches, a catalog frame
+
+#### Scenario: The border a diploma frame gives
+
+- **WHEN** the mat borders are asked for the diploma in its frame
+- **THEN** they are 1½ inches at the sides and 1¾ inches at the top and bottom, and the mat opening is 8 by 10½ inches
+
+#### Scenario: A diploma-size print in the mat calculator
+
+- **WHEN** an 8½ by 11 inch print gets a mat 1½ inches wide, or 2 inches wide
+- **THEN** the frames sold with a pre-cut mat for it are the 11x14 and the 12x16, in that order; with 1½ inches the frame is 11 by 13½ inches, a custom size
+
+#### Scenario: A diploma-size print that gets the diploma frame
+
+- **WHEN** an 8½ by 11 inch print gets a mat 1⅝ inches wide
+- **THEN** the frame is 11¼ by 13¾ inches, matched to the standard 11x14, and the frames sold with a pre-cut mat for it are the 11x14 and the 12x16
+
+#### Scenario: F4's mat answer is unchanged
+
+- **WHEN** F4 is given an 8 by 10½ inch mat opening
+- **THEN** the frames sold with that mat are the 12x16 only, as before
