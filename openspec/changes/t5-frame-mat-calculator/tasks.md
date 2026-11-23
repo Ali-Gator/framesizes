@@ -32,8 +32,8 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
 ## 4. Calculator UI
 
-- [ ] 4.1 Write a markup test (`renderToStaticMarkup`) of the server render: the title "Frame and mat calculator", the two ends, the Reverse button's name, empty "Print width" and "Print height", "Mat border" holding "2" with only "2 in" pressed, the find button, the empty text and the example drawing's legend and caption. Build `frame-mat.tsx`, the fields, chips and Reverse, and `mat-drawing.tsx` (design decisions 4 to 6). Verify the test passes.
-- [ ] 4.2 Build the answer panel and its cards. Verify with DOM tests:
+- [x] 4.1 Write a markup test (`renderToStaticMarkup`) of the server render: the title "Frame and mat calculator", the two ends, the Reverse button's name, empty "Print width" and "Print height", "Mat border" holding "2" with only "2 in" pressed, the find button, the empty text and the example drawing's legend and caption. Build `frame-mat.tsx`, the fields, chips and Reverse, and `mat-drawing.tsx` (design decisions 4 to 6). Verify the test passes.
+- [x] 4.2 Build the answer panel and its cards. Verify with DOM tests:
   - the answer region is `aria-live="polite"`;
   - errors set `aria-invalid` and focus the first marked field;
   - the answer follows an edit after the first find, and "Start over" clears it;
@@ -47,7 +47,7 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
 ## 5. The page (`app/frame-mat-calculator/`)
 
-- [ ] 5.1 Set F5 live in `site-map.ts` with the SEO guide's title, `h1` and description, and `lastModified` set to the merge date. Verify `checkSiteMap` passes.
+- [x] 5.1 Set F5 live in `site-map.ts` with the SEO guide's title, `h1` and description, and `lastModified` set to the merge date. Verify `checkSiteMap` passes.
 - [ ] 5.2 Add `e2e/frame-mat-content.spec.ts`:
   - the outline and the intro;
   - the calculator's server render;
