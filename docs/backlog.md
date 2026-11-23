@@ -269,3 +269,8 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
+
+
+От Олега:
+
+Добавить для мобильного вида таблиц, где есть горизонтальный скролл, какую-то подсказку визуальную (можно пропадающую при начале скролла), что можно скроллить горизонтально.
