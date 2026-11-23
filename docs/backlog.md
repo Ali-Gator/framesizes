@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-112**
+_Next id:_ **BL-116**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -116,6 +116,19 @@ when to add and when to fold items in.
   URL Inspection: indexed, with its own canonical (guide, after launch).
   _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist · _Status:_ gated — DNS live
 
+- **[BL-112] Preview card for F5** — paste `https://framesizes.app/frame-mat-calculator` into a chat
+  app or a preview tool and check the card shows the 8x10-in-its-mat image (guide checklist 7).
+  _Refs:_ `apps/web/src/app/frame-mat-calculator/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+- **[BL-113] Rich Results Test for F5** — run the live F5 URL through the Rich Results Test and confirm
+  its `BreadcrumbList` validates (guide checklist 15).
+  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-114] URL Inspection for F5** — after launch, check `/frame-mat-calculator` in Search Console's
+  URL Inspection: indexed, and Google chose the page's own canonical.
+  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — DNS live
+- **[BL-115] F5's first paragraph has no numbers** — guide checklist 8 asks the first paragraph to
+  answer the head keyword with numbers; F5's intro, verbatim from the approved canvas and spec, has
+  none. Decide whether to add one (for example the 8x10 + 2 in answer) or exempt tool pages in the guide.
+  _Refs:_ `openspec/specs/frame-mat-calculator/spec.md` "The intro in the server HTML", pre-publish checklist 8 · _Status:_ gated — owner's copy decision
 - **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
   system colour once a second hub makes the nav visible.

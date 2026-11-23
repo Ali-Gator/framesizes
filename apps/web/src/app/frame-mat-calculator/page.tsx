@@ -151,7 +151,7 @@ const STEPS = [
   },
   {
     t: "Read the answer",
-    p: "This mat size calculator gives the frame size and the mat opening. Under them: the frames sold with a pre-cut mat for your print, and the border each one gives.",
+    p: "This mat size calculator gives the frame size and the mat opening. Under them it lists the frames sold with a pre-cut mat for your print and the border each one gives.",
   },
 ] as const;
 

@@ -62,8 +62,8 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
   Build `page.tsx` with the steps, the formula section and figure, the table, the cases and the questions (design decision 7). Verify the tests pass.
 
-- [ ] 5.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts`. Verify `pnpm build` prerenders it at 1200 × 630, under 300 KB.
-- [ ] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, card text, labels, messages, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword; leave the title, `h1`, description and the two keyword questions verbatim. A rewording that changes what the canvas says goes to the owner. Verify the unit, DOM and content tests still pass.
+- [x] 5.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts`. Verify `pnpm build` prerenders it at 1200 × 630, under 300 KB.
+- [x] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, card text, labels, messages, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword; leave the title, `h1`, description and the two keyword questions verbatim. A rewording that changes what the canvas says goes to the owner. Verify the unit, DOM and content tests still pass.
 
 ## 6. Live-page counts elsewhere (approved test edits only)
 
@@ -78,8 +78,8 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
 ## 7. Gate
 
-- [ ] 7.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
-- [ ] 7.2 Run the SEO guide's pre-publish checklist for F5 on the checks that can run before go-live. Log the ones that need the live URL (preview card, Rich Results Test, URL Inspection) as backlog items gated on DNS.
+- [x] 7.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
+- [x] 7.2 Run the SEO guide's pre-publish checklist for F5 on the checks that can run before go-live. Log the ones that need the live URL (preview card, Rich Results Test, URL Inspection) as backlog items gated on DNS.
 
 ## Workflow follow-up
 
