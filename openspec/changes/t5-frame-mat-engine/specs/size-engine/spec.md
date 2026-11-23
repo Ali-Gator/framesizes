@@ -23,7 +23,12 @@ Given a print size and a mat width in inches, the engine SHALL give the mat open
 
 ### Requirement: The frame size from a print is matched to a standard size
 
-The engine SHALL match the frame size a print and a mat width give exactly as it matches a frame measured inside: a standard or metric size within ⅜ inch, else a custom size with the nearest standard sizes below and above.
+The engine SHALL match the frame size a print and a mat width give exactly as it matches a frame measured inside: a standard or metric size within ⅜ inch, else a custom size with the nearest standard sizes below and above. It SHALL also match the print itself the same way, so the page can name it.
+
+#### Scenario: The print is named
+
+- **WHEN** an 8 by 10 inch print gets a mat 2 inches wide
+- **THEN** the print is the standard 8x10
 
 #### Scenario: A frame size that is standard
 
@@ -111,6 +116,63 @@ The engine SHALL match the largest print a frame and a mat width give exactly as
 
 - **WHEN** a 14 by 11 inch frame gets a mat 2 inches wide
 - **THEN** the largest print is a custom size with the landscape 7x5 below and the landscape 11x8.5 above
+
+### Requirement: A frame given in reverse is matched to a standard size
+
+From a frame, the engine SHALL also match the frame size exactly as it matches a frame measured inside, so the page can name the pre-cut mat that frame is sold with. From a print, the frame match SHALL be the frame size's match.
+
+#### Scenario: A frame sold with a pre-cut mat
+
+- **WHEN** an 11 by 14 inch frame gets a mat 2 inches wide
+- **THEN** the frame is the standard 11x14, whose pre-cut mat holds an 8x10 print
+
+#### Scenario: A frame usually sold without a mat
+
+- **WHEN** an 8.5 by 11 inch frame gets a mat 1½ inches wide
+- **THEN** the frame is the standard 8.5x11, which has no pre-cut mat
+
+#### Scenario: A custom frame
+
+- **WHEN** a 9 by 12 inch frame gets a mat 2 inches wide
+- **THEN** the frame is a custom size
+
+### Requirement: A frame and a print give the mat border on each side
+
+Given a frame size and a print size in inches, the engine SHALL give the mat border at the sides as (frame width − print width + 2 × overlap) ÷ 2 and at the top and bottom as (frame height − print height + 2 × overlap) ÷ 2, with the overlap ¼ inch unless given. A border of 0 or less SHALL be given as computed: the print's opening does not fit that frame.
+
+#### Scenario: An 8x10 print in an 11x14 frame
+
+- **WHEN** the borders are asked for an 8 by 10 inch print in an 11 by 14 inch frame
+- **THEN** they are 1¾ inches at the sides and 2¼ inches at the top and bottom
+
+#### Scenario: An 8x10 print in a 16x16 frame
+
+- **WHEN** the borders are asked for an 8 by 10 inch print in a 16 by 16 inch frame
+- **THEN** they are 4¼ inches at the sides and 3¼ inches at the top and bottom
+
+#### Scenario: A 5x7 print in an 11x14 frame
+
+- **WHEN** the borders are asked for a 5 by 7 inch print in an 11 by 14 inch frame
+- **THEN** they are 3¼ inches at the sides and 3¾ inches at the top and bottom
+
+#### Scenario: A landscape print in a landscape frame
+
+- **WHEN** the borders are asked for a 10 by 8 inch print in a 14 by 11 inch frame
+- **THEN** they are 2¼ inches at the sides and 1¾ inches at the top and bottom
+
+#### Scenario: A print too big for the frame
+
+- **WHEN** the borders are asked for an 8 by 10 inch print in a 5 by 7 inch frame
+- **THEN** they are −1¼ inches at the sides and at the top and bottom
+
+### Requirement: The calculator offers four mat widths and starts at 2 inches
+
+The engine SHALL give the mat widths the calculator offers as presets, 1½, 2, 2½ and 3 inches, and the width it starts with, 2 inches.
+
+#### Scenario: The presets and the default
+
+- **WHEN** the calculator's mat widths are asked for
+- **THEN** the presets are 1½, 2, 2½ and 3 inches and the default is 2 inches
 
 ### Requirement: A mat question that gives no size says why
 

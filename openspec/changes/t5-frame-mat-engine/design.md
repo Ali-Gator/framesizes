@@ -5,9 +5,9 @@
 See `proposal.md` for the motivation and the two-change split. What this change builds on:
 
 - `packages/sizes/src/frames.ts`: the catalog (`CATALOG`, `findFrame`), each size's common pre-cut mat (`mat`, turned with the frame), `MAT_OVERLAP` (¼ in) and `frameAnatomy`, whose mat opening is the image less the overlap on every side.
-- `packages/sizes/src/measure.ts` (T4): `identifyFrame` matches an inside measurement to a standard, metric or custom size, with the nearest sizes below and above; its `mat` branch lists the frames whose pre-cut mat holds a print within ⅜ in; `whyNoAnswer` and `NoAnswer` name why a measurement gets no answer.
+- `packages/sizes/src/measure.ts` (T4): `identifyFrame` matches an inside measurement to a standard, metric or custom size, with the nearest sizes below and above (and the squares for a near-square size); its `mat` branch lists the frames whose pre-cut mat holds a print within ⅜ in; `whyNoAnswer` and `NoAnswer` name why a measurement gets no answer.
 - `packages/sizes/src/**` maps to `size-engine` in `openspec/specs/README.md`, so a new file there is gated by the existing spec. Vitest already runs the package's tests.
-- The consumer is the F5 page, not drawn yet. The canvas may change which standard sizes the answer names; phase 1's step 3 folds that in with `/opsx:update` before apply.
+- The consumer is the F5 page, drawn on the approved canvas (https://claude.ai/artifact/PjZ5GizsgyTKMvx6nAfdRp, approved 2026-11-23). Its `Calc` board runs the same arithmetic in its own script (`TOL`, `OVER`, `matchUS`, `matchMetric`, `precut`, `nearest`, `border`, `fromPrint`, `fromFrame`); this change is that logic, tested. The canvas answers are under "Canvas answers" below.
 
 ## Goals / Non-Goals
 
@@ -15,15 +15,15 @@ See `proposal.md` for the motivation and the two-change split. What this change 
 
 - One pure entry point answers both directions (print → frame, frame → print), tested in Node.
 - Every match and pre-cut answer comes from T4's code, so F4 and F5 never disagree about what size a number is.
-- No new package, dependency, constant or README row.
+- Every number the canvas's result cards and the "Mat board sizes" table print comes from the engine: sizes, matches, pre-cut frames and the border each frame gives a print.
+- No new package, dependency or README row.
 
 **Non-Goals:**
 
 - Centimetre input. The page converts with `CM_PER_INCH`, as F2, F3 and F4 do.
-- Metric mats. The catalog's mat pairings are US only, as in T4's mat path. (A metric frame size can still be named by the match, as on F4.)
-- Choosing one "best" standard frame or print. That is the canvas's first open question. Options 1a, 1c and 2a also need the mat widths a named frame gives a named print, which `MatAnswer` does not carry; picking one of them adds a one-line "mat widths for a frame and a print" function at `/opsx:update`.
-- A default mat width. It is a widget setting the canvas picks (open question 3); if it becomes an engine constant, `/opsx:update` adds it.
-- Bottom-weighted and double mats (open questions 4 and 5).
+- Metric mats. The catalog's mat pairings are US only, as in T4's mat path. (A metric frame size is still named by the match, as on F4: canvas Q8.)
+- Choosing which cards to show and in what order (exact size, pre-cut frames, next size up, square frames; in reverse the print below and the frame's own mat). That is the page's layout from canvas Q1 and Q2; the engine gives every fact each card needs.
+- Bottom-weighted and double mats (canvas Q4 and Q5: not in v1).
 - Rounding or labels. The page writes sizes with `writeEighths` and `writeSize`.
 
 ## Decisions
@@ -34,9 +34,12 @@ See `proposal.md` for the motivation and the two-change split. What this change 
 
 - Alternative: add the two directions to `measure.ts` as more `Measurement` kinds. Rejected: a measurement is one size read off a frame; a mat question has two inputs and gives three sizes. Its result shape would bend `Identified` for every F4 caller.
 
-### 2. One tagged question, one answer shape
+### 2. One tagged question, one answer shape, one border helper
 
 ```ts
+const MAT_WIDTH = 2; // in, the width the calculator starts with
+const MAT_WIDTHS = [1.5, 2, 2.5, 3] as const; // in, the presets
+
 type MatQuestion =
   | { from: "print"; print: Size; width: number; overlap?: number }
   | { from: "frame"; frame: Size; width: number; overlap?: number };
@@ -45,18 +48,24 @@ interface MatAnswer {
   print: Size; // as given, or the largest print the mat holds
   opening: Size;
   frame: Size; // as given, or the frame size the print and mat give
-  /** The frame size matched (from a print) or the largest print matched (from a frame). */
-  match: Identified;
+  printMatch: Identified; // the print matched
+  frameMatch: Identified; // the frame matched
   /** Frames sold with a pre-cut mat for `print`, in its orientation; often empty from a frame. */
   preCut: readonly Frame[];
 }
 
 function matSizes(q: MatQuestion): MatAnswer | undefined;
 function whyNoMat(q: MatQuestion): NoAnswer | undefined;
+
+/** Mat border at the sides and at the top and bottom for `print` in `frame`. */
+function matBorders(frame: Size, print: Size, overlap?: number): { side: number; top: number };
 ```
 
-- Both directions give the same three sizes, so one shape serves the page's result card in either mode, and the reverse button only flips `from`.
+- Both directions give the same three sizes and both matches, so one shape serves the result card in either mode, and the Reverse button only flips `from` (carrying the answer over as the new input is page state, canvas "Other choices").
+- From a print, `frameMatch` drives the answer (standard, metric or custom with `above` = next size up and `squareAbove` = the square frame card) and `printMatch` names the print ("for an 8x10 print"). From a frame, `printMatch` drives it (`below` = the standard print that fits) and `frameMatch` gives the frame's own pre-cut mat: `frameMatch.frame.mat` when it is standard.
+- `matBorders` gives every border the canvas prints: each pre-cut frame, the next size up, the square frame, a standard or metric frame, the reverse print below, the frame's own mat, and the table's "Mat border" column (`matBorders(frame, frame.mat)`). It is plain arithmetic, so a print too big for the frame gives a negative border; the page never asks for one, since it only names frames at least as big as the exact size and prints no bigger than the largest print.
 - `whyNoMat` mirrors `identifyFrame` / `whyNoAnswer`: the answer function stays a plain `T | undefined`, and the reason is asked for only when there is none.
+- `MAT_WIDTH` and `MAT_WIDTHS` are engine constants because the site's rule is that pages never type a size by hand (canvas Q3: field filled with 2 in, chips 1½, 2, 2½ and 3 in; cm chips are their `toCm` values, 3.8, 5.1, 6.4 and 7.6).
 
 ### 3. The arithmetic
 
@@ -64,14 +73,15 @@ All in inches, per side, keeping the input's orientation (no upright turn is nee
 
 - From a print: `opening = print − 2·overlap`; `frame = opening + 2·width`.
 - From a frame: `opening = frame − 2·width`; `print = opening + 2·overlap`.
+- Borders: `side = (frame.w − print.w + 2·overlap) / 2`; `top = (frame.h − print.h + 2·overlap) / 2`.
 
-`width` is the cut width, (frame − opening) ÷ 2, the same quantity `frameAnatomy` implies (11x14 with an 8x10 → 1¾ at the sides, 2¼ at the top and bottom). The ¼ in the lip hides from the front is not subtracted here: what the visitor is told is a canvas copy question (open question 6).
+`width` is the cut width, the same quantity `frameAnatomy` implies (11x14 with an 8x10 → 1¾ at the sides, 2¼ at the top and bottom). The ¼ in the lip hides from the front is not subtracted: the page says it in copy (canvas Q6).
 
-### 4. The match is `identifyFrame` on an inside measurement
+### 4. The matches are `identifyFrame` on an inside measurement
 
-`match = identifyFrame({ kind: "inside", size })` with `size` the frame (from a print) or the print (from a frame). It is the same ⅜ in tolerance, metric rule and nearest below/above as F4, already tested.
+`frameMatch` and `printMatch` are each `identifyFrame({ kind: "inside", size })`. Same ⅜ in tolerance, metric rule and nearest below/above as F4, already tested.
 
-- Matching a print against the frame catalog is sound: the catalog's sizes are also the common print sizes (4x6, 5x7, 8x10, 8.5x11, 11x14…). The catalog lacks two print sizes its mats hold (8x12, 4x4); that only matters if the canvas picks "name the standard print that fits", and `/opsx:update` would add them then.
+- Matching a print against the frame catalog is sound: the catalog's sizes are also the common print sizes (4x6, 5x7, 8x10, 8.5x11, 11x14…). It lacks two print sizes its mats hold (8x12, 4x4), so the reverse "print below" never names them; the canvas's own script uses the same catalog, so page and canvas agree.
 - Alternative: export T4's private `match`. Rejected: `identifyFrame` already is that function behind the positive-number check, and `matSizes` has done that check by then.
 
 ### 5. Pre-cut frames: one helper shared with `identifyFrame`
@@ -80,28 +90,27 @@ The filter in `identifyFrame`'s mat branch (catalog frames whose `mat` is within
 
 ### 6. Validation
 
-`whyNoMat` returns `"number"` when a side, the width or the overlap is not a positive finite number, and `"room"` when the opening has a side ≤ 0. It reuses T4's `NoAnswer` type; `"narrow"` never occurs for a mat. A width of 0 is refused as `"number"`: "no mat" is a different question (F1 and F4 answer it), and allowing it would quietly give a frame ½ in smaller than the print.
+`whyNoMat` returns `"number"` when a side, the width or the overlap is not a positive finite number, and `"room"` when the opening has a side ≤ 0. It reuses T4's `NoAnswer` type; `"narrow"` never occurs for a mat. A width of 0 is refused as `"number"`: the canvas's error for it adds the no-mat answer in copy ("With no mat, the frame is the print size"), which needs no engine call.
 
 ## Risks / Trade-offs
 
-- [The custom answer reads oddly for common cases: an 8x10 print with a 2 in mat names 8.5x11 below and 12x16 above, plus two squares, while the frame people buy is the 11x14 with a pre-cut mat.] → The answer also carries `preCut` (11x14), and the canvas decides what the page names first (open question 1). If it picks a different rule, `/opsx:update` changes the spec before any test is written.
-- [A frame and a mat width usually give a print size between two standards.] → The reverse answer names both neighbours; the canvas decides how to show it (open question 2).
+- [A custom answer carries many neighbours: an 8x10 print with a 2 in mat has 8.5x11 below, 12x16 above, squares 10x10 and 16x16, and pre-cut 11x14.] → The canvas (Q1 option A) shows the exact size, the pre-cut frames, the next size up (only when not already pre-cut) and the square above; it drops the sizes below. The engine still gives all of them, so the layout can change without an engine change.
 - [Moving the pre-cut filter could change F4's mat answer.] → The move is a pure extraction, `measure.test.ts` is not edited and must pass, and F4's DOM tests cover the mat result.
-- [Uniform width only.] → Real mats are often a little wider at the bottom. Kept out until the canvas asks for it (open question 4).
+- [Uniform width only.] → Real mats are often a little wider at the bottom. Out of v1 by the canvas (Q4).
 
 ## Migration Plan
 
 None. New exports only; F5 stays `live: false`; F4's behaviour is unchanged.
 
-## Questions for the canvas
+## Canvas answers
 
-These go to the designer with the phase 1 prompt. The approved canvas answers them, and step 3 folds any change into this change with `/opsx:update` before `/opsx:apply`. Recommendation first.
+Approved 2026-11-23 on https://claude.ai/artifact/PjZ5GizsgyTKMvx6nAfdRp. Every question took option A.
 
-1. **Which standard frame the forward answer names when the exact size is custom.** (a) Lead with the exact frame size to order, then "ready-made with a pre-cut mat" from `preCut`, then the size above with the real mat widths it gives (recommended). (b) The F4 pair, sizes below and above. (c) One "best" frame chosen by a rule (closest mat width).
-2. **What the reverse answer names.** (a) The largest print, then the standard print below it that fits and the mat width it gives (recommended). (b) The F4 pair. (c) A frame plus a print gives the mat widths, instead of a frame plus a width.
-3. **Default mat width and its input.** 2 in default, presets 1½, 2, 2½ and 3 in, plus a typed value (recommended); or a free field only.
-4. **Bottom-weighted mat.** Not in v1 (recommended); or a toggle adding ½ in at the bottom.
-5. **Double mat.** Not in v1 (recommended).
-6. **Mat width wording.** Say "mat border" for the cut width and note that the frame's lip covers about ¼ in of it (recommended); or show the visible width.
-7. **Centimetres.** An in/cm switch, as on F4, converting before the engine (recommended).
-8. **Metric frame sizes in the answer.** The F4 match names a metric frame when it is closer than any US size: an 8x12 print with a 2 in mat gives 11½ × 15½ in, the metric 30 × 40 cm. Keep that, as F4 does, since 30 × 40 cm frames are sold in the US (recommended); or match US sizes only on F5.
+1. **Custom frame size:** cards in order: Order this size (the exact frame, mat cut to the asked border), Ready-made with a pre-cut mat (each frame with the border it gives), Next size up (only when it is not already a pre-cut frame), and, for a near-square print, Square frames (the square above with its borders; the square below named as too small). For 8x10 + 2 in: 11½ × 13½ in; 11x14 (1¾ / 2¼ in); 12x16 (2¼ / 3¼ in); 16x16 (4¼ / 3¼ in).
+2. **Reverse:** the largest print first, then the standard print below it that fits with its borders, then the mat this frame is sold with. For 11x14 + 2 in: 7½ × 10½ in; 5x7 (3¼ / 3¾ in); the 11x14's pre-cut mat takes an 8x10 (1¾ / 2¼ in).
+3. **Mat input:** field filled with 2 in, chips 1½, 2, 2½ and 3 in; typing any other number un-presses the chips.
+4. **Bottom-weighted mat:** not in v1.
+5. **Double mat:** not in v1.
+6. **Wording:** "Mat border" is the cut width; the hint says the frame's lip covers about ¼ in of it.
+7. **Units:** in/cm switch in the widget head and the site header, as on F4; switching converts the typed numbers.
+8. **Metric frames:** kept. A 12x16 print with a 2 in mat lands on 40 × 50 cm; an 8x12 on 30 × 40 cm.

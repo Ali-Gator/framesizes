@@ -7,7 +7,9 @@ Tracker row T5 is the F5 page, "Frame & mat calculator" (`/frame-mat-calculator`
 F5 has no approved design yet, so T5 ships in two phases, as CLAUDE.md's "A page with no approved design yet" sets out (T4 ran the same way):
 
 1. This one, `t5-frame-mat-engine`: the mat math in the size engine, with no UI and no page.
-2. A page change, `t5-frame-mat-calculator`, proposed once the canvas is approved and this change is applied. It covers the widget, the copy, the SEO head values and F5 going live.
+2. A page change, `t5-frame-mat-calculator`, proposed once this change is applied. It covers the widget, the copy, the SEO head values and F5 going live.
+
+The F5 canvas (https://claude.ai/artifact/PjZ5GizsgyTKMvx6nAfdRp) was approved on 2026-11-23, before this change was applied, and its answers are folded in here (option A on all eight questions): the result names the exact frame size, the pre-cut frames with the border each gives, the next size up and the square frame; the reverse result names the standard print below and the frame's own pre-cut mat; the calculator starts at a 2 in border with 1½, 2, 2½ and 3 in presets; metric frame sizes stay.
 
 ## What Changes
 
@@ -19,6 +21,9 @@ F5 has no approved design yet, so T5 ships in two phases, as CLAUDE.md's "A page
   - that frame size matched the way F4 matches a measured frame: a standard size within ⅜ in, else custom with the nearest standard sizes below and above (11½ × 13½ → custom; 8.5x11 below, 12x16 above);
   - the frames sold with a pre-cut mat for that print, from the catalog's mat pairings: 8x10 → 11x14; 11x14 → 16x20; 16x20 → 18x24 and 20x24.
 - **From a frame (reverse).** A frame size and a mat width give the mat opening (the frame less the mat width on each side), the largest print the mat holds (the opening plus the overlap on each side), and that print matched the same way: an 11x14 frame with a 2 in mat → a 7 × 10 in opening and a print up to 7½ × 10½ in; an 8x10 frame with a 1¾ in mat → a 5x7 print.
+- **Both matches, both ways.** The answer matches the print and the frame each way. From a print, the print match names the print ("for an 8x10 print"). From a frame, the frame match names the mat the frame is sold with (an 11x14 frame → a pre-cut mat for an 8x10).
+- **Mat borders (canvas Q1, Q2).** A frame and a print give the border at the sides and at the top and bottom: the 11x14 with an 8x10 → 1¾ / 2¼ in; the 12x16 → 2¼ / 3¼ in; the 16x16 → 4¼ / 3¼ in; an 11x14 frame with a 5x7 → 3¼ / 3¾ in. The cards and the "Mat board sizes" table print these.
+- **Mat widths (canvas Q3).** The calculator starts at 2 in and offers 1½, 2, 2½ and 3 in, held in the engine like every other size.
 - **Refusing bad input.** A size, mat width or overlap that is not a positive number gives no answer, and so does a mat or an overlap that leaves no opening. The engine says which: the `NoAnswer` reasons F4 already uses (`number`, `room`).
 - **Reuse.** The pre-cut lookup already lives inside `identifyFrame`'s mat branch; it moves into one helper both callers share, with no change in what F4 shows. The match is `identifyFrame` on an inside measurement, unchanged. `MAT_OVERLAP`, `CATALOG` and the mat pairings are reused, not retyped.
 - No new allowance and no new size data, so no `verification.md`: the ¼ in overlap and the ⅜ in tolerance were checked in the archived t2 and t4 changes.
@@ -37,6 +42,9 @@ None.
   - a print and a mat width give the mat opening, the frame size and that size's match;
   - a print names the frames sold with a pre-cut mat for it;
   - a frame and a mat width give the mat opening, the largest print and that print's match;
+  - a frame given in reverse is matched too, for its own pre-cut mat;
+  - a frame and a print give the mat border on each side;
+  - the calculator's four preset mat widths and its 2 in start;
   - a mat question that gives no size says why.
 
   The existing requirements do not change.
@@ -54,5 +62,6 @@ None.
 - Tracker: T5 becomes `In progress` at archive (the page change completes it).
 - For the canvas and the page change, noted here so it is not lost:
   - The SEO guide's F5 rows: URL `/frame-mat-calculator`; head keyword "picture frame size calculator" (260 / KD 15); title "Picture Frame & Mat Calculator" with the ` | Frame Sizes` suffix; h1 "Frame and Mat Size Calculator"; description "Enter your print size and mat width to get the frame size and mat opening. Works in reverse too: start from a frame and find the print that fits."; secondary keywords "mat board sizes" (590), "what size frame for 11x14 print" (320), "what size frame for diploma" (260), "frame mat sizes" (210), "mat size calculator" (110). The research's head is "mat board sizes" (590 / KD 11); the guide's swap is deliberate and documented there (the h1 names what the page does). The page is a Tool page in the guide's outline, and its links table says F5 must link to PH2.
-  - Open product questions for the canvas, each with a recommendation, are in `design.md` ("Open questions"). The main one: which standard frame to name when the exact frame size is custom. The F4 match names the sizes below and above, which for an 8x10 print with a 2 in mat is 8.5x11 and 12x16, while the pre-cut answer is 11x14.
-  - "What size frame for diploma": a diploma is usually 8.5x11. The catalog pairs an 8.5x11 print only with the 12x16 frame, while diploma frames are often sold as an 11x14 with an 8.5x11 opening. Check this against sources in the page change before the copy names a frame.
+  - The canvas answers are listed in `design.md` ("Canvas answers"); the page change takes its copy, keyword placement (canvas "head" note) and Related tools (Art print sizes, Measure a picture frame, Frame size chart, How big is 8x10) from the canvas.
+  - "What size frame for diploma": the canvas marks it unverified. A diploma is usually 8.5x11. The catalog pairs an 8.5x11 print only with the 12x16 frame, while diploma frames are often sold as an 11x14 with an 8.5x11 opening. Check this against sources in the page change before the copy names a frame.
+  - The canvas's cm formula rounds the ½ in overlap to 1.3 cm; the page writes cm from inches with `toCm`, so its examples stay exact (8x10 + 5.1 cm → 29.2 × 34.3 cm).
