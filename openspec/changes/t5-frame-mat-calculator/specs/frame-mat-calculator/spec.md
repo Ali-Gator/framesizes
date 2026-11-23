@@ -126,7 +126,7 @@ When no standard or metric frame is within ⅜ in, the answer SHALL give, in ord
 - **WHEN** the visitor enters a 16 × 20 in print with a 2 in border
 - **THEN** the answer names a 19½ × 23½ in frame, the pre-cut card lists the 18x24 frame (1¼ in at the sides, 2¼ in at the top and bottom) and the 20x24 frame (2¼ in all round, "Also the next size up.") with "Both are sold with a mat cut for a 16x20 print.", and there is no "Next size up" card and no "Square frames" card
 
-#### Scenario: A diploma-size print with a 1½ inch border
+#### Scenario: A diploma-size print with a custom frame
 
 - **WHEN** the visitor enters an 8½ × 11 in print with a 1½ in border
 - **THEN** the answer reads "Your frame: 11 × 13½ in. Not a standard size.", the "Ready-made, with a pre-cut mat" card lists the 11x14 frame (1½ in at the sides, 1¾ in at the top and bottom, "Also the next size up.") and the 12x16 frame (2 in at the sides, 2¾ in at the top and bottom) with "Both are sold with a mat cut for an 8.5x11 print.", and there is no "Next size up" card and no "Square frames" card
