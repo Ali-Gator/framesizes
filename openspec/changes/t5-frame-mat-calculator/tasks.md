@@ -15,7 +15,7 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
 - [ ] 2.1 Add tests for the two new scenarios of "A mat question that gives no size says why" (0.1, ¼ and 0.2 in refused as `"narrow"`; ⅜ in answered with an 8¼ × 10¼ in frame). Refuse `width <= overlap` in `mat.ts` and widen `NoMat` to `NoAnswer` (design decision 1). Verify the new tests and the existing `mat.test.ts` pass unedited. Delete BL-111 from `docs/backlog.md`.
 - [ ] 2.2 Open each listing in `verification.md` in a browser and record the frame size, the diploma size and the opening it shows. Fewer than three confirming an 11x14 frame with a mat for 8.5x11: stop and take the diploma back to the owner.
-- [ ] 2.3 Add tests for "The engine names the frame sold for a diploma" (both scenarios). Add `DIPLOMA` to `mat.ts`, read from `CATALOG`, and export it from `index.ts` with its spec link. Verify the tests pass.
+- [ ] 2.3 Add tests for "The engine names the frame sold for a diploma" (all four scenarios). Add `DIPLOMA` to `mat.ts`, read from `CATALOG`, export it from `index.ts` with its spec link, and add its frame to `matSizes`' `preCut` for a diploma-size print (design decision 1). Verify the tests pass and `measure.test.ts` passes unedited.
 
 ## 3. Calculator logic (`components/frame-mat/`)
 

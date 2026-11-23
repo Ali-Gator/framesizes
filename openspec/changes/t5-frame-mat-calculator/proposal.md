@@ -44,12 +44,12 @@ Tracker row T5 is the F5 page, "Frame & mat calculator" (`/frame-mat-calculator`
   - Desktop: inputs and drawing on the left, the answer on the right. Phone: one column, the answer under the button, then the drawing. One DOM, laid out by CSS.
 - **Size engine:**
   - BL-111: a mat width at or below the ¼ in overlap gets no answer (it gives a frame no bigger than the print, or a print no smaller than the frame). The reason is `"narrow"`, so `NoMat` becomes `NoAnswer`.
-  - Diploma frames (new data, checked against sources in this change's `verification.md`): an 8.5 × 11 in diploma, and the 11x14 frame sold for it with a mat cut for 8.5x11 (an 8 × 10½ in opening, 1½ in at the sides and 1¾ in at the top and bottom).
+  - Diploma frames (new data, checked against sources in this change's `verification.md`): an 8.5 × 11 in diploma, and the 11x14 frame sold for it with a mat cut for 8.5x11 (an 8 × 10½ in opening, 1½ in at the sides and 1¾ in at the top and bottom). The calculator lists that 11x14 among the pre-cut frames for an 8.5x11 print, so its answer agrees with the diploma case on the same page; F4's pre-cut lookup does not change.
 - **F5 goes live** in the site map with its head values. The sitemap gains `/frame-mat-calculator`. F1's, F2's, F3's and F4's Related tools gain the F5 card; F1's "Frame size by image size" paragraph gains its existing `IfLive page="F5"` sentence; the footer lists F5 under Frames.
 
 Product questions settled here (recommendation, for the owner to approve with task 1.1):
 
-- **Diploma.** The canvas answered "12x16 frame" and marked it unverified. Retail listings (`verification.md`) sell diploma frames as 11x14 with a mat for an 8.5x11 diploma and an 8 × 10½ in opening. Proposed: "An 11x14 frame. Diploma frames come with a mat cut for 8.5x11: 1½ in at the sides, 1¾ in at the top and bottom. For a wider border, a 12x16 frame comes with a pre-cut 8.5x11 mat: 2 in at the sides, 2¾ in at the top and bottom." The canvas's "Unverified" badge and FAQ prefix do not ship.
+- **Diploma.** The canvas answered "12x16 frame" and marked it unverified. Retail listings (`verification.md`) sell diploma frames as 11x14 with a mat for an 8.5x11 diploma and an 8 × 10½ in opening. Proposed: "An 11x14 frame. Diploma frames come with a mat cut for 8.5x11: 1½ in at the sides, 1¾ in at the top and bottom. For a wider border, a 12x16 frame comes with a pre-cut 8.5x11 mat: 2 in at the sides, 2¾ in at the top and bottom." The canvas's "Unverified" badge and FAQ prefix do not ship. With it, the calculator names the 11x14 as pre-cut for an 8.5x11 print too (8.5x11 with a 1½ in border: "Use an 11x14 frame.", sold with this mat pre-cut).
 
 Copy that is not on the approved canvas, for the owner before commit:
 

@@ -31,6 +31,7 @@ What exists:
 1. **Engine changes, `packages/sizes/src/mat.ts`:**
    - BL-111: `sizesOf` refuses `width <= overlap` with `"narrow"` before any arithmetic; `NoMat` becomes `NoAnswer` (the `Exclude` goes). A mat that is not wider than the print's hidden edge would give a frame no bigger than the print, or a print no smaller than the frame.
    - Diploma: `export const DIPLOMA = { print: { w: 8.5, h: 11 }, frame: <the 11x14 catalog frame> }`, read from `CATALOG` by id so no size is retyped, with a comment pointing at this change's `verification.md`. Borders come from `matBorders`.
+   - `matSizes` adds `DIPLOMA.frame` to `preCut` when the print is the diploma size (within `MEASURE_TOLERANCE`, either orientation), keeping catalog order. Without it the calculator would answer an 8.5x11 print with "Have the mat cut to this border" for an 11x14 frame while the diploma case on the same page says 11x14 frames come with that mat. `preCutFrames` is not touched, so F4's mat answer and `measure.test.ts` stay as they are.
    - Alternative: write the diploma frame in the page copy. Rejected: the constitution keeps every size in the engine.
 
 2. **One pure reducer: `components/frame-mat/state.ts`.**

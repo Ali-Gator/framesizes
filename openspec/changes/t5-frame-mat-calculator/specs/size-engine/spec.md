@@ -40,7 +40,7 @@ The engine SHALL give no answer, and SHALL say which rule refused it, when a pri
 
 ### Requirement: The engine names the frame sold for a diploma
 
-The engine SHALL give the usual US diploma size, 8½ by 11 inches, and the frame sold for it with a mat cut for that size, 11 by 14 inches, as checked against retail listings.
+The engine SHALL give the usual US diploma size, 8½ by 11 inches, and the frame sold for it with a mat cut for that size, 11 by 14 inches, as checked against retail listings. A mat question whose print is the diploma size SHALL list that frame among the frames sold with a pre-cut mat for it, in catalog order; the pre-cut lookup that F4 uses SHALL NOT change.
 
 #### Scenario: The diploma and its frame
 
@@ -51,3 +51,13 @@ The engine SHALL give the usual US diploma size, 8½ by 11 inches, and the frame
 
 - **WHEN** the mat borders are asked for the diploma in its frame
 - **THEN** they are 1½ inches at the sides and 1¾ inches at the top and bottom, and the mat opening is 8 by 10½ inches
+
+#### Scenario: A diploma-size print in the mat calculator
+
+- **WHEN** an 8½ by 11 inch print gets a mat 1½ inches wide, or 2 inches wide
+- **THEN** the frames sold with a pre-cut mat for it are the 11x14 and the 12x16, in that order; with 1½ inches the frame is 11 by 14 inches, a standard size
+
+#### Scenario: F4's mat answer is unchanged
+
+- **WHEN** F4 is given an 8 by 10½ inch mat opening
+- **THEN** the frames sold with that mat are the 12x16 only, as before
