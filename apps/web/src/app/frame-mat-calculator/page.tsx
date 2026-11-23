@@ -108,8 +108,11 @@ const P11 = { w: 11, h: 14 };
 const P16 = { w: 16, h: 20 };
 const CASE_11 = fromPrint(P11);
 const CASE_16 = fromPrint(P16);
-const between = (a: MatAnswer) =>
-  a.frameMatch.kind === "custom" ? [a.frameMatch.below?.id, a.frameMatch.above?.id] : [];
+function between(a: MatAnswer): string {
+  const m = a.frameMatch;
+  if (m.kind !== "custom" || !m.below || !m.above) throw new Error("expected a size between two");
+  return `${m.below.id} and ${m.above.id}`;
+}
 const WIDER = preCutFrames(DIPLOMA.print).filter((f) => f.id !== DIPLOMA.frame.id);
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -373,6 +376,8 @@ export default function FrameMatCalculator() {
           ].map(({ print, a }) => {
             const pid = id(print);
             const frames = a.preCut;
+            if (frames.length < 1 || frames.length > 2)
+              throw new Error(`${pid}: expected one or two pre-cut frames`);
             return (
               <article key={pid} className="f5-case">
                 <h3 className="f5-case-t">
@@ -393,7 +398,7 @@ export default function FrameMatCalculator() {
                 </p>
                 <p className="f5-case-m">
                   With a <L inches={MAT_WIDTH} /> mat cut to order: <S size={a.frame} />, between{" "}
-                  {between(a).join(" and ")}.
+                  {between(a)}.
                 </p>
               </article>
             );

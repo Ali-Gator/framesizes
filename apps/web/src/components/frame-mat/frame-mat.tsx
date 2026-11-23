@@ -1,6 +1,6 @@
 "use client";
 
-import { inEighths, MAT_OVERLAP, MAT_WIDTHS, toCm, type Unit } from "@framesizes/sizes";
+import { inEighths, LIP, MAT_WIDTHS, toCm, type Unit } from "@framesizes/sizes";
 import { useId, useLayoutEffect, useReducer, useRef } from "react";
 
 import { writeLength } from "@/components/measure-frame/state";
@@ -39,7 +39,8 @@ export function FrameMat() {
   const field = (f: Field) => `${id}-${f}`;
 
   // {@link openspec/specs/frame-mat-calculator/spec.md#requirement-switching-the-unit-converts-the-numbers-already-typed}
-  const lastUnit = useRef(unit);
+  // INITIAL holds inches; a client-side visit may first render in cm, which converts it then.
+  const lastUnit = useRef<Unit>("in");
   useLayoutEffect(() => {
     if (lastUnit.current === unit) return;
     dispatch({ type: "unit", from: lastUnit.current, to: unit });
@@ -170,8 +171,7 @@ export function FrameMat() {
               {error("m") ?? (
                 <span className="mc-hint" id={`${field("m")}-d`}>
                   The cut width on each side. The frame&apos;s lip covers about{" "}
-                  <U in={writeLength(MAT_OVERLAP, "in")} cm={writeLength(MAT_OVERLAP, "cm")} /> of
-                  it.
+                  <U in={writeLength(LIP, "in")} cm={writeLength(LIP, "cm")} /> of it.
                 </span>
               )}
             </div>

@@ -2,6 +2,7 @@ import {
   type Frame,
   findFrame,
   inEighths,
+  LIP,
   MAT_OVERLAP,
   matBorders,
   type MatAnswer,
@@ -75,20 +76,20 @@ export function describe(
   const tol = ln(MEASURE_TOLERANCE);
 
   if (from === "frame") {
-    const own = frameMatch.kind === "standard" ? frameMatch.frame : undefined;
-    const ownMat = own?.mat ? id(own.mat) : undefined;
+    const own0 = frameMatch.kind === "standard" ? frameMatch.frame : undefined;
+    const ownMat = own0?.mat ? id(own0.mat) : undefined;
     const soldWith: Card =
-      own && own.mat && ownMat
+      own0 && own0.mat && ownMat
         ? {
             title: "Sold with this frame",
-            rows: [{ chip: `${ownMat} print`, border: bd(frame, own.mat) }],
-            text: `${cap(withArticle(own.id))} frame comes with a mat pre-cut for ${withArticle(ownMat)} print.`,
+            rows: [{ chip: `${ownMat} print`, border: bd(frame, own0.mat) }],
+            text: `${cap(withArticle(own0.id))} frame comes with a mat pre-cut for ${withArticle(ownMat)} print.`,
           }
-        : own
+        : own0
           ? {
               title: "Sold with this frame",
               rows: [],
-              text: `${own.id} frames are usually sold without a mat.`,
+              text: `${own0.id} frames are usually sold without a mat.`,
             }
           : {
               title: "Sold with this frame",
@@ -103,7 +104,8 @@ export function describe(
     };
     if (printMatch.kind === "standard") {
       const p = printMatch.frame;
-      const own = ownMat === p.id;
+      // The frame's own mat, or a pairing the engine adds for this print (the diploma frame).
+      const own = ownMat === p.id || (!!own0 && preCut.some((f) => f.id === own0.id));
       return {
         ...base,
         head: `${cap(withArticle(p.id))} print fits.`,
@@ -349,7 +351,7 @@ export function drawing(
     w: ((s.w * k) / W) * 100,
     h: ((s.h * k) / H) * 100,
   });
-  const lip = 2 * MAT_OVERLAP;
+  const lip = 2 * LIP;
   const sideAt = { l: ((W / 2 - ((opening.w + b.side) * k) / 2) / W) * 100, t: 50 };
   const topAt = { l: 50, t: ((H / 2 - ((opening.h + b.top) * k) / 2) / H) * 100 };
 

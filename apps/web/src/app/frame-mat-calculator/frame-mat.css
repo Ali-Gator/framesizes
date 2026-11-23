@@ -179,6 +179,11 @@
   border-color: var(--ink);
   box-shadow: 0 0 0 1px var(--ink);
 }
+/* A stored "cm" keeps the server's inch digits hidden until the calculator renders in cm (globals.css). */
+[data-unit-pending] .mc-input {
+  color: transparent !important;
+  caret-color: var(--ink);
+}
 .mc-input[aria-invalid="true"] {
   border-color: var(--poor);
 }

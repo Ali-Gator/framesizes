@@ -249,6 +249,19 @@ group("a reverse answer", () => {
     ]);
   });
 
+  /** {@link openspec/specs/frame-mat-calculator/spec.md#requirement-a-reverse-answer-gives-the-largest-print-and-the-frames-own-mat} */
+  it("folds the diploma frame's mat into the print card, as the forward answer has it", () => {
+    const a = say("frame", "11¼", "13¾", "1⅝");
+    expect(a.head).toBe("An 8.5x11 print fits.");
+    expect(a.cards).toEqual([
+      {
+        title: "Standard print that fits",
+        rows: [{ chip: "8.5x11 print", border: "Mat border 1⅝ in all round." }],
+        text: "An 11x14 frame is sold with this mat pre-cut.",
+      },
+    ]);
+  });
+
   /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-a-metric-frame-size} */
   it("names the 12x16 print for a 15¾ × 19¾ frame, with no pre-cut mat", () => {
     const a = say("frame", "15¾", "19¾", "2");

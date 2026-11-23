@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-116**
+_Next id:_ **BL-118**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -129,6 +129,14 @@ when to add and when to fold items in.
   answer the head keyword with numbers; F5's intro, verbatim from the approved canvas and spec, has
   none. Decide whether to add one (for example the 8x10 + 2 in answer) or exempt tool pages in the guide.
   _Refs:_ `openspec/specs/frame-mat-calculator/spec.md` "The intro in the server HTML", pre-publish checklist 8 · _Status:_ gated — owner's copy decision
+- **[BL-116] F5 reverse names a print a little bigger than the largest** — from a frame, a standard
+  print within ⅜ in either way "fits" (an 8x10 frame with a 1⅞ in border: largest print 4¾ × 6¾, answer
+  "A 5x7 print fits." with a 1¾ in border). The canvas does the same, and a bigger print only hides more
+  under the mat; decide whether to accept only prints no bigger than the largest.
+  _Refs:_ `apps/web/src/components/frame-mat/answer.ts`, `frame-mat-calculator` "A reverse answer gives the largest print" · _Status:_ gated — owner's product decision (t5 review, 2026-11-23)
+- **[BL-117] F5 formula figure's label in inches only** — the formula section's drawing is server-rendered
+  with an inch `aria-label` while its caption switches unit through `<U>`; give the label both units.
+  _Refs:_ `apps/web/src/app/frame-mat-calculator/page.tsx`, `components/frame-mat/answer.ts` (`drawing`) · _Status:_ open — t5 review, 2026-11-23
 - **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
   system colour once a second hub makes the nav visible.

@@ -213,6 +213,13 @@ describe("the calculator in use", () => {
     ]);
   });
 
+  /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-the-header-switch} */
+  it("starts at 5.1 cm when it first renders in centimetres", () => {
+    act(() => setUnit("cm"));
+    mount();
+    expect(field("Mat border").value).toBe("5.1");
+  });
+
   /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-there-and-back} */
   it("reverses there and back with the answer carried", () => {
     mount();
