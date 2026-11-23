@@ -119,8 +119,8 @@ export function matSizes(q: MatQuestion): MatAnswer | undefined {
 const catalogIndex = (f: Frame) =>
   CATALOG.findIndex((c) => c.w === Math.min(f.w, f.h) && c.h === Math.max(f.w, f.h));
 
-/** `preCutFrames`, plus the diploma frame for a diploma-size print, in catalog order. */
-function preCutFor(print: Size): readonly Frame[] {
+/** `preCutFrames`, plus the diploma frame for a diploma-size print, in catalog order. Shared with F6. */
+export function preCutFor(print: Size): readonly Frame[] {
   const found = preCutFrames(print);
   const landscape = print.w > print.h;
   const up = landscape ? { w: print.h, h: print.w } : print;

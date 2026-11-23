@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-118**
+_Next id:_ **BL-120**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -260,6 +260,10 @@ when to add and when to fold items in.
   check. Rechecked 2026-11-23 (t6 `verification.md`): 20x30 matted for 16x24 is mostly one maker,
   27x40 matted for 24x36 one listing; no change.
   _Refs:_ `packages/sizes/src/frames.ts` · _Status:_ deferred — the next size data check
+- **[BL-119] Check 24x30 and 30x40 frames at retail** — they would give 18x24 and 24x36 posters an
+  even mat on F6 (3¼ / 3¼ in; 3¼ / 2¼ in), but the 19-size catalog stops at 27x40 and adding them
+  changes F1, F2 (descriptions "4x6 to 27x40", "all 19"), F4 and F5. F6 canvas Q5 chose "not now".
+  _Refs:_ `packages/sizes/src/frames.ts`, `openspec/changes/t6-poster-frame-engine/design.md` · _Status:_ deferred — the next size data check
 - **[BL-20] Phone picker in the design system** — backlog-1 added a phone block (stacked size
   rows, 44px filters, compact legend) to `widgets.css`, a diffable port of the design-system
   bundle; add the same variant to the design system's `SizeTable` and `SegmentedControl` so the
@@ -270,7 +274,7 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
-
-От Олега:
-
-Добавить для мобильного вида таблиц, где есть горизонтальный скролл, какую-то подсказку визуальную (можно пропадающую при начале скролла), что можно скроллить горизонтально.
+- **[BL-118] Show that a wide table scrolls sideways on a phone** — where a table scrolls
+  horizontally in its box on a phone, add a visual hint that it scrolls (it may fade once the visitor
+  starts scrolling). From the owner's note, 2026-11-23.
+  _Refs:_ `apps/web/src/app/widgets.css`, size tables on F1, F4, F5 (and F6's chart) · _Status:_ open — owner's request

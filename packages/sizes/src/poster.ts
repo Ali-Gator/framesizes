@@ -1,7 +1,7 @@
 import { CATALOG, findFrame, type Frame } from "./frames";
-import { MAT_WIDTH, matBorders, matSizes } from "./mat";
-import { identifyFrame, type Identified, MEASURE_TOLERANCE, preCutFrames } from "./measure";
-import { ACTUAL_SIZES, type ActualSize } from "./screen";
+import { DIPLOMA, MAT_WIDTH, matBorders, matSizes, preCutFor } from "./mat";
+import { gap, identifyFrame, type Identified, MEASURE_TOLERANCE } from "./measure";
+import { ACTUAL_SIZES, type ActualSize, fromMm } from "./screen";
 import type { Size } from "./units";
 
 /*
@@ -18,14 +18,6 @@ export interface Poster extends Size {
   group: PosterGroup;
   use: string;
 }
-
-const MM_PER_INCH = 25.4;
-const fromMm = (id: string, w: number, h: number): ActualSize => ({
-  id,
-  label: id,
-  w: w / MM_PER_INCH,
-  h: h / MM_PER_INCH,
-});
 
 function us(id: string, use: string): Poster {
   const frame = findFrame(id);
@@ -99,7 +91,6 @@ export interface PosterFrames {
 }
 
 const positive = (n: number) => Number.isFinite(n) && n > 0;
-const gap = (a: Size, b: Size) => Math.max(Math.abs(a.w - b.w), Math.abs(a.h - b.h));
 const inRange = (n: number) => n >= POSTER_BORDER.min && n <= POSTER_BORDER.max;
 
 function namedA(up: Size, landscape: boolean): ActualSize | undefined {
@@ -110,14 +101,19 @@ function namedA(up: Size, landscape: boolean): ActualSize | undefined {
   return landscape ? { ...near, w: near.h, h: near.w } : { ...near };
 }
 
+/** The print a pre-cut frame's mat is cut for: its catalog pairing, else the diploma. */
+const soldPrint = (f: Frame, up: Size): Size =>
+  f.mat && gap(f.mat, up) <= MEASURE_TOLERANCE ? f.mat : DIPLOMA.print;
+
 function matted(up: Size, landscape: boolean): MattedFrame[] {
   const square = up.h - up.w <= MEASURE_TOLERANCE;
-  const preCut = new Set(preCutFrames(up).map((f) => f.id));
+  const preCut = new Set(preCutFor(up).map((f) => f.id));
   const found: MattedFrame[] = [];
   for (const f of CATALOG) {
-    if (f.orientation === "square" && !square) continue;
-    const { side, top } = matBorders(f, up);
     const pre = preCut.has(f.id);
+    if (f.orientation === "square" && !square && !pre) continue;
+    // A pre-cut mat's opening is cut for its own print, so its borders are the mat's as sold.
+    const { side, top } = matBorders(f, pre ? soldPrint(f, up) : up);
     if (pre || (inRange(side) && inRange(top))) found.push({ frame: f, side, top, preCut: pre });
   }
   found.sort((a, b) => a.frame.w * a.frame.h - b.frame.w * b.frame.h);

@@ -86,7 +86,7 @@ When a poster's own size matches no standard or metric frame and is within ⅜ i
 
 ### Requirement: A poster with a mat names the standard frames that hold it
 
-For a poster size the engine SHALL list, smallest area first (catalog order on a tie) and in the poster's orientation, every catalog frame sold with a pre-cut mat for it and every catalog frame whose mat border is within the border range on every side. Square frames SHALL be considered only for a square poster (sides within ⅜ inch). Each frame SHALL come with its borders at the sides and at the top and bottom, and whether its mat is sold pre-cut.
+For a poster size the engine SHALL list, smallest area first (catalog order on a tie) and in the poster's orientation, every catalog frame sold with a pre-cut mat for it, the diploma pairing included, and every catalog frame whose mat border is within the border range on every side. A square frame not sold pre-cut for it SHALL be considered only for a square poster (sides within ⅜ inch). Each frame SHALL come with its two borders and whether its mat is sold pre-cut.
 
 #### Scenario: An 11x17 poster with a mat
 
@@ -137,6 +137,25 @@ For a poster size the engine SHALL list, smallest area first (catalog order on a
 
 - **WHEN** the frames with a mat are asked for a 10 by 10 inch poster
 - **THEN** they are the 12x12 (1¼ and 1¼ inches), the 12x16 (1¼ and 3¼ inches) and the 16x16 (3¼ and 3¼ inches), in that order
+
+#### Scenario: A near-square poster keeps its pre-cut square frames
+
+- **WHEN** the frames with a mat are asked for a 7.7 by 8.3 inch poster
+- **THEN** they are the 10x10 and the 12x12, both sold with a pre-cut mat, then the 11x14
+
+#### Scenario: A diploma-size poster
+
+- **WHEN** the frames with a mat are asked for an 8½ by 11 inch poster
+- **THEN** the 11x14 and the 12x16 are both marked as sold with a pre-cut mat, as the frame and mat calculator names them
+
+### Requirement: A pre-cut frame's borders are those of the mat as sold
+
+For a frame sold with a pre-cut mat for a poster, the engine SHALL give the borders of that mat as sold: the frame with the print the mat is cut for (its catalog pairing, or the diploma for the diploma frame), not the poster's own size, which may differ by up to ⅜ inch.
+
+#### Scenario: A poster a little larger than its pre-cut mat
+
+- **WHEN** the frames with a mat are asked for an 11.3 by 17.3 inch poster
+- **THEN** the 12x18 is listed as pre-cut with borders of ¾ and ¾ inch, the borders of its 11x17 mat
 
 ### Requirement: A poster with no standard frame for a mat gets the frame for a 2 inch mat
 

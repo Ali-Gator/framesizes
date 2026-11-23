@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { findFrame } from "../frames";
+import { matSizes } from "../mat";
 import { identifyFrame, type Identified } from "../measure";
 import {
   A_FRAMES,
@@ -76,12 +77,17 @@ describe("the poster sizes", () => {
 
   /** {@link openspec/specs/size-engine/spec.md#scenario-the-us-poster-sizes-are-catalog-sizes} */
   it("has every US size in the frame catalog", () => {
-    const us = POSTERS.filter((p) => p.group === "us");
-    expect(us).toHaveLength(7);
-    for (const p of us) {
-      const f = findFrame(p.id);
-      expect(f).toMatchObject({ w: p.w, h: p.h });
-    }
+    const us = POSTERS.filter((p) => p.group === "us").map((p) => [p.id, p.w, p.h]);
+    expect(us).toEqual([
+      ["11x17", 11, 17],
+      ["12x18", 12, 18],
+      ["16x20", 16, 20],
+      ["18x24", 18, 24],
+      ["20x30", 20, 30],
+      ["24x36", 24, 36],
+      ["27x40", 27, 40],
+    ]);
+    for (const [id, w, h] of us) expect(findFrame(String(id))).toMatchObject({ w, h });
   });
 
   /** {@link openspec/specs/size-engine/spec.md#scenario-the-a-series-posters-from-their-millimetre-sizes} */
@@ -227,6 +233,33 @@ describe("a poster with a mat", () => {
       "12x16 (1¼ / 3¼)",
       "16x16 (3¼ / 3¼)",
     ]);
+  });
+});
+
+describe("pre-cut frames", () => {
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-near-square-poster-keeps-its-pre-cut-square-frames} */
+  it("keeps the pre-cut 10x10 and 12x12 for a 7.7 × 8.3", () => {
+    expect(write(frames({ w: 7.7, h: 8.3 }).matted)).toEqual([
+      "10x10 (1¼ / 1¼, pre-cut)",
+      "12x12 (2¼ / 2¼, pre-cut)",
+      "11x14 (1⅞ / 3⅛)",
+    ]);
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-diploma-size-poster} */
+  it("marks the 11x14 and 12x16 pre-cut for a diploma, as F5 does", () => {
+    const pre = frames({ w: 8.5, h: 11 })
+      .matted.filter((f) => f.preCut)
+      .map((f) => f.frame.id);
+    expect(pre).toEqual(["11x14", "12x16"]);
+    expect(
+      matSizes({ from: "print", print: { w: 8.5, h: 11 }, width: 2 })?.preCut.map((f) => f.id),
+    ).toEqual(pre);
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-poster-a-little-larger-than-its-pre-cut-mat} */
+  it("gives the 12x18 the borders of its 11x17 mat for an 11.3 × 17.3", () => {
+    expect(write(frames({ w: 11.3, h: 17.3 }).matted)[0]).toBe("12x18 (¾ / ¾, pre-cut)");
   });
 });
 

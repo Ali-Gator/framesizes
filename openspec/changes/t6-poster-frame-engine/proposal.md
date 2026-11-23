@@ -51,6 +51,7 @@ None.
   - a poster without a mat takes a frame of its own size, matched as a measured frame;
   - a poster near A2 or A1 is named that A-series frame;
   - a poster with a mat names the standard frames that hold it, smallest first, with their borders and whether the mat is pre-cut;
+  - a pre-cut frame's borders are those of the mat as sold;
   - a poster with no standard frame for a mat gets the frame for a 2 in mat;
   - the border range a mat may have, 1 to 4 inches;
   - a poster size that is not a positive number gets no answer.
