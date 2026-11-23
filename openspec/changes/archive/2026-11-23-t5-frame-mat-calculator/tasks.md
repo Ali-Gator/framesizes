@@ -19,7 +19,7 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
 ## 3. Calculator logic (`components/frame-mat/`)
 
-- [ ] 3.1 Write `state.test.ts` for the reducer and `outcome`:
+- [x] 3.1 Write `state.test.ts` for the reducer and `outcome`:
   - the initial state (from a print, empty sizes, border "2");
   - type, preset (in and cm), find, reset;
   - swap with and without an answer, and the 8x10 → 11½ × 13½ → 8x10 round trip;
@@ -28,7 +28,7 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
   Implement `state.ts` (design decision 2). Verify the tests pass.
 
-- [ ] 3.2 Write `answer.test.ts`, pinning every sentence in the standard, metric, custom, reverse and drawing scenarios, in both units for the 8x10 + 2 in answer. Implement `answer.ts` (design decision 3) on the engine and F4's `writeLength`, `writeIn` and `article`. Verify the tests pass.
+- [x] 3.2 Write `answer.test.ts`, pinning every sentence in the standard, metric, custom, reverse and drawing scenarios, in both units for the 8x10 + 2 in answer. Implement `answer.ts` (design decision 3) on the engine and F4's `writeLength`, `writeIn` and `article`. Verify the tests pass.
 
 ## 4. Calculator UI
 
