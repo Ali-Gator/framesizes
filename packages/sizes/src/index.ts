@@ -115,3 +115,12 @@ export { MAT_WIDTH, MAT_WIDTHS } from "./mat";
 export { type NoMat, whyNoMat } from "./mat";
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-engine-names-the-frame-sold-for-a-diploma} */
 export { DIPLOMA } from "./mat";
+
+/** {@link openspec/specs/size-engine/spec.md#requirement-the-poster-frame-picker-offers-ten-poster-sizes} */
+export { POSTERS, type Poster, type PosterGroup } from "./poster";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-poster-near-a2-or-a1-is-named-that-a-series-frame} */
+export { A_FRAMES } from "./poster";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-poster-with-a-mat-names-the-standard-frames-that-hold-it} */
+export { posterFrames, type MattedFrame, type PosterFrames } from "./poster";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-mat-border-on-a-poster-frame-is-1-to-4-inches} */
+export { POSTER_BORDER } from "./poster";

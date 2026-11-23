@@ -75,7 +75,8 @@ export type Identified =
 
 const positive = (n: number) => Number.isFinite(n) && n > 0;
 const upright = ({ w, h }: Size): Size => (w <= h ? { w, h } : { w: h, h: w });
-const gap = (a: Size, b: Size) => Math.max(Math.abs(a.w - b.w), Math.abs(a.h - b.h));
+/** The larger of the two side differences, in inches. */
+export const gap = (a: Size, b: Size) => Math.max(Math.abs(a.w - b.w), Math.abs(a.h - b.h));
 
 /** An upright catalog frame turned to the measured orientation; a square stays square. */
 function turn(frame: Frame, landscape: boolean): Frame {

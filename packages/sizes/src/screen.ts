@@ -5,7 +5,7 @@ import { CM_PER_INCH, type Size, type Unit } from "./units";
  * The actual size viewer's sizes and a screen's scale. A scale is CSS pixels per inch.
  */
 
-const MM_PER_INCH = 25.4;
+export const MM_PER_INCH = 25.4;
 
 /** A size the actual size viewer offers, upright: `id` names it in sentences, `label` on its button. */
 export interface ActualSize extends Size {
@@ -19,7 +19,8 @@ function catalog(id: string): ActualSize {
   return { id, label: id.replace("x", "×"), w: frame.w, h: frame.h };
 }
 
-const fromMm = (id: string, w: number, h: number): ActualSize => ({
+/** An A-series size from millimetres, upright. */
+export const fromMm = (id: string, w: number, h: number): ActualSize => ({
   id,
   label: id,
   w: w / MM_PER_INCH,
