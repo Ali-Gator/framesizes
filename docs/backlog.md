@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-120**
+_Next id:_ **BL-123**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -278,3 +278,19 @@ when to add and when to fold items in.
   horizontally in its box on a phone, add a visual hint that it scrolls (it may fade once the visitor
   starts scrolling). From the owner's note, 2026-11-23.
   _Refs:_ `apps/web/src/app/widgets.css`, size tables on F1, F4, F5 (and F6's chart) · _Status:_ open — owner's request
+- **[BL-120] F5 reverse answer calls a too-big print "fits"** — from a frame, `matSizes` matches the
+  largest print with F4's ±⅜ in tolerance, so a standard print up to ⅜ in bigger counts as fitting:
+  a 10×15 cm frame with a 0.7 cm border (largest print 9.9×14.9 cm) says "A 4x6 print fits", though a
+  4x6 (10.2×15.2 cm) is bigger than the frame, and shows a 0.6 / 0.5 cm border the field refuses.
+  From a frame, accept only a print no bigger than the largest print, else fall back to `below`;
+  the same goes for the metric match. Needs a spec delta and a test.
+  _Refs:_ `packages/sizes/src/mat.ts` (`matched`), `apps/web/src/components/frame-mat/answer.ts`, `openspec/specs/frame-mat-calculator/spec.md#requirement-a-reverse-answer-gives-the-largest-print-and-the-frames-own-mat` · _Status:_ open — found on the live page, 2026-11-23
+- **[BL-121] F5 drawing shows the 11x14 example while a field is in error** — a refused border
+  (0.6 or 5 cm in a 10×15 cm frame) drops the answer and the drawing falls back to the example 11x14
+  (27.9×35.6 cm) beside inputs that still say 10×15. Keep the last good drawing or the entered frame
+  instead, so the legend never disagrees with the fields.
+  _Refs:_ `apps/web/src/components/frame-mat/answer.ts` (`drawing`, `example`) · _Status:_ open — found on the live page, 2026-11-23
+- **[BL-122] F5 "Print" label spills out of a narrow opening** — a 10×15 cm frame with a 4.5 cm border
+  gives a 1 cm opening; the "Print" label runs past it and over the "4.5 cm" side tag. Hide or move
+  the label when the opening is narrower than the text.
+  _Refs:_ `apps/web/src/components/frame-mat/mat-drawing.tsx` · _Status:_ open — found on the live page, 2026-11-23
