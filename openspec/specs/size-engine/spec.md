@@ -251,6 +251,25 @@ interface FrameMeasurements {
   mat?: { opening: Size; print: Size }; // absent with no pre-cut mat
 }
 function frameMeasurements(frame: Frame): FrameMeasurements;
+function preCutFrames(print: Size): readonly Frame[]; // frames sold with a pre-cut mat for it
+
+const MAT_WIDTH = 2; // in, the calculator's start
+const MAT_WIDTHS = [1.5, 2, 2.5, 3] as const; // in, the presets
+type MatQuestion =
+  | { from: "print"; print: Size; width: number; overlap?: number }
+  | { from: "frame"; frame: Size; width: number; overlap?: number };
+interface MatAnswer {
+  print: Size; // as given, or the largest print the mat holds
+  opening: Size;
+  frame: Size; // as given, or the frame size the print and mat give
+  printMatch: Identified; // identifyFrame on the print as an inside size
+  frameMatch: Identified; // identifyFrame on the frame as an inside size
+  preCut: readonly Frame[]; // preCutFrames(print)
+}
+function matSizes(q: MatQuestion): MatAnswer | undefined;
+type NoMat = "number" | "room"; // Exclude<NoAnswer, "narrow">
+function whyNoMat(q: MatQuestion): NoMat | undefined;
+function matBorders(frame: Size, print: Size, overlap?: number): { side: number; top: number };
 ```
 
 `apps/web` depends on it with `workspace:*` and lists it in `transpilePackages`. There is no build step.
@@ -268,6 +287,8 @@ The wall tool (`wall.ts`) works in inches with `y` up from the bottom; pixels ap
 The gallery wall (`gallery.ts`) uses the same coordinates. A template is a tree of rows and columns of catalog ids. `layoutTemplate` measures the tree (a row's width is its children's widths plus the gaps, its height the tallest child; a column swaps the axes), then places it: a row centres its children on its middle, a column centres them across. Frames come out depth first. The group is centred on the furniture with its bottom `ABOVE_SOFA` above it, else centred across the usable area with its centre at `CENTRE_LINE` above a known floor or in the bounds' middle. `nailMarks` puts one nail at the centre or two D-ring nails `inset` in from each side, `drop` below the top edge; the engine holds no default for either. `measureGroup` sorts nails highest first: the highest unlisted nail starts a row, every nail 4 in or less below it joins, and each row reads left to right. `groupDistances` and `setGroupDistance` run `frameDistances` and `setDistance` on the group's box with only the furniture as an obstacle; `centreGroup` moves the group across to the usable area's middle.
 
 The measure engine (`measure.ts`) works in inches; the page converts centimetres first. A front opening grows by two lips, an outside shrinks by two faces and grows by two lips, and a mat opening grows by two `MAT_OVERLAP`s to the print. The frame size is made upright and matched against `CATALOG` and `METRIC_FRAMES` by the larger side difference, within `MEASURE_TOLERANCE`; each list matches at most once (pinned gaps: 1 in and over ¾ in). The metric size wins only when strictly closer and carries the US match as `close`. With no match, `below` and `above` come from the upright catalog in the same shape class (square when the sides are within the tolerance), largest area below and smallest above, an area tie to the earlier entry. A rectangle whose long side is under 1.2 × its short side (squarer than every catalog rectangle; 20x24 is 1.2) also gets `squareBelow` and `squareAbove` from the squares, by the same rule; the keys are absent otherwise. `identifyFrame` and `whyNoAnswer` share one private check, so each refusal rule lives once. `readLength` matches whole forms only: a decimal with a point or comma, a glyph after an optional whole number, or a fraction after an optional whole number and a space or hyphen. A mat print is matched against the catalog's mat pairings, US only, and lists every frame sold with it in catalog order. Every answer is turned to the measured orientation; a metric answer keeps its upright `id` and `label`. The allowances are checked in `openspec/changes/archive/2026-11-22-t4-measure-engine/verification.md`.
+
+The mat calculator (`mat.ts`) works in inches, per side and in the input's orientation, with no upright turn. From a print the opening is the print less two overlaps and the frame is the opening plus two mat widths; from a frame the opening is the frame less two mat widths and the print is the opening plus two overlaps. The mat width is the board cut on each side; the ¼ in the lip hides is not subtracted. Both sizes are matched with `identifyFrame` on an inside size, so F4 and F5 never disagree, and `preCutFrames` is the same filter `identifyFrame`'s mat branch calls. `matSizes` and `whyNoMat` share one private check. `matBorders` is plain arithmetic: (frame − print + 2 × overlap) ÷ 2 on each axis.
 
 ## Edge Cases
 
@@ -294,6 +315,10 @@ The measure engine (`measure.ts`) works in inches; the page converts centimetres
 - A near-square custom size (sides more than ⅜ in apart, long side under 1.2 × short) names the rectangles and the squares: 9 × 9.5 gets 5x7 and 11x14, plus 8x8 and 10x10. Exactly 1.2 (10 × 12) names no square.
 - `readLength` gives `undefined` for empty text, a minus sign, a unit (`8 in`), a division by 0 and anything else; it reads `0` as 0, so a page can say "above 0".
 - `inEighths` rounds to the nearest eighth: 8.04 reads "8", 8.07 reads "8⅛".
+- `matSizes` returns `undefined` (`whyNoMat` "number") for a side, width or overlap that is 0, negative or not finite, and for a width so large a size overflows to Infinity; "room" when the opening has a side of 0 or less (a 4x6 frame with a 2 in mat).
+- A mat width at or below the overlap still answers, with a frame smaller than the print or a print bigger than the frame (BL-111).
+- `matBorders` checks nothing: a print too big for the frame gives a negative border, a `NaN` side gives `NaN`. Pass it sizes from `matSizes` or the catalog.
+- From a frame, `preCut` is often empty: the largest print rarely lands within ⅜ in of a mat pairing (11x14 with a 2 in mat gives 7½ × 10½).
 
 ## Requirements
 
@@ -1199,4 +1224,200 @@ For a measurement that gets no answer the engine SHALL say which rule refused it
 #### Scenario: A measurement with an answer
 
 - **WHEN** a frame measured inside is 8 by 10 inches
+- **THEN** there is no reason
+
+### Requirement: A print and a mat width give the mat opening and the frame size
+
+Given a print size and a mat width in inches, the engine SHALL give the mat opening as the print less the mat's overlap on every side, ¼ inch unless given, and the frame size as that opening plus the mat width on every side. The mat width is the board cut on each side, from the mat's outer edge to its opening. Both sizes SHALL keep the print's orientation.
+
+#### Scenario: An 8x10 print with a 2 inch mat
+
+- **WHEN** an 8 by 10 inch print gets a mat 2 inches wide
+- **THEN** the mat opening is 7½ by 9½ inches and the frame size is 11½ by 13½ inches
+
+#### Scenario: A landscape print with a 2 inch mat
+
+- **WHEN** a 10 by 8 inch print gets a mat 2 inches wide
+- **THEN** the mat opening is 9½ by 7½ inches and the frame size is 13½ by 11½ inches
+
+#### Scenario: A different overlap
+
+- **WHEN** an 8 by 10 inch print gets a mat 2 inches wide that overlaps it by ⅛ inch on each side
+- **THEN** the mat opening is 7¾ by 9¾ inches and the frame size is 11¾ by 13¾ inches
+
+### Requirement: The frame size from a print is matched to a standard size
+
+The engine SHALL match the frame size a print and a mat width give exactly as it matches a frame measured inside: a standard or metric size within ⅜ inch, else a custom size with the nearest standard sizes below and above. It SHALL also match the print itself the same way, so the page can name it.
+
+#### Scenario: The print is named
+
+- **WHEN** an 8 by 10 inch print gets a mat 2 inches wide
+- **THEN** the print is the standard 8x10
+
+#### Scenario: A frame size that is standard
+
+- **WHEN** a 5 by 7 inch print gets a mat 1¾ inches wide
+- **THEN** the frame size is 8 by 10 inches, the standard 8x10
+
+#### Scenario: An 11x14 print with a 2 inch mat
+
+- **WHEN** an 11 by 14 inch print gets a mat 2 inches wide
+- **THEN** the frame size is 14½ by 17½ inches, a custom size with the 12x16 below and the 16x20 above
+
+#### Scenario: An 8x10 print with a 2 inch mat is near-square
+
+- **WHEN** an 8 by 10 inch print gets a mat 2 inches wide
+- **THEN** the frame size 11½ by 13½ inches is a custom size with the 8.5x11 below and the 12x16 above, and the squares 10x10 below and 16x16 above
+
+#### Scenario: A landscape frame size
+
+- **WHEN** a 10 by 8 inch print gets a mat 2 inches wide
+- **THEN** the frame size is a custom size with the landscape 11x8.5 below and the landscape 16x12 above
+
+#### Scenario: A frame size that is metric
+
+- **WHEN** an 8 by 12 inch print gets a mat 2 inches wide
+- **THEN** the frame size is 11½ by 15½ inches, the metric 30 × 40 cm, and no US size is close
+
+### Requirement: A print names the frames sold with a pre-cut mat for it
+
+For a print size the engine SHALL list, in catalog order and in the print's orientation, every catalog frame whose common pre-cut mat holds a print within ⅜ inch of it, or none. This SHALL be the same list a measured mat opening gives for the print it points to.
+
+#### Scenario: An 8x10 print
+
+- **WHEN** the frames sold with a pre-cut mat are asked for an 8 by 10 inch print
+- **THEN** the frame is the 11x14
+
+#### Scenario: An 11x14 print
+
+- **WHEN** the frames sold with a pre-cut mat are asked for an 11 by 14 inch print
+- **THEN** the frame is the 16x20
+
+#### Scenario: A 16x20 print
+
+- **WHEN** the frames sold with a pre-cut mat are asked for a 16 by 20 inch print
+- **THEN** the frames are the 18x24 and the 20x24
+
+#### Scenario: A landscape print's pre-cut frame
+
+- **WHEN** the frames sold with a pre-cut mat are asked for a 10 by 8 inch print
+- **THEN** the frame is the landscape 14x11
+
+#### Scenario: A 12x16 print with no pre-cut mat
+
+- **WHEN** the frames sold with a pre-cut mat are asked for a 12 by 16 inch print
+- **THEN** no frame is listed
+
+### Requirement: A frame and a mat width give the mat opening and the largest print
+
+Given a frame size and a mat width in inches, the engine SHALL give the mat opening as the frame less the mat width on every side, and the largest print the mat holds as that opening plus the mat's overlap on every side, ¼ inch unless given. Both sizes SHALL keep the frame's orientation.
+
+#### Scenario: An 11x14 frame with a 2 inch mat
+
+- **WHEN** an 11 by 14 inch frame gets a mat 2 inches wide
+- **THEN** the mat opening is 7 by 10 inches and the largest print is 7½ by 10½ inches
+
+#### Scenario: A landscape frame with a 2 inch mat
+
+- **WHEN** a 14 by 11 inch frame gets a mat 2 inches wide
+- **THEN** the mat opening is 10 by 7 inches and the largest print is 10½ by 7½ inches
+
+### Requirement: The largest print for a frame is matched to a standard size
+
+The engine SHALL match the largest print a frame and a mat width give exactly as it matches a frame measured inside: a standard or metric size within ⅜ inch, else a custom size with the nearest standard sizes below and above.
+
+#### Scenario: A print that is standard
+
+- **WHEN** an 8 by 10 inch frame gets a mat 1¾ inches wide
+- **THEN** the largest print is 5 by 7 inches, the standard 5x7
+
+#### Scenario: A print between two sizes
+
+- **WHEN** an 11 by 14 inch frame gets a mat 2 inches wide
+- **THEN** the largest print, 7½ by 10½ inches, is a custom size with the 5x7 below and the 8.5x11 above
+
+#### Scenario: A landscape print between two sizes
+
+- **WHEN** a 14 by 11 inch frame gets a mat 2 inches wide
+- **THEN** the largest print is a custom size with the landscape 7x5 below and the landscape 11x8.5 above
+
+### Requirement: A frame given in reverse is matched to a standard size
+
+From a frame, the engine SHALL also match the frame size exactly as it matches a frame measured inside, so the page can name the pre-cut mat that frame is sold with. From a print, the frame match SHALL be the frame size's match.
+
+#### Scenario: A frame sold with a pre-cut mat
+
+- **WHEN** an 11 by 14 inch frame gets a mat 2 inches wide
+- **THEN** the frame is the standard 11x14, whose pre-cut mat holds an 8x10 print
+
+#### Scenario: A frame usually sold without a mat
+
+- **WHEN** an 8.5 by 11 inch frame gets a mat 1½ inches wide
+- **THEN** the frame is the standard 8.5x11, which has no pre-cut mat
+
+#### Scenario: A custom frame
+
+- **WHEN** a 9 by 12 inch frame gets a mat 2 inches wide
+- **THEN** the frame is a custom size
+
+### Requirement: A frame and a print give the mat border on each side
+
+Given a frame size and a print size in inches, the engine SHALL give the mat border at the sides as (frame width − print width + 2 × overlap) ÷ 2 and at the top and bottom as (frame height − print height + 2 × overlap) ÷ 2, with the overlap ¼ inch unless given. A border of 0 or less SHALL be given as computed: the print's opening does not fit that frame.
+
+#### Scenario: An 8x10 print in an 11x14 frame
+
+- **WHEN** the borders are asked for an 8 by 10 inch print in an 11 by 14 inch frame
+- **THEN** they are 1¾ inches at the sides and 2¼ inches at the top and bottom
+
+#### Scenario: An 8x10 print in a 16x16 frame
+
+- **WHEN** the borders are asked for an 8 by 10 inch print in a 16 by 16 inch frame
+- **THEN** they are 4¼ inches at the sides and 3¼ inches at the top and bottom
+
+#### Scenario: A 5x7 print in an 11x14 frame
+
+- **WHEN** the borders are asked for a 5 by 7 inch print in an 11 by 14 inch frame
+- **THEN** they are 3¼ inches at the sides and 3¾ inches at the top and bottom
+
+#### Scenario: A landscape print in a landscape frame
+
+- **WHEN** the borders are asked for a 10 by 8 inch print in a 14 by 11 inch frame
+- **THEN** they are 2¼ inches at the sides and 1¾ inches at the top and bottom
+
+#### Scenario: A print too big for the frame
+
+- **WHEN** the borders are asked for an 8 by 10 inch print in a 5 by 7 inch frame
+- **THEN** they are −1¼ inches at the sides and at the top and bottom
+
+### Requirement: The calculator offers four mat widths and starts at 2 inches
+
+The engine SHALL give the mat widths the calculator offers as presets, 1½, 2, 2½ and 3 inches, and the width it starts with, 2 inches.
+
+#### Scenario: The presets and the default
+
+- **WHEN** the calculator's mat widths are asked for
+- **THEN** the presets are 1½, 2, 2½ and 3 inches and the default is 2 inches
+
+### Requirement: A mat question that gives no size says why
+
+The engine SHALL give no answer, and SHALL say which rule refused it, when a print or frame side, a mat width or an overlap is not a positive finite number, or when the mat or the overlap leaves no opening. A question that gets an answer SHALL have no reason.
+
+#### Scenario: A number that is not positive
+
+- **WHEN** a print side, a frame side, a mat width or an overlap is 0, negative or not a number
+- **THEN** there is no answer, and the reason is a number that is not positive
+
+#### Scenario: A mat as wide as the frame
+
+- **WHEN** a 4 by 6 inch frame gets a mat 2 inches wide, or 3 inches wide
+- **THEN** there is no answer, and the reason is that the mat leaves no room
+
+#### Scenario: An overlap as wide as the print
+
+- **WHEN** a ½ by 6 inch print gets a mat 2 inches wide with the ¼ inch overlap
+- **THEN** there is no answer, and the reason is that the mat leaves no room
+
+#### Scenario: A question with an answer
+
+- **WHEN** an 8 by 10 inch print gets a mat 2 inches wide
 - **THEN** there is no reason

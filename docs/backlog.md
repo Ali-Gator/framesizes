@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-111**
+_Next id:_ **BL-112**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -195,6 +195,12 @@ when to add and when to fold items in.
   _Refs:_ `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/opengraph-image.tsx` · _Status:_ deferred — whole-site translation
 
 ## Widgets
+
+- **[BL-111] Refuse a mat narrower than its overlap** — `matSizes` answers a mat width at or
+  below the ¼ in overlap, so an 8x10 print with a 0.1 in mat gives a 7.7 × 9.7 frame smaller than
+  the print, and an 11x14 frame with 0.2 in gives a print bigger than the frame. Decide in the F5
+  page change whether to refuse `width <= overlap` (as `"room"` or a new reason) and spec it.
+  _Refs:_ `packages/sizes/src/mat.ts` · `size-engine` "A mat question that gives no size says why" · _Status:_ open
 
 - **[BL-98] F3 chips a small screen cannot use** — on a 7 in tablet in the phone layout (Fire 7,
   600 × 1024) the tablet chips from 12.4 in give under 100 px per inch, so the touch slider ignores

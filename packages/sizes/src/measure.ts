@@ -193,11 +193,19 @@ export function identifyFrame(m: Measurement): Identified | undefined {
   const size = sizeOf(m);
   if (typeof size === "string") return undefined;
   if (m.kind !== "mat") return match(size);
-  const print = upright(size);
-  const frames = CATALOG.filter((f) => f.mat && gap(f.mat, print) <= MEASURE_TOLERANCE).map((f) =>
-    turn(f, size.w > size.h),
+  return { kind: "mat", size, frames: preCutFrames(size) };
+}
+
+/**
+ * The catalog frames whose pre-cut mat holds a print within the tolerance of `print`, in catalog
+ * order and turned to the print's orientation; empty when none is sold for it.
+ * {@link openspec/specs/size-engine/spec.md#requirement-a-print-names-the-frames-sold-with-a-pre-cut-mat-for-it}
+ */
+export function preCutFrames(print: Size): readonly Frame[] {
+  const up = upright(print);
+  return CATALOG.filter((f) => f.mat && gap(f.mat, up) <= MEASURE_TOLERANCE).map((f) =>
+    turn(f, print.w > print.h),
   );
-  return { kind: "mat", size, frames };
 }
 
 /** A catalog frame's four measurements, as F4's table lists them. */
