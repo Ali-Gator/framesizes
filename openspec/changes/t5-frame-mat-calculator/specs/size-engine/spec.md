@@ -55,7 +55,12 @@ The engine SHALL give the usual US diploma size, 8½ by 11 inches, and the frame
 #### Scenario: A diploma-size print in the mat calculator
 
 - **WHEN** an 8½ by 11 inch print gets a mat 1½ inches wide, or 2 inches wide
-- **THEN** the frames sold with a pre-cut mat for it are the 11x14 and the 12x16, in that order; with 1½ inches the frame is 11 by 14 inches, a standard size
+- **THEN** the frames sold with a pre-cut mat for it are the 11x14 and the 12x16, in that order; with 1½ inches the frame is 11 by 13½ inches, a custom size
+
+#### Scenario: A diploma-size print that gets the diploma frame
+
+- **WHEN** an 8½ by 11 inch print gets a mat 1⅝ inches wide
+- **THEN** the frame is 11¼ by 13¾ inches, matched to the standard 11x14, and the frames sold with a pre-cut mat for it are the 11x14 and the 12x16
 
 #### Scenario: F4's mat answer is unchanged
 

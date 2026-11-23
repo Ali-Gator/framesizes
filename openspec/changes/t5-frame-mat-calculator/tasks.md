@@ -4,7 +4,7 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
 ## 1. Set-up
 
-- [ ] 1.1 Get the owner's approval for, and record the date here:
+- [x] 1.1 Get the owner's approval for, and record the date here (approved 2026-11-23, all three):
   - editing the five e2e tests named in the proposal's Impact (only those five may change);
   - the diploma answer (11x14, with 12x16 for a wider border) in place of the canvas's 12x16;
   - the off-canvas copy: the BL-111 message, the social image and its alt.
@@ -13,9 +13,9 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
 ## 2. Size engine (`size-engine`)
 
-- [ ] 2.1 Add tests for the two new scenarios of "A mat question that gives no size says why" (0.1, ¼ and 0.2 in refused as `"narrow"`; ⅜ in answered with an 8¼ × 10¼ in frame). Refuse `width <= overlap` in `mat.ts` and widen `NoMat` to `NoAnswer` (design decision 1). Verify the new tests and the existing `mat.test.ts` pass unedited. Delete BL-111 from `docs/backlog.md`.
-- [ ] 2.2 Open each listing in `verification.md` in a browser and record the frame size, the diploma size and the opening it shows. Fewer than three confirming an 11x14 frame with a mat for 8.5x11: stop and take the diploma back to the owner.
-- [ ] 2.3 Add tests for "The engine names the frame sold for a diploma" (all four scenarios). Add `DIPLOMA` to `mat.ts`, read from `CATALOG`, export it from `index.ts` with its spec link, and add its frame to `matSizes`' `preCut` for a diploma-size print (design decision 1). Verify the tests pass and `measure.test.ts` passes unedited.
+- [x] 2.1 Add tests for the two new scenarios of "A mat question that gives no size says why" (0.1, ¼ and 0.2 in refused as `"narrow"`; ⅜ in answered with an 8¼ × 10¼ in frame). Refuse `width <= overlap` in `mat.ts` and widen `NoMat` to `NoAnswer` (design decision 1). Verify the new tests and the existing `mat.test.ts` pass unedited. Delete BL-111 from `docs/backlog.md`.
+- [x] 2.2 Open each listing in `verification.md` in a browser and record the frame size, the diploma size and the opening it shows. Fewer than three confirming an 11x14 frame with a mat for 8.5x11: stop and take the diploma back to the owner.
+- [x] 2.3 Add tests for "The engine names the frame sold for a diploma" (all four scenarios). Add `DIPLOMA` to `mat.ts`, read from `CATALOG`, export it from `index.ts` with its spec link, and add its frame to `matSizes`' `preCut` for a diploma-size print (design decision 1). Verify the tests pass and `measure.test.ts` passes unedited.
 
 ## 3. Calculator logic (`components/frame-mat/`)
 

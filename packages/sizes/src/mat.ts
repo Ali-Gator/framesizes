@@ -1,5 +1,11 @@
-import { MAT_OVERLAP, type Frame } from "./frames";
-import { identifyFrame, preCutFrames, type Identified, type NoAnswer } from "./measure";
+import { CATALOG, findFrame, MAT_OVERLAP, type Frame } from "./frames";
+import {
+  identifyFrame,
+  MEASURE_TOLERANCE,
+  preCutFrames,
+  type Identified,
+  type NoAnswer,
+} from "./measure";
 import type { Size } from "./units";
 
 /*
@@ -34,8 +40,24 @@ export interface MatAnswer {
 const positive = (n: number) => Number.isFinite(n) && n > 0;
 const grow = ({ w, h }: Size, by: number): Size => ({ w: w + 2 * by, h: h + 2 * by });
 
-/** Why a mat question gets no answer; a mat never gives `"narrow"`. */
-export type NoMat = Exclude<NoAnswer, "narrow">;
+/** Why a mat question gets no answer: `"narrow"` is a mat no wider than its overlap. */
+export type NoMat = NoAnswer;
+
+function catalogFrame(id: string): Frame {
+  const found = CATALOG.find((f) => f.id === id);
+  if (!found) throw new Error(`${id} is not a catalog frame`);
+  return found;
+}
+
+/**
+ * The usual US diploma, and the frame sold for it with a mat cut for that size, upright.
+ * Checked against retail listings: `openspec/changes/archive/2026-11-23-t5-frame-mat-calculator/verification.md`.
+ * {@link openspec/specs/size-engine/spec.md#requirement-the-engine-names-the-frame-sold-for-a-diploma}
+ */
+export const DIPLOMA: { readonly print: Size; readonly frame: Frame } = {
+  print: { w: 8.5, h: 11 },
+  frame: catalogFrame("11x14"),
+};
 
 type Sizes = Pick<MatAnswer, "print" | "opening" | "frame">;
 
@@ -49,6 +71,7 @@ function sizesOf(q: MatQuestion): Sizes | NoMat {
   const given = q.from === "print" ? q.print : q.frame;
   const overlap = q.overlap ?? MAT_OVERLAP;
   if (![given.w, given.h, q.width, overlap].every(positive)) return "number";
+  if (q.width <= overlap) return "narrow";
   if (q.from === "print") {
     const opening = grow(q.print, -overlap);
     if (opening.w <= 0 || opening.h <= 0) return "room";
@@ -67,8 +90,8 @@ function matched(size: Size): Identified {
 }
 
 /**
- * Why a mat question gets no answer: a number that is not positive, or a mat or overlap that
- * leaves no opening; `undefined` when it gets one.
+ * Why a mat question gets no answer: a number that is not positive, a mat no wider than its
+ * overlap, or a mat or overlap that leaves no opening; `undefined` when it gets one.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-mat-question-that-gives-no-size-says-why}
  */
 export function whyNoMat(q: MatQuestion): NoMat | undefined {
@@ -89,8 +112,23 @@ export function matSizes(q: MatQuestion): MatAnswer | undefined {
     ...sizes,
     printMatch: matched(sizes.print),
     frameMatch: matched(sizes.frame),
-    preCut: preCutFrames(sizes.print),
+    preCut: preCutFor(sizes.print),
   };
+}
+
+const catalogIndex = (f: Frame) =>
+  CATALOG.findIndex((c) => c.w === Math.min(f.w, f.h) && c.h === Math.max(f.w, f.h));
+
+/** `preCutFrames`, plus the diploma frame for a diploma-size print, in catalog order. */
+function preCutFor(print: Size): readonly Frame[] {
+  const found = preCutFrames(print);
+  const landscape = print.w > print.h;
+  const up = landscape ? { w: print.h, h: print.w } : print;
+  const { print: d, frame } = DIPLOMA;
+  if (Math.max(Math.abs(up.w - d.w), Math.abs(up.h - d.h)) > MEASURE_TOLERANCE) return found;
+  const diploma = landscape ? findFrame(`${frame.h}x${frame.w}`) : frame;
+  if (!diploma || found.some((f) => f.id === diploma.id)) return found;
+  return [...found, diploma].sort((a, b) => catalogIndex(a) - catalogIndex(b));
 }
 
 /**

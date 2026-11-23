@@ -98,10 +98,10 @@ When the frame a print needs is within ⅜ in of a US catalog size, the answer S
 - **WHEN** the visitor enters a 5 × 7 in print with a 1¾ in border and presses the button
 - **THEN** the answer reads "Use an 8x10 frame.", "Frame size" 8 × 10 in (20.3 × 25.4 cm), "Mat opening" 4½ × 6½ in, and "The opening is your print less ¼ in on each side. The frame adds the 1¾ in border on each side: 8 × 10 in. That is the standard 8x10."; the "Ready-made frame" card names an 8x10 frame, "Mat border 1¾ in all round." and "Sold with this mat pre-cut, for a 5x7 print."
 
-#### Scenario: A diploma-size print with a 1½ inch border
+#### Scenario: A diploma-size print with a 1⅝ inch border
 
-- **WHEN** the visitor enters an 8½ × 11 in print with a 1½ in border
-- **THEN** the answer reads "Use an 11x14 frame.", the "Ready-made frame" card names an 11x14 frame, "Mat border 1½ in at the sides, 1¾ in at the top and bottom." and "Sold with this mat pre-cut, for an 8.5x11 print.", and an "Also sold with a pre-cut mat" card names a 12x16 frame, 2 in at the sides and 2¾ in at the top and bottom
+- **WHEN** the visitor enters an 8½ × 11 in print with a 1⅝ in border
+- **THEN** the answer reads "Use an 11x14 frame.", "Frame size" 11 × 14 in, and "The opening is your print less ¼ in on each side. The frame adds the 1⅝ in border on each side: 11¼ × 13¾ in. That is within ⅜ in of 11x14."; the "Ready-made frame" card names an 11x14 frame, "Mat border 1½ in at the sides, 1¾ in at the top and bottom." and "Sold with this mat pre-cut, for an 8.5x11 print.", and an "Also sold with a pre-cut mat" card names a 12x16 frame, 2 in at the sides and 2¾ in at the top and bottom
 
 ### Requirement: A metric frame answer names the metric frame
 
@@ -125,6 +125,11 @@ When no standard or metric frame is within ⅜ in, the answer SHALL give, in ord
 
 - **WHEN** the visitor enters a 16 × 20 in print with a 2 in border
 - **THEN** the answer names a 19½ × 23½ in frame, the pre-cut card lists the 18x24 frame (1¼ in at the sides, 2¼ in at the top and bottom) and the 20x24 frame (2¼ in all round, "Also the next size up.") with "Both are sold with a mat cut for a 16x20 print.", and there is no "Next size up" card and no "Square frames" card
+
+#### Scenario: A diploma-size print with a 1½ inch border
+
+- **WHEN** the visitor enters an 8½ × 11 in print with a 1½ in border
+- **THEN** the answer reads "Your frame: 11 × 13½ in. Not a standard size.", the "Ready-made, with a pre-cut mat" card lists the 11x14 frame (1½ in at the sides, 1¾ in at the top and bottom, "Also the next size up.") and the 12x16 frame (2 in at the sides, 2¾ in at the top and bottom) with "Both are sold with a mat cut for an 8.5x11 print.", and there is no "Next size up" card and no "Square frames" card
 
 #### Scenario: A landscape print
 

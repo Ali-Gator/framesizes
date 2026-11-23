@@ -113,3 +113,5 @@ export { matBorders } from "./mat";
 export { MAT_WIDTH, MAT_WIDTHS } from "./mat";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-mat-question-that-gives-no-size-says-why} */
 export { type NoMat, whyNoMat } from "./mat";
+/** {@link openspec/specs/size-engine/spec.md#requirement-the-engine-names-the-frame-sold-for-a-diploma} */
+export { DIPLOMA } from "./mat";

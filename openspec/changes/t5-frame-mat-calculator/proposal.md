@@ -49,7 +49,7 @@ Tracker row T5 is the F5 page, "Frame & mat calculator" (`/frame-mat-calculator`
 
 Product questions settled here (recommendation, for the owner to approve with task 1.1):
 
-- **Diploma.** The canvas answered "12x16 frame" and marked it unverified. Retail listings (`verification.md`) sell diploma frames as 11x14 with a mat for an 8.5x11 diploma and an 8 × 10½ in opening. Proposed: "An 11x14 frame. Diploma frames come with a mat cut for 8.5x11: 1½ in at the sides, 1¾ in at the top and bottom. For a wider border, a 12x16 frame comes with a pre-cut 8.5x11 mat: 2 in at the sides, 2¾ in at the top and bottom." The canvas's "Unverified" badge and FAQ prefix do not ship. With it, the calculator names the 11x14 as pre-cut for an 8.5x11 print too (8.5x11 with a 1½ in border: "Use an 11x14 frame.", sold with this mat pre-cut).
+- **Diploma.** The canvas answered "12x16 frame" and marked it unverified. Retail listings (`verification.md`) sell diploma frames as 11x14 with a mat for an 8.5x11 diploma and an 8 × 10½ in opening. Proposed: "An 11x14 frame. Diploma frames come with a mat cut for 8.5x11: 1½ in at the sides, 1¾ in at the top and bottom. For a wider border, a 12x16 frame comes with a pre-cut 8.5x11 mat: 2 in at the sides, 2¾ in at the top and bottom." The canvas's "Unverified" badge and FAQ prefix do not ship. With it, the calculator names the 11x14 as pre-cut for an 8.5x11 print too (8.5x11 with a 1⅝ in border, 11¼ × 13¾ in: "Use an 11x14 frame.", sold with this mat pre-cut; with a 1½ in border the frame is a custom 11 × 13½ in and both pre-cut frames are listed. Corrected at apply: a uniform 1½ in border does not reach 14 in).
 
 Copy that is not on the approved canvas, for the owner before commit:
 
