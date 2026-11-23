@@ -38,7 +38,7 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
   - errors set `aria-invalid` and focus the first marked field;
   - the answer follows an edit after the first find, and "Start over" clears it;
   - the header's unit converts the fields.
-- [ ] 4.3 Add `e2e/frame-mat.spec.ts`:
+- [x] 4.3 Add `e2e/frame-mat.spec.ts`:
   - at 1280: the answer right of the fields and the drawing under them; the 8x10 + 2 in custom answer; Reverse there and back;
   - at 390 × 844: the answer under the button, the drawing under the answer, nothing wider than the screen;
   - in both: the 4 × 6 in frame with a 2 in border marked.
@@ -48,7 +48,7 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 ## 5. The page (`app/frame-mat-calculator/`)
 
 - [x] 5.1 Set F5 live in `site-map.ts` with the SEO guide's title, `h1` and description, and `lastModified` set to the merge date. Verify `checkSiteMap` passes.
-- [ ] 5.2 Add `e2e/frame-mat-content.spec.ts`:
+- [x] 5.2 Add `e2e/frame-mat-content.spec.ts`:
   - the outline and the intro;
   - the calculator's server render;
   - the formula rules in both units and the table's 11x14 and 20x20 rows, 15 rows in all, and the sentence under it;
@@ -67,7 +67,7 @@ Branch `t5-frame-mat-calculator`, cut from `main` after the engine PR merged. In
 
 ## 6. Live-page counts elsewhere (approved test edits only)
 
-- [ ] 6.1 Re-point five tests to their new scenarios, each adding only F5:
+- [x] 6.1 Re-point five tests to their new scenarios, each adding only F5:
   - `e2e/frame-chart-content.spec.ts` → `frame-size-chart` "F2, F3, F4, F5 and G1 are live besides the home page" (the five cards and the "frame and mat size calculator" link);
   - `e2e/frames-on-wall-content.spec.ts` → `frames-on-wall` "F1, F2, F3, F4, F5 and G1 are live";
   - `e2e/actual-size-content.spec.ts` → `actual-size` "F1, F2, F3, F4, F5 and G1 are live";
