@@ -11,7 +11,7 @@ Given a print size and a mat width in inches, the engine SHALL give the mat open
 - **WHEN** an 8 by 10 inch print gets a mat 2 inches wide
 - **THEN** the mat opening is 7½ by 9½ inches and the frame size is 11½ by 13½ inches
 
-#### Scenario: A landscape print
+#### Scenario: A landscape print with a 2 inch mat
 
 - **WHEN** a 10 by 8 inch print gets a mat 2 inches wide
 - **THEN** the mat opening is 9½ by 7½ inches and the frame size is 13½ by 11½ inches
@@ -74,12 +74,12 @@ For a print size the engine SHALL list, in catalog order and in the print's orie
 - **WHEN** the frames sold with a pre-cut mat are asked for a 16 by 20 inch print
 - **THEN** the frames are the 18x24 and the 20x24
 
-#### Scenario: A landscape print
+#### Scenario: A landscape print's pre-cut frame
 
 - **WHEN** the frames sold with a pre-cut mat are asked for a 10 by 8 inch print
 - **THEN** the frame is the landscape 14x11
 
-#### Scenario: A print no pre-cut mat is sold for
+#### Scenario: A 12x16 print with no pre-cut mat
 
 - **WHEN** the frames sold with a pre-cut mat are asked for a 12 by 16 inch print
 - **THEN** no frame is listed
@@ -93,7 +93,7 @@ Given a frame size and a mat width in inches, the engine SHALL give the mat open
 - **WHEN** an 11 by 14 inch frame gets a mat 2 inches wide
 - **THEN** the mat opening is 7 by 10 inches and the largest print is 7½ by 10½ inches
 
-#### Scenario: A landscape frame
+#### Scenario: A landscape frame with a 2 inch mat
 
 - **WHEN** a 14 by 11 inch frame gets a mat 2 inches wide
 - **THEN** the mat opening is 10 by 7 inches and the largest print is 10½ by 7½ inches

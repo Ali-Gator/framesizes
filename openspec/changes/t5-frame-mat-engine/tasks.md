@@ -6,11 +6,11 @@ The F5 canvas (https://claude.ai/artifact/PjZ5GizsgyTKMvx6nAfdRp) was approved 2
 
 ## 1. Set-up
 
-- [ ] 1.1 Run `pnpm test` on the branch and verify it is green before any edit.
+- [x] 1.1 Run `pnpm test` on the branch and verify it is green before any edit.
 
 ## 2. Pre-cut helper (`packages/sizes/src/measure.ts`)
 
-- [ ] 2.1 Write the pre-cut tests in a new `packages/sizes/src/__tests__/mat.test.ts`: the 8x10, 11x14 and 16x20 prints, the landscape 10x8 and the 12x16 with none. Move the filter out of `identifyFrame`'s mat branch into an exported `preCutFrames(print)` and call it from there (design decision 5). Verify the new tests pass and `measure.test.ts` passes unedited.
+- [x] 2.1 Write the pre-cut tests in a new `packages/sizes/src/__tests__/mat.test.ts`: the 8x10, 11x14 and 16x20 prints, the landscape 10x8 and the 12x16 with none. Move the filter out of `identifyFrame`'s mat branch into an exported `preCutFrames(print)` and call it from there (design decision 5). Verify the new tests pass and `measure.test.ts` passes unedited.
 
 ## 3. Mat engine (`packages/sizes/src/mat.ts`)
 
