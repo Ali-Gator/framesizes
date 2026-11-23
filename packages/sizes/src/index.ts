@@ -102,3 +102,14 @@ export { measureGroup, type GroupMeasure, type Nail } from "./gallery";
 export { groupDistances, setGroupDistance } from "./gallery";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-group-is-centred-on-the-wall} */
 export { centreGroup } from "./gallery";
+
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-print-and-a-mat-width-give-the-mat-opening-and-the-frame-size} */
+export { matSizes, type MatAnswer, type MatQuestion } from "./mat";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-print-names-the-frames-sold-with-a-pre-cut-mat-for-it} */
+export { preCutFrames } from "./measure";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-frame-and-a-print-give-the-mat-border-on-each-side} */
+export { matBorders } from "./mat";
+/** {@link openspec/specs/size-engine/spec.md#requirement-the-calculator-offers-four-mat-widths-and-starts-at-2-inches} */
+export { MAT_WIDTH, MAT_WIDTHS } from "./mat";
+/** {@link openspec/specs/size-engine/spec.md#requirement-a-mat-question-that-gives-no-size-says-why} */
+export { whyNoMat } from "./mat";
