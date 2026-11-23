@@ -257,7 +257,8 @@ when to add and when to fold items in.
   pages live
 - **[BL-17] Recheck the 20x30 and 27x40 mat pairings** — both show "No mat", but about one listing
   in seven pairs them with a 16x24 / 24x36 mat (t2 `verification.md`); look again at the next data
-  check.
+  check. Rechecked 2026-11-23 (t6 `verification.md`): 20x30 matted for 16x24 is mostly one maker,
+  27x40 matted for 24x36 one listing; no change.
   _Refs:_ `packages/sizes/src/frames.ts` · _Status:_ deferred — the next size data check
 - **[BL-20] Phone picker in the design system** — backlog-1 added a phone block (stacked size
   rows, 44px filters, compact legend) to `widgets.css`, a diffable port of the design-system
@@ -269,7 +270,6 @@ when to add and when to fold items in.
   keeps its 52px on a phone (design.md hides it with `visibility`); collapsing it removes the gap but
   makes the table jump when the view changes.
   _Refs:_ `apps/web/src/components/frame-chart/frame-chart.tsx` · _Status:_ gated — the owner's call on the trade-off
-
 
 От Олега:
 
