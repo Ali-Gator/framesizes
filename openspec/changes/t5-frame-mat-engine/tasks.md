@@ -22,7 +22,7 @@ The F5 canvas (https://claude.ai/artifact/PjZ5GizsgyTKMvx6nAfdRp) was approved 2
 
 ## 4. Gate
 
-- [ ] 4.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green, and that `git diff --stat main` touches nothing under `apps/web`.
+- [x] 4.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Verify all three are green, and that `git diff --stat main` touches nothing under `apps/web`.
 
 ## Workflow follow-up
 

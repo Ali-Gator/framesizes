@@ -34,21 +34,32 @@ export interface MatAnswer {
 const positive = (n: number) => Number.isFinite(n) && n > 0;
 const grow = ({ w, h }: Size, by: number): Size => ({ w: w + 2 * by, h: h + 2 * by });
 
-function sizesOf(q: MatQuestion): Pick<MatAnswer, "print" | "opening" | "frame"> | NoAnswer {
+/** Why a mat question gets no answer; a mat never gives `"narrow"`. */
+export type NoMat = Exclude<NoAnswer, "narrow">;
+
+type Sizes = Pick<MatAnswer, "print" | "opening" | "frame">;
+
+/** A width so large it overflows to Infinity is refused as a number, like Infinity itself. */
+const finite = (s: Sizes): Sizes | NoMat =>
+  [s.print, s.opening, s.frame].every((z) => Number.isFinite(z.w) && Number.isFinite(z.h))
+    ? s
+    : "number";
+
+function sizesOf(q: MatQuestion): Sizes | NoMat {
   const given = q.from === "print" ? q.print : q.frame;
   const overlap = q.overlap ?? MAT_OVERLAP;
   if (![given.w, given.h, q.width, overlap].every(positive)) return "number";
   if (q.from === "print") {
     const opening = grow(q.print, -overlap);
     if (opening.w <= 0 || opening.h <= 0) return "room";
-    return { print: q.print, opening, frame: grow(opening, q.width) };
+    return finite({ print: q.print, opening, frame: grow(opening, q.width) });
   }
   const opening = grow(q.frame, -q.width);
   if (opening.w <= 0 || opening.h <= 0) return "room";
-  return { print: grow(opening, overlap), opening, frame: q.frame };
+  return finite({ print: grow(opening, overlap), opening, frame: q.frame });
 }
 
-/** `identifyFrame` on an inside size; every size here is positive, so it always answers. */
+/** `identifyFrame` on an inside size; every size here is positive and finite, so it always answers. */
 function matched(size: Size): Identified {
   const found = identifyFrame({ kind: "inside", size });
   if (!found) throw new Error(`${size.w} × ${size.h} has no match`);
@@ -60,7 +71,7 @@ function matched(size: Size): Identified {
  * leaves no opening; `undefined` when it gets one.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-mat-question-that-gives-no-size-says-why}
  */
-export function whyNoMat(q: MatQuestion): NoAnswer | undefined {
+export function whyNoMat(q: MatQuestion): NoMat | undefined {
   const sizes = sizesOf(q);
   return typeof sizes === "string" ? sizes : undefined;
 }
@@ -84,7 +95,7 @@ export function matSizes(q: MatQuestion): MatAnswer | undefined {
 
 /**
  * The mat border at the sides and at the top and bottom for `print` in `frame`; 0 or less when
- * the print's opening does not fit.
+ * the print's opening does not fit. Plain arithmetic: pass sizes `matSizes` or the catalog gave.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-frame-and-a-print-give-the-mat-border-on-each-side}
  */
 export function matBorders(

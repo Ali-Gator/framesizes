@@ -251,6 +251,13 @@ describe("a mat question with no answer", () => {
     }
   });
 
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-number-that-is-not-positive} */
+  it("refuses a width so large the frame size overflows", () => {
+    const q = print(8, 10, 1e308);
+    expect(matSizes(q)).toBeUndefined();
+    expect(whyNoMat(q)).toBe("number");
+  });
+
   /** {@link openspec/specs/size-engine/spec.md#scenario-a-mat-as-wide-as-the-frame} */
   it("refuses a 4x6 frame with a 2 or 3 in mat as leaving no room", () => {
     for (const q of [frame(4, 6, 2), frame(4, 6, 3)]) {

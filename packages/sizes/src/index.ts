@@ -112,4 +112,4 @@ export { matBorders } from "./mat";
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-calculator-offers-four-mat-widths-and-starts-at-2-inches} */
 export { MAT_WIDTH, MAT_WIDTHS } from "./mat";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-mat-question-that-gives-no-size-says-why} */
-export { whyNoMat } from "./mat";
+export { type NoMat, whyNoMat } from "./mat";
