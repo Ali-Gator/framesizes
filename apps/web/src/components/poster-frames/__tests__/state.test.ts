@@ -123,6 +123,13 @@ describe("a typed size", () => {
     expect(poster(typed("a", ""), "in")).toEqual({ error: { w: true, h: false } });
   });
 
+  /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-zero-a-letter-a-negative} */
+  it("marks a number too big to be a length", () => {
+    const huge = "9".repeat(400);
+    expect(poster(typed(huge, "19"), "in")).toEqual({ error: { w: true, h: false } });
+    expect(reducer(typed(huge, "19"), { type: "unit", from: "in", to: "cm" }).fields.w).toBe(huge);
+  });
+
   /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-three-ways-to-type-13} */
   it("reads 13 1/2, 13.5 and 13½ the same", () => {
     for (const w of ["13 1/2", "13.5", "13½", "13,5"])

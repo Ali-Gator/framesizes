@@ -1,7 +1,7 @@
 "use client";
 
-import { posterFrames, POSTERS, toWholeCm, type Unit } from "@framesizes/sizes";
-import { useId, useLayoutEffect, useReducer, useRef } from "react";
+import { MAT_OVERLAP, posterFrames, POSTERS, toWholeCm, type Unit } from "@framesizes/sizes";
+import { useEffect, useId, useLayoutEffect, useReducer, useRef } from "react";
 
 import { PageLink } from "@/components/site/page-link";
 import { Button } from "@/components/ui/button";
@@ -73,10 +73,26 @@ export function PosterFrames() {
     lastUnit.current = unit;
   }, [unit]);
 
+  // A button that removes itself (Custom size, Back, the box) names where focus goes next.
+  const root = useRef<HTMLElement>(null);
+  const focusNext = useRef<string | null>(null);
+  useEffect(() => {
+    if (!focusNext.current) return;
+    root.current?.querySelector<HTMLElement>(focusNext.current)?.focus();
+    focusNext.current = null;
+  });
+  const go = (selector: string, action: Parameters<typeof dispatch>[0]) => {
+    focusNext.current = selector;
+    dispatch(action);
+  };
+
   const custom = state.mode === "custom";
   const picked = poster(state, unit);
-  const frames = "size" in picked ? posterFrames(picked.size) : undefined;
   const sized = "size" in picked ? picked : undefined;
+  // A side no wider than the mat's two overlaps leaves no opening: no answer yet, as while typing
+  // (a half-typed size, or the render before a unit switch converts the fields).
+  const room = !state.mat || !sized || Math.min(sized.size.w, sized.size.h) > 2 * MAT_OVERLAP;
+  const frames = sized && room ? posterFrames(sized.size) : undefined;
   const answer =
     sized && frames
       ? {
@@ -90,7 +106,7 @@ export function PosterFrames() {
   const hint = `${id}-hint`;
 
   return (
-    <section className="fs-widget mc pf" aria-labelledby={`${id}-t`}>
+    <section ref={root} className="fs-widget mc pf" aria-labelledby={`${id}-t`}>
       <header className="mc-head">
         <h2 className="mc-title" id={`${id}-t`}>
           Find the frame for your poster
@@ -101,7 +117,11 @@ export function PosterFrames() {
         <div className="mc-main">
           {custom ? (
             <div className="pf-grp">
-              <button type="button" className="pf-back" onClick={() => dispatch({ type: "chips" })}>
+              <button
+                type="button"
+                className="pf-back"
+                onClick={() => go('.pf-chip[aria-pressed="true"]', { type: "chips" })}
+              >
                 <BackIcon />
                 Back to standard sizes
               </button>
@@ -176,7 +196,7 @@ export function PosterFrames() {
                   type="button"
                   className="mc-chip pf-cchip"
                   aria-pressed={false}
-                  onClick={() => dispatch({ type: "custom" })}
+                  onClick={() => go(`[id="${id}-w"]`, { type: "custom" })}
                 >
                   Custom size
                 </button>
@@ -224,7 +244,7 @@ export function PosterFrames() {
               <Result
                 a={answer}
                 onPick={(i) => dispatch({ type: "pick", i })}
-                onMat={(on) => dispatch({ type: "mat", on })}
+                onMat={(on) => go('[aria-label="Mat"] [aria-checked="true"]', { type: "mat", on })}
               />
             ) : (
               <p className="mc-empty">

@@ -256,6 +256,48 @@ describe("the widget in use", () => {
     expect([field("Width").value, field("Height").value]).toEqual(["13", "19"]);
   });
 
+  /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-empty-fields} */
+  it("waits, not crashes, while a side is too small for a mat", () => {
+    mount();
+    click(button("With a mat"));
+    click(button("Custom size"));
+    act(() => setUnit("cm"));
+    type(field("Width"), "60");
+    type(field("Height"), "1");
+    expect(live()?.textContent).toBe("Type the poster's width and height. The frame shows here.");
+    expect(host?.querySelector('[role="img"]')).toBeNull();
+    type(field("Height"), "100");
+    expect(unitText(live()?.querySelector(".mc-res-h"), "cm")).toContain("with a mat");
+  });
+
+  /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-a-typed-size-converts} */
+  it("switches 1 × 30 in with a mat to cm without a crash", () => {
+    mount();
+    click(button("With a mat"));
+    click(button("Custom size"));
+    type(field("Width"), "1");
+    type(field("Height"), "30");
+    expect(inchText(live()?.querySelector(".mc-res-h"))).toBe(
+      "No standard frame fits your poster with a mat.",
+    );
+    act(() => setUnit("cm"));
+    expect([field("Width").value, field("Height").value]).toEqual(["2.5", "76.2"]);
+    expect(unitText(live()?.querySelector(".mc-res-h"), "cm")).toBe(
+      "No standard frame fits your poster with a mat.",
+    );
+  });
+
+  /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-there-and-back} */
+  it("keeps focus on the widget when a pressed button goes away", () => {
+    mount();
+    click(button("Custom size"));
+    expect(document.activeElement).toBe(field("Width"));
+    click(button("Back to standard sizes"));
+    expect(document.activeElement).toBe(button("24×36"));
+    click(button("See frames with a mat"));
+    expect(document.activeElement?.textContent).toBe("With a mat");
+  });
+
   /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-landscape} */
   it("turns the chip labels in landscape", () => {
     mount();

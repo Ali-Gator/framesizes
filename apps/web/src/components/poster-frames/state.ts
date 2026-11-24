@@ -67,7 +67,7 @@ export function reducer(state: State, action: Action): State {
       const fields = { ...state.fields };
       for (const f of FIELDS) {
         const n = inches(fields[f], action.from);
-        if (n !== undefined && n > 0) fields[f] = write(n, action.to);
+        if (n !== undefined && Number.isFinite(n) && n > 0) fields[f] = write(n, action.to);
       }
       return { ...state, fields };
     }
@@ -107,7 +107,10 @@ export function poster(state: State, unit: Unit): PosterPick {
   }
   const text = { w: state.fields.w.trim(), h: state.fields.h.trim() };
   const n = { w: inches(text.w, unit), h: inches(text.h, unit) };
-  const bad = (f: Field) => text[f] !== "" && !((n[f] ?? 0) > 0);
+  const bad = (f: Field) => {
+    const x = n[f] ?? 0;
+    return text[f] !== "" && !(Number.isFinite(x) && x > 0);
+  };
   const error = { w: bad("w"), h: bad("h") };
   if (error.w || error.h) return { error };
   if (n.w === undefined || n.h === undefined) return { empty: true };
