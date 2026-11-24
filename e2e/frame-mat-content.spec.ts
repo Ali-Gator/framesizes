@@ -223,7 +223,7 @@ test("no affiliate links", async ({ page }) => {
   expect(text).not.toContain("Where to buy");
 });
 
-/** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-f1-f2-f3-f4-f5-and-g1-are-live} */
+/** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-f1-f2-f3-f4-f5-f6-and-g1-are-live} */
 test("links only to live pages", async ({ page }) => {
   const { related, hrefs } = await serverHtml(page);
   expect(related).toEqual([
@@ -231,6 +231,7 @@ test("links only to live pages", async ({ page }) => {
     "/frame-sizes-on-wall",
     "/how-big-is-8x10",
     "/measure-picture-frame",
+    "/poster-frame-sizes",
   ]);
   expect(hrefs).not.toContain("/art-print-sizes");
   expect(hrefs.filter((h) => h.startsWith("#"))).toEqual([]);

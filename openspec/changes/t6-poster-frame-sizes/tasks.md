@@ -26,15 +26,15 @@ Branch `t6-poster-frame-sizes`, cut from `main` after the engine PR merged. In e
 
 ## 3. Widget UI
 
-- [ ] 3.1 Write a markup test (`renderToStaticMarkup`) of the server render: the title "Find the frame for your poster", the ten chips with their cm or mm lines and only "24×36" pressed, "Custom size", "Without a mat" and "Portrait" chosen, the 24x36 answer and its box, and the drawing's label, legend and caption. Build `poster-frames.tsx`, the chips, the controls, the custom fields and `poster-drawing.tsx` (design decisions 4 to 6). Verify the test passes.
-- [ ] 3.2 Build the answer panel, its cards and the box. Verify with DOM tests:
+- [x] 3.1 Write a markup test (`renderToStaticMarkup`) of the server render: the title "Find the frame for your poster", the ten chips with their cm or mm lines and only "24×36" pressed, "Custom size", "Without a mat" and "Portrait" chosen, the 24x36 answer and its box, and the drawing's label, legend and caption. Build `poster-frames.tsx`, the chips, the controls, the custom fields and `poster-drawing.tsx` (design decisions 4 to 6). Verify the test passes.
+- [x] 3.2 Build the answer panel, its cards and the box. Verify with DOM tests:
   - the answer region is `aria-live="polite"`;
   - pressing a mat card draws it and moves "In the drawing";
   - "See frames with a mat" and "See it without a mat" switch the mat control, and A3 and a typed 40 × 60 in show no box;
   - bad input sets `aria-invalid` on the bad field only and shows no answer or drawing;
   - Back and reopen keep the chip and the typed size;
   - the header's unit converts the fields and every number.
-- [ ] 3.3 Add `e2e/poster-frames.spec.ts`:
+- [x] 3.3 Add `e2e/poster-frames.spec.ts`:
   - at 1280: the answer right of the chips and the drawing under the mat control; 11x17 with a mat, then pick frame 2;
   - at 390 × 844: the answer under the mat control, the drawing under the answer, nothing wider than the screen;
   - in both: a typed 13 × 19 answer, and 0 marked.
@@ -43,8 +43,8 @@ Branch `t6-poster-frame-sizes`, cut from `main` after the engine PR merged. In e
 
 ## 4. The page (`app/poster-frame-sizes/`)
 
-- [ ] 4.1 Set F6 live in `site-map.ts` with the SEO guide's title, `h1` and description, and `lastModified` set to the merge date. Verify `checkSiteMap` passes (title 47 characters, no suffix).
-- [ ] 4.2 Add `e2e/poster-frames-content.spec.ts`:
+- [x] 4.1 Set F6 live in `site-map.ts` with the SEO guide's title, `h1` and description, and `lastModified` set to the merge date. Verify `checkSiteMap` passes (title 47 characters, no suffix).
+- [x] 4.2 Add `e2e/poster-frames-content.spec.ts`:
   - the outline and the answer paragraph;
   - the widget's server render;
   - the chart table: ten rows, the 11x17, 27x40 and A2 rows, and the 11x17 row in cm;
@@ -64,7 +64,7 @@ Branch `t6-poster-frame-sizes`, cut from `main` after the engine PR merged. In e
 
 ## 5. Live-page counts elsewhere (approved test edits only)
 
-- [ ] 5.1 Re-point six tests to their new scenarios, each adding only F6:
+- [x] 5.1 Re-point six tests to their new scenarios, each adding only F6:
   - `e2e/frame-chart-content.spec.ts` → `frame-size-chart` "F2, F3, F4, F5, F6 and G1 are live besides the home page" (six cards);
   - `e2e/frames-on-wall-content.spec.ts` → `frames-on-wall` "F1, F2, F3, F4, F5, F6 and G1 are live";
   - `e2e/actual-size-content.spec.ts` → `actual-size` "F1, F2, F3, F4, F5, F6 and G1 are live";
