@@ -311,3 +311,18 @@
   color: var(--ink-muted);
   white-space: nowrap;
 }
+
+/*
+ * Chart: a cell holds a frame and its borders ("30.5 × 45.7 cm, pre-cut · 1.9 / 1.9 cm"), wider
+ * than the shared 146 px `num` column. The widths fit the longest cell in either unit, so nothing
+ * spills into the next column and a unit switch moves nothing; a narrower box scrolls sideways.
+ */
+.f6-chart .fs-table {
+  min-width: 800px;
+}
+.f6-chart .fs-table col.fs-col-num {
+  width: 216px;
+}
+.f6-chart .fs-table col.fs-col-num:last-child {
+  width: 352px;
+}

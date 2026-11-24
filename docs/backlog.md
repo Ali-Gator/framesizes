@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-128**
+_Next id:_ **BL-129**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -233,6 +233,12 @@ when to add and when to fold items in.
   _Refs:_ `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/opengraph-image.tsx` · _Status:_ deferred — whole-site translation
 
 ## Widgets
+
+- **[BL-128] E2e guard: no size-table cell spills into the next column** — F6's chart shipped with
+  matted cells (up to 328 px in cm) in the shared 146 px `num` column, so text overlapped the next
+  column and the table scrolled sideways at 1280. Add a scenario and one e2e that checks every
+  `.fs-table` cell's `scrollWidth <= clientWidth` on each live page in both units at 1280.
+  _Refs:_ `apps/web/src/app/poster-frame-sizes/poster-frames.css`, `apps/web/src/components/ui/size-table.tsx` · _Status:_ open — F6 chart fix, 2026-11-24
 
 - **[BL-98] F3 chips a small screen cannot use** — on a 7 in tablet in the phone layout (Fire 7,
   600 × 1024) the tablet chips from 12.4 in give under 100 px per inch, so the touch slider ignores
