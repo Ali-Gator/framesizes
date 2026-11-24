@@ -34,7 +34,8 @@ const aSize = (s: Size, unit: Unit) =>
   unit === "cm" ? size(s, "cm") : `${oneDecimal(s.w)} × ${oneDecimal(s.h)} in`;
 const sizeOf = (s: Size, isA: boolean, unit: Unit) => (isA ? aSize(s, unit) : size(s, unit));
 const mm = (s: Size) => `${Math.round(s.w * 25.4)} × ${Math.round(s.h * 25.4)} mm`;
-const pair = (side: number, top: number, unit: Unit) =>
+/** Two borders, sides / top and bottom: `¾ / ¾ in`. */
+export const pair = (side: number, top: number, unit: Unit) =>
   `${num(side, unit)} / ${num(top, unit)} ${unit}`;
 const other = (unit: Unit): Unit => (unit === "in" ? "cm" : "in");
 
