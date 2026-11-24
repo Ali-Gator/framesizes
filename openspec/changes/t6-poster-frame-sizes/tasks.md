@@ -22,7 +22,7 @@ Branch `t6-poster-frame-sizes`, cut from `main` after the engine PR merged. In e
 
   Implement `state.ts` (design decision 1) on F5's `inches`. Verify the tests pass.
 
-- [ ] 2.2 Write `answer.test.ts`, pinning every sentence in the spec's answer, box, unit and drawing scenarios: 24x36, A3, A2, 40 × 50 cm and 13 × 19 without a mat; 11x17 (with pick 1), 24x36, 13 × 19, 27x40 and landscape 17x11 with a mat; 11x17 and 24x36 in cm; the drawing labels, legends, the 40 × 50 cm pre-cut 18x24 drawn with the sold mat's borders, the 11/24 scale ratio, the dashed custom frame and 40 × 60 in. Implement `answer.ts` (design decisions 2 and 3) on `posterFrames`, F4's `article` and the engine's `inEighths` and `toCm`. Verify the tests pass.
+- [x] 2.2 Write `answer.test.ts`, pinning every sentence in the spec's answer, box, unit and drawing scenarios: 24x36, A3, A2, 40 × 50 cm and 13 × 19 without a mat; 11x17 (with pick 1), 24x36, 13 × 19, 27x40 and landscape 17x11 with a mat; 11x17 and 24x36 in cm; the drawing labels, legends, the 40 × 50 cm pre-cut 18x24 drawn with the sold mat's borders, the 11/24 scale ratio, the dashed custom frame and 40 × 60 in. Implement `answer.ts` (design decisions 2 and 3) on `posterFrames`, F4's `article` and the engine's `inEighths` and `toCm`. Verify the tests pass.
 
 ## 3. Widget UI
 

@@ -108,6 +108,11 @@ A standard frame answer without a mat SHALL end with a box naming the standard f
 - **WHEN** the visitor picks A3 without a mat, or types 40 × 60 in without a mat
 - **THEN** no "See frames with a mat" button shows
 
+#### Scenario: A custom size with no frame for a mat
+
+- **WHEN** the visitor types 40 × 60 in with a mat
+- **THEN** no "See it without a mat" button shows: a custom size has no frame to name
+
 #### Scenario: A standard frame with none for a mat
 
 - **WHEN** the visitor picks 27x40 without a mat
