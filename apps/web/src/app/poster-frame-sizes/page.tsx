@@ -423,21 +423,23 @@ export default function PosterFrameSizes() {
           frame shows its border at the sides and at the top and bottom. The mat overlaps the poster
           by <L inches={MAT_OVERLAP} /> on each side.
         </p>
-        <SizeTable
-          title="Standard poster frame sizes"
-          meta="Borders: sides / top and bottom"
-          selectable={false}
-          columns={[
-            { label: "Poster" },
-            { label: "Without a mat", num: true },
-            { label: "With a mat", num: true },
-          ]}
-          rows={ROWS.map(({ p, frames }) => ({
-            id: p.id,
-            label: <PosterCell p={p} />,
-            cells: [<BareCell key="b" frames={frames} />, <MatCell key="m" frames={frames} />],
-          }))}
-        />
+        <div className="f6-chart">
+          <SizeTable
+            title="Standard poster frame sizes"
+            meta="Borders: sides / top and bottom"
+            selectable={false}
+            columns={[
+              { label: "Poster" },
+              { label: "Without a mat", num: true },
+              { label: "With a mat", num: true },
+            ]}
+            rows={ROWS.map(({ p, frames }) => ({
+              id: p.id,
+              label: <PosterCell p={p} />,
+              cells: [<BareCell key="b" frames={frames} />, <MatCell key="m" frames={frames} />],
+            }))}
+          />
+        </div>
       </Section>
 
       {/* {@link openspec/specs/poster-frame-sizes/spec.md#requirement-the-size-groups-answer-each-poster-in-a-card} */}
