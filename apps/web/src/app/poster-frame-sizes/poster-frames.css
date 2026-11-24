@@ -1,0 +1,313 @@
+/* F6: the poster frame picker and the page's parts, from the approved canvas's f6.css. Builds on F5's frame-mat.css. */
+
+.pf-grp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* chips */
+.pf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pf-chip {
+  flex-direction: column;
+  gap: 0;
+  min-width: 76px;
+  padding: 6px 12px;
+  line-height: 20px;
+}
+.pf-chip-n {
+  display: block;
+  font-size: 15px;
+}
+.pf-chip-s {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-muted);
+}
+.pf-chip[aria-pressed="true"] .pf-chip-s {
+  color: var(--on-tape);
+}
+.pf-cchip {
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+/* custom size */
+.pf-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px 0 10px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 15px/20px var(--font-sans);
+  cursor: pointer;
+}
+.pf-back:hover {
+  border-color: var(--ink);
+}
+.pf-back:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.pf-back svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pf-custom {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pf-custom legend {
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+/* mat and orientation */
+.pf-segs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pf-segs [role="radiogroup"] {
+  max-width: 100%;
+}
+.pf-orient-note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+@media (width < 48rem) {
+  .pf-segs [role="radiogroup"] {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .pf-segs [role="radio"] {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+@media (width >= 48rem) {
+  .pf-segs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+}
+
+/* answer */
+.pf-use {
+  margin: -6px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.pf-k {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.pf-drawn {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--stage);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.pf-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pf-row + .pf-row {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.pf-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.pf-bd {
+  display: block;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+.pf-note {
+  display: block;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.pf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pf-badge svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pf-pre {
+  background: var(--tape-soft);
+  color: var(--tape-ink);
+  border: 1px solid var(--tape-ink);
+}
+.pf-cut {
+  background: var(--paper);
+  color: var(--ink-muted);
+  border: 1px dashed var(--line-strong);
+}
+.pf-cut svg {
+  display: none;
+}
+.pf-pick {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.pf-pick:hover {
+  border-color: var(--ink);
+}
+.pf-pick[aria-pressed="true"] {
+  border: 2px solid var(--ink);
+  padding: 11px 13px;
+  background: var(--paper);
+}
+.pf-pick:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.pf-more {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--line-strong);
+}
+.pf-more p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+.pf-more .fs-btn {
+  align-self: flex-start;
+}
+.pf-link {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+.pf-link a {
+  color: var(--ink);
+}
+
+/* drawing: a custom frame's moulding is dashed */
+.pf-xf {
+  background: transparent;
+  border: 3px dashed var(--oak);
+}
+
+/* page parts */
+.f6-sizes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.f6-sizes .f5-case-v {
+  font-size: 20px;
+  line-height: 26px;
+}
+.f6-mm {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.f6-canv {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  max-width: 680px;
+}
+.f6-canv li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.f6-canv .k {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 16px;
+}
+.f6-canv .v {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.pt-l {
+  display: block;
+  white-space: nowrap;
+}
+.pt-use {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.pt-none {
+  display: block;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}

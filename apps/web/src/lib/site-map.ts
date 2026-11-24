@@ -116,7 +116,14 @@ const PAGE_LIST = [
     hub: "frames",
     name: "Poster frame sizes",
     card: { question: "What frame fits my poster or painting?", ratio: [2, 3] },
-    live: false,
+    live: true,
+    seo: {
+      title: "Poster Frame Sizes Chart: With or Without a Mat",
+      h1: "Poster Frame Sizes",
+      description:
+        "Find the frame that fits your poster or painting: standard poster frame sizes from 11x17 to 27x40, with or without a mat, in inches and cm.",
+      lastModified: "2026-11-24",
+    },
   },
   {
     id: "F7",

@@ -148,8 +148,8 @@ test("the widget footer says where the sizes come from", async ({ page }) => {
   expect(widgetFooter).toContain(`last checked ${checked}`);
 });
 
-/** {@link openspec/specs/frame-size-chart/spec.md#scenario-f2-f3-f4-f5-and-g1-are-live-besides-the-home-page} */
-test("links to F2, F3, F4, F5 and G1 and to no page that is not live", async ({ page }) => {
+/** {@link openspec/specs/frame-size-chart/spec.md#scenario-f2-f3-f4-f5-f6-and-g1-are-live-besides-the-home-page} */
+test("links to F2, F3, F4, F5, F6 and G1 and to no page that is not live", async ({ page }) => {
   const { headings, hrefs, links, related } = await serverHtml(page);
   expect(headings).toContain("h2 Related tools");
   expect(links).toContain("See it on my wall");
@@ -160,6 +160,7 @@ test("links to F2, F3, F4, F5 and G1 and to no page that is not live", async ({ 
     "/how-big-is-8x10",
     "/measure-picture-frame",
     "/frame-mat-calculator",
+    "/poster-frame-sizes",
     "/gallery-wall-planner",
   ]);
   expect(hrefs.filter((h) => h.startsWith("#"))).toEqual([]);

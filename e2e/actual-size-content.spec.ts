@@ -112,7 +112,7 @@ test("no affiliate links", async ({ page }) => {
   expect(headings.join()).not.toContain("Where to buy");
 });
 
-/** {@link openspec/specs/actual-size/spec.md#scenario-f1-f2-f3-f4-f5-and-g1-are-live} */
+/** {@link openspec/specs/actual-size/spec.md#scenario-f1-f2-f3-f4-f5-f6-and-g1-are-live} */
 test("links only to live pages", async ({ page }) => {
   const { related, hrefs } = await serverHtml(page);
   expect(related).toEqual([
@@ -120,6 +120,7 @@ test("links only to live pages", async ({ page }) => {
     "/frame-sizes-on-wall",
     "/measure-picture-frame",
     "/frame-mat-calculator",
+    "/poster-frame-sizes",
     "/gallery-wall-planner",
   ]);
   expect(hrefs).not.toContain("/photo-print-sizes");

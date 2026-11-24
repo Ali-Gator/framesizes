@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-123**
+_Next id:_ **BL-128**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -125,6 +125,23 @@ when to add and when to fold items in.
 - **[BL-114] URL Inspection for F5** — after launch, check `/frame-mat-calculator` in Search Console's
   URL Inspection: indexed, and Google chose the page's own canonical.
   _Refs:_ On-page SEO guide, after launch · _Status:_ gated — DNS live
+- **[BL-123] Preview card for F6** — paste `https://framesizes.app/poster-frame-sizes` into a chat
+  app or a preview tool and check the card shows the 24x36 poster in its own frame and in a 27x40 with a mat (guide checklist 7).
+  _Refs:_ `apps/web/src/app/poster-frame-sizes/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+- **[BL-124] Rich Results Test for F6** — run the live F6 URL through the Rich Results Test and confirm
+  its `BreadcrumbList` validates (guide checklist 15).
+  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-125] URL Inspection for F6** — after launch, check `/poster-frame-sizes` in Search Console's
+  URL Inspection: indexed, and Google chose the page's own canonical.
+  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — DNS live
+- **[BL-126] F6 unit switch can flip a near-tolerance answer** — switching in↔cm rewrites a typed field
+  rounded to 0.1 cm and answers from that text, so 16⅜ × 20 in ("Use a 16x20 frame.") reads 41.6 cm and
+  becomes "Not a standard size". Keep the parsed inches until the visitor edits a field (F5 rounds the same way).
+  _Refs:_ `apps/web/src/components/poster-frames/state.ts` (`unit` action), phase review t6 · _Status:_ open
+- **[BL-127] F6 pre-cut card copy for a near-standard poster** — a pre-cut frame matched within ⅜ in says
+  "Sold with a mat cut for your poster" and "overlaps by ¼ in", but the mat is cut for the standard print
+  (40 × 50 cm in an 18x24 overlaps about ⅛ in). Name the print the mat is cut for; new copy goes to the owner.
+  _Refs:_ `apps/web/src/components/poster-frames/answer.ts` (`describe`, with a mat), phase review t6 · _Status:_ gated — owner copy
 - **[BL-115] F5's first paragraph has no numbers** — guide checklist 8 asks the first paragraph to
   answer the head keyword with numbers; F5's intro, verbatim from the approved canvas and spec, has
   none. Decide whether to add one (for example the 8x10 + 2 in answer) or exempt tool pages in the guide.
