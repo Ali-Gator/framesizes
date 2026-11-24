@@ -59,8 +59,8 @@ Branch `t6-poster-frame-sizes`, cut from `main` after the engine PR merged. In e
 
   Build `page.tsx` and `poster-frames.css` with the table, the group cards, the painting section, the how-to and the questions (design decision 7). Verify the tests pass.
 
-- [ ] 4.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts`. Verify `pnpm build` prerenders it at 1200 × 630, under 300 KB.
-- [ ] 4.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, card text, labels, messages, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword; leave the title, `h1`, description and the two keyword questions verbatim. A rewording that changes what the canvas says goes to the owner, and the spec scenarios it touches are updated with it. Verify the unit, DOM and content tests still pass.
+- [x] 4.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts`. Verify `pnpm build` prerenders it at 1200 × 630, under 300 KB.
+- [x] 4.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, card text, labels, messages, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword; leave the title, `h1`, description and the two keyword questions verbatim. A rewording that changes what the canvas says goes to the owner, and the spec scenarios it touches are updated with it. Verify the unit, DOM and content tests still pass.
 
 ## 5. Live-page counts elsewhere (approved test edits only)
 
@@ -76,8 +76,8 @@ Branch `t6-poster-frame-sizes`, cut from `main` after the engine PR merged. In e
 
 ## 6. Gate
 
-- [ ] 6.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
-- [ ] 6.2 Run the SEO guide's pre-publish checklist for F6 on the checks that can run before go-live (1–14 on the built HTML). Log the ones that need the live URL (preview card, Rich Results Test, URL Inspection) as backlog items gated on DNS, as BL-112 to BL-114 did for F5.
+- [x] 6.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
+- [x] 6.2 Run the SEO guide's pre-publish checklist for F6 on the checks that can run before go-live (1–14 on the built HTML). Log the ones that need the live URL (preview card, Rich Results Test, URL Inspection) as backlog items gated on DNS, as BL-112 to BL-114 did for F5. (Done 2026-11-24: checks 1–14 pass on the built HTML; BL-123 to BL-125 logged.)
 
 ## Workflow follow-up
 
