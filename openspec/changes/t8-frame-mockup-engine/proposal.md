@@ -16,7 +16,7 @@ Most of the parts already exist: the frame catalog and its pre-cut mats (`CATALO
 ## What Changes
 
 - New module `packages/sizes/src/mockup.ts` in the size engine. Lengths are in inches, artwork sizes in pixels.
-- **The sizes offered.** The 19 catalog frame sizes and A3, A2 and A1 (from `POSTERS`), turned to the artwork's orientation. An artwork whose sides differ by less than 5% counts as square and gets the five square frames. For a portrait 2000 × 3000 px artwork that is 4x6 … 27x40, A3, A2, A1 (17 sizes).
+- **The sizes offered.** The catalog frame sizes of the artwork's shape (14 rectangular, or 5 square) and A3, A2 and A1 (from `POSTERS`), turned to the artwork's orientation. An artwork whose sides differ by less than 5% counts as square and gets the five square frames. For a portrait 2000 × 3000 px artwork that is 4x6 … 27x40, A3, A2, A1 (17 sizes).
 - **How much each size cuts.** The art fills the opening edge to edge, centred, so a size of another shape cuts part of it. Each size carries that share, with and without a mat. 2000 × 3000 px (2:3), no mat: 4x6, 12x18, 20x30 and 24x36 cut 0%; 27x40 1.2%; 11x17 2.9%; A3 and A2 5.7%; A1 5.6%; 16x20 16.7%; 20x24 20%.
 - **The size it opens on.** The size that cuts least; sizes within 1 percentage point of it count as tied, and the largest tied size wins. 2:3 art opens on 24x36, 3:4 art (3000 × 4000 px) on 18x24, an A-series file (2480 × 3508 px) on A1, square art on 20x20.
 - **The opening with a mat.** A frame sold with a pre-cut mat uses that mat: the opening is the mat's print size less the ¼ in overlap on each side (16x20 → 10½ × 13½ in). A frame with no pre-cut mat gets a 2 in mat (20x30 → 16 × 26 in; A2 → 12.5 × 19.4 in). A 4x6 has no room for a 2 in mat: with a mat it stays in the list with no opening and no cut, so the page shows it disabled, and the mockup never opens on it. Without a mat the opening is the frame size.
@@ -26,7 +26,7 @@ Most of the parts already exist: the frame catalog and its pre-cut mats (`CATALO
 - **The opening size follows the mat.** An upload opens on the size that cuts least with the mat setting in force: 3:4 art opens on 18x24 without a mat and on 12x16 with one.
 - **A key press.** Arrow keys move the artwork ¼ in and Shift + arrow 1 in along the cut side. The engine turns that step into a change of the focus point: the step divided by how far the filled artwork reaches past the opening on that side. 2000 × 3000 px art in a 16x20 reaches 4 in past it, so ¼ in is 0.0625 and 1 in is 0.25. An artwork that is not cut does not move.
 - **No answer.** An artwork whose width or height is not a positive number gets no answer.
-- **Reuse.** `framesFor`, `findFrame`, `POSTERS`, `MAT_OVERLAP`, `MAT_WIDTH`, `MOULDING`, `wallScene`, `DEMO_ROOM`, `CENTRE_LINE` and `SOFA` are reused, not retyped. `CATALOG`, `POSTERS` and the wall do not change.
+- **Reuse.** `framesFor`, `POSTERS`, `MAT_OVERLAP`, `MAT_WIDTH`, `MOULDING`, `wallScene`, `DEMO_ROOM` (its wall bounds) and `CENTRE_LINE` are reused, not retyped. `CATALOG`, `POSTERS` and the wall do not change.
 - **Out of this change, by design.** File reading, decoding, drawing, `toBlob` and the download are browser code for the page change. Frame style colours and names are visitor-facing, so they come from the canvas. Two neighbours keep their jobs:
   - a list of sizes that fit an artwork without cropping is PH2 (Art print sizes);
   - a "prints sharp up to" readout is Q2 (DPI checker).

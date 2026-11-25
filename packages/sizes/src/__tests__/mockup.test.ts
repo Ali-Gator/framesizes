@@ -279,6 +279,12 @@ describe("a key press", () => {
   it("does not move an artwork that is not cut", () => {
     expect(focusStep(PORTRAIT, { w: 24, h: 36 }, KEY_STEP.arrow)).toBe(0);
   });
+
+  /** {@link openspec/specs/size-engine/spec.md#requirement-a-key-press-moves-a-mockup-artwork-by-a-fixed-step} */
+  it("treats a cut under half a pixel as no cut", () => {
+    expect(focusStep({ width: 2000, height: 3000.4 }, { w: 24, h: 36 }, KEY_STEP.arrow)).toBe(0);
+    expect(visiblePart({ width: 2000, height: 3000.4 }, { w: 24, h: 36 }, 1)?.y).toBe(0);
+  });
 });
 
 describe("the wall and the views", () => {

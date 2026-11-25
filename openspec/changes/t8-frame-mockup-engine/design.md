@@ -99,7 +99,7 @@ The opening is decided per case:
 
 `visiblePart` takes the largest rect of the opening's ratio inside the artwork. On the cut axis it sits at `focus × slack`, where `focus` is clamped to 0..1 (default 0.5). The rect is in fractional pixels, which `drawImage` takes as they are. A focus is one number because only one axis is ever cut.
 
-`focusStep` turns a key step in inches into a focus change: `step / slackInches`, where `slackInches` is the artwork's length on the cut axis, scaled to fill the opening, less the opening's length. With no slack it returns 0. The page adds the result to the focus and `visiblePart` clamps it, so a key never pushes the artwork off its edge.
+`focusStep` turns a key step in inches into a focus change: `step / slackInches`, where `slackInches` is the artwork's length on the cut axis, scaled to fill the opening, less the opening's length. With less than half a pixel of slack it returns 0, so float noise never becomes a huge step. The page adds the result to the focus and clamps the stored focus to 0..1 after every step (`visiblePart` clamps too), so a key never pushes the artwork off its edge and a reverse press moves it at once. The cut axis is the one where the visible part is shorter than the artwork.
 
 ### 7. The wall, the views and the PNG
 

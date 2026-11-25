@@ -60,7 +60,12 @@ function orientationOf({ width, height }: Art): Orientation {
 export function mockupSizes(art: Art): readonly MockupSize[] | undefined {
   if (!valid(art)) return undefined;
   const orientation = orientationOf(art);
-  const frames = framesFor(orientation).map(({ id, w, h, mat }) => ({ id, w, h, mat }));
+  const frames = framesFor(orientation).map(({ id, w, h, mat }) => ({
+    id,
+    w,
+    h,
+    mat: mat && { ...mat },
+  }));
   if (orientation === "square") return frames;
   const turn = orientation === "landscape";
   const aSeries = POSTERS.filter((p) => p.group === "a-series").map(({ id, w, h }) => ({
@@ -120,8 +125,8 @@ function overhang(art: Art, opening: Size) {
   const ro = opening.w / opening.h;
   const w = Math.min(art.width, art.height * ro);
   const h = Math.min(art.height, w / ro);
-  // Under a millionth of a pixel is float noise, not a cut.
-  const clean = (slack: number) => (slack < 1e-6 ? 0 : slack);
+  // Under half a pixel is float noise or an invisible cut: nothing to slide.
+  const clean = (slack: number) => (slack < 0.5 ? 0 : slack);
   return art.width - w > art.height - h
     ? { axis: "x" as const, w, h, slack: clean(art.width - w) }
     : { axis: "y" as const, w, h, slack: clean(art.height - h) };
