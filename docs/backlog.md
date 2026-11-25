@@ -234,11 +234,6 @@ when to add and when to fold items in.
 
 ## Widgets
 
-- **[BL-130] F7 `exportSize` takes no bad view** — a zero or NaN view gives `{ w: NaN, h: NaN }` and an empty PNG with no error, while the artwork calls in the same module return `undefined`. Views come from `mockupView` today, so it only bites a future caller.
-  _Refs:_ `packages/sizes/src/mockup.ts` (`exportSize`) · _Status:_ open
-- **[BL-131] F7 `visiblePart` returns a pixel rect typed as `Rect`** — `Rect`'s doc says inches with y up from the floor; the crop is pixels with y down from the art's top. A `PixelRect` type would stop a page flipping the crop. Same pass: the barrel exports generic `View`, `Placement`, `TIE`; `MockupView`, `MockupPlacement`, `MOCKUP_TIE` would not clash with F1's local `View`.
-  _Refs:_ `packages/sizes/src/mockup.ts`, `packages/sizes/src/index.ts` · _Status:_ open
-
 - **[BL-128] E2e guard: no size-table cell spills into the next column** — F6's chart shipped with
   matted cells (up to 328 px in cm) in the shared 146 px `num` column, so text overlapped the next
   column and the table scrolled sideways at 1280. Add a scenario and one e2e that checks every
