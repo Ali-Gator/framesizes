@@ -17,7 +17,7 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
 
 ## 3. Widget logic (`components/frame-mockup/`)
 
-- [ ] 3.1 Write `state.test.ts` for the reducer and selectors (design decision 1):
+- [x] 3.1 Write `state.test.ts` for the reducer and selectors (design decision 1):
   - the initial state (sample 2000 × 3000, 24x36, no mat, black, sofa, wall, focus 0.5, panel size);
   - `uploaded` on 2000 × 3000, 3000 × 2000, 2000 × 2000 and 3000 × 4000 with and without the mat (24x36, 36x24, 20x20, 18x24 / 12x16), the "opened" then "replaced" note, and settings kept;
   - `sample` back on 24x36 with the settings kept;
@@ -28,8 +28,8 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
 
   Implement `state.ts`. Verify the tests pass.
 
-- [ ] 3.2 Write `copy.test.ts`, pinning every sentence and label in the spec: the chips and their subs (the sample with and without a mat, "<1% cut" on A1 with a mat and on A3, A2 and A1 for a 2480 × 3508 px file, "No room"), the answer's value and sub (24x36 in both units, A2 in mm, in and cm), every fact line (no mat, pre-cut 24x36, 2 in on 20x30, above the sofa, plain wall, close-up, cm), the hint and "Nothing to move", the notes, the two errors, the art line, the picture's labels, the PNG line and the file names (`frame-mockup-24x36.png`, `frame-mockup-a2.png`). Implement `copy.ts` (design decision 2). Verify the tests pass.
-- [ ] 3.3 Write `scene.test.ts`: for 24x36 above the sofa the outside's top is 16 in from the wall's top and the close-up's view starts 6.5 in from it; the plain wall drops the sofa; the mat and opening for 24x36 with its pre-cut mat; the artwork's drawn rect for 2:3 in 16x20 at focus 0, 0.5 and 1. Implement `scene.ts` (design decision 3). Verify the tests pass.
+- [x] 3.2 Write `copy.test.ts`, pinning every sentence and label in the spec: the chips and their subs (the sample with and without a mat, "<1% cut" on A1 with a mat and on A3, A2 and A1 for a 2480 × 3508 px file, "No room"), the answer's value and sub (24x36 in both units, A2 in mm, in and cm), every fact line (no mat, pre-cut 24x36, 2 in on 20x30, above the sofa, plain wall, close-up, cm), the hint and "Nothing to move", the notes, the two errors, the art line, the picture's labels, the PNG line and the file names (`frame-mockup-24x36.png`, `frame-mockup-a2.png`). Implement `copy.ts` (design decision 2). Verify the tests pass.
+- [x] 3.3 Write `scene.test.ts`: for 24x36 above the sofa the outside's top is 16 in from the wall's top and the close-up's view starts 6.5 in from it; the plain wall drops the sofa; the mat and opening for 24x36 with its pre-cut mat; the artwork's drawn rect for 2:3 in 16x20 at focus 0, 0.5 and 1. Implement `scene.ts` (design decision 3). Verify the tests pass.
 
 ## 4. Widget UI
 
