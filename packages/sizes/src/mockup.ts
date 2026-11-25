@@ -36,8 +36,8 @@ export interface MockupOption {
 export type Placement = "sofa" | "plain";
 export type View = "wall" | "close";
 
-/** Sides within this share of each other count as square. */
-export const SQUARE_TOLERANCE = 0.05;
+/** Sides within this share of each other count as square: from there a square frame cuts less than 20x24, the squarest rectangle (≈ 0.087). */
+export const SQUARE_TOLERANCE = 1 - Math.sqrt(20 / 24);
 /** Cuts within one percentage point of the least count as tied. */
 export const TIE = 0.01;
 /** The saved PNG's longer side, in pixels. */

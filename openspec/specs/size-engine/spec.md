@@ -310,7 +310,7 @@ interface MockupOption {
 }
 type Placement = "sofa" | "plain";
 type View = "wall" | "close";
-const SQUARE_TOLERANCE = 0.05; // sides within 5% count as square
+const SQUARE_TOLERANCE = 1 - Math.sqrt(20 / 24); // ≈ 0.087: square cuts less than 20x24 beyond it
 const TIE = 0.01; // cuts within one percentage point are tied
 const EXPORT_LONG_SIDE = 2400; // px
 const KEY_STEP = { arrow: 0.25, shift: 1 } as const; // in
@@ -345,7 +345,7 @@ The mat calculator (`mat.ts`) works in inches, per side and in the input's orien
 
 The poster engine (`poster.ts`, F6) works in inches. `bare` is `identifyFrame` on the poster as an inside size, so F4 and F6 agree. When it is custom, `aFrame` is the nearest of A2 and A1 within `MEASURE_TOLERANCE`, from a list only F6 reads. `matted` walks the upright catalog: a frame is taken when it is in `mat.ts`'s pre-cut set (`preCutFrames` plus the diploma, so F5 and F6 agree) or when both `matBorders` are within `POSTER_BORDER`. A square frame is skipped for a non-square poster (sides more than ⅜ in apart) unless it is pre-cut for it. A pre-cut frame's borders are those of its mat as sold (its catalog pairing, else `DIPLOMA.print`); every other frame's come from the poster. The list is sorted by area, stably, then turned for a landscape poster with its borders swapped. `customFrame` is `matSizes` from the poster at `MAT_WIDTH`. The poster sizes, the A2 and A1 frames and the BL-17 recheck are in `openspec/changes/archive/2026-11-23-t6-poster-frame-engine/verification.md`.
 
-The mockup engine (`mockup.ts`, F7) takes an artwork in pixels and gives lengths in inches. Art whose shorter side is at least 95% of its longer counts as square and gets `framesFor("square")`; otherwise it gets `framesFor` of its orientation followed by the A-series `POSTERS`, turned, with no mat. The opening is the frame without a mat; with one it is the pre-cut mat less two `MAT_OVERLAP`s, else the frame less two `MAT_WIDTH`s. The cut is 1 − min(ra / ro, ro / ra) of the art and opening ratios, the share of the art outside `visiblePart`. `mockupDefault` takes the least cut, treats every cut within `TIE` of it as tied, and picks the largest frame area among them (first on an exact area tie). `visiblePart` is the largest rect of the opening's ratio inside the art, in fractional pixels; on the cut axis it sits at the clamped focus × slack, and a slack under half a pixel counts as no cut. `focusStep` is the step over the slack in inches; the page adds it to the focus and clamps the stored focus to 0..1. The cut axis is the one where the visible part is shorter than the art. `hangMockup` shifts `wallScene`'s sofa placement by half of `DEMO_ROOM`'s wall width, or centres the outside on `CENTRE_LINE`. The close-up widens the outside by a quarter of its longer side; every offered size fits the wall by either rule, so nothing is clamped. `exportSize` scales the view's longer side to `EXPORT_LONG_SIDE` and rounds.
+The mockup engine (`mockup.ts`, F7) takes an artwork in pixels and gives lengths in inches. Art whose shorter side is at least √(20/24) ≈ 91.3% of its longer counts as square and gets `framesFor("square")`, since from there a square frame cuts less than 20x24, the squarest catalog rectangle; otherwise it gets `framesFor` of its orientation followed by the A-series `POSTERS`, turned, with no mat. The opening is the frame without a mat; with one it is the pre-cut mat less two `MAT_OVERLAP`s, else the frame less two `MAT_WIDTH`s. The cut is 1 − min(ra / ro, ro / ra) of the art and opening ratios, the share of the art outside `visiblePart`. `mockupDefault` takes the least cut, treats every cut within `TIE` of it as tied, and picks the largest frame area among them (first on an exact area tie). `visiblePart` is the largest rect of the opening's ratio inside the art, in fractional pixels; on the cut axis it sits at the clamped focus × slack, and a slack under half a pixel counts as no cut. `focusStep` is the step over the slack in inches; the page adds it to the focus and clamps the stored focus to 0..1. The cut axis is the one where the visible part is shorter than the art. `hangMockup` shifts `wallScene`'s sofa placement by half of `DEMO_ROOM`'s wall width, or centres the outside on `CENTRE_LINE`. The close-up widens the outside by a quarter of its longer side; every offered size fits the wall by either rule, so nothing is clamped. `exportSize` scales the view's longer side to `EXPORT_LONG_SIDE` and rounds.
 
 ## Edge Cases
 
@@ -381,7 +381,6 @@ The mockup engine (`mockup.ts`, F7) takes an artwork in pixels and gives lengths
 - From a frame, `preCut` is often empty: the largest print rarely lands within ⅜ in of a mat pairing (11x14 with a 2 in mat gives 7½ × 10½).
 - `mockupSizes`, `mockupOptions`, `mockupDefault`, `visiblePart` and `focusStep` return `undefined` for an artwork side that is 0, negative or not finite (`visiblePart` and `focusStep` also for such an opening side).
 - With a mat, 4x6 stays first in `mockupOptions` with `opening: null` and `cut: null`; `mockupDefault` never picks it.
-- Art with an aspect between about 0.894 and 0.95 is offered no square size although 20x20 would cut less than 8x10 (BL-129).
 - `exportSize` checks nothing: a zero or NaN view gives `NaN` sides (BL-130).
 - A `NaN` focus counts as 0.5; a focus outside 0..1 is held at the edge.
 
@@ -1735,7 +1734,7 @@ The engine SHALL give no frame, with or without a mat, for a poster size whose w
 
 ### Requirement: A mockup offers the catalog sizes and three A-series sizes in the artwork's orientation
 
-For an artwork given in pixels the engine SHALL list the sizes a mockup offers: the catalog frame sizes and A3, A2 and A1 from the poster sizes, turned to the artwork's orientation, catalog sizes first in catalog order. An artwork whose shorter side is within 5% of its longer side SHALL count as square and get the square catalog sizes only.
+For an artwork given in pixels the engine SHALL list the sizes a mockup offers: the catalog frame sizes and A3, A2 and A1 from the poster sizes, turned to the artwork's orientation, catalog sizes first in catalog order. An artwork whose shorter side is at least √(20/24), about 91.3%, of its longer side SHALL count as square and get the square catalog sizes only: from that shape on a square frame cuts less than 20x24, the squarest catalog rectangle.
 
 #### Scenario: A portrait artwork
 
@@ -1756,6 +1755,16 @@ For an artwork given in pixels the engine SHALL list the sizes a mockup offers: 
 
 - **WHEN** the sizes are listed for a 1000 by 1050 pixel artwork
 - **THEN** they are the five square sizes, because 1000 is within 5% of 1050
+
+#### Scenario: An artwork 6% off square counts as square
+
+- **WHEN** the sizes are listed for a 1800 by 1910 pixel artwork
+- **THEN** they are the five square sizes, so it opens on 20x20, which cuts 5.8%, not on 20x24, which cuts 11.6%
+
+#### Scenario: An artwork 9% off square stays a rectangle
+
+- **WHEN** the sizes are listed for a 1000 by 1100 pixel artwork
+- **THEN** they are the portrait sizes, so it opens on 20x24, which cuts 8.3%; a square frame would cut 9.1%
 
 ### Requirement: Each mockup size says how much of the artwork it cuts
 
