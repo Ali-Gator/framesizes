@@ -33,8 +33,8 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
 
 ## 4. Widget UI
 
-- [ ] 4.1 Add `--leaf` to `globals.css` and build `components/ui/sample-room.tsx` from the canvas's Scene SVG (design decision 5), with a markup test that the sofa shows only when asked.
-- [ ] 4.2 Give `SegmentedControl` an optional `disabled` per option, skipped by the arrow keys, and an `aria-describedby` hook. Add a test for it (no existing test changes).
+- [x] 4.1 Add `--leaf` to `globals.css` and build `components/ui/sample-room.tsx` from the canvas's Scene SVG (design decision 5), with a markup test that the sofa shows only when asked.
+- [x] 4.2 Give `SegmentedControl` an optional `disabled` per option, skipped by the arrow keys, and an `aria-describedby` hook. Add a test for it (no existing test changes).
 - [ ] 4.3 Write a markup test (`renderToStaticMarkup`) of the widget's server render, pinning the spec's "The widget in the server HTML" scenario. Build `frame-mockup.tsx`, `mockup-picture.tsx`, the chips, the styles, the Mat, Wall and View controls, the phone buttons and the answer (design decisions 4, 9 and 10), and `public/frame-mockup/` with the canvas's three SVGs (decision 12). Verify the test passes.
 - [ ] 4.4 Build `use-artwork.ts` (decision 8), the drop area and the move control (decision 6). Verify with DOM tests:
   - the note and the errors are in one polite live region and the answer in another;

@@ -29,6 +29,8 @@
   --poor-soft: #fce6da;
   --oak: #9c6835;
   --furniture: #7e847c;
+  /* The sample room's plant (F7 canvas, v2 room). */
+  --leaf: #6e8f63;
 }
 
 /* Colours and fonts point at runtime variables; `--font-schibsted` / `--font-plex-mono` come from next/font in layout.tsx. */
@@ -55,6 +57,7 @@
   --color-poor-soft: var(--poor-soft);
   --color-oak: var(--oak);
   --color-furniture: var(--furniture);
+  --color-leaf: var(--leaf);
   --font-sans:
     var(--font-schibsted), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
