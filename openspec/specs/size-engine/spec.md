@@ -294,6 +294,35 @@ interface PosterFrames {
   customFrame?: Size; // only when matted is empty: the frame for a MAT_WIDTH mat
 }
 function posterFrames(poster: Size): PosterFrames | undefined;
+
+interface Art {
+  width: number; // px
+  height: number; // px
+}
+interface MockupSize extends Size {
+  id: string; // "24x36", "36x24", "A2"
+  mat: Size | null; // the pre-cut mat's print size, turned, a copy; null when none (A-series included)
+}
+interface MockupOption {
+  size: MockupSize;
+  opening: Size | null; // in, with or without the mat as asked; null: no room for a 2 in mat (4x6)
+  cut: number | null; // 0..1; null with no opening
+}
+type Placement = "sofa" | "plain";
+type View = "wall" | "close";
+const SQUARE_TOLERANCE = 0.05; // sides within 5% count as square
+const TIE = 0.01; // cuts within one percentage point are tied
+const EXPORT_LONG_SIDE = 2400; // px
+const KEY_STEP = { arrow: 0.25, shift: 1 } as const; // in
+function mockupSizes(art: Art): readonly MockupSize[] | undefined;
+function mockupOpening(size: MockupSize, mat: boolean): Size | undefined; // undefined: no room for a mat
+function mockupOptions(art: Art, mat: boolean): readonly MockupOption[] | undefined; // offered order
+function mockupDefault(art: Art, mat: boolean): MockupOption | undefined;
+function visiblePart(art: Art, opening: Size, focus?: number): Rect | undefined; // px, y down from the art's top
+function focusStep(art: Art, opening: Size, step: number): number | undefined; // 0 when not cut
+function hangMockup(size: Size, placement: Placement): Rect; // outside, on the 144 × 96 in wall
+function mockupView(outside: Rect, view: View): Rect;
+function exportSize(view: Rect): Size; // px
 ```
 
 `apps/web` depends on it with `workspace:*` and lists it in `transpilePackages`. There is no build step.
@@ -315,6 +344,8 @@ The measure engine (`measure.ts`) works in inches; the page converts centimetres
 The mat calculator (`mat.ts`) works in inches, per side and in the input's orientation, with no upright turn. From a print the opening is the print less two overlaps and the frame is the opening plus two mat widths; from a frame the opening is the frame less two mat widths and the print is the opening plus two overlaps. The mat width is the board cut on each side; the ¼ in the lip hides is not subtracted. Both sizes are matched with `identifyFrame` on an inside size, so F4 and F5 never disagree, and `preCutFrames` is the same filter `identifyFrame`'s mat branch calls. `matSizes` and `whyNoMat` share one private check. `matBorders` is plain arithmetic: (frame − print + 2 × overlap) ÷ 2 on each axis. `matSizes` adds `DIPLOMA.frame` (turned to the print) to `preCut` for a print within the tolerance of the diploma, in catalog order; `preCutFrames`, and so F4, are unchanged. The diploma data was checked against retail listings in the archived t5-frame-mat-calculator change (`verification.md`).
 
 The poster engine (`poster.ts`, F6) works in inches. `bare` is `identifyFrame` on the poster as an inside size, so F4 and F6 agree. When it is custom, `aFrame` is the nearest of A2 and A1 within `MEASURE_TOLERANCE`, from a list only F6 reads. `matted` walks the upright catalog: a frame is taken when it is in `mat.ts`'s pre-cut set (`preCutFrames` plus the diploma, so F5 and F6 agree) or when both `matBorders` are within `POSTER_BORDER`. A square frame is skipped for a non-square poster (sides more than ⅜ in apart) unless it is pre-cut for it. A pre-cut frame's borders are those of its mat as sold (its catalog pairing, else `DIPLOMA.print`); every other frame's come from the poster. The list is sorted by area, stably, then turned for a landscape poster with its borders swapped. `customFrame` is `matSizes` from the poster at `MAT_WIDTH`. The poster sizes, the A2 and A1 frames and the BL-17 recheck are in `openspec/changes/archive/2026-11-23-t6-poster-frame-engine/verification.md`.
+
+The mockup engine (`mockup.ts`, F7) takes an artwork in pixels and gives lengths in inches. Art whose shorter side is at least 95% of its longer counts as square and gets `framesFor("square")`; otherwise it gets `framesFor` of its orientation followed by the A-series `POSTERS`, turned, with no mat. The opening is the frame without a mat; with one it is the pre-cut mat less two `MAT_OVERLAP`s, else the frame less two `MAT_WIDTH`s. The cut is 1 − min(ra / ro, ro / ra) of the art and opening ratios, the share of the art outside `visiblePart`. `mockupDefault` takes the least cut, treats every cut within `TIE` of it as tied, and picks the largest frame area among them (first on an exact area tie). `visiblePart` is the largest rect of the opening's ratio inside the art, in fractional pixels; on the cut axis it sits at the clamped focus × slack, and a slack under half a pixel counts as no cut. `focusStep` is the step over the slack in inches; the page adds it to the focus and clamps the stored focus to 0..1. The cut axis is the one where the visible part is shorter than the art. `hangMockup` shifts `wallScene`'s sofa placement by half of `DEMO_ROOM`'s wall width, or centres the outside on `CENTRE_LINE`. The close-up widens the outside by a quarter of its longer side; every offered size fits the wall by either rule, so nothing is clamped. `exportSize` scales the view's longer side to `EXPORT_LONG_SIDE` and rounds.
 
 ## Edge Cases
 
@@ -348,6 +379,11 @@ The poster engine (`poster.ts`, F6) works in inches. `bare` is `identifyFrame` o
 - A 27x40 poster has no standard frame with a mat: `matted` is empty and `customFrame` is 30½ × 43½ in.
 - A typed poster near A4 (8.3 × 11.7) is listed with the 11x17 as pre-cut: A4 is within ⅜ in of that frame's 8x12 mat. A4 is not a poster preset.
 - From a frame, `preCut` is often empty: the largest print rarely lands within ⅜ in of a mat pairing (11x14 with a 2 in mat gives 7½ × 10½).
+- `mockupSizes`, `mockupOptions`, `mockupDefault`, `visiblePart` and `focusStep` return `undefined` for an artwork side that is 0, negative or not finite (`visiblePart` and `focusStep` also for such an opening side).
+- With a mat, 4x6 stays first in `mockupOptions` with `opening: null` and `cut: null`; `mockupDefault` never picks it.
+- Art with an aspect between about 0.894 and 0.95 is offered no square size although 20x20 would cut less than 8x10 (BL-129).
+- `exportSize` checks nothing: a zero or NaN view gives `NaN` sides (BL-130).
+- A `NaN` focus counts as 0.5; a focus outside 0..1 is held at the edge.
 
 ## Requirements
 
@@ -1696,3 +1732,208 @@ The engine SHALL give no frame, with or without a mat, for a poster size whose w
 
 - **WHEN** the frames are asked for a poster whose height is not a number
 - **THEN** there is no answer
+
+### Requirement: A mockup offers the catalog sizes and three A-series sizes in the artwork's orientation
+
+For an artwork given in pixels the engine SHALL list the sizes a mockup offers: the catalog frame sizes and A3, A2 and A1 from the poster sizes, turned to the artwork's orientation, catalog sizes first in catalog order. An artwork whose shorter side is within 5% of its longer side SHALL count as square and get the square catalog sizes only.
+
+#### Scenario: A portrait artwork
+
+- **WHEN** the sizes are listed for a 2000 by 3000 pixel artwork
+- **THEN** they are 4x6, 5x7, 8x10, 8.5x11, 11x14, 11x17, 12x16, 12x18, 16x20, 18x24, 20x24, 20x30, 24x36, 27x40, A3, A2 and A1, in that order, all portrait
+
+#### Scenario: A landscape artwork
+
+- **WHEN** the sizes are listed for a 3000 by 2000 pixel artwork
+- **THEN** they are the same seventeen sizes turned, starting 6x4, 7x5, 10x8, and ending with A1 at 33.1 by 23.4 inches
+
+#### Scenario: A square artwork
+
+- **WHEN** the sizes are listed for a 2000 by 2000 pixel artwork
+- **THEN** they are 8x8, 10x10, 12x12, 16x16 and 20x20
+
+#### Scenario: A nearly square artwork counts as square
+
+- **WHEN** the sizes are listed for a 1000 by 1050 pixel artwork
+- **THEN** they are the five square sizes, because 1000 is within 5% of 1050
+
+### Requirement: Each mockup size says how much of the artwork it cuts
+
+The artwork SHALL fill the opening edge to edge without stretching, so an opening of another shape cuts part of it. For each offered size the engine SHALL give the share of the artwork that is cut, from 0 to 1, as 1 minus the smaller of the two width-to-height ratios divided by the larger, for the opening without a mat and for the opening with a mat.
+
+#### Scenario: A 2:3 artwork without a mat
+
+- **WHEN** the cut is asked for a 2000 by 3000 pixel artwork without a mat
+- **THEN** 4x6, 12x18, 20x30 and 24x36 cut nothing, 27x40 cuts 1.2%, 11x17 2.9%, A3 and A2 5.7%, A1 5.6%, 16x20 16.7% and 20x24 20%, each to one decimal
+
+#### Scenario: A 3:4 artwork with a mat
+
+- **WHEN** the cut is asked for a 3000 by 4000 pixel artwork with a mat
+- **THEN** 12x16 cuts 1.6%, 16x20 3.6% and 18x24 5.6%, each to one decimal
+
+### Requirement: A mockup opens on the size that cuts least
+
+For an artwork and a mat choice the engine SHALL name the size the mockup opens on: the offered size that cuts least. Sizes whose cut is within 1 percentage point of the least SHALL count as tied, and the tied size with the largest area SHALL win.
+
+#### Scenario: A 2:3 artwork opens on 24x36
+
+- **WHEN** the opening size is asked for a 2000 by 3000 pixel artwork without a mat
+- **THEN** it is 24x36, the largest of 4x6, 12x18, 20x30 and 24x36, which cut nothing; 27x40 at 1.2% is not tied
+
+#### Scenario: A 3:4 artwork opens on 18x24
+
+- **WHEN** the opening size is asked for a 3000 by 4000 pixel artwork without a mat
+- **THEN** it is 18x24
+
+#### Scenario: An A-series artwork opens on A1
+
+- **WHEN** the opening size is asked for a 2480 by 3508 pixel artwork without a mat
+- **THEN** it is A1, the largest of A3, A2 and A1, which all cut less than 1%
+
+#### Scenario: A 2:3 artwork with a mat opens on 24x36
+
+- **WHEN** the opening size is asked for a 2000 by 3000 pixel artwork with a mat
+- **THEN** it is 24x36, which cuts 0.8%, larger than A1 at 0.1%, both within 1 point of the least
+
+#### Scenario: A 3:4 artwork with a mat opens on 12x16
+
+- **WHEN** the opening size is asked for a 3000 by 4000 pixel artwork with a mat
+- **THEN** it is 12x16, which cuts 1.6%; 16x20 at 3.6% is not tied
+
+#### Scenario: A square artwork opens on 20x20
+
+- **WHEN** the opening size is asked for a 2000 by 2000 pixel artwork without a mat
+- **THEN** it is 20x20
+
+### Requirement: The opening a mockup artwork fills is the frame or its mat opening
+
+Without a mat the opening SHALL be the frame size. With a mat, a frame sold with a pre-cut mat SHALL use that mat: the opening is the mat's print size less the ¼ inch overlap on each side. A frame with no pre-cut mat SHALL get a 2 inch mat on every side. A size with no room for a 2 inch mat SHALL stay in the sizes offered with a mat, with no opening and no cut, and a mockup SHALL never open on it.
+
+#### Scenario: A pre-cut 16x20
+
+- **WHEN** the opening is asked for a 16x20 frame with a mat
+- **THEN** it is 10½ by 13½ inches, from the 11x14 pre-cut mat
+
+#### Scenario: A 20x30 with no pre-cut mat
+
+- **WHEN** the opening is asked for a 20x30 frame with a mat
+- **THEN** it is 16 by 26 inches
+
+#### Scenario: An A2 with a mat
+
+- **WHEN** the opening is asked for an A2 frame with a mat
+- **THEN** it is 4 inches less than 420 by 594 mm on each axis, 12.5 by 19.4 inches to one decimal
+
+#### Scenario: A 4x6 with a mat has no opening
+
+- **WHEN** the sizes are listed for a 2000 by 3000 pixel artwork with a mat
+- **THEN** 4x6 is listed first with no opening and no cut, and the other sixteen each have an opening and a cut
+
+#### Scenario: Without a mat the opening is the frame
+
+- **WHEN** the opening is asked for a 24x36 frame without a mat
+- **THEN** it is 24 by 36 inches
+
+### Requirement: The visible part of a mockup artwork is centred and follows a focus point
+
+For an artwork and an opening the engine SHALL give the part of the artwork that shows, in pixels, with the opening's shape and as large as the artwork allows. It SHALL be centred by default. A focus point from 0 to 1 SHALL slide it along the side that is cut, 0 at the left or top edge and 1 at the right or bottom edge, and the part SHALL never leave the artwork.
+
+#### Scenario: A 2:3 artwork in a 16x20, centred
+
+- **WHEN** the visible part is asked for a 2000 by 3000 pixel artwork in a 16 by 20 inch opening
+- **THEN** it is 2000 by 2500 pixels with its top edge at 250
+
+#### Scenario: The focus point moves it
+
+- **WHEN** the same part is asked with the focus at 0, and then at 1
+- **THEN** its top edge is at 0, and then at 500
+
+#### Scenario: A 3:4 artwork in a 16x20
+
+- **WHEN** the visible part is asked for a 3000 by 4000 pixel artwork in a 16 by 20 inch opening
+- **THEN** it is 3000 by 3750 pixels with its top edge at 125
+
+#### Scenario: A focus point outside 0 to 1 is held at the edge
+
+- **WHEN** the visible part of the 2000 by 3000 pixel artwork in a 16 by 20 inch opening is asked with the focus at 1.5
+- **THEN** its top edge is at 500, as at 1
+
+#### Scenario: An artwork of the opening's shape is not cut
+
+- **WHEN** the visible part is asked for a 2000 by 3000 pixel artwork in a 24 by 36 inch opening
+- **THEN** it is the whole artwork, 2000 by 3000 pixels from 0, 0, whatever the focus
+
+### Requirement: A mockup frame hangs at true scale on the sample wall
+
+The engine SHALL place a mockup frame, with its moulding, on the sample wall 144 inches wide and 96 high, centred across it, by one of two rules: above the sofa, its outside bottom edge 8 inches over the 34 inch sofa back, as on the frame size chart; or on a plain wall, its centre 57 inches above the floor.
+
+#### Scenario: A 24x36 above the sofa
+
+- **WHEN** a 24x36 frame is placed above the sofa
+- **THEN** its outside is 26 by 38 inches, its left edge at 59, its bottom edge at 42 and its top edge at 80 inches
+
+#### Scenario: A 24x36 on a plain wall
+
+- **WHEN** a 24x36 frame is placed on the plain wall
+- **THEN** its outside bottom edge is at 38 and its top edge at 76 inches, its left edge at 59
+
+#### Scenario: The largest frame fits the wall
+
+- **WHEN** a 27x40 frame, portrait and then landscape, is placed by either rule
+- **THEN** its outside lies inside the 144 by 96 inch wall
+
+### Requirement: A mockup has a whole-wall view and a close-up
+
+The engine SHALL give two views of the wall in inches: the whole wall, and a close-up of the frame whose outside is widened on every side by a quarter of the outside's longer side. The close-up SHALL lie inside the wall for every offered size, either rule and either orientation.
+
+#### Scenario: The whole wall
+
+- **WHEN** the whole-wall view is asked
+- **THEN** it is 144 by 96 inches from the wall's bottom left corner
+
+#### Scenario: A 24x36 close-up above the sofa
+
+- **WHEN** the close-up is asked for a 24x36 frame above the sofa
+- **THEN** it is 45 by 57 inches, its left edge at 49.5 and its bottom edge at 32.5 inches
+
+### Requirement: A saved mockup is 2400 pixels on its longer side
+
+The engine SHALL give the pixel size of a saved mockup from its view: the view's longer side becomes 2400 pixels and the other side is scaled to match, rounded to a whole pixel.
+
+#### Scenario: The whole wall saved
+
+- **WHEN** the pixel size is asked for the whole-wall view
+- **THEN** it is 2400 by 1600 pixels
+
+#### Scenario: A 24x36 close-up saved
+
+- **WHEN** the pixel size is asked for the 45 by 57 inch close-up
+- **THEN** it is 1895 by 2400 pixels
+
+### Requirement: A key press moves a mockup artwork by a fixed step
+
+The engine SHALL hold two key steps, ¼ inch for an arrow key and 1 inch with Shift. For an artwork, an opening and a step in inches it SHALL give the change in focus point that moves the artwork by that step along the cut side: the step divided by how far the artwork, scaled to fill the opening, reaches past the opening on that side. An artwork that is not cut SHALL get no change.
+
+#### Scenario: Arrow and Shift + arrow on a 2:3 artwork in a 16x20
+
+- **WHEN** the focus change is asked for a 2000 by 3000 pixel artwork in a 16 by 20 inch opening, for ¼ inch and then for 1 inch
+- **THEN** it is 0.0625 and then 0.25, because the filled artwork is 16 by 24 inches and reaches 4 inches past the opening
+
+#### Scenario: An artwork that is not cut does not move
+
+- **WHEN** the focus change is asked for a 2000 by 3000 pixel artwork in a 24 by 36 inch opening
+- **THEN** it is 0
+
+### Requirement: An artwork size that is not a positive number gets no mockup answer
+
+An artwork whose width or height in pixels is not a positive finite number SHALL get no sizes, no opening size, no visible part and no focus change.
+
+#### Scenario: A zero width
+
+- **WHEN** the sizes are asked for a 0 by 3000 pixel artwork
+- **THEN** there is no answer
+
+#### Scenario: A negative side, NaN and Infinity
+
+- **WHEN** the sizes are asked for a -2000 by 3000, a 2000 by NaN and a 2000 by Infinity pixel artwork
+- **THEN** there is no answer for any of them

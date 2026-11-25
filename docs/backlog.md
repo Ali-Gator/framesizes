@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-129**
+_Next id:_ **BL-132**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -233,6 +233,13 @@ when to add and when to fold items in.
   _Refs:_ `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/opengraph-image.tsx` · _Status:_ deferred — whole-site translation
 
 ## Widgets
+
+- **[BL-129] F7 near-square art gets no square frame** — `SQUARE_TOLERANCE` (5%) classes 1800×1910 px art as portrait, so it opens on 8x10 cutting 15.1% while 20x20 would cut 5.8%; square frames beat 8x10 for any aspect above ~0.894. Product call: raise the tolerance to ~0.105, or add the square sizes whenever one cuts less than the best rectangle; needs a spec scenario.
+  _Refs:_ `packages/sizes/src/mockup.ts` (`SQUARE_TOLERANCE`), size-engine spec "A mockup offers the catalog sizes…" · _Status:_ gated — owner's answer
+- **[BL-130] F7 `exportSize` takes no bad view** — a zero or NaN view gives `{ w: NaN, h: NaN }` and an empty PNG with no error, while the artwork calls in the same module return `undefined`. Views come from `mockupView` today, so it only bites a future caller.
+  _Refs:_ `packages/sizes/src/mockup.ts` (`exportSize`) · _Status:_ open
+- **[BL-131] F7 `visiblePart` returns a pixel rect typed as `Rect`** — `Rect`'s doc says inches with y up from the floor; the crop is pixels with y down from the art's top. A `PixelRect` type would stop a page flipping the crop. Same pass: the barrel exports generic `View`, `Placement`, `TIE`; `MockupView`, `MockupPlacement`, `MOCKUP_TIE` would not clash with F1's local `View`.
+  _Refs:_ `packages/sizes/src/mockup.ts`, `packages/sizes/src/index.ts` · _Status:_ open
 
 - **[BL-128] E2e guard: no size-table cell spills into the next column** — F6's chart shipped with
   matted cells (up to 328 px in cm) in the shared 146 px `num` column, so text overlapped the next
