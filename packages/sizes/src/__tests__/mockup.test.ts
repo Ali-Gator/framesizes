@@ -104,6 +104,24 @@ describe("the sizes a mockup offers", () => {
   });
 });
 
+describe("the square cut-over", () => {
+  /** {@link openspec/specs/size-engine/spec.md#scenario-an-artwork-6-off-square-counts-as-square} */
+  it("gives an artwork 6% off square the square sizes", () => {
+    const art = { width: 1800, height: 1910 };
+    expect(sizes(art).map((s) => s.id)).toEqual(["8x8", "10x10", "12x12", "16x16", "20x20"]);
+    expect(defaultId(art, false)).toBe("20x20");
+    expect(cuts(art, false, ["20x20"])).toEqual(["20x20 5.8"]);
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-an-artwork-9-off-square-stays-a-rectangle} */
+  it("keeps an artwork 9% off square on the rectangles", () => {
+    const art = { width: 1000, height: 1100 };
+    expect(sizes(art).map((s) => s.id)).toEqual(PORTRAIT_IDS);
+    expect(defaultId(art, false)).toBe("20x24");
+    expect(cuts(art, false, ["20x24"])).toEqual(["20x24 8.3"]);
+  });
+});
+
 describe("the opening the artwork fills", () => {
   /** {@link openspec/specs/size-engine/spec.md#scenario-a-pre-cut-16x20} */
   it("uses the 11x14 pre-cut mat of a 16x20", () => {

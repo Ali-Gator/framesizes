@@ -234,8 +234,6 @@ when to add and when to fold items in.
 
 ## Widgets
 
-- **[BL-129] F7 near-square art gets no square frame** — `SQUARE_TOLERANCE` (5%) classes 1800×1910 px art as portrait, so it opens on 8x10 cutting 15.1% while 20x20 would cut 5.8%; square frames beat 8x10 for any aspect above ~0.894. Product call: raise the tolerance to ~0.105, or add the square sizes whenever one cuts less than the best rectangle; needs a spec scenario.
-  _Refs:_ `packages/sizes/src/mockup.ts` (`SQUARE_TOLERANCE`), size-engine spec "A mockup offers the catalog sizes…" · _Status:_ gated — owner's answer
 - **[BL-130] F7 `exportSize` takes no bad view** — a zero or NaN view gives `{ w: NaN, h: NaN }` and an empty PNG with no error, while the artwork calls in the same module return `undefined`. Views come from `mockupView` today, so it only bites a future caller.
   _Refs:_ `packages/sizes/src/mockup.ts` (`exportSize`) · _Status:_ open
 - **[BL-131] F7 `visiblePart` returns a pixel rect typed as `Rect`** — `Rect`'s doc says inches with y up from the floor; the crop is pixels with y down from the art's top. A `PixelRect` type would stop a page flipping the crop. Same pass: the barrel exports generic `View`, `Placement`, `TIE`; `MockupView`, `MockupPlacement`, `MOCKUP_TIE` would not clash with F1's local `View`.
