@@ -43,6 +43,7 @@ export interface State {
   focus: number;
   /** The group a phone shows. */
   panel: Panel;
+  /** Cleared when the size or the mat changes: an upload's note names the size it opened on. */
   note: Note | null;
   /** A file is being read. */
   reading: boolean;
@@ -110,10 +111,10 @@ export function reducer(state: State, action: Action): State {
     case "size":
       // A size with no opening under the current mat (4x6 with a mat) is refused.
       if (!optionOf(state.art, state.mat, action.id)?.opening) return state;
-      return { ...state, size: action.id, focus: 0.5, download: "idle" };
+      return { ...state, size: action.id, focus: 0.5, note: null, download: "idle" };
     case "mat":
       if (action.on && !optionOf(state.art, true, state.size)?.opening) return state;
-      return { ...state, mat: action.on, focus: 0.5, download: "idle" };
+      return { ...state, mat: action.on, focus: 0.5, note: null, download: "idle" };
     case "finish":
       return { ...state, finish: action.finish, download: "idle" };
     case "placement":

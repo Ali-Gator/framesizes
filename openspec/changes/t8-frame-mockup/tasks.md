@@ -35,8 +35,8 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
 
 - [x] 4.1 Add `--leaf` to `globals.css` and build `components/ui/sample-room.tsx` from the canvas's Scene SVG (design decision 5), with a markup test that the sofa shows only when asked.
 - [x] 4.2 Give `SegmentedControl` an optional `disabled` per option, skipped by the arrow keys, and an `aria-describedby` hook. Add a test for it (no existing test changes).
-- [ ] 4.3 Write a markup test (`renderToStaticMarkup`) of the widget's server render, pinning the spec's "The widget in the server HTML" scenario. Build `frame-mockup.tsx`, `mockup-picture.tsx`, the chips, the styles, the Mat, Wall and View controls, the phone buttons and the answer (design decisions 4, 9 and 10), and `public/frame-mockup/` with the canvas's three SVGs (decision 12). Verify the test passes.
-- [ ] 4.4 Build `use-artwork.ts` (decision 8), the drop area and the move control (decision 6). Verify with DOM tests:
+- [x] 4.3 Write a markup test (`renderToStaticMarkup`) of the widget's server render, pinning the spec's "The widget in the server HTML" scenario. Build `frame-mockup.tsx`, `mockup-picture.tsx`, the chips, the styles, the Mat, Wall and View controls, the phone buttons and the answer (design decisions 4, 9 and 10), and `public/frame-mockup/` with the canvas's three SVGs (decision 12). Verify the test passes.
+- [x] 4.4 Build `use-artwork.ts` (decision 8), the drop area and the move control (decision 6). Verify with DOM tests:
   - the note and the errors are in one polite live region and the answer in another;
   - a non-image file and a file that does not decode keep the artwork, with their messages;
   - a stale pick is dropped and its URL revoked;
@@ -44,7 +44,7 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
   - Shift + ArrowUp on 16x20 moves the focus by `focusStep(1 in)`; the move control is disabled on 24x36;
   - "Mat" is disabled and described on 4x6; the 4x6 chip is disabled with the mat on;
   - the phone buttons carry `aria-expanded` and their current values.
-- [ ] 4.5 Build `export.ts` (decision 7). Add `e2e/frame-mockup.spec.ts`:
+- [x] 4.5 Build `export.ts` (decision 7). Add `e2e/frame-mockup.spec.ts`:
   - at 1280: the chips right of the picture, Mat below it, no phone buttons; a 3000 × 2000 px fixture dropped on the drop area opens on 36x24; dragging the artwork on 16x20 moves it;
   - at 390 × 844: "Style" shows the styles and hides the chips, nothing wider than the screen; at 390 × 664 the `h1`, the paragraph, the picture and "Choose a JPEG or PNG" are in the first screen;
   - uploads of 2000 × 3000 and then 3000 × 4000 px fixtures, a PDF and a broken image;
@@ -55,8 +55,8 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
 
 ## 5. The page (`app/frame-mockup/`)
 
-- [ ] 5.1 Set F7 live in `site-map.ts` with the SEO guide's title, `h1` and description, and `lastModified` set to the merge date. Verify `checkSiteMap` passes (title 45 characters with the suffix, description 138).
-- [ ] 5.2 Add `e2e/frame-mockup-content.spec.ts`:
+- [x] 5.1 Set F7 live in `site-map.ts` with the SEO guide's title, `h1` and description, and `lastModified` set to the merge date. Verify `checkSiteMap` passes (title 45 characters with the suffix, description 138).
+- [x] 5.2 Add `e2e/frame-mockup-content.spec.ts`:
   - the outline and the answer paragraph;
   - the widget's server render;
   - the shape table's five rows, and no cell overflowing at 1280 and 390;
@@ -70,11 +70,11 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
   Build `page.tsx` and `frame-mockup.css` with the how-to, the shape table, the keyword sections and the questions (design decision 11). Verify the tests pass.
 
 - [ ] 5.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts`, its geometry from `scene` and literal colours. Verify `pnpm build` prerenders it at 1200 × 630, under 300 KB.
-- [ ] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, labels, notes, messages, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword; leave the title, `h1` and description verbatim, and keep "poster mockup" in the first sentence and the three keyword headings. A rewording that changes what the canvas says goes to the owner, and the spec scenarios it touches are updated with it. Verify the unit, DOM and content tests still pass.
+- [x] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, labels, notes, messages, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword; leave the title, `h1` and description verbatim, and keep "poster mockup" in the first sentence and the three keyword headings. A rewording that changes what the canvas says goes to the owner, and the spec scenarios it touches are updated with it. Verify the unit, DOM and content tests still pass.
 
 ## 6. Live-page counts elsewhere (approved test edits only)
 
-- [ ] 6.1 Re-point seven tests to their new scenarios, each adding only F7:
+- [x] 6.1 Re-point seven tests to their new scenarios, each adding only F7:
   - `e2e/frame-chart-content.spec.ts` → `frame-size-chart` "F2, F3, F4, F5, F6, F7 and G1 are live besides the home page" (seven cards);
   - `e2e/frames-on-wall-content.spec.ts` → `frames-on-wall` "F1, F2, F3, F4, F5, F6, F7 and G1 are live";
   - `e2e/actual-size-content.spec.ts` → `actual-size` "F1, F2, F3, F4, F5, F6, F7 and G1 are live";

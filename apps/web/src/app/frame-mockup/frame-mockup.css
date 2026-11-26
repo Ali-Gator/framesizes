@@ -1,0 +1,663 @@
+/* F7: the mockup generator and the page's parts, from the approved canvas's f7.css. Builds on F5's frame-mat.css. */
+
+/* frame styles: one colour each, read by the frame, its dot and the PNG */
+.fin-black {
+  --fin: #1f2124;
+  --fin-line: rgba(255, 255, 255, 0.1);
+}
+.fin-white {
+  --fin: #f6f5f0;
+  --fin-line: rgba(20, 24, 28, 0.22);
+}
+.fin-oak {
+  --fin: #c9a06a;
+  --fin-line: rgba(90, 58, 30, 0.35);
+}
+.fin-walnut {
+  --fin: #5a3b26;
+  --fin-line: rgba(255, 255, 255, 0.08);
+}
+
+/* the picture */
+.mk-frame-box {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--stage);
+  overflow: hidden;
+}
+.mk-stage {
+  position: relative;
+  flex: none;
+  max-height: 100%;
+  overflow: hidden;
+  background: var(--stage);
+}
+.mk-pic {
+  position: absolute;
+  inset: 0;
+}
+.mk-world {
+  position: absolute;
+}
+.mk-room {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.mk-fr {
+  position: absolute;
+  box-sizing: border-box;
+  background: var(--fin);
+  box-shadow:
+    inset 0 0 0 1px var(--fin-line),
+    var(--shadow-frame);
+}
+.is-drag .mk-fr {
+  opacity: 0.55;
+}
+.mk-mat {
+  position: absolute;
+  background: #fbfaf6;
+  box-shadow: inset 0 0 0 1px rgba(20, 24, 28, 0.1);
+}
+.mk-art {
+  position: absolute;
+  display: block;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
+}
+.mk-bev {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid rgba(20, 24, 28, 0.22);
+  pointer-events: none;
+}
+.mk-band {
+  position: absolute;
+  background: rgba(231, 233, 226, 0.6);
+  pointer-events: none;
+}
+.mk-edge {
+  position: absolute;
+  outline: 2px dashed var(--ink);
+  pointer-events: none;
+}
+.mk-move {
+  position: absolute;
+  z-index: 2;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  cursor: grab;
+  border-radius: 2px;
+}
+.mk-move:active {
+  cursor: grabbing;
+}
+.mk-move:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--tape);
+}
+.mk-move:disabled {
+  cursor: default;
+}
+.mk-pic-wrap {
+  position: relative;
+}
+.mk-busy {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(243, 244, 239, 0.72);
+}
+.mk-busy span {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* layout: phone first, one column in the canvas's order */
+.mk-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 0 20px;
+}
+.mk-left,
+.mk-right,
+.mk-tog {
+  display: contents;
+}
+.mk-body > * > *:not(.mk-pic-wrap),
+.mk-tog > * {
+  margin: 0 16px;
+  min-width: 0;
+}
+.mk-status:empty {
+  display: none;
+}
+
+/* controls */
+.mk-group,
+.mk-ctl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.mk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mk-chip {
+  flex: none;
+  flex-direction: column;
+  gap: 0;
+  min-width: 76px;
+  padding: 6px 12px;
+  line-height: 20px;
+}
+.mk-chip-n {
+  display: block;
+  font-size: 15px;
+}
+.mk-chip-s {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-muted);
+}
+.mk-chip[aria-pressed="true"] .mk-chip-s {
+  color: var(--on-tape);
+}
+.mk-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.mk-chip:disabled:hover {
+  background: var(--paper);
+}
+.mk-fins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mk-fin {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px 0 12px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 15px/20px var(--font-sans);
+  cursor: pointer;
+}
+.mk-fin:hover {
+  background: var(--stage);
+}
+.mk-fin[aria-pressed="true"] {
+  background: var(--tape);
+  border-color: var(--ink);
+  color: var(--on-tape);
+}
+.mk-fin:focus-visible,
+.mk-tab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.mk-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--fin);
+  box-shadow: inset 0 0 0 1px rgba(20, 24, 28, 0.35);
+}
+.mk-why {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.mk-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 16px;
+  background: var(--paper);
+}
+.mk-tab {
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 52px;
+  padding: 4px 2px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.mk-tab:hover {
+  background: var(--stage);
+}
+.mk-tab[aria-expanded="true"] {
+  background: var(--tape);
+  color: var(--on-tape);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+.mk-tab-k {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.mk-tab[aria-expanded="true"] .mk-tab-k {
+  color: var(--on-tape);
+}
+.mk-tab-v {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* upload */
+.mk-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mk-choose {
+  width: 100%;
+}
+@media (width >= 48rem) {
+  .mk-drop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 14px;
+    padding: 16px;
+    border: 2px dashed var(--line-strong);
+    border-radius: var(--radius-md);
+    background: var(--wall);
+  }
+  .mk-drop.is-over {
+    border-color: var(--ink);
+    background: var(--tape-soft);
+  }
+  .mk-drop.is-busy {
+    border-style: solid;
+    cursor: progress;
+  }
+  .mk-drop-icon {
+    display: flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .mk-drop-t {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 200px;
+    min-width: 0;
+  }
+}
+.mk-drop-title {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 20px;
+}
+.mk-drop-sub {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.mk-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 44px;
+}
+.mk-art-k {
+  display: flex;
+  flex-direction: column;
+}
+.mk-art-t {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 20px;
+}
+.mk-art-s {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ink-muted);
+}
+.mk-note,
+.mk-err {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  line-height: 20px;
+}
+.mk-note {
+  background: var(--tape-soft);
+  color: var(--ink);
+}
+.mk-note .mk-icon {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  color: var(--tape-ink);
+}
+.mk-err {
+  background: var(--poor-soft);
+  color: var(--poor);
+  font-weight: 600;
+}
+.mk-err .mk-icon {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+}
+.mk-err small {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink);
+}
+.mk-wait {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+
+/* answer and download */
+.mk-hint {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+}
+.mk-answer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mk-facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 20px;
+}
+.mk-facts li {
+  padding-left: 14px;
+  position: relative;
+}
+.mk-facts li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tape);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+.mk-whole {
+  color: var(--good);
+  font-weight: 600;
+}
+.mk-link {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+.mk-link a {
+  color: var(--ink);
+}
+.mk-dl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mk-dl-btn {
+  width: 100%;
+}
+.mk-saved {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--good);
+}
+.mk-saved:empty {
+  display: none;
+}
+.mk-saved .font-mono {
+  font-weight: 500;
+  color: var(--ink);
+}
+.mk-failed {
+  color: var(--poor);
+}
+
+/* page parts */
+.f7-uses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.f7-use {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.f7-use .mk-frame-box {
+  border-radius: var(--radius-sm);
+}
+.f7-use p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+}
+.f7-shapes {
+  max-width: 760px;
+}
+/* Two text columns that wrap: the table fits a phone and never scrolls. */
+.f7-shapes .fs-table {
+  min-width: 0;
+}
+.f7-shapes .fs-table td,
+.f7-shapes .fs-table th {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (width >= 60rem) {
+  .f7-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (width >= 48rem) {
+  .mk-tabs {
+    display: none;
+  }
+}
+
+/* layouts last, so they win over the base rules above */
+@media (width < 48rem) {
+  .mk-pic-wrap {
+    order: 1;
+  }
+  .mk-drop {
+    order: 2;
+  }
+  .mk-status {
+    order: 3;
+  }
+  .mk-line {
+    order: 4;
+  }
+  .mk-tabs {
+    order: 5;
+  }
+  .mk-group {
+    order: 6;
+  }
+  .mk-left > .mk-hint {
+    order: 7;
+  }
+  .mk-answer {
+    order: 8;
+  }
+  .mk-dl {
+    order: 9;
+  }
+  .mk-group:not(.is-open) {
+    display: none;
+  }
+  .mk-glabel,
+  .mk-drop-icon,
+  .mk-drop-t {
+    display: none;
+  }
+  .mk-g-mat .mc-label {
+    display: none;
+  }
+  .mk-seg {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .mk-seg [role="radio"] {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 8px;
+  }
+  .mk-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -16px;
+    padding: 2px 16px 8px;
+  }
+  .mk-fins {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 48rem) {
+  .mk-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 28px;
+    padding: 24px;
+    align-items: start;
+  }
+  .mk-left,
+  .mk-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+  .mk-left {
+    position: sticky;
+    top: 16px;
+  }
+  .mk-body > * > *:not(.mk-pic-wrap),
+  .mk-tog > * {
+    margin: 0;
+  }
+  .mk-frame-box {
+    border-radius: var(--radius-lg);
+  }
+  .mk-tog {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px 20px;
+  }
+  .mk-g-wall {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+  }
+  .mk-chips {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .mk-chip {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+  }
+  .mk-fins {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .mk-dl {
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+}
