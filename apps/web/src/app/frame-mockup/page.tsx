@@ -226,7 +226,11 @@ export default function FrameMockupPage() {
       <div className="flex flex-col gap-4 md:gap-12">
         <div className="flex flex-col gap-3">
           <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: F7.name }]} />
-          <h1 className="display tracking-[-0.03em] md:display-xl">{F7.seo.h1}</h1>
+          {/* 38px on a phone: at 40px "Mockup Generator" fit 358px with ~2px to spare on macOS
+              and wrapped to a third line on Linux, pushing the upload button off the first screen. */}
+          <h1 className="display tracking-[-0.03em] max-md:text-[38px] max-md:leading-[42px] md:display-xl">
+            {F7.seo.h1}
+          </h1>
           {/* {@link openspec/specs/frame-mockup/spec.md#requirement-the-answer-paragraph-names-the-head-keyword} */}
           <p className="max-w-prose md:body-lg">
             Make a poster mockup: upload a JPEG or PNG, see it framed on a wall at true size, and
