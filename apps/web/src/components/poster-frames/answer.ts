@@ -2,6 +2,7 @@ import {
   type ActualSize,
   inEighths,
   MAT_OVERLAP,
+  type MattedFrame,
   MAT_WIDTH,
   MEASURE_TOLERANCE,
   oneDecimal,
@@ -12,6 +13,7 @@ import {
   type Size,
   toCm,
   type Unit,
+  writeSize,
 } from "@framesizes/sizes";
 
 import { article } from "@/components/measure-frame/answer";
@@ -220,6 +222,20 @@ export function describe(
     const sel = Math.min(Math.max(pick, 0), n - 1);
     const drawn = matted[sel];
     if (!drawn) throw new Error("no frame to draw");
+    /** A pre-cut mat cut for a print that is not the poster. */
+    const off = (x: MattedFrame) => x.preCut && !same(x.print, p.size);
+    const overlap = !matted.some(off)
+      ? ` The mat overlaps the poster by ${len(MAT_OVERLAP, unit)} on each side.`
+      : matted.some((x) => !x.preCut)
+        ? ` A mat cut to order overlaps the poster by ${len(MAT_OVERLAP, unit)} on each side.`
+        : "";
+    const note = (x: MattedFrame) => {
+      if (!off(x))
+        return x.preCut ? `Sold with a mat cut for ${forP}.` : `Have the mat cut for ${forP}.`;
+      const side = (p.size.w - x.frame.w) / 2 + x.side;
+      const top = (p.size.h - x.frame.h) / 2 + x.top;
+      return `Sold with a mat cut for ${withArticle(writeSize(x.print, "search"))} print. It overlaps your poster by ${pair(side, top, unit)}.`;
+    };
     return {
       ...base,
       head:
@@ -229,7 +245,7 @@ export function describe(
       label: n === 1 ? "Frame size" : "Frame in the drawing",
       value: size(drawn.frame, unit),
       sub: size(drawn.frame, other(unit)),
-      how: `Borders are sides / top and bottom. The mat overlaps the poster by ${len(MAT_OVERLAP, unit)} on each side.${n > 1 ? " Tap a frame to draw it." : ""}`,
+      how: `Borders are sides / top and bottom.${overlap}${n > 1 ? " Tap a frame to draw it." : ""}`,
       cards: matted.map((x, i) => ({
         title: n > 1 ? `Frame ${i + 1} of ${n}` : "Frame",
         rows: [
@@ -237,7 +253,7 @@ export function describe(
             chip: `${x.frame.id} frame`,
             badge: badge(x.preCut),
             border: `Border ${pair(x.side, x.top, unit)}`,
-            note: x.preCut ? `Sold with a mat cut for ${forP}.` : `Have the mat cut for ${forP}.`,
+            note: note(x),
           },
         ],
         ...(n > 1 ? { pick: i, selected: i === sel } : {}),
