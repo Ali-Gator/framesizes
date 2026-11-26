@@ -57,7 +57,7 @@ when to add and when to fold items in.
   keeping the request IP (`ip: false` is a dead option, `$ip` is set server-side); the Privacy Policy's
   "no IP address" rests on cookieless mode plus the project's "Discard client IP data". Query
   stored events for `$ip` once real traffic exists (BL-86 pinned the "no location" half in code).
-  _Refs:_ PostHog project 344498, `apps/web/src/app/privacy-policy/page.tsx` · _Status:_ gated — DNS live (backlog-7 triage, 2026-11-21)
+  _Refs:_ PostHog project 344498, `apps/web/src/app/privacy-policy/page.tsx` · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-87] Write the company-page widget exemption into CLAUDE.md** — CLAUDE.md says every page
   carries its own widget; A1–A5 carry none by design (t26 proposal and design). Add the exemption
   to its Conventions so a later review does not flag it.
@@ -78,10 +78,10 @@ when to add and when to fold items in.
 - **[BL-3] `www` and `http` redirect in one hop** — check that `www.framesizes.app` and
   `http://` answer one 308 to `https://framesizes.app` (guide checklist 1); the app cannot see it,
   the Vercel domain settings do.
-  _Refs:_ On-page SEO guide, pre-publish checklist 1 · _Status:_ gated — DNS live
+  _Refs:_ On-page SEO guide, pre-publish checklist 1 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-5] PostHog authorized URLs** — the project shows "No authorized URLs configured"; add
   `https://framesizes.app` so URL-based filters and the toolbar work.
-  _Refs:_ PostHog project 344498, Settings › Project · _Status:_ gated — DNS live
+  _Refs:_ PostHog project 344498, Settings › Project · _Status:_ open — `https://framesizes.app` set as the authorized URL with the owner's yes (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-9] Social-image font path from `process.cwd()`** — works because the image is prerendered
   from `apps/web` (the Next docs' own pattern); if the route ever renders at request time from
   another directory, `readFile` fails and every `og:image` answers 500. Resolve it from the module
@@ -90,63 +90,63 @@ when to add and when to fold items in.
 - **[BL-13] Home page preview card in a chat app** — paste `https://framesizes.app` into a chat
   app or a preview tool and check the card shows the nested-size image (guide checklist 7); the
   image itself is checked, the live card is not.
-  _Refs:_ On-page SEO guide, pre-publish checklist 7 · _Status:_ gated — DNS live
+  _Refs:_ On-page SEO guide, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-14] Rich Results Test for the home page** — run the live URL through the Rich Results Test
   and confirm `WebSite` and `Organization` validate (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts`, pre-publish checklist 15 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/lib/seo.ts`, pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-39] F2 preview card in a chat app** — paste `https://framesizes.app/frame-sizes-on-wall` into a
   chat app or a preview tool and check the card shows the 16x20-above-a-sofa image (guide checklist 7).
-  _Refs:_ `apps/web/src/app/frame-sizes-on-wall/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/frame-sizes-on-wall/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-40] Rich Results Test for F2** — run the live F2 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-89] F3 preview card in a chat app** — paste `https://framesizes.app/how-big-is-8x10` into a
   chat app or a preview tool and check the card shows the nested-sizes comparison image (guide checklist 7).
-  _Refs:_ `apps/web/src/app/how-big-is-8x10/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/how-big-is-8x10/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-90] Rich Results Test for F3** — run the live F3 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/app/how-big-is-8x10/page.tsx`, pre-publish checklist 15 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/how-big-is-8x10/page.tsx`, pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-107] Preview card for F4** — paste the live F4 URL into a chat app or a preview tool and check
   the card shows the 8x10 frame with its three measurements (guide checklist 7).
-  _Refs:_ `apps/web/src/app/measure-picture-frame/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/measure-picture-frame/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-108] Rich Results Test for F4** — run the live F4 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist 15 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-109] URL Inspection for F4** — after launch, check `/measure-picture-frame` in Search Console's
   URL Inspection: indexed, with its own canonical (guide, after launch).
-  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist · _Status:_ gated — the owner runs URL Inspection in Search Console once Google has crawled the page (backlog-8 triage, 2026-11-26)
 
 - **[BL-112] Preview card for F5** — paste `https://framesizes.app/frame-mat-calculator` into a chat
   app or a preview tool and check the card shows the 8x10-in-its-mat image (guide checklist 7).
-  _Refs:_ `apps/web/src/app/frame-mat-calculator/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/frame-mat-calculator/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-113] Rich Results Test for F5** — run the live F5 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-114] URL Inspection for F5** — after launch, check `/frame-mat-calculator` in Search Console's
   URL Inspection: indexed, and Google chose the page's own canonical.
-  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — DNS live
+  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — the owner runs URL Inspection in Search Console once Google has crawled the page (backlog-8 triage, 2026-11-26)
 - **[BL-123] Preview card for F6** — paste `https://framesizes.app/poster-frame-sizes` into a chat
   app or a preview tool and check the card shows the 24x36 poster in its own frame and in a 27x40 with a mat (guide checklist 7).
-  _Refs:_ `apps/web/src/app/poster-frame-sizes/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/poster-frame-sizes/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-124] Rich Results Test for F6** — run the live F6 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-125] URL Inspection for F6** — after launch, check `/poster-frame-sizes` in Search Console's
   URL Inspection: indexed, and Google chose the page's own canonical.
-  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — DNS live
+  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — the owner runs URL Inspection in Search Console once Google has crawled the page (backlog-8 triage, 2026-11-26)
 - **[BL-132] Preview card for F7** — paste `https://framesizes.app/frame-mockup` into a chat app or a
   preview tool and check the card shows the sample in a 24x36 black frame above a sofa (guide checklist 7).
-  _Refs:_ `apps/web/src/app/frame-mockup/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/app/frame-mockup/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-133] Rich Results Test for F7** — run the live F7 URL through the Rich Results Test and confirm
   its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-134] URL Inspection for F7** — after launch, check `/frame-mockup` in Search Console's URL
   Inspection: indexed, and Google chose the page's own canonical.
-  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — DNS live
+  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — the owner runs URL Inspection in Search Console once Google has crawled the page (backlog-8 triage, 2026-11-26)
 - **[BL-135] F7 PNG download on an iPhone** — CI's Playwright runs Chromium only. On iOS Safari, save the
   whole wall and a close-up after an upload and check the PNG opens, is 2,400 px on its longer side and
   shows the artwork (an SVG room drawn into a canvas, then `toBlob`).
-  _Refs:_ `apps/web/src/components/frame-mockup/export.ts` · _Status:_ gated — DNS live
+  _Refs:_ `apps/web/src/components/frame-mockup/export.ts` · _Status:_ gated — an iOS Safari run: an iPhone, or the iOS Simulator with a test image in Photos (backlog-8 triage, 2026-11-26)
 - **[BL-126] F6 unit switch can flip a near-tolerance answer** — switching in↔cm rewrites a typed field
   rounded to 0.1 cm and answers from that text, so 16⅜ × 20 in ("Use a 16x20 frame.") reads 41.6 cm and
   becomes "Not a standard size". Keep the parsed inches until the visitor edits a field (F5 rounds the same way).
@@ -154,7 +154,7 @@ when to add and when to fold items in.
 - **[BL-127] F6 pre-cut card copy for a near-standard poster** — a pre-cut frame matched within ⅜ in says
   "Sold with a mat cut for your poster" and "overlaps by ¼ in", but the mat is cut for the standard print
   (40 × 50 cm in an 18x24 overlaps about ⅛ in). Name the print the mat is cut for; new copy goes to the owner.
-  _Refs:_ `apps/web/src/components/poster-frames/answer.ts` (`describe`, with a mat), phase review t6 · _Status:_ gated — owner copy
+  _Refs:_ `apps/web/src/components/poster-frames/answer.ts` (`describe`, with a mat), phase review t6 · _Status:_ open — owner chose the real-overlap copy (backlog-8 triage, 2026-11-26)
 - **[BL-115] F5's first paragraph has no numbers** — guide checklist 8 asks the first paragraph to
   answer the head keyword with numbers; F5's intro, verbatim from the approved canvas and spec, has
   none. Decide whether to add one (for example the 8x10 + 2 in answer) or exempt tool pages in the guide.
@@ -163,18 +163,18 @@ when to add and when to fold items in.
   print within ⅜ in either way "fits" (an 8x10 frame with a 1⅞ in border: largest print 4¾ × 6¾, answer
   "A 5x7 print fits." with a 1¾ in border). The canvas does the same, and a bigger print only hides more
   under the mat; decide whether to accept only prints no bigger than the largest.
-  _Refs:_ `apps/web/src/components/frame-mat/answer.ts`, `frame-mat-calculator` "A reverse answer gives the largest print" · _Status:_ gated — owner's product decision (t5 review, 2026-11-23)
+  _Refs:_ `apps/web/src/components/frame-mat/answer.ts`, `frame-mat-calculator` "A reverse answer gives the largest print" · _Status:_ open — owner chose "no bigger, ⅟₁₆ in slack" (backlog-8 triage, 2026-11-26); ships with BL-120
 - **[BL-117] F5 formula figure's label in inches only** — the formula section's drawing is server-rendered
   with an inch `aria-label` while its caption switches unit through `<U>`; give the label both units.
   _Refs:_ `apps/web/src/app/frame-mat-calculator/page.tsx`, `components/frame-mat/answer.ts` (`drawing`) · _Status:_ open — t5 review, 2026-11-23
 - **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
   shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
   system colour once a second hub makes the nav visible.
-  _Refs:_ `apps/web/src/components/site/hub-nav.tsx` · _Status:_ gated — a second live hub (backlog-3 triage, 2026-11-15)
+  _Refs:_ `apps/web/src/components/site/hub-nav.tsx` · _Status:_ open — the gallery hub is live, so the nav shows (backlog-8 triage, 2026-11-26)
 - **[BL-103] Check X1's live head on production** — Rich Results Test on the live X1 URL
   (BreadcrumbList valid), a preview card in a chat app, `www.` and trailing-slash URLs reach the
   canonical in one hop, and no `X-Robots-Tag` on the response.
-  _Refs:_ `openspec/specs/extension-site/spec.md` · _Status:_ gated — the t24-go-live deploy
+  _Refs:_ `openspec/specs/extension-site/spec.md` · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 
 - **[BL-104] A translated X1's last breadcrumb item is the English URL** — on `/ru/…` the
   BreadcrumbList's last `item` is `https://framesizes.app/extensions/gallery-wall-layout-generator`,
@@ -191,15 +191,15 @@ when to add and when to fold items in.
 - **[BL-100] Check the pin switch on production** — install from the store with the button
   unpinned: the tab opens `?pinned=0`; pin it and the page switches to usage mode within 2 s with
   `pinned` gone from the address. The published extension talks only to `https://framesizes.app/*`.
-  _Refs:_ `openspec/changes/archive/2026-11-22-t24-go-live/tasks.md` (After deploy) · _Status:_ gated — the t24-go-live deploy
+  _Refs:_ `openspec/changes/archive/2026-11-22-t24-go-live/tasks.md` (After deploy) · _Status:_ gated — a person installs 0.1.1 from the store in desktop Chrome, unpinned, then pins it (backlog-8 triage, 2026-11-26)
 - **[BL-101] Check G1's extension section on production** — with the extension installed, G1 reads
   "You have it…" at the same height as with it disabled; on a 390 px touch phone it shows "Chrome on
   phones doesn't run extensions…" and no "Add to Chrome".
-  _Refs:_ `apps/web/src/components/extension/` · _Status:_ gated — the t24-go-live deploy
+  _Refs:_ `apps/web/src/components/extension/` · _Status:_ gated — a person with the store extension in desktop Chrome, and a 390 px touch phone (backlog-8 triage, 2026-11-26)
 - **[BL-102] Check the install tab in Chrome's language** — upload 0.1.1
   (`pnpm --filter extension zip`); once the store passes it, a first install in Chrome set to
   Russian opens `/ru/…`, and in Filipino `/tl/…`.
-  _Refs:_ `apps/extension/src/background.ts` `howToUrl` · _Status:_ gated — store review of 0.1.1
+  _Refs:_ `apps/extension/src/background.ts` `howToUrl` · _Status:_ gated — a person does a first store install in Chrome set to Russian, then Filipino (backlog-8 triage, 2026-11-26)
 - **[BL-105] The English first-install e2e fails on a Mac set to another language** — Chromium
   ignores `--lang` on macOS, so since 0.1.1 the install tab follows the system language and "a first
   install opens one how-to tab with pinned=0" expects English. CI (Linux) passes; on darwin accept
