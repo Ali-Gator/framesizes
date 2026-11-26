@@ -86,9 +86,18 @@ function turn(frame: Frame, landscape: boolean): Frame {
   return turned;
 }
 
-function closest<T extends Size>(list: readonly T[], up: Size): { item: T; d: number } | undefined {
+/** How much bigger than a frame's largest print its matched size may be on each side, in inches. */
+const PRINT_SLACK = 1 / 16;
+
+/** `noBigger`: skip a size more than `PRINT_SLACK` bigger than `up` on either side. */
+function closest<T extends Size>(
+  list: readonly T[],
+  up: Size,
+  noBigger = false,
+): { item: T; d: number } | undefined {
   let best: { item: T; d: number } | undefined;
   for (const item of list) {
+    if (noBigger && (item.w - up.w > PRINT_SLACK || item.h - up.h > PRINT_SLACK)) continue;
     const d = gap(item, up);
     if (d <= MEASURE_TOLERANCE && (!best || d < best.d)) best = { item, d };
   }
@@ -132,11 +141,11 @@ function nearest(
   return out;
 }
 
-function match(size: Size): Identified {
+function match(size: Size, noBigger = false): Identified {
   const up = upright(size);
   const landscape = size.w > size.h;
-  const us = closest(CATALOG, up);
-  const metric = closest(METRIC_FRAMES, up);
+  const us = closest(CATALOG, up, noBigger);
+  const metric = closest(METRIC_FRAMES, up, noBigger);
   if (metric && (!us || metric.d < us.d)) {
     const m = metric.item;
     return {
@@ -149,6 +158,13 @@ function match(size: Size): Identified {
   if (us) return { kind: "standard", size, frame: turn(us.item, landscape) };
   return { kind: "custom", size, ...nearest(up, landscape) };
 }
+
+/**
+ * The standard or metric size the largest print a frame takes matches: at most ⅟₁₆ in bigger and
+ * at most ⅜ in smaller on each side, else a custom size with the sizes below and above.
+ * {@link openspec/specs/size-engine/spec.md#requirement-the-largest-print-for-a-frame-is-matched-to-a-standard-size}
+ */
+export const matchLargestPrint = (print: Size): Identified => match(print, true);
 
 /** Why a measurement gives no size. */
 export type NoAnswer = "number" | "narrow" | "room";

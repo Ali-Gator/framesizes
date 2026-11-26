@@ -1,6 +1,7 @@
 import { CATALOG, findFrame, MAT_OVERLAP, type Frame } from "./frames";
 import {
   identifyFrame,
+  matchLargestPrint,
   MEASURE_TOLERANCE,
   preCutFrames,
   type Identified,
@@ -101,7 +102,9 @@ export function whyNoMat(q: MatQuestion): NoMat | undefined {
 
 /**
  * The print, mat opening and frame a mat question gives, each matched as F4 matches an inside
- * measurement, and the frames sold with a pre-cut mat for the print; `undefined` when none.
+ * measurement except the largest print from a frame, which matches no size more than ⅟₁₆ in
+ * bigger (`matchLargestPrint`), and the frames sold with a pre-cut mat for the print; `undefined`
+ * when none.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-print-and-a-mat-width-give-the-mat-opening-and-the-frame-size}
  * {@link openspec/specs/size-engine/spec.md#requirement-a-frame-and-a-mat-width-give-the-mat-opening-and-the-largest-print}
  */
@@ -110,7 +113,7 @@ export function matSizes(q: MatQuestion): MatAnswer | undefined {
   if (typeof sizes === "string") return undefined;
   return {
     ...sizes,
-    printMatch: matched(sizes.print),
+    printMatch: q.from === "frame" ? matchLargestPrint(sizes.print) : matched(sizes.print),
     frameMatch: matched(sizes.frame),
     preCut: preCutFor(sizes.print),
   };
