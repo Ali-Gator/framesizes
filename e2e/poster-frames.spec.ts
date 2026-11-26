@@ -116,3 +116,43 @@ for (const viewport of [
     });
   });
 }
+
+/** The opening's "Poster" label is hidden, or its box lies inside the opening. */
+async function labelInside(page: Page) {
+  const label = widget(page).locator(".mt-open .mt-art");
+  if (!(await label.isVisible())) return false;
+  const o = await box(page, ".mt-open");
+  const l = await box(page, ".mt-open .mt-art");
+  expect(l.x).toBeGreaterThanOrEqual(o.x);
+  expect(l.y).toBeGreaterThanOrEqual(o.y);
+  expect(l.x + l.width).toBeLessThanOrEqual(o.x + o.width);
+  expect(l.y + l.height).toBeLessThanOrEqual(o.y + o.height);
+  return true;
+}
+
+for (const viewport of [
+  { width: 1280, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test.describe(`the poster label at ${viewport.width}`, () => {
+    test.use({ viewport });
+
+    /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-a-poster-name-that-does-not-fit} */
+    test("no Poster label spills out of a 3 × 5 in poster", async ({ page }) => {
+      await open(page);
+      await widget(page).getByRole("button", { name: "Custom size", exact: true }).click();
+      await field(page, "Width").fill("3");
+      await field(page, "Height").fill("5");
+      await expect(answer(page).locator(".mc-res-h .u-in")).toContainText("3 × 5 in");
+      // The poster is narrower than the label's one line of text.
+      expect((await box(page, ".mt-open")).width).toBeLessThan(52);
+      await labelInside(page);
+    });
+
+    /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-a-poster-name-that-does-not-fit} */
+    test("the Poster label still shows for a 24x36 poster", async ({ page }) => {
+      await open(page);
+      expect(await labelInside(page)).toBe(true);
+    });
+  });
+}

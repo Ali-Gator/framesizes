@@ -128,3 +128,51 @@ test.describe("on a phone", () => {
     await fitsWidth(page);
   });
 });
+
+/** The opening's "Print" label is hidden, or its box lies inside the opening. */
+async function labelInside(page: Page) {
+  const open = calc(page).locator(".mt-open");
+  const label = open.locator(".mt-art");
+  if (!(await label.isVisible())) return false;
+  const o = await box(page, ".mt-open");
+  const l = await box(page, ".mt-open .mt-art");
+  expect(l.x).toBeGreaterThanOrEqual(o.x);
+  expect(l.y).toBeGreaterThanOrEqual(o.y);
+  expect(l.x + l.width).toBeLessThanOrEqual(o.x + o.width);
+  expect(l.y + l.height).toBeLessThanOrEqual(o.y + o.height);
+  return true;
+}
+
+for (const viewport of [
+  { width: 1280, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test.describe(`the print label at ${viewport.width}`, () => {
+    test.use({ viewport });
+
+    /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-a-print-name-that-does-not-fit-the-opening} */
+    test("no Print label spills out of a 1 cm opening", async ({ page }) => {
+      await open(page);
+      await calc(page).getByRole("radio", { name: "cm", exact: true }).click();
+      await press(page, "Reverse: start from a frame");
+      await field(page, "Frame width").fill("10");
+      await field(page, "Frame height").fill("15");
+      await field(page, "Mat border").fill("4.5");
+      await press(page, "Find the print that fits");
+      await expect(field(page, "Mat border")).not.toHaveAttribute("aria-invalid", "true");
+      await expect(calc(page).locator("figcaption")).toHaveText(
+        "Your frame, with the largest print under the mat.",
+      );
+      // The opening is narrower than the label's one line of text.
+      expect((await box(page, ".mt-open")).width).toBeLessThan(46);
+      await labelInside(page);
+    });
+
+    /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-a-print-name-that-does-not-fit-the-opening} */
+    test("the Print label still shows for an 8x10 in an 11x14", async ({ page }) => {
+      await open(page);
+      await expect(calc(page).locator(".mc-fig")).toContainText(/11 × 14 in/);
+      expect(await labelInside(page)).toBe(true);
+    });
+  });
+}
