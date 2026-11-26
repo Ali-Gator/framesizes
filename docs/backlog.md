@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-132**
+_Next id:_ **BL-136**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -134,6 +134,19 @@ when to add and when to fold items in.
 - **[BL-125] URL Inspection for F6** — after launch, check `/poster-frame-sizes` in Search Console's
   URL Inspection: indexed, and Google chose the page's own canonical.
   _Refs:_ On-page SEO guide, after launch · _Status:_ gated — DNS live
+- **[BL-132] Preview card for F7** — paste `https://framesizes.app/frame-mockup` into a chat app or a
+  preview tool and check the card shows the sample in a 24x36 black frame above a sofa (guide checklist 7).
+  _Refs:_ `apps/web/src/app/frame-mockup/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ gated — DNS live
+- **[BL-133] Rich Results Test for F7** — run the live F7 URL through the Rich Results Test and confirm
+  its `BreadcrumbList` validates (guide checklist 15).
+  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ gated — DNS live
+- **[BL-134] URL Inspection for F7** — after launch, check `/frame-mockup` in Search Console's URL
+  Inspection: indexed, and Google chose the page's own canonical.
+  _Refs:_ On-page SEO guide, after launch · _Status:_ gated — DNS live
+- **[BL-135] F7 PNG download on an iPhone** — CI's Playwright runs Chromium only. On iOS Safari, save the
+  whole wall and a close-up after an upload and check the PNG opens, is 2,400 px on its longer side and
+  shows the artwork (an SVG room drawn into a canvas, then `toBlob`).
+  _Refs:_ `apps/web/src/components/frame-mockup/export.ts` · _Status:_ gated — DNS live
 - **[BL-126] F6 unit switch can flip a near-tolerance answer** — switching in↔cm rewrites a typed field
   rounded to 0.1 cm and answers from that text, so 16⅜ × 20 in ("Use a 16x20 frame.") reads 41.6 cm and
   becomes "Not a standard size". Keep the parsed inches until the visitor edits a field (F5 rounds the same way).
@@ -233,11 +246,6 @@ when to add and when to fold items in.
   _Refs:_ `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/opengraph-image.tsx` · _Status:_ deferred — whole-site translation
 
 ## Widgets
-
-- **[BL-130] F7 `exportSize` takes no bad view** — a zero or NaN view gives `{ w: NaN, h: NaN }` and an empty PNG with no error, while the artwork calls in the same module return `undefined`. Views come from `mockupView` today, so it only bites a future caller.
-  _Refs:_ `packages/sizes/src/mockup.ts` (`exportSize`) · _Status:_ open
-- **[BL-131] F7 `visiblePart` returns a pixel rect typed as `Rect`** — `Rect`'s doc says inches with y up from the floor; the crop is pixels with y down from the art's top. A `PixelRect` type would stop a page flipping the crop. Same pass: the barrel exports generic `View`, `Placement`, `TIE`; `MockupView`, `MockupPlacement`, `MOCKUP_TIE` would not clash with F1's local `View`.
-  _Refs:_ `packages/sizes/src/mockup.ts`, `packages/sizes/src/index.ts` · _Status:_ open
 
 - **[BL-128] E2e guard: no size-table cell spills into the next column** — F6's chart shipped with
   matted cells (up to 328 px in cm) in the shared 146 px `num` column, so text overlapped the next

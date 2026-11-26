@@ -146,7 +146,7 @@ test("no affiliate links", async ({ page }) => {
   expect(outline.join()).not.toContain("Where to buy");
 });
 
-/** {@link openspec/specs/measure-frame/spec.md#scenario-f1-f2-f3-f4-f5-f6-and-g1-are-live} */
+/** {@link openspec/specs/measure-frame/spec.md#scenario-f1-f2-f3-f4-f5-f6-f7-and-g1-are-live} */
 test("links only to live pages", async ({ page }) => {
   const { related, hrefs } = await serverHtml(page);
   expect(related).toEqual([
@@ -155,6 +155,7 @@ test("links only to live pages", async ({ page }) => {
     "/how-big-is-8x10",
     "/frame-mat-calculator",
     "/poster-frame-sizes",
+    "/frame-mockup",
   ]);
   expect(hrefs).not.toContain("/photo-print-sizes");
   expect(hrefs.filter((h) => h.startsWith("#"))).toEqual([]);

@@ -361,6 +361,17 @@ describe("the saved PNG", () => {
       h: 2400,
     });
   });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-view-that-is-not-a-positive-size} */
+  it("gets no size for a view that is not a positive size", () => {
+    for (const view of [
+      { ...WALL, w: 0 },
+      { ...WALL, h: -96 },
+      { ...WALL, h: Number.NaN },
+      { ...WALL, w: Number.POSITIVE_INFINITY },
+    ])
+      expect(exportSize(view)).toBeUndefined();
+  });
 });
 
 describe("an artwork with no answer", () => {

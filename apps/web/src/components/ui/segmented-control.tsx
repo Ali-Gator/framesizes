@@ -5,6 +5,10 @@ import { type KeyboardEvent, useRef } from "react";
 export interface SegmentOption<T extends string> {
   value: T;
   label: string;
+  /** Not offered now: greyed out, skipped by the arrow keys. */
+  disabled?: boolean;
+  /** An element that says why, for a disabled option. */
+  describedBy?: string;
 }
 
 const SIZES = {
@@ -40,9 +44,17 @@ export function SegmentedControl<T extends string>({
     const step = STEP[event.key];
     if (!step) return;
     event.preventDefault();
-    const next = (index + step + options.length) % options.length;
+    // The next enabled option in that direction; none other than this one: stay.
+    let next = index;
+    for (let n = 1; n < options.length; n++) {
+      const i = (index + step * n + options.length * n) % options.length;
+      if (!options[i]?.disabled) {
+        next = i;
+        break;
+      }
+    }
     const option = options[next];
-    if (!option) return;
+    if (!option || next === index) return;
     onChange(option.value);
     buttons.current[next]?.focus();
   }
@@ -65,13 +77,15 @@ export function SegmentedControl<T extends string>({
             role="radio"
             data-value={option.value}
             aria-checked={checked}
+            disabled={option.disabled}
+            aria-describedby={option.describedBy}
             tabIndex={checked ? 0 : -1}
             onClick={() => onChange(option.value)}
             onKeyDown={(event) => onKeyDown(event, index)}
-            className={`${SIZES[size]} cursor-pointer rounded-pill font-semibold forced-colors:border-2 ${
+            className={`${SIZES[size]} cursor-pointer rounded-pill font-semibold disabled:cursor-not-allowed disabled:opacity-45 forced-colors:border-2 ${
               checked
                 ? "bg-tape text-on-tape shadow-[inset_0_0_0_1.5px_var(--ink)] forced-colors:border-[Highlight]"
-                : "text-ink-muted hover:text-ink forced-colors:border-[Canvas]"
+                : "text-ink-muted enabled:hover:text-ink forced-colors:border-[Canvas]"
             }`}
           >
             {option.label}

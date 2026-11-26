@@ -292,7 +292,7 @@ test("six questions, each answered in the HTML, the first open", async ({ page }
   expect(questions.map((q) => q.open)).toEqual([true, false, false, false, false, false]);
 });
 
-/** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-f1-f2-f3-f4-f5-f6-and-g1-are-live} */
+/** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-f1-f2-f3-f4-f5-f6-f7-and-g1-are-live} */
 test("links only to live pages", async ({ page }) => {
   const { related, hrefs } = await serverHtml(page);
   expect(related).toEqual([
@@ -301,6 +301,7 @@ test("links only to live pages", async ({ page }) => {
     "/how-big-is-8x10",
     "/measure-picture-frame",
     "/frame-mat-calculator",
+    "/frame-mockup",
   ]);
   expect(hrefs).not.toContain("/poster-sizes");
   expect(hrefs.filter((h) => h.startsWith("#"))).toEqual([]);

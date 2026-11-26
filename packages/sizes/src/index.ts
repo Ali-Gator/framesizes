@@ -130,15 +130,15 @@ export { type Art, mockupSizes, type MockupSize, SQUARE_TOLERANCE } from "./mock
 /** {@link openspec/specs/size-engine/spec.md#requirement-each-mockup-size-says-how-much-of-the-artwork-it-cuts} */
 export { type MockupOption, mockupOptions } from "./mockup";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-mockup-opens-on-the-size-that-cuts-least} */
-export { mockupDefault, TIE } from "./mockup";
+export { mockupDefault, TIE as MOCKUP_TIE } from "./mockup";
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-opening-a-mockup-artwork-fills-is-the-frame-or-its-mat-opening} */
 export { mockupOpening } from "./mockup";
 /** {@link openspec/specs/size-engine/spec.md#requirement-the-visible-part-of-a-mockup-artwork-is-centred-and-follows-a-focus-point} */
-export { visiblePart } from "./mockup";
+export { type PixelRect, visiblePart } from "./mockup";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-mockup-frame-hangs-at-true-scale-on-the-sample-wall} */
-export { hangMockup, type Placement } from "./mockup";
+export { hangMockup, type Placement as MockupPlacement } from "./mockup";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-mockup-has-a-whole-wall-view-and-a-close-up} */
-export { mockupView, type View } from "./mockup";
+export { mockupView, type View as MockupView } from "./mockup";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-saved-mockup-is-2400-pixels-on-its-longer-side} */
 export { EXPORT_LONG_SIDE, exportSize } from "./mockup";
 /** {@link openspec/specs/size-engine/spec.md#requirement-a-key-press-moves-a-mockup-artwork-by-a-fixed-step} */

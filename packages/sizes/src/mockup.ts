@@ -33,6 +33,14 @@ export interface MockupOption {
   cut: number | null;
 }
 
+/** A rectangle in pixels of the artwork: `y` down from its top edge. */
+export interface PixelRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export type Placement = "sofa" | "plain";
 export type View = "wall" | "close";
 
@@ -137,7 +145,7 @@ function overhang(art: Art, opening: Size) {
  * 0.5 by default) slides it along the cut side.
  * {@link openspec/specs/size-engine/spec.md#requirement-the-visible-part-of-a-mockup-artwork-is-centred-and-follows-a-focus-point}
  */
-export function visiblePart(art: Art, opening: Size, focus = 0.5): Rect | undefined {
+export function visiblePart(art: Art, opening: Size, focus = 0.5): PixelRect | undefined {
   if (!valid(art) || !positive(opening.w) || !positive(opening.h)) return undefined;
   const { axis, w, h, slack } = overhang(art, opening);
   const offset = Math.min(1, Math.max(0, Number.isNaN(focus) ? 0.5 : focus)) * slack;
@@ -183,10 +191,12 @@ export function mockupView(outside: Rect, view: View): Rect {
 }
 
 /**
- * The saved PNG's pixel size: the view's longer side at `EXPORT_LONG_SIDE`, the other in proportion.
+ * The saved PNG's pixel size: the view's longer side at `EXPORT_LONG_SIDE`, the other in proportion;
+ * `undefined` for a view whose side is not a positive number.
  * {@link openspec/specs/size-engine/spec.md#requirement-a-saved-mockup-is-2400-pixels-on-its-longer-side}
  */
-export function exportSize(view: Rect): Size {
+export function exportSize(view: Rect): Size | undefined {
+  if (!positive(view.w) || !positive(view.h)) return undefined;
   const scale = EXPORT_LONG_SIDE / Math.max(view.w, view.h);
   return { w: Math.round(view.w * scale), h: Math.round(view.h * scale) };
 }

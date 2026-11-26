@@ -131,7 +131,14 @@ const PAGE_LIST = [
     hub: "frames",
     name: "Poster and frame mockup",
     card: { question: "How will my design look in a frame?", ratio: [3, 4] },
-    live: false,
+    live: true,
+    seo: {
+      title: "Poster & Frame Mockup Generator",
+      h1: "Poster and Frame Mockup Generator",
+      description:
+        "Upload your artwork, pick a frame style and a wall, and download a framed poster mockup as a PNG. It runs in your browser, with no account.",
+      lastModified: "2026-11-25",
+    },
   },
   {
     id: "P1",

@@ -374,6 +374,11 @@ Related tools SHALL list the live Frames pages other than F2, then C1 and G1 whe
 - **WHEN** `/frame-sizes-on-wall` is requested while only F1, F2, F3, F4, F5, F6, G1 and the company pages are live
 - **THEN** Related tools holds six cards, linking to `/`, `/how-big-is-8x10`, `/measure-picture-frame`, `/frame-mat-calculator`, `/poster-frame-sizes` and `/gallery-wall-planner` in that order; no link points to `/how-high-to-hang-pictures`; and no `href` starts with `#`
 
+#### Scenario: F1, F2, F3, F4, F5, F6, F7 and G1 are live
+
+- **WHEN** `/frame-sizes-on-wall` is requested while only F1, F2, F3, F4, F5, F6, F7, G1 and the company pages are live
+- **THEN** Related tools holds seven cards, linking to `/`, `/how-big-is-8x10`, `/measure-picture-frame`, `/frame-mat-calculator`, `/poster-frame-sizes`, `/frame-mockup` and `/gallery-wall-planner` in that order; no link points to `/how-high-to-hang-pictures`; and no `href` starts with `#`
+
 ### Requirement: The description's sizes are the catalog's
 
 The page's meta description SHALL give the number of catalog sizes, and the range it states SHALL run from the smallest to the largest rectangular size.
