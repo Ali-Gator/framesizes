@@ -200,7 +200,7 @@ export function breadcrumbTrail(target: SitePage): Crumb[] {
 
 /**
  * The breadcrumb trail as a `BreadcrumbList`, with absolute URLs. A translated version passes its
- * trail with translated names.
+ * trail with translated names, its last crumb at its own localized path.
  * {@link openspec/specs/seo-base/spec.md#requirement-pages-below-the-home-page-carry-breadcrumbs}
  * {@link openspec/specs/extension-site/spec.md#requirement-a-translated-versions-breadcrumbs-are-translated}
  */

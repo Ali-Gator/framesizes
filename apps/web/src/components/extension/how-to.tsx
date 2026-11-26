@@ -6,7 +6,7 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { FAQ } from "@/components/ui/faq";
 import { U } from "@/components/ui/u";
 import { EXTENSION_ID } from "@/lib/extension";
-import { DEFAULT_LOCALE, localeByCode } from "@/lib/locales";
+import { DEFAULT_LOCALE, localeByCode, localizedPath } from "@/lib/locales";
 import { breadcrumbJsonLd, breadcrumbTrail, jsonLdScript } from "@/lib/seo";
 import { builtPage } from "@/lib/site-map";
 
@@ -74,7 +74,8 @@ export function ExtensionHowTo({ copy, locale }: { copy: ExtensionCopy; locale: 
   // {@link openspec/specs/extension-site/spec.md#requirement-a-translated-versions-breadcrumbs-are-translated}
   const trail = breadcrumbTrail(X1);
   const crumbs = trail.map((crumb, i) => ({
-    path: crumb.path,
+    // The last crumb is the version itself, so its `BreadcrumbList` item is its own canonical URL.
+    path: i === trail.length - 1 ? localizedPath(locale, crumb.path) : crumb.path,
     name: i === 0 ? copy.crumbs.home : i === trail.length - 1 ? copy.crumbs.page : copy.crumbs.hub,
   }));
   const [plan, shop, nails] = copy.steps;

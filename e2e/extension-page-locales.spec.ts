@@ -159,6 +159,18 @@ test("the Spanish breadcrumbs are in Spanish and link to the English pages", asy
   expect(crumbs.list).toEqual(["Inicio", "Pared de cuadros", "Extensión de Chrome"]);
 });
 
+/** {@link openspec/specs/extension-site/spec.md#scenario-the-last-crumb-in-the-spanish-breadcrumblist} */
+test("the Spanish BreadcrumbList ends at the Spanish canonical URL", async ({ page }) => {
+  const { last, canonical } = await serverDoc(page, `/es${PATH}`, (doc) => ({
+    last: [...doc.querySelectorAll('script[type="application/ld+json"]')]
+      .map((s) => JSON.parse(s.textContent ?? "null"))
+      .find((d) => d?.["@type"] === "BreadcrumbList")?.itemListElement[2]?.item,
+    canonical: doc.querySelector('link[rel="canonical"]')?.getAttribute("href"),
+  }));
+  expect(last).toBe(`https://framesizes.app/es${PATH}`);
+  expect(last).toBe(canonical);
+});
+
 /** {@link openspec/specs/extension-site/spec.md#scenario-no-related-tools-in-italian} */
 test("the Italian version has no Related tools", async ({ page }) => {
   const sections = await serverDoc(page, `/it${PATH}`, (doc) =>

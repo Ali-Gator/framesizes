@@ -54,7 +54,7 @@ export function HubNav({ links }: { links: HubLink[] }) {
               onClick={() => setOpen(false)}
               className={`whitespace-nowrap border-b border-line px-3 py-3 text-[17px] last:border-b-0 hover:bg-stage hover:text-ink min-[600px]:border-b-0 min-[600px]:py-2.5 min-[600px]:text-[15px] min-[900px]:py-2 ${
                 current
-                  ? "font-bold text-ink shadow-[inset_3px_0_0_var(--ink)] min-[600px]:rounded-none min-[600px]:shadow-[inset_0_-2px_0_var(--ink)]"
+                  ? "font-bold text-ink shadow-[inset_3px_0_0_var(--ink)] min-[600px]:rounded-none min-[600px]:shadow-[inset_0_-2px_0_var(--ink)] forced-colors:underline forced-colors:underline-offset-4"
                   : "font-medium text-ink-muted min-[900px]:rounded-pill"
               }`}
             >
