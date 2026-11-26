@@ -51,7 +51,7 @@ The key stays optional and out of every `INITIAL`, so the whole-state `toEqual`s
 - the card note reads "Sold with a mat cut for a 16x20 print. It overlaps your poster by ⅛ / ⅛ in." (sides / top, the border's pair format, "0.3 / 0.2 cm" in cm);
 - the help line `how` (`:232`) gives the ¼ in sentence as "A mat cut to order overlaps the poster by ¼ in on each side." when some card is cut to order, and drops it when every card is pre-cut.
 
-Answers where every mat matches the poster keep today's copy, so the 11x17 and 24x36 scenarios and `answer.test.ts:156-240` pass unedited. Run `humanizer:humanizer` over the new strings before commit, keeping the sizes and the approved meaning.
+Answers where every mat matches the poster keep today's copy, so the 11x17 and 24x36 scenarios and `answer.test.ts:156-240` pass unedited. The copy is final: `humanizer:humanizer` ran over both strings in triage and left them unchanged.
 
 **BL-104.** `apps/web/src/components/extension/how-to.tsx:75-79`: the last crumb's path becomes `localizedPath(locale, path)`. `localizedPath` comes from `@/lib/locales`, already imported, and returns the English path for the default locale. `breadcrumbJsonLd` and `Breadcrumbs` are unchanged, because the visible last crumb is not a link. Optionally note it in the `seo.ts:202-203` docstring. New e2e test in `e2e/extension-page-locales.spec.ts`. The existing "Spanish breadcrumbs" test stays unedited.
 
@@ -94,7 +94,7 @@ Answers where every mat matches the poster keep today's copy, so the 11x17 and 2
   - (b) Bigger/smaller wording. Card: "Sold with a mat cut for a 16x20 print, a little smaller than your poster." Help line: "…by ¼ in on each side, less with a mat cut for a 16x20 print."
 - **Trade-off:** (a) states the number that is false today. (b) is shorter but gives no overlap.
 - **Recommendation:** (a).
-- **Answer:** (a) name the real overlap (user, 2026-11-26). The copy shows only on a mismatch and is humanized before commit.
+- **Answer:** (a) name the real overlap (user, 2026-11-26). The copy shows only on a mismatch. The humanizer ran in triage and left it unchanged.
 
 ### Decision 4 — BL-35: edit the citation walker's test file
 
