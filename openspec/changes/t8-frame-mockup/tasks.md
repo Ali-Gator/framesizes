@@ -69,7 +69,7 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
 
   Build `page.tsx` and `frame-mockup.css` with the how-to, the shape table, the keyword sections and the questions (design decision 11). Verify the tests pass.
 
-- [ ] 5.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts`, its geometry from `scene` and literal colours. Verify `pnpm build` prerenders it at 1200 × 630, under 300 KB.
+- [x] 5.3 Build `opengraph-image.tsx` (read `01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) with `ogFonts`, its geometry from `scene` and literal colours. Verify `pnpm build` prerenders it at 1200 × 630, under 300 KB.
 - [x] 5.4 Run `humanizer:humanizer` over all new visitor-facing text: copy, headings, FAQ, labels, notes, messages, alts and `aria-label`s. Keep every size, fact and SEO-guide keyword; leave the title, `h1` and description verbatim, and keep "poster mockup" in the first sentence and the three keyword headings. A rewording that changes what the canvas says goes to the owner, and the spec scenarios it touches are updated with it. Verify the unit, DOM and content tests still pass.
 
 ## 6. Live-page counts elsewhere (approved test edits only)
@@ -87,8 +87,8 @@ Branch `t8-frame-mockup`, cut from `main` after the engine PR and the BL-129 fix
 
 ## 7. Gate
 
-- [ ] 7.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
-- [ ] 7.2 Run the SEO guide's pre-publish checklist for F7 on the checks that can run before go-live (1–14 on the built HTML), including that every verb in the description exists in the widget (upload, pick a style, pick a wall, download a PNG, no account). Log the ones that need the live URL (preview card, Rich Results Test, URL Inspection) and a PNG download on an iPhone as backlog items gated on go-live, from BL-132.
+- [x] 7.1 Run `pnpm fix`, `pnpm test`, `pnpm build` and `openspec validate --all --no-interactive`. Verify each is green.
+- [x] 7.2 Run the SEO guide's pre-publish checklist for F7 on the checks that can run before go-live (1–14 on the built HTML), including that every verb in the description exists in the widget (upload, pick a style, pick a wall, download a PNG, no account). Log the ones that need the live URL (preview card, Rich Results Test, URL Inspection) and a PNG download on an iPhone as backlog items gated on go-live, from BL-132.
 
 ## Workflow follow-up
 
