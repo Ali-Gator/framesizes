@@ -1,5 +1,6 @@
 "use client";
 
+import { mockupSizes } from "@framesizes/sizes";
 import { useEffect, useRef } from "react";
 
 import type { Action, Artwork } from "./state";
@@ -7,7 +8,7 @@ import type { Action, Artwork } from "./state";
 /**
  * Reads a picked or dropped file on the device: its size from an `<img>`, which applies the
  * file's EXIF orientation. The newest pick wins; an older one that finishes later is dropped and
- * its URL revoked. An upload's URL lives until it is replaced, the sample returns or the page goes.
+ * its URL revoked, and so is one the visitor cancels. An upload's URL lives until it is replaced, the sample returns or the page goes.
  * {@link openspec/specs/frame-mockup/spec.md#requirement-the-uploaded-artwork-stays-on-the-device}
  * {@link openspec/specs/frame-mockup/spec.md#requirement-a-file-that-cannot-be-used-leaves-the-artwork-as-it-was}
  */
@@ -38,12 +39,17 @@ export function useArtwork(art: Artwork, dispatch: (action: Action) => void) {
       URL.revokeObjectURL(objectUrl);
       return;
     }
-    if (!size?.width || !size.height) {
+    // No size offered (a zero or absurd side): nothing to frame.
+    if (!size?.width || !size.height || !mockupSizes(size)) {
       URL.revokeObjectURL(objectUrl);
       dispatch({ type: "failed", kind: "decode" });
       return;
     }
     dispatch({ type: "uploaded", art: { url: objectUrl, ...size } });
   }
-  return pick;
+  /** Drops a read still running, as when the visitor goes back to the sample meanwhile. */
+  function cancel() {
+    latest.current++;
+  }
+  return { pick, cancel };
 }

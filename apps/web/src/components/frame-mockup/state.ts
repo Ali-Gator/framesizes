@@ -156,6 +156,8 @@ export function reducer(state: State, action: Action): State {
     case "drag":
       return { ...state, focus: clamp(action.focus) };
     case "download":
+      // A PNG that finishes after the view changed answers nothing on screen.
+      if (action.state !== "making" && state.download !== "making") return state;
       return { ...state, download: action.state };
   }
 }

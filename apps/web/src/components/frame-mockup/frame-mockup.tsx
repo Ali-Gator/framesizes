@@ -100,10 +100,12 @@ const KEY_DIRECTION: Record<"x" | "y", Record<string, number>> = {
 export function FrameMockup() {
   const [state, dispatch] = useReducer(reducer, INITIAL);
   const id = useId();
-  const pick = useArtwork(state.art, dispatch);
+  const { pick, cancel } = useArtwork(state.art, dispatch);
   const input = useRef<HTMLInputElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const [over, setOver] = useState(false);
+  // Enter and leave fire for each child the file passes over; Safari gives no relatedTarget.
+  const overCount = useRef(0);
   const [dragging, setDragging] = useState(false);
   const drag = useRef<{ x: number; y: number; focus: number; ppi: number } | null>(null);
 
@@ -150,6 +152,7 @@ export function FrameMockup() {
 
   function onDrop(event: DragEvent) {
     event.preventDefault();
+    overCount.current = 0;
     setOver(false);
     void pick(event.dataTransfer.files[0]);
   }
@@ -328,11 +331,13 @@ export function FrameMockup() {
             className={`mk-drop${over ? " is-over" : ""}${state.reading ? " is-busy" : ""}`}
             onDragEnter={(e) => {
               e.preventDefault();
+              overCount.current++;
               setOver(true);
             }}
             onDragOver={(e) => e.preventDefault()}
-            onDragLeave={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOver(false);
+            onDragLeave={() => {
+              overCount.current = Math.max(0, overCount.current - 1);
+              if (!overCount.current) setOver(false);
             }}
             onDrop={onDrop}
           >
@@ -381,7 +386,13 @@ export function FrameMockup() {
               <span className="mk-art-s">{art.sub}</span>
             </span>
             {state.art.sample ? null : (
-              <Button variant="ghost" onClick={() => dispatch({ type: "sample" })}>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  cancel();
+                  dispatch({ type: "sample" });
+                }}
+              >
                 Use the sample again
               </Button>
             )}

@@ -232,6 +232,40 @@ describe("uploads", () => {
   });
 });
 
+describe("the sample during a read", () => {
+  /** {@link openspec/specs/frame-mockup/spec.md#scenario-back-to-the-sample} */
+  it("drops a read still running when the visitor goes back to the sample", async () => {
+    const images = stubImages();
+    images.next(2000, 3000);
+    await choose(png());
+    let release: (() => void) | undefined;
+    Object.defineProperty(HTMLImageElement.prototype, "decode", {
+      configurable: true,
+      value(this: HTMLImageElement) {
+        Object.defineProperty(this, "naturalWidth", { configurable: true, value: 3000 });
+        Object.defineProperty(this, "naturalHeight", { configurable: true, value: 4000 });
+        return new Promise<void>((r) => (release = r));
+      },
+    });
+    const input = q<HTMLInputElement>('input[type="file"]');
+    if (!input) throw new Error("no input");
+    Object.defineProperty(input, "files", { configurable: true, value: [png()] });
+    await act(async () => {
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    click(button("Use the sample again"));
+    await act(async () => {
+      release?.();
+      await new Promise((r) => setTimeout(r, 0));
+    });
+    expect(q(".mk-art-t")?.textContent).toBe("Sample artwork");
+    expect(q(".mk-status")?.textContent).toBe(
+      "The sample is back on 24x36. Your style, mat, wall and view stay as they were.",
+    );
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:test/2");
+  });
+});
+
 describe("moving the artwork", () => {
   /** {@link openspec/specs/frame-mockup/spec.md#scenario-keys-move-the-artwork} */
   it("moves by focusStep(1 in) on Shift + ArrowUp in 16x20", () => {

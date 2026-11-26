@@ -194,3 +194,15 @@ describe("a file that cannot be used", () => {
     }
   });
 });
+
+describe("the download", () => {
+  /** {@link openspec/specs/frame-mockup/spec.md#requirement-the-png-saves-the-view-on-screen} */
+  it("ignores a PNG that finishes after the view changed", () => {
+    const making = run([{ type: "download", state: "making" }]);
+    expect(run([{ type: "download", state: "done" }], making).download).toBe("done");
+    const changed = run([{ type: "size", id: "16x20" }], making);
+    expect(changed.download).toBe("idle");
+    expect(run([{ type: "download", state: "done" }], changed).download).toBe("idle");
+    expect(run([{ type: "download", state: "failed" }], changed).download).toBe("idle");
+  });
+});
