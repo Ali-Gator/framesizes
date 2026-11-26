@@ -50,11 +50,13 @@ export function FrameMat() {
   const { from } = state;
   const isPrint = from === "print";
   const out = outcome(state, unit);
-  const errors = state.submitted && "errors" in out ? out.errors : {};
+  const failed = state.submitted && "errors" in out;
+  const errors = failed ? out.errors : {};
   const result = state.submitted && "answer" in out ? out : undefined;
   const answer = result && describe(result, from, unit);
   const other = result && describe(result, from, unit === "in" ? "cm" : "in");
-  const draw = drawing(result, from, unit);
+  // {@link openspec/specs/frame-mat-calculator/spec.md#scenario-no-drawing-while-a-field-is-marked}
+  const draw = failed ? undefined : drawing(result, from, unit);
   const border = inches(state.fields.m, unit);
   const findLabel = isPrint ? "Find my frame size" : "Find the print that fits";
   const labels: Record<Field, string> = isPrint
@@ -249,7 +251,7 @@ export function FrameMat() {
           ) : null}
         </div>
 
-        <MatDrawing draw={draw} className="mc-fig" />
+        {draw ? <MatDrawing draw={draw} className="mc-fig" /> : null}
       </div>
     </section>
   );
