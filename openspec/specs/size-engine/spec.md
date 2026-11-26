@@ -308,21 +308,28 @@ interface MockupOption {
   opening: Size | null; // in, with or without the mat as asked; null: no room for a 2 in mat (4x6)
   cut: number | null; // 0..1; null with no opening
 }
-type Placement = "sofa" | "plain";
-type View = "wall" | "close";
+/** px, y down from the artwork's top. */
+interface PixelRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+type Placement = "sofa" | "plain"; // the barrel exports it as MockupPlacement
+type View = "wall" | "close"; // the barrel exports it as MockupView
 const SQUARE_TOLERANCE = 1 - Math.sqrt(20 / 24); // ≈ 0.087: square cuts less than 20x24 beyond it
-const TIE = 0.01; // cuts within one percentage point are tied
+const TIE = 0.01; // cuts within one percentage point are tied; the barrel exports it as MOCKUP_TIE
 const EXPORT_LONG_SIDE = 2400; // px
 const KEY_STEP = { arrow: 0.25, shift: 1 } as const; // in
 function mockupSizes(art: Art): readonly MockupSize[] | undefined;
 function mockupOpening(size: MockupSize, mat: boolean): Size | undefined; // undefined: no room for a mat
 function mockupOptions(art: Art, mat: boolean): readonly MockupOption[] | undefined; // offered order
 function mockupDefault(art: Art, mat: boolean): MockupOption | undefined;
-function visiblePart(art: Art, opening: Size, focus?: number): Rect | undefined; // px, y down from the art's top
+function visiblePart(art: Art, opening: Size, focus?: number): PixelRect | undefined;
 function focusStep(art: Art, opening: Size, step: number): number | undefined; // 0 when not cut
 function hangMockup(size: Size, placement: Placement): Rect; // outside, on the 144 × 96 in wall
 function mockupView(outside: Rect, view: View): Rect;
-function exportSize(view: Rect): Size; // px
+function exportSize(view: Rect): Size | undefined; // px; undefined for a side that is not a positive number
 ```
 
 `apps/web` depends on it with `workspace:*` and lists it in `transpilePackages`. There is no build step.
@@ -381,7 +388,7 @@ The mockup engine (`mockup.ts`, F7) takes an artwork in pixels and gives lengths
 - From a frame, `preCut` is often empty: the largest print rarely lands within ⅜ in of a mat pairing (11x14 with a 2 in mat gives 7½ × 10½).
 - `mockupSizes`, `mockupOptions`, `mockupDefault`, `visiblePart` and `focusStep` return `undefined` for an artwork side that is 0, negative or not finite (`visiblePart` and `focusStep` also for such an opening side).
 - With a mat, 4x6 stays first in `mockupOptions` with `opening: null` and `cut: null`; `mockupDefault` never picks it.
-- `exportSize` checks nothing: a zero or NaN view gives `NaN` sides (BL-130).
+- `exportSize` returns `undefined` for a view side that is 0, negative or not finite.
 - A `NaN` focus counts as 0.5; a focus outside 0..1 is held at the edge.
 
 ## Requirements
@@ -1907,7 +1914,7 @@ The engine SHALL give two views of the wall in inches: the whole wall, and a clo
 
 ### Requirement: A saved mockup is 2400 pixels on its longer side
 
-The engine SHALL give the pixel size of a saved mockup from its view: the view's longer side becomes 2400 pixels and the other side is scaled to match, rounded to a whole pixel.
+The engine SHALL give the pixel size of a saved mockup from its view: the view's longer side becomes 2400 pixels and the other side is scaled to match, rounded to a whole pixel. A view whose width or height is not a positive finite number SHALL get no size.
 
 #### Scenario: The whole wall saved
 
@@ -1918,6 +1925,11 @@ The engine SHALL give the pixel size of a saved mockup from its view: the view's
 
 - **WHEN** the pixel size is asked for the 45 by 57 inch close-up
 - **THEN** it is 1895 by 2400 pixels
+
+#### Scenario: A view that is not a positive size
+
+- **WHEN** the pixel size is asked for a view whose width is 0, or whose height is negative, NaN or Infinity
+- **THEN** there is no answer
 
 ### Requirement: A key press moves a mockup artwork by a fixed step
 

@@ -294,6 +294,25 @@ describe("moving the artwork", () => {
   });
 });
 
+describe("the frame styles", () => {
+  /** {@link openspec/specs/frame-mockup/spec.md#scenario-walnut} */
+  it("offers four styles; Walnut changes only the frame's colour", () => {
+    expect([...host.querySelectorAll(".mk-fins button")].map((b) => b.textContent)).toEqual([
+      "Black",
+      "White",
+      "Light oak",
+      "Walnut",
+    ]);
+    const outside = () => unitText(host.querySelectorAll(".mk-facts li")[1]);
+    const before = outside();
+    click(button("Walnut"));
+    expect(pressed(host, ".mk-fins")).toEqual(["Walnut"]);
+    expect(q(".mk-fr")?.classList.contains("fin-walnut")).toBe(true);
+    expect(q('[role="img"]')?.getAttribute("aria-label")).toContain("walnut frame");
+    expect(outside()).toBe(before);
+  });
+});
+
 describe("the mat and 4x6", () => {
   /** {@link openspec/specs/frame-mockup/spec.md#scenario-4x6-picked} */
   it("disables and describes Mat on 4x6, and the 4x6 chip with the mat on", () => {

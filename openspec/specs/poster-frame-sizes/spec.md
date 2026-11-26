@@ -440,6 +440,11 @@ Related tools SHALL list the live Frames pages other than F6, then P1 when live,
 - **WHEN** `/poster-frame-sizes` is requested while only F1, F2, F3, F4, F5, F6, G1 and the company pages are live
 - **THEN** Related tools holds five cards, linking to `/`, `/frame-sizes-on-wall`, `/how-big-is-8x10`, `/measure-picture-frame` and `/frame-mat-calculator` in that order; no link points to `/poster-sizes`; and no `href` starts with `#`
 
+#### Scenario: F1, F2, F3, F4, F5, F6, F7 and G1 are live
+
+- **WHEN** `/poster-frame-sizes` is requested while only F1, F2, F3, F4, F5, F6, F7, G1 and the company pages are live
+- **THEN** Related tools holds six cards, linking to `/`, `/frame-sizes-on-wall`, `/how-big-is-8x10`, `/measure-picture-frame`, `/frame-mat-calculator` and `/frame-mockup` in that order; no link points to `/poster-sizes`; and no `href` starts with `#`
+
 ### Requirement: The page carries its head values and breadcrumbs
 
 The page SHALL take its title, `h1`, description and content date from its site map entry, carry breadcrumbs Home › Poster frame sizes with a matching `BreadcrumbList`, and send its own 1200 × 630 social image with the alt "A 24x36 poster in a 24x36 frame, and in a 27x40 frame with a mat".
