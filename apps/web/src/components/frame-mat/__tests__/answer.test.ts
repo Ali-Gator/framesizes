@@ -324,4 +324,12 @@ group("the drawing", () => {
     });
     expect(d.caption).toBe("Drawn at the exact frame size.");
   });
+
+  /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-the-formula-figure-in-both-units} */
+  it("labels the page's formula figure in inches with centimetres in brackets", () => {
+    const d = drawing(result("print", "8", "10", "2"), "print", "in", true);
+    expect(d.label).toBe(
+      "Drawing of an 11½ by 13½ in (29.2 by 34.3 cm) frame with a 2 in (5.1 cm) mat border at the sides and at the top and bottom, and a 7½ by 9½ in (19.1 by 24.1 cm) opening. The print's edge is under the mat.",
+    );
+  });
 });

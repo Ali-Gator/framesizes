@@ -315,7 +315,7 @@ export default function FrameMatCalculator() {
           </div>
           <MatDrawing
             className="f5-fig"
-            draw={drawing({ answer: EXAMPLE, width: MAT_WIDTH }, "print", "in")}
+            draw={drawing({ answer: EXAMPLE, width: MAT_WIDTH }, "print", "in", true)}
             caption={
               <>
                 An 8x10 print with a <L inches={MAT_WIDTH} /> mat border: frame{" "}

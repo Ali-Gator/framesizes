@@ -56,7 +56,7 @@ The answer area SHALL be a polite live region. A drawing SHALL show the frame, t
 #### Scenario: The formula figure in both units
 
 - **WHEN** the page's server HTML is read
-- **THEN** the formula section's drawing label gives the frame as "11 by 14 in (27.9 by 35.6 cm)" and every other size the same way, in inches with centimetres in brackets
+- **THEN** the formula section's drawing label gives the frame as "11½ by 13½ in (29.2 by 34.3 cm)", the border as "2 in (5.1 cm)" and every other size the same way, in inches with centimetres in brackets
 
 ### Requirement: Switching the unit converts the numbers already typed
 
