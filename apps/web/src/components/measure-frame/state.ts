@@ -35,6 +35,8 @@ export interface State {
   submitted: boolean;
   /** Back from an answer with the numbers kept. */
   kept: boolean;
+  /** A field's length in inches as a unit switch read it, kept until the field changes. */
+  exact?: Partial<Record<Field, number>>;
 }
 
 export type Action =
@@ -85,9 +87,15 @@ function read({ text, eighths }: FieldState, unit: Unit): Read {
   return { inches: unit === "cm" ? n / CM_PER_INCH : n + extra };
 }
 
+/** A field's length: the one a unit switch kept, else the one its text gives. */
+function value(state: State, field: Field, unit: Unit): Read {
+  const kept = state.exact?.[field];
+  return kept === undefined ? read(state.fields[field], unit) : { inches: kept };
+}
+
 /** A field's length in inches, when it holds one above 0. */
 export function fieldValue(state: State, field: Field, unit: Unit): number | undefined {
-  const r = read(state.fields[field], unit);
+  const r = value(state, field, unit);
   return "inches" in r && r.inches > 0 ? r.inches : undefined;
 }
 
@@ -111,7 +119,7 @@ export function outcome(state: State, unit: Unit): Outcome {
   const errors: Partial<Record<Field, string>> = {};
   const x: Partial<Record<Field, number>> = {};
   for (const field of fieldsOf(state.kind)) {
-    const r = read(state.fields[field], unit);
+    const r = value(state, field, unit);
     if ("empty" in r) errors[field] = `Enter the ${NAMES[field]}.`;
     else if ("bad" in r)
       errors[field] = unit === "cm" ? "Use a number, like 20.6." : "Use a number, like 8 or 8 1/8.";
@@ -146,8 +154,14 @@ export function outcome(state: State, unit: Unit): Outcome {
   return state.kind === "outside" ? { answer, measured, face: f } : { answer, measured };
 }
 
-function setField(state: State, field: Field, next: Partial<FieldState>): State {
-  return { ...state, fields: { ...state.fields, [field]: { ...state.fields[field], ...next } } };
+/** The state with `next` in a field, which drops the length a unit switch kept for it. */
+function setField({ exact, ...state }: State, field: Field, next: Partial<FieldState>): State {
+  const left = Object.entries(exact ?? {}).filter(([f]) => f !== field);
+  return {
+    ...state,
+    ...(left.length ? { exact: Object.fromEntries(left) } : {}),
+    fields: { ...state.fields, [field]: { ...state.fields[field], ...next } },
+  };
 }
 
 /**
@@ -182,16 +196,19 @@ export function reducer(state: State, action: Action): State {
     }
     case "unit": {
       if (action.from === action.to) return state;
+      // The length read before the first switch is kept, so a rounded field never moves the answer.
       const fields = { ...state.fields };
+      const exact = { ...state.exact };
       for (const field of ["w", "h", "f"] as const) {
-        const r = read(state.fields[field], action.from);
+        const r = value(state, field, action.from);
         if (!("inches" in r)) continue;
         fields[field] =
           action.to === "cm"
             ? { text: toCm(r.inches).toFixed(1), eighths: 0 }
             : toEighths(r.inches);
+        exact[field] = r.inches;
       }
-      return { ...state, fields };
+      return Object.keys(exact).length ? { ...state, fields, exact } : { ...state, fields };
     }
     case "find":
       return "answer" in outcome(state, action.unit)

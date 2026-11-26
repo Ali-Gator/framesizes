@@ -1,3 +1,4 @@
+import { posterFrames } from "@framesizes/sizes";
 import { describe, expect, it } from "vitest";
 
 import { type Action, INITIAL, poster, reducer, type State } from "../state";
@@ -147,5 +148,23 @@ describe("a typed size", () => {
     if (!("size" in p)) throw new Error("expected a size");
     expect(p.size.w).toBeCloseTo(40 / 2.54, 9);
     expect(p.size.h).toBeCloseTo(50 / 2.54, 9);
+  });
+});
+
+describe("a unit switch keeps the typed length", () => {
+  /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-a-switch-keeps-a-near-standard-answer} */
+  it("still answers 16x20 for 16⅜ × 20 in after a switch to cm, until the width is retyped", () => {
+    const frame = (s: State) => {
+      const p = poster(s, "cm");
+      if (!("size" in p)) throw new Error("expected a size");
+      return posterFrames(p.size)?.bare;
+    };
+    const cm = reducer(typed("16 3/8", "20"), { type: "unit", from: "in", to: "cm" });
+    expect(cm.fields.w).toBe("41.6");
+    expect(frame(cm)).toMatchObject({ kind: "standard", frame: { id: "16x20" } });
+    const retyped = reducer(cm, { type: "type", field: "w", text: "41.6" });
+    expect(retyped).not.toHaveProperty("exact.w");
+    const p = poster(retyped, "cm");
+    expect("size" in p && p.size.w).toBeCloseTo(41.6 / 2.54, 9);
   });
 });

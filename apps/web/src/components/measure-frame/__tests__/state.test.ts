@@ -215,3 +215,18 @@ describe("the answer", () => {
     expect("answer" in o && o.answer.kind).toBe("standard");
   });
 });
+
+describe("a unit switch keeps the typed length", () => {
+  /** {@link openspec/specs/measure-frame/spec.md#scenario-a-switch-keeps-a-near-standard-frame-standard} */
+  it("still names the 16x20 for 16⅜ × 20 in inside after a switch to cm", () => {
+    const cm = run(
+      { type: "enter" },
+      ...typed("16", "20"),
+      { type: "eighth", eighths: 3 },
+      { type: "unit", from: "in", to: "cm" },
+    );
+    expect(cm.fields.w.text).toBe("41.6");
+    const o = outcome(cm, "cm");
+    expect("answer" in o && o.answer).toMatchObject({ kind: "standard", frame: { id: "16x20" } });
+  });
+});
