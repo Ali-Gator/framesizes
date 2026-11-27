@@ -45,19 +45,9 @@ when to add and when to fold items in.
   `@typescript/native`, so `tsc`, Next.js and eslint use one compiler.
   _Refs:_ `package.json`, https://github.com/typescript-eslint/typescript-eslint/issues/10940 · _Status:_ deferred — a
   typescript-eslint release that supports TS 7.1
-- **[BL-35] Citation walker walks the e2e build folders** — `scripts/__tests__/spec-citations.test.ts`
-  skips only `node_modules` and `.next`, so after a local e2e run it walks `apps/web/.next-e2e` and
-  `.next-analytics` on every `pnpm test:unit` and pre-commit; skip any folder starting `.next`. Edits an
-  existing test, so it needs the owner's approval.
-  _Refs:_ `scripts/__tests__/spec-citations.test.ts` · _Status:_ open — backlog-3 review, 2026-11-15
 
 ## Site
 
-- **[BL-97] Check PostHog stores no IP for site events** — no browser setting can stop PostHog
-  keeping the request IP (`ip: false` is a dead option, `$ip` is set server-side); the Privacy Policy's
-  "no IP address" rests on cookieless mode plus the project's "Discard client IP data". Query
-  stored events for `$ip` once real traffic exists (BL-86 pinned the "no location" half in code).
-  _Refs:_ PostHog project 344498, `apps/web/src/app/privacy-policy/page.tsx` · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-87] Write the company-page widget exemption into CLAUDE.md** — CLAUDE.md says every page
   carries its own widget; A1–A5 carry none by design (t26 proposal and design). Add the exemption
   to its Conventions so a later review does not flag it.
@@ -75,71 +65,21 @@ when to add and when to fold items in.
   a dark design is approved.
   _Refs:_ `openspec/specs/site-shell/spec.md`, `apps/web/src/app/globals.css` · _Status:_ deferred — a
   reviewed dark design
-- **[BL-3] `www` and `http` redirect in one hop** — check that `www.framesizes.app` and
-  `http://` answer one 308 to `https://framesizes.app` (guide checklist 1); the app cannot see it,
-  the Vercel domain settings do.
-  _Refs:_ On-page SEO guide, pre-publish checklist 1 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-5] PostHog authorized URLs** — the project shows "No authorized URLs configured"; add
-  `https://framesizes.app` so URL-based filters and the toolbar work.
-  _Refs:_ PostHog project 344498, Settings › Project · _Status:_ open — `https://framesizes.app` set as the authorized URL with the owner's yes (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-9] Social-image font path from `process.cwd()`** — works because the image is prerendered
   from `apps/web` (the Next docs' own pattern); if the route ever renders at request time from
   another directory, `readFile` fails and every `og:image` answers 500. Resolve it from the module
   instead (T1 phase review).
   _Refs:_ `apps/web/src/app/opengraph-image.tsx` · _Status:_ deferred — the image becomes dynamic
-- **[BL-13] Home page preview card in a chat app** — paste `https://framesizes.app` into a chat
-  app or a preview tool and check the card shows the nested-size image (guide checklist 7); the
-  image itself is checked, the live card is not.
-  _Refs:_ On-page SEO guide, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-14] Rich Results Test for the home page** — run the live URL through the Rich Results Test
-  and confirm `WebSite` and `Organization` validate (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts`, pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-39] F2 preview card in a chat app** — paste `https://framesizes.app/frame-sizes-on-wall` into a
-  chat app or a preview tool and check the card shows the 16x20-above-a-sofa image (guide checklist 7).
-  _Refs:_ `apps/web/src/app/frame-sizes-on-wall/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-40] Rich Results Test for F2** — run the live F2 URL through the Rich Results Test and confirm
-  its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-89] F3 preview card in a chat app** — paste `https://framesizes.app/how-big-is-8x10` into a
-  chat app or a preview tool and check the card shows the nested-sizes comparison image (guide checklist 7).
-  _Refs:_ `apps/web/src/app/how-big-is-8x10/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-90] Rich Results Test for F3** — run the live F3 URL through the Rich Results Test and confirm
-  its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/app/how-big-is-8x10/page.tsx`, pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-107] Preview card for F4** — paste the live F4 URL into a chat app or a preview tool and check
-  the card shows the 8x10 frame with its three measurements (guide checklist 7).
-  _Refs:_ `apps/web/src/app/measure-picture-frame/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-108] Rich Results Test for F4** — run the live F4 URL through the Rich Results Test and confirm
-  its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-109] URL Inspection for F4** — after launch, check `/measure-picture-frame` in Search Console's
   URL Inspection: indexed, with its own canonical (guide, after launch).
   _Refs:_ `apps/web/src/app/measure-picture-frame/page.tsx`, pre-publish checklist · _Status:_ gated — the owner runs URL Inspection in Search Console once Google has crawled the page (backlog-8 triage, 2026-11-26)
 
-- **[BL-112] Preview card for F5** — paste `https://framesizes.app/frame-mat-calculator` into a chat
-  app or a preview tool and check the card shows the 8x10-in-its-mat image (guide checklist 7).
-  _Refs:_ `apps/web/src/app/frame-mat-calculator/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-113] Rich Results Test for F5** — run the live F5 URL through the Rich Results Test and confirm
-  its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-114] URL Inspection for F5** — after launch, check `/frame-mat-calculator` in Search Console's
   URL Inspection: indexed, and Google chose the page's own canonical.
   _Refs:_ On-page SEO guide, after launch · _Status:_ gated — the owner runs URL Inspection in Search Console once Google has crawled the page (backlog-8 triage, 2026-11-26)
-- **[BL-123] Preview card for F6** — paste `https://framesizes.app/poster-frame-sizes` into a chat
-  app or a preview tool and check the card shows the 24x36 poster in its own frame and in a 27x40 with a mat (guide checklist 7).
-  _Refs:_ `apps/web/src/app/poster-frame-sizes/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-124] Rich Results Test for F6** — run the live F6 URL through the Rich Results Test and confirm
-  its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-125] URL Inspection for F6** — after launch, check `/poster-frame-sizes` in Search Console's
   URL Inspection: indexed, and Google chose the page's own canonical.
   _Refs:_ On-page SEO guide, after launch · _Status:_ gated — the owner runs URL Inspection in Search Console once Google has crawled the page (backlog-8 triage, 2026-11-26)
-- **[BL-132] Preview card for F7** — paste `https://framesizes.app/frame-mockup` into a chat app or a
-  preview tool and check the card shows the sample in a 24x36 black frame above a sofa (guide checklist 7).
-  _Refs:_ `apps/web/src/app/frame-mockup/opengraph-image.tsx`, pre-publish checklist 7 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-- **[BL-133] Rich Results Test for F7** — run the live F7 URL through the Rich Results Test and confirm
-  its `BreadcrumbList` validates (guide checklist 15).
-  _Refs:_ `apps/web/src/lib/seo.ts` (`breadcrumbJsonLd`), pre-publish checklist 15 · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
 - **[BL-134] URL Inspection for F7** — after launch, check `/frame-mockup` in Search Console's URL
   Inspection: indexed, and Google chose the page's own canonical.
   _Refs:_ On-page SEO guide, after launch · _Status:_ gated — the owner runs URL Inspection in Search Console once Google has crawled the page (backlog-8 triage, 2026-11-26)
@@ -147,40 +87,10 @@ when to add and when to fold items in.
   whole wall and a close-up after an upload and check the PNG opens, is 2,400 px on its longer side and
   shows the artwork (an SVG room drawn into a canvas, then `toBlob`).
   _Refs:_ `apps/web/src/components/frame-mockup/export.ts` · _Status:_ gated — an iOS Safari run: an iPhone, or the iOS Simulator with a test image in Photos (backlog-8 triage, 2026-11-26)
-- **[BL-126] F6 unit switch can flip a near-tolerance answer** — switching in↔cm rewrites a typed field
-  rounded to 0.1 cm and answers from that text, so 16⅜ × 20 in ("Use a 16x20 frame.") reads 41.6 cm and
-  becomes "Not a standard size". Keep the parsed inches until the visitor edits a field (F5 rounds the same way).
-  _Refs:_ `apps/web/src/components/poster-frames/state.ts` (`unit` action), phase review t6 · _Status:_ open
-- **[BL-127] F6 pre-cut card copy for a near-standard poster** — a pre-cut frame matched within ⅜ in says
-  "Sold with a mat cut for your poster" and "overlaps by ¼ in", but the mat is cut for the standard print
-  (40 × 50 cm in an 18x24 overlaps about ⅛ in). Name the print the mat is cut for; new copy goes to the owner.
-  _Refs:_ `apps/web/src/components/poster-frames/answer.ts` (`describe`, with a mat), phase review t6 · _Status:_ open — owner chose the real-overlap copy (backlog-8 triage, 2026-11-26)
 - **[BL-115] F5's first paragraph has no numbers** — guide checklist 8 asks the first paragraph to
   answer the head keyword with numbers; F5's intro, verbatim from the approved canvas and spec, has
   none. Decide whether to add one (for example the 8x10 + 2 in answer) or exempt tool pages in the guide.
   _Refs:_ `openspec/specs/frame-mat-calculator/spec.md` "The intro in the server HTML", pre-publish checklist 8 · _Status:_ gated — owner's copy decision
-- **[BL-116] F5 reverse names a print a little bigger than the largest** — from a frame, a standard
-  print within ⅜ in either way "fits" (an 8x10 frame with a 1⅞ in border: largest print 4¾ × 6¾, answer
-  "A 5x7 print fits." with a 1¾ in border). The canvas does the same, and a bigger print only hides more
-  under the mat; decide whether to accept only prints no bigger than the largest.
-  _Refs:_ `apps/web/src/components/frame-mat/answer.ts`, `frame-mat-calculator` "A reverse answer gives the largest print" · _Status:_ open — owner chose "no bigger, ⅟₁₆ in slack" (backlog-8 triage, 2026-11-26); ships with BL-120
-- **[BL-117] F5 formula figure's label in inches only** — the formula section's drawing is server-rendered
-  with an inch `aria-label` while its caption switches unit through `<U>`; give the label both units.
-  _Refs:_ `apps/web/src/app/frame-mat-calculator/page.tsx`, `components/frame-mat/answer.ts` (`drawing`) · _Status:_ open — t5 review, 2026-11-23
-- **[BL-31] Current hub in forced-colors mode** — the header's current hub link is marked by an inset
-  shadow and bold text; forced colors drop the shadow, leaving bold only. Add an outline or underline in a
-  system colour once a second hub makes the nav visible.
-  _Refs:_ `apps/web/src/components/site/hub-nav.tsx` · _Status:_ open — the gallery hub is live, so the nav shows (backlog-8 triage, 2026-11-26)
-- **[BL-103] Check X1's live head on production** — Rich Results Test on the live X1 URL
-  (BreadcrumbList valid), a preview card in a chat app, `www.` and trailing-slash URLs reach the
-  canonical in one hop, and no `X-Robots-Tag` on the response.
-  _Refs:_ `openspec/specs/extension-site/spec.md` · _Status:_ open — passed on the live site (backlog-8 triage, 2026-11-26); retire in backlog-8
-
-- **[BL-104] A translated X1's last breadcrumb item is the English URL** — on `/ru/…` the
-  BreadcrumbList's last `item` is `https://framesizes.app/extensions/gallery-wall-layout-generator`,
-  not the page's own canonical. Google reads the last item as the current page; point it at the
-  translated URL (or drop its `item`) and amend the spec's "crumb links point to the English pages".
-  _Refs:_ `openspec/specs/extension-site/spec.md#requirement-a-translated-versions-breadcrumbs-are-translated`, `apps/web/src/lib/seo.ts` · _Status:_ open — t24-go-live pre-publish check, 2026-11-22
 
 ## Chrome extension
 
@@ -314,19 +224,3 @@ when to add and when to fold items in.
   horizontally in its box on a phone, add a visual hint that it scrolls (it may fade once the visitor
   starts scrolling). From the owner's note, 2026-11-23.
   _Refs:_ `apps/web/src/app/widgets.css`, size tables on F1, F4, F5 (and F6's chart) · _Status:_ open — owner's request
-- **[BL-120] F5 reverse answer calls a too-big print "fits"** — from a frame, `matSizes` matches the
-  largest print with F4's ±⅜ in tolerance, so a standard print up to ⅜ in bigger counts as fitting:
-  a 10×15 cm frame with a 0.7 cm border (largest print 9.9×14.9 cm) says "A 4x6 print fits", though a
-  4x6 (10.2×15.2 cm) is bigger than the frame, and shows a 0.6 / 0.5 cm border the field refuses.
-  From a frame, accept only a print no bigger than the largest print, else fall back to `below`;
-  the same goes for the metric match. Needs a spec delta and a test.
-  _Refs:_ `packages/sizes/src/mat.ts` (`matched`), `apps/web/src/components/frame-mat/answer.ts`, `openspec/specs/frame-mat-calculator/spec.md#requirement-a-reverse-answer-gives-the-largest-print-and-the-frames-own-mat` · _Status:_ open — found on the live page, 2026-11-23
-- **[BL-121] F5 drawing shows the 11x14 example while a field is in error** — a refused border
-  (0.6 or 5 cm in a 10×15 cm frame) drops the answer and the drawing falls back to the example 11x14
-  (27.9×35.6 cm) beside inputs that still say 10×15. Keep the last good drawing or the entered frame
-  instead, so the legend never disagrees with the fields.
-  _Refs:_ `apps/web/src/components/frame-mat/answer.ts` (`drawing`, `example`) · _Status:_ open — found on the live page, 2026-11-23
-- **[BL-122] F5 "Print" label spills out of a narrow opening** — a 10×15 cm frame with a 4.5 cm border
-  gives a 1 cm opening; the "Print" label runs past it and over the "4.5 cm" side tag. Hide or move
-  the label when the opening is narrower than the text.
-  _Refs:_ `apps/web/src/components/frame-mat/mat-drawing.tsx` · _Status:_ open — found on the live page, 2026-11-23
