@@ -295,3 +295,12 @@ The header SHALL show the language picker's button, beside the Units toggle, on 
 - **GIVEN** `/` is open 375px and 1280px wide
 - **WHEN** the visitor moves in the app to `/extensions/gallery-wall-layout-generator` and the picker's code arrives late
 - **THEN** the Units toggle sits at the same place while the code loads and after the language button appears
+
+### Requirement: The current hub stays marked in forced colors
+
+In forced colors the header's current hub link SHALL keep a mark drawn in a system colour, an underline, besides its bold text, since forced colors drop the shadow that marks it otherwise.
+
+#### Scenario: The current hub in forced colors
+
+- **WHEN** a page in the Frames hub is opened with forced colors active and two hubs live
+- **THEN** the "Frames" link is underlined and the other hub links are not

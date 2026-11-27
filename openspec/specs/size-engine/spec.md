@@ -241,6 +241,7 @@ type Identified =
     }
   | { kind: "mat"; size: Size; frames: readonly Frame[] };
 function identifyFrame(m: Measurement): Identified | undefined;
+function matchLargestPrint(print: Size): Identified; // from a frame: no more than ⅟₁₆ in bigger, ⅜ in smaller (not in index.ts)
 type NoAnswer = "number" | "narrow" | "room";
 function whyNoAnswer(m: Measurement): NoAnswer | undefined; // the rule identifyFrame refused on
 interface FrameMeasurements {
@@ -262,7 +263,7 @@ interface MatAnswer {
   print: Size; // as given, or the largest print the mat holds
   opening: Size;
   frame: Size; // as given, or the frame size the print and mat give
-  printMatch: Identified; // identifyFrame on the print as an inside size
+  printMatch: Identified; // from a print: identifyFrame on the print as an inside size; from a frame: matchLargestPrint
   frameMatch: Identified; // identifyFrame on the frame as an inside size
   preCut: readonly Frame[]; // preCutFrames(print)
 }
@@ -286,6 +287,7 @@ interface MattedFrame {
   side: number; // in, border at the sides
   top: number; // in, border at the top and bottom
   preCut: boolean;
+  print: Size; // the print the mat is cut for: the poster, or a pre-cut mat's own print; turned like frame
 }
 interface PosterFrames {
   bare: Identified; // identifyFrame on the poster as an inside size
@@ -348,7 +350,7 @@ The gallery wall (`gallery.ts`) uses the same coordinates. A template is a tree 
 
 The measure engine (`measure.ts`) works in inches; the page converts centimetres first. A front opening grows by two lips, an outside shrinks by two faces and grows by two lips, and a mat opening grows by two `MAT_OVERLAP`s to the print. The frame size is made upright and matched against `CATALOG` and `METRIC_FRAMES` by the larger side difference, within `MEASURE_TOLERANCE`; each list matches at most once (pinned gaps: 1 in and over ¾ in). The metric size wins only when strictly closer and carries the US match as `close`. With no match, `below` and `above` come from the upright catalog in the same shape class (square when the sides are within the tolerance), largest area below and smallest above, an area tie to the earlier entry. A rectangle whose long side is under 1.2 × its short side (squarer than every catalog rectangle; 20x24 is 1.2) also gets `squareBelow` and `squareAbove` from the squares, by the same rule; the keys are absent otherwise. `identifyFrame` and `whyNoAnswer` share one private check, so each refusal rule lives once. `readLength` matches whole forms only: a decimal with a point or comma, a glyph after an optional whole number, or a fraction after an optional whole number and a space or hyphen. A mat print is matched against the catalog's mat pairings, US only, and lists every frame sold with it in catalog order. Every answer is turned to the measured orientation; a metric answer keeps its upright `id` and `label`. The allowances are checked in `openspec/changes/archive/2026-11-22-t4-measure-engine/verification.md`.
 
-The mat calculator (`mat.ts`) works in inches, per side and in the input's orientation, with no upright turn. From a print the opening is the print less two overlaps and the frame is the opening plus two mat widths; from a frame the opening is the frame less two mat widths and the print is the opening plus two overlaps. The mat width is the board cut on each side; the ¼ in the lip hides is not subtracted. Both sizes are matched with `identifyFrame` on an inside size, so F4 and F5 never disagree, and `preCutFrames` is the same filter `identifyFrame`'s mat branch calls. `matSizes` and `whyNoMat` share one private check. `matBorders` is plain arithmetic: (frame − print + 2 × overlap) ÷ 2 on each axis. `matSizes` adds `DIPLOMA.frame` (turned to the print) to `preCut` for a print within the tolerance of the diploma, in catalog order; `preCutFrames`, and so F4, are unchanged. The diploma data was checked against retail listings in the archived t5-frame-mat-calculator change (`verification.md`).
+The mat calculator (`mat.ts`) works in inches, per side and in the input's orientation, with no upright turn. From a print the opening is the print less two overlaps and the frame is the opening plus two mat widths; from a frame the opening is the frame less two mat widths and the print is the opening plus two overlaps. The mat width is the board cut on each side; the ¼ in the lip hides is not subtracted. Both sizes are matched with `identifyFrame` on an inside size, so F4 and F5 never disagree, except the largest print from a frame, which `matchLargestPrint` matches one-sided (at most ⅟₁₆ in bigger, at most ⅜ in smaller) so no named print is too big for the frame; and `preCutFrames` is the same filter `identifyFrame`'s mat branch calls. `matSizes` and `whyNoMat` share one private check. `matBorders` is plain arithmetic: (frame − print + 2 × overlap) ÷ 2 on each axis. `matSizes` adds `DIPLOMA.frame` (turned to the print) to `preCut` for a print within the tolerance of the diploma, in catalog order; `preCutFrames`, and so F4, are unchanged. The diploma data was checked against retail listings in the archived t5-frame-mat-calculator change (`verification.md`).
 
 The poster engine (`poster.ts`, F6) works in inches. `bare` is `identifyFrame` on the poster as an inside size, so F4 and F6 agree. When it is custom, `aFrame` is the nearest of A2 and A1 within `MEASURE_TOLERANCE`, from a list only F6 reads. `matted` walks the upright catalog: a frame is taken when it is in `mat.ts`'s pre-cut set (`preCutFrames` plus the diploma, so F5 and F6 agree) or when both `matBorders` are within `POSTER_BORDER`. A square frame is skipped for a non-square poster (sides more than ⅜ in apart) unless it is pre-cut for it. A pre-cut frame's borders are those of its mat as sold (its catalog pairing, else `DIPLOMA.print`); every other frame's come from the poster. The list is sorted by area, stably, then turned for a landscape poster with its borders swapped. `customFrame` is `matSizes` from the poster at `MAT_WIDTH`. The poster sizes, the A2 and A1 frames and the BL-17 recheck are in `openspec/changes/archive/2026-11-23-t6-poster-frame-engine/verification.md`.
 
@@ -1395,7 +1397,7 @@ Given a frame size and a mat width in inches, the engine SHALL give the mat open
 
 ### Requirement: The largest print for a frame is matched to a standard size
 
-The engine SHALL match the largest print a frame and a mat width give exactly as it matches a frame measured inside: a standard or metric size within ⅜ inch, else a custom size with the nearest standard sizes below and above.
+The engine SHALL match the largest print a frame and a mat width give to a standard or metric size that is at most ⅟₁₆ inch bigger and at most ⅜ inch smaller on each side, else a custom size with the nearest standard sizes below and above. A size more than ⅟₁₆ inch bigger than the largest print SHALL never be its match.
 
 #### Scenario: A print that is standard
 
@@ -1411,6 +1413,16 @@ The engine SHALL match the largest print a frame and a mat width give exactly as
 
 - **WHEN** a 14 by 11 inch frame gets a mat 2 inches wide
 - **THEN** the largest print is a custom size with the landscape 7x5 below and the landscape 11x8.5 above
+
+#### Scenario: A standard print a little bigger than the largest print
+
+- **WHEN** an 8 by 10 inch frame gets a mat 1⅞ inches wide
+- **THEN** the largest print, 4¾ by 6¾ inches, is a custom size with the 4x6 below and the 5x7 above
+
+#### Scenario: A standard print bigger than a metric frame allows
+
+- **WHEN** a 10 by 15 cm frame gets a mat 0.7 cm wide
+- **THEN** the largest print, about 9.9 by 14.9 cm, is a custom size and not the 4x6
 
 ### Requirement: A frame given in reverse is matched to a standard size
 
