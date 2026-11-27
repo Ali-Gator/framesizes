@@ -165,7 +165,7 @@ for (const viewport of [
       );
       // The opening is narrower than the label's one line of text.
       expect((await box(page, ".mt-open")).width).toBeLessThan(46);
-      await labelInside(page);
+      expect(await labelInside(page)).toBe(false);
     });
 
     /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-a-print-name-that-does-not-fit-the-opening} */

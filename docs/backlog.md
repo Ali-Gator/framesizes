@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-136**
+_Next id:_ **BL-140**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -156,6 +156,27 @@ when to add and when to fold items in.
   _Refs:_ `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/opengraph-image.tsx` · _Status:_ deferred — whole-site translation
 
 ## Widgets
+
+- **[BL-136] F5 reverse card can show a border smaller than the one typed** — the ⅟₁₆ in slack
+  (backlog-8, BL-120) lets the matched print be a hair bigger than the largest print, and the card
+  shows the border for that print: 20.3 × 25.4 cm with 4.5 cm names the 5x7 with "Mat border
+  4.4 cm all round". Decide whether the card shows the typed border or the matched print's.
+  _Refs:_ `packages/sizes/src/measure.ts` (`PRINT_SLACK`), `apps/web/src/components/frame-mat/answer.ts` · _Status:_ gated — product decision on which border the card shows (backlog-8 review, 2026-11-27)
+
+- **[BL-137] F5 swap with a carried cm size answers from rounded text** — after a reverse answer in
+  cm, `swap` writes the carried print as one-decimal cm and clears `exact`, so the next find can
+  name a different frame near the ⅜ in edge. Keep `carry.w`/`carry.h` in `exact` after the swap.
+  _Refs:_ `apps/web/src/components/frame-mat/state.ts` (`swap`) · _Status:_ open — BL-126 sibling, backlog-8 review, 2026-11-27
+
+- **[BL-138] F4 pressing the lit eighth drops the kept length** — `setField` clears `exact` even when
+  the value does not change, so pressing the already-lit ⅜ after a unit switch re-answers from
+  16.375 instead of 16.378. Keep `exact` when the new value equals the current one.
+  _Refs:_ `apps/web/src/components/measure-frame/state.ts` (`setField`, `eighth`) · _Status:_ open — backlog-8 review, 2026-11-27
+
+- **[BL-139] F5 hides "Print" in openings that have room for it** — the shared `.mt-open`
+  container query hides `.mt-art` below about 51 px, sized for F6's "Poster"; F5's "Print" needs
+  about 33 px, so a 35–51 px opening loses a label that would fit. Give F5 its own threshold.
+  _Refs:_ `apps/web/src/app/frame-mat-calculator/frame-mat.css` · _Status:_ open — polish, backlog-8 review, 2026-11-27
 
 - **[BL-128] E2e guard: no size-table cell spills into the next column** — F6's chart shipped with
   matted cells (up to 328 px in cm) in the shared 146 px `num` column, so text overlapped the next

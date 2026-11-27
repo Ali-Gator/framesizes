@@ -39,7 +39,7 @@
 
 - [x] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
 - [x] 3.2 Delete these shipped and retired bullets from `docs/backlog.md`: BL-3, BL-5, BL-13, BL-14, BL-31, BL-35, BL-39, BL-40, BL-89, BL-90, BL-97, BL-103, BL-104, BL-107, BL-108, BL-112, BL-113, BL-116, BL-117, BL-120, BL-121, BL-122, BL-123, BL-124, BL-126, BL-127, BL-132, BL-133. Verify `grep -cE "\[BL-(3|5|13|14|31|35|39|40|89|90|97|103|104|107|108|112|113|116|117|120|121|122|123|124|126|127|132|133)\]" docs/backlog.md` prints 0. BL-74, BL-105, BL-100–102, BL-109, BL-114, BL-125, BL-134 and BL-135 stay
-- [ ] 3.3 `/code-review high` in a fresh subagent. Fix its findings and log the rest as new BL items from the `_Next id:_` counter (candidate: F5 `swap` with a carried cm size rewrites rounded text, BL-126's sibling)
+- [x] 3.3 `/code-review high` in a fresh subagent. Fix its findings and log the rest as new BL items from the `_Next id:_` counter (candidate: F5 `swap` with a carried cm size rewrites rounded text, BL-126's sibling)
 - [ ] 3.4 Archive with the `/opsx:archive` flow (no Tracker). After archive, edit the permanent specs' other sections:
   - `openspec/specs/frame-mat-calculator/spec.md` Edge Cases: delete the BL-116 line (`:101`) and the BL-117 line (`:102`), and say a unit switch keeps the typed length until an edit (`:98`).
   - `openspec/specs/frame-mat-calculator/spec.md` Interface and Behavior: the `drawing` label's both-units option, and line 89's carve-out for the formula figure.

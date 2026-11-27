@@ -146,7 +146,7 @@ for (const viewport of [
       await expect(answer(page).locator(".mc-res-h .u-in")).toContainText("3 × 5 in");
       // The poster is narrower than the label's one line of text.
       expect((await box(page, ".mt-open")).width).toBeLessThan(52);
-      await labelInside(page);
+      expect(await labelInside(page)).toBe(false);
     });
 
     /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-a-poster-name-that-does-not-fit} */
