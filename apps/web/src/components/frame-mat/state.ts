@@ -27,6 +27,8 @@ export interface State {
   fields: Record<Field, string>;
   /** The find button was pressed: errors show, and the answer follows every edit. */
   submitted: boolean;
+  /** A field's length in inches as a unit switch read it, kept until the field changes. */
+  exact?: Partial<Record<Field, number>>;
 }
 
 export type Action =
@@ -42,6 +44,12 @@ export type Action =
 /** A length in inches as a field holds it: eighths of an inch, or centimetres to one decimal. */
 const write = (inches: number, unit: Unit) =>
   unit === "cm" ? toCm(inches).toFixed(1) : inEighths(inches);
+
+/** The state without the kept lengths of `fields`. */
+function forget({ exact, ...state }: State, fields: readonly Field[]): State {
+  const left = Object.entries(exact ?? {}).filter(([f]) => !fields.includes(f as Field));
+  return left.length ? { ...state, exact: Object.fromEntries(left) } : state;
+}
 
 export const INITIAL: State = {
   from: "print",
@@ -76,7 +84,7 @@ export function outcome(state: State, unit: Unit): Outcome {
   for (const field of FIELDS) {
     const text = state.fields[field].trim();
     const above = `Enter a ${names[field]} above 0 ${unit}.${field === "m" ? " With no mat, the frame is the print size." : ""}`;
-    const n = inches(text, unit);
+    const n = state.exact?.[field] ?? inches(text, unit);
     if (!text) errors[field] = `Enter the ${names[field]}.`;
     else if (n === undefined)
       errors[field] =
@@ -132,15 +140,21 @@ export function outcome(state: State, unit: Unit): Outcome {
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "type":
-      return { ...state, fields: { ...state.fields, [action.field]: action.text } };
+      return {
+        ...forget(state, [action.field]),
+        fields: { ...state.fields, [action.field]: action.text },
+      };
     case "preset":
-      return { ...state, fields: { ...state.fields, m: write(action.inches, action.unit) } };
+      return {
+        ...forget(state, ["m"]),
+        fields: { ...state.fields, m: write(action.inches, action.unit) },
+      };
     case "swap": {
       const from = state.from === "print" ? "frame" : "print";
       const { carry, unit } = action;
       return carry
         ? {
-            ...state,
+            ...forget(state, ["w", "h"]),
             from,
             fields: { ...state.fields, w: write(carry.w, unit), h: write(carry.h, unit) },
           }
@@ -150,18 +164,23 @@ export function reducer(state: State, action: Action): State {
       return { ...state, submitted: true };
     case "reset":
       return {
-        ...state,
+        ...forget(state, FIELDS),
         fields: { w: "", h: "", m: write(MAT_WIDTH, action.unit) },
         submitted: false,
       };
     case "unit": {
       if (action.from === action.to) return state;
+      // The length read before the first switch is kept, so a rounded field never moves the answer.
       const fields = { ...state.fields };
+      const exact = { ...state.exact };
       for (const field of FIELDS) {
-        const n = inches(fields[field], action.from);
-        if (n !== undefined) fields[field] = write(n, action.to);
+        const n = exact[field] ?? inches(fields[field], action.from);
+        if (n !== undefined) {
+          fields[field] = write(n, action.to);
+          exact[field] = n;
+        }
       }
-      return { ...state, fields };
+      return Object.keys(exact).length ? { ...state, fields, exact } : { ...state, fields };
     }
   }
 }

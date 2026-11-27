@@ -27,6 +27,7 @@ interface State {
   landscape: boolean;
   fields: Record<Field, string>; // as typed, in the visitor's unit
   pick: number; // the with-a-mat frame drawn
+  exact?: Partial<Record<Field, number>>; // inches kept by a unit switch until the field changes
 }
 type Action =
   | { type: "poster"; id: string }
@@ -231,7 +232,7 @@ A standard frame answer without a mat SHALL end with a box naming the standard f
 
 ### Requirement: With a mat the answer lists the standard frames that hold the poster
 
-With a mat, the answer SHALL list every standard frame the engine gives, smallest first, each in a card with its borders at the sides and at the top and bottom, a "Pre-cut mat included" or "Mat cut to order" badge, and a note saying so. With more than one, the cards SHALL be buttons: the first is drawn, and pressing another draws that one.
+With a mat, the answer SHALL list every standard frame the engine gives, smallest first, each in a card with its borders at the sides and at the top and bottom, a "Pre-cut mat included" or "Mat cut to order" badge, and a note saying so. With more than one, the cards SHALL be buttons: the first is drawn, and pressing another draws that one. When a pre-cut mat is cut for a standard print other than the poster, its note SHALL name that print and how far the mat overlaps the poster at the sides and at the top and bottom, and the answer's help line SHALL give the ¼ in overlap only for a mat cut to order.
 
 #### Scenario: Three frames for an 11x17 poster
 
@@ -252,6 +253,11 @@ With a mat, the answer SHALL list every standard frame the engine gives, smalles
 
 - **WHEN** the visitor types 13 × 19 in with a mat
 - **THEN** the answer reads "2 standard frames fit your poster with a mat." and names an 18x24 frame (border 2¾ / 2¾ in) and a 20x24 frame (3¾ / 2¾ in)
+
+#### Scenario: A pre-cut mat cut for a nearby print
+
+- **WHEN** the visitor types 40 × 50 cm with a mat
+- **THEN** the 18x24 card reads "Sold with a mat cut for a 16x20 print. It overlaps your poster by ⅛ / ⅛ in." (in cm, "0.3 / 0.2 cm"), and the answer does not say the mat overlaps the poster by ¼ in on each side
 
 ### Requirement: A poster with no standard frame for a mat gets the frame for a 2 inch mat
 
@@ -306,7 +312,7 @@ A custom field holding 0, a negative number or anything that is not a length SHA
 
 ### Requirement: The unit switch writes every number in the visitor's unit
 
-The site header's in/cm switch SHALL set the unit for every number the widget writes: inches to the nearest eighth, centimetres to one decimal with no trailing ".0", each from the true length. A-series sizes SHALL lead with millimetres, their inches to one decimal. Switching SHALL convert the typed custom size and leave other text as it is. Chip names stay as they are.
+The site header's in/cm switch SHALL set the unit for every number the widget writes: inches to the nearest eighth, centimetres to one decimal with no trailing ".0", each from the true length. A-series sizes SHALL lead with millimetres, their inches to one decimal. Switching SHALL convert the typed custom size and leave other text as it is. Chip names stay as they are. Until the visitor edits a rewritten field, the answer SHALL use the length the field held before the switch, so a switch alone never changes the answer.
 
 #### Scenario: An 11x17 poster with a mat in centimetres
 
@@ -323,9 +329,14 @@ The site header's in/cm switch SHALL set the unit for every number the widget wr
 - **WHEN** the custom fields hold 13 and 19 in inches and the visitor switches to cm, then back to in
 - **THEN** they read "33" and "48.3", then "13" and "19"
 
+#### Scenario: A switch keeps a near-standard answer
+
+- **WHEN** the visitor types 16⅜ × 20 in without a mat, which reads "Use a 16x20 frame.", then switches to cm
+- **THEN** the width field reads "41.6" and the answer still reads "Use a 16x20 frame."
+
 ### Requirement: The answer is announced and drawn to one scale
 
-The answer area SHALL be a polite live region. A drawing SHALL show the frame and the poster, and with a mat the mat and the poster seen in it, as one image whose label gives every size in both units, with a legend. Every size SHALL be drawn at one scale, set by the largest frame the page names, so a bigger poster looks bigger; a typed frame bigger than that SHALL be drawn smaller, to fit.
+The answer area SHALL be a polite live region. A drawing SHALL show the frame and the poster, and with a mat the mat and the poster seen in it, as one image whose label gives every size in both units, with a legend. Every size SHALL be drawn at one scale, set by the largest frame the page names, so a bigger poster looks bigger; a typed frame bigger than that SHALL be drawn smaller, to fit. The poster's name SHALL show inside the poster only where it fits across and down.
 
 #### Scenario: The drawing without a mat
 
@@ -356,6 +367,11 @@ The answer area SHALL be a polite live region. A drawing SHALL show the frame an
 
 - **WHEN** the visitor types 40 × 60 in without a mat
 - **THEN** the frame fills the drawing and the caption reads "Drawn smaller than the other sizes, to fit."
+
+#### Scenario: A poster name that does not fit
+
+- **WHEN** the visitor types 3 × 5 in without a mat
+- **THEN** the drawing shows no "Poster" text inside the poster, and no text spills outside it
 
 ### Requirement: A desktop shows the controls beside the answer, a phone one column
 

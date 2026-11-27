@@ -77,6 +77,8 @@ export interface MattedFrame {
   top: number;
   /** Sold with a pre-cut mat for this poster. */
   preCut: boolean;
+  /** The print the mat is cut for, turned like `frame`: the poster, or a pre-cut mat's own print. */
+  print: Size;
 }
 
 export interface PosterFrames {
@@ -113,8 +115,10 @@ function matted(up: Size, landscape: boolean): MattedFrame[] {
     const pre = preCut.has(f.id);
     if (f.orientation === "square" && !square && !pre) continue;
     // A pre-cut mat's opening is cut for its own print, so its borders are the mat's as sold.
-    const { side, top } = matBorders(f, pre ? soldPrint(f, up) : up);
-    if (pre || (inRange(side) && inRange(top))) found.push({ frame: f, side, top, preCut: pre });
+    const print = pre ? soldPrint(f, up) : up;
+    const { side, top } = matBorders(f, print);
+    if (pre || (inRange(side) && inRange(top)))
+      found.push({ frame: f, side, top, preCut: pre, print });
   }
   found.sort((a, b) => a.frame.w * a.frame.h - b.frame.w * b.frame.h);
   if (!landscape) return found;
@@ -122,7 +126,13 @@ function matted(up: Size, landscape: boolean): MattedFrame[] {
     const turned =
       m.frame.orientation === "square" ? m.frame : findFrame(`${m.frame.h}x${m.frame.w}`);
     if (!turned) throw new Error(`${m.frame.id} has no landscape entry`);
-    return { ...m, frame: turned, side: m.top, top: m.side };
+    return {
+      ...m,
+      frame: turned,
+      side: m.top,
+      top: m.side,
+      print: { w: m.print.h, h: m.print.w },
+    };
   });
 }
 

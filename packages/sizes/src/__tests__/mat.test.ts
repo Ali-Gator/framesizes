@@ -174,6 +174,27 @@ describe("the largest print for a frame", () => {
     const m = as(answer(frame(14, 11, 2)).printMatch, "custom");
     expect([m.below?.id, m.above?.id]).toEqual(["7x5", "11x8.5"]);
   });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-standard-print-a-little-bigger-than-the-largest-print} */
+  it("is a custom size between the 4x6 and the 5x7 for an 8x10 with a 1⅞ in mat", () => {
+    const a = answer(frame(8, 10, 1.875));
+    expect(a.print).toEqual({ w: 4.75, h: 6.75 });
+    const m = as(a.printMatch, "custom");
+    expect([m.below?.id, m.above?.id]).toEqual(["4x6", "5x7"]);
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#scenario-a-standard-print-bigger-than-a-metric-frame-allows} */
+  it("is a custom size, not the 4x6, for a 10 × 15 cm frame with a 0.7 cm mat", () => {
+    const a = answer(frame(10 / 2.54, 15 / 2.54, 0.7 / 2.54));
+    expect(a.printMatch.kind).toBe("custom");
+  });
+
+  /** {@link openspec/specs/size-engine/spec.md#requirement-the-largest-print-for-a-frame-is-matched-to-a-standard-size} */
+  it("still matches the 5x7 when the largest print is ⅟₁₆ in under it on one side", () => {
+    const a = answer(frame(8 - 1 / 16, 10, 1.75));
+    expect(a.print).toEqual({ w: 5 - 1 / 16, h: 7 });
+    expect(as(a.printMatch, "standard").frame.id).toBe("5x7");
+  });
 });
 
 describe("a frame given in reverse", () => {

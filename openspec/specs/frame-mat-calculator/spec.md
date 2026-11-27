@@ -25,6 +25,7 @@ interface State {
   from: From;
   fields: Record<Field, string>; // as typed, in the visitor's unit
   submitted: boolean; // find pressed: errors show, the answer follows every edit
+  exact?: Partial<Record<Field, number>>; // inches kept by a unit switch until the field changes
 }
 type Action =
   | { type: "type"; field: Field; text: string }
@@ -81,12 +82,13 @@ function drawing(
   result: { answer: MatAnswer; width: number } | undefined,
   from: From,
   unit: Unit,
+  bothUnits?: boolean, // the page's formula figure: every label size as "X by Y in (X by Y cm)"
 ): Drawing;
 ```
 
 ## Behavior
 
-The server renders the calculator from a print, sizes empty, the border "2" with the 2 in chip pressed, the empty text and the example drawing (the catalog's 11x14 with its 8x10 mat). Chips, hints, the drawing's legend and its border tags carry both units in `<U>`; the fields, the answer and the drawing's `aria-label` are written in the visitor's unit. The unit is the site's (`useUnit`), not reducer state: a layout effect dispatches `unit` from the last unit it saw, starting at "in" because `INITIAL` holds inches, so the header switch, the calculator's switch and a client-side visit in cm all convert the fields. While a stored cm is pending, `[data-unit-pending] .mc-input` hides the server's inch digits.
+The server renders the calculator from a print, sizes empty, the border "2" with the 2 in chip pressed, the empty text and the example drawing (the catalog's 11x14 with its 8x10 mat). Chips, hints, the drawing's legend and its border tags carry both units in `<U>`; the fields, the answer and the widget drawing's `aria-label` are written in the visitor's unit; the formula figure's `aria-label` (`drawing(…, true)`) gives both. The unit is the site's (`useUnit`), not reducer state: a layout effect dispatches `unit` from the last unit it saw, starting at "in" because `INITIAL` holds inches, so the header switch, the calculator's switch and a client-side visit in cm all convert the fields. While a stored cm is pending, `[data-unit-pending] .mc-input` hides the server's inch digits.
 
 `outcome` reads each field with `readLength` (centimetres ÷ 2.54), then asks `whyNoMat`: "narrow" marks the border, "room" marks the print side no bigger than two overlaps (from a print) or the border (from a frame), naming the first side the border closes. `describe` follows the canvas's option A: a print is named only when `printMatch` is a US standard size, a standard frame shows the matched frame's size with "That is the standard X." or "That is within ⅜ in of X.", borders come from `matBorders`. From a frame, the frame's own mat, or a pairing the engine lists in `preCut` for the print (the diploma's 11x14), folds into the print card.
 
@@ -94,12 +96,11 @@ One render serves both layouts: below 48rem one column in DOM order (fields, but
 
 ## Edge Cases
 
+- From a frame, a standard print up to ⅟₁₆ in bigger than the largest print still fits, so its card can show a border up to ⅟₃₂ in narrower than the one typed (BL-136).
 - Reverse after an answer carries the exact frame or print, not the matched standard, so Reverse twice returns the numbers typed.
-- Switching in to cm and back rounds to the nearest eighth, so a value can move by up to 1⁄16 in.
+- Switching in to cm and back rewrites the text rounded (cm to one decimal, in to the nearest eighth), but the answer keeps the typed length (`exact`) until the field is edited, a chip is pressed, Reverse or Start over.
 - An empty or unreadable field is left as it is on a unit switch; "-10" reads as "above 0", "abc" as "Use a number".
 - An 8.5x11 print with a 1½ in border gives a custom 11 × 13½ in frame (a uniform border cannot reach 14 in); with 1⅝ in it matches the 11x14.
-- A standard print within ⅜ in of the largest print "fits" even when a little bigger (BL-116).
-- The formula figure's `aria-label` is in inches only (BL-117).
 
 ## Requirements
 
@@ -160,7 +161,7 @@ Pressing a chip SHALL fill the border field with its width and press only that c
 
 ### Requirement: Switching the unit converts the numbers already typed
 
-The in/cm switch in the calculator's head and the one in the site header SHALL set one unit for the page. Switching SHALL rewrite every field that holds a number, in centimetres to one decimal and in inches to the nearest eighth, and leave other text as it is.
+The in/cm switch in the calculator's head and the one in the site header SHALL set one unit for the page. Switching SHALL rewrite every field that holds a number, in centimetres to one decimal and in inches to the nearest eighth, and leave other text as it is. Until the visitor edits a rewritten field, the answer SHALL use the length the field held before the switch, so a switch alone never changes the answer.
 
 #### Scenario: Inches to centimetres and back
 
@@ -171,6 +172,11 @@ The in/cm switch in the calculator's head and the one in the site header SHALL s
 
 - **WHEN** the visitor switches the site header's unit to cm with 8, 10 and 2 typed
 - **THEN** the calculator's own switch shows cm and its fields read "20.3", "25.4" and "5.1"
+
+#### Scenario: A switch keeps a near-standard print standard
+
+- **WHEN** the visitor finds a mat for an 8⅜ × 10 in print, which is the standard 8x10, then switches to cm
+- **THEN** the width field reads "21.3" and the answer still treats the print as the standard 8x10
 
 ### Requirement: The answer shows after the button and then follows every edit
 
@@ -235,7 +241,7 @@ When no standard or metric frame is within ⅜ in, the answer SHALL give, in ord
 
 ### Requirement: A reverse answer gives the largest print and the frame's own mat
 
-From a frame, the answer SHALL give the largest print, the mat opening and how they were worked out, then the standard or metric print that fits with its border (and the next print up as too big), then "Sold with this frame": the print the frame's own pre-cut mat takes, that the frame is usually sold without a mat, or that no frame this size comes with one.
+From a frame, the answer SHALL give the largest print, the mat opening and how they were worked out, then the standard or metric print that fits with its border (and the next print up as too big), then "Sold with this frame": the print the frame's own pre-cut mat takes, that the frame is usually sold without a mat, or that no frame this size comes with one. A print more than ⅟₁₆ in bigger than the largest print SHALL never be named as the print that fits.
 
 #### Scenario: An 11x14 frame with a 2 inch border
 
@@ -251,6 +257,16 @@ From a frame, the answer SHALL give the largest print, the mat opening and how t
 
 - **WHEN** the visitor enters a 15¾ × 19¾ in frame with a 2 in border, from a frame
 - **THEN** the answer names a 12x16 print and the "Sold with this frame" card says "No frame this size is sold with a pre-cut mat."
+
+#### Scenario: A standard print a little too big is not named
+
+- **WHEN** the visitor enters an 8 × 10 in frame with a 1⅞ in border, from a frame
+- **THEN** the answer reads "Largest print: 4¾ × 6¾ in. Not a standard print size.", the "Standard print that fits" card names a 4x6 print with "Mat border 2¼ in all round." and "The next print up, 5x7, is too big for a 1⅞ in border.", and the answer never reads "A 5x7 print fits."
+
+#### Scenario: A print bigger than the frame is not named
+
+- **WHEN** the visitor enters a 10 × 15 cm frame with a 0.7 cm border, from a frame
+- **THEN** the answer does not read "A 4x6 print fits." and shows no border below the one typed
 
 ### Requirement: Reverse swaps the direction and carries the answer over
 
@@ -302,17 +318,32 @@ A field that is empty, not a number, not above 0, a border no wider than the mat
 
 ### Requirement: The answer is announced and drawn
 
-The answer area SHALL be a polite live region. A drawing SHALL show the frame, the mat, the opening and the print's edge under the mat, as one image with a label that gives the frame, the borders and the opening, and a legend with the frame size, the mat opening, the print and the mat border.
+The answer area SHALL be a polite live region. A drawing SHALL show the frame, the mat, the opening and the print's edge under the mat, as one image with a label that gives the frame, the borders and the opening, and a legend with the frame size, the mat opening, the print and the mat border. While a field is marked after a find, no drawing SHALL show, so the drawing never disagrees with the fields. The print's name SHALL show inside the opening only where it fits across and down; a narrower or shorter opening SHALL show no name. The formula section's drawing, rendered once on the server, SHALL give every size in its label in both units.
 
 #### Scenario: The drawing before an answer
 
-- **WHEN** the calculator has no answer
+- **WHEN** the calculator has no answer and no field is marked
 - **THEN** the drawing shows an 8x10 print in an 11x14 frame, its legend reads "Frame size" 11 × 14 in, "Mat opening" 7½ × 9½ in, "Print, edge under the mat" 8 × 10 in and "Mat border, sides / top" 1¾ / 2¼ in
 
 #### Scenario: The drawing of a custom answer
 
 - **WHEN** the answer is for an 8 × 10 in print with a 2 in border
 - **THEN** the drawing's label names an 11½ by 13½ in frame with a 2 in border at the sides and at the top and bottom and a 7½ by 9½ in opening, its legend's last row reads "Mat border" 2 in, and its caption reads "Drawn at the exact frame size."
+
+#### Scenario: No drawing while a field is marked
+
+- **WHEN** the visitor has an answer for a 10 × 15 cm frame with a 2 cm border, from a frame, then changes the border to 5 cm and presses "Find the print that fits"
+- **THEN** the border field is marked and no drawing shows, in particular not the 11x14 example
+
+#### Scenario: A print name that does not fit the opening
+
+- **WHEN** the answer is for a 10 × 15 cm frame with a 4.5 cm border, from a frame
+- **THEN** the drawing shows no "Print" text inside the 1 cm opening, and no text overlaps the border's side tag
+
+#### Scenario: The formula figure in both units
+
+- **WHEN** the page's server HTML is read
+- **THEN** the formula section's drawing label gives the frame as "11½ by 13½ in (29.2 by 34.3 cm)", the border as "2 in (5.1 cm)" and every other size the same way, in inches with centimetres in brackets
 
 ### Requirement: A desktop shows the inputs beside the answer, a phone one column
 

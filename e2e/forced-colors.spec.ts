@@ -77,6 +77,20 @@ test("the checked unit carries a border or outline in forced colors", async ({ p
   expect(await color(checked)).not.toBe(await color(unchecked));
 });
 
+/** {@link openspec/specs/site-shell/spec.md#scenario-the-current-hub-in-forced-colors} */
+test("the current hub link is underlined in forced colors", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.emulateMedia({ forcedColors: "active" });
+  await open(page);
+  const hubs = page.getByRole("navigation", { name: "Hubs" });
+  const line = (name: string) =>
+    hubs
+      .getByRole("link", { name, exact: true })
+      .evaluate((el) => getComputedStyle(el).textDecorationLine);
+  expect(await line("Frames")).toContain("underline");
+  expect(await line("Gallery wall")).not.toContain("underline");
+});
+
 /** Every visible row's top (from the table's top) and height, and each radio's left edge. */
 const layout = (page: Page) =>
   page.locator("table:has(tbody input)").evaluate((table) => {

@@ -175,3 +175,12 @@ describe("bad input", () => {
       expect(answer(typed(w, "11")).frame).toEqual({ w: 12, h: 14.5 });
   });
 });
+
+describe("a unit switch keeps the typed length", () => {
+  /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-a-switch-keeps-a-near-standard-print-standard} */
+  it("still treats an 8⅜ × 10 in print as the 8x10 after a switch to cm", () => {
+    const cm = run([{ type: "unit", from: "in", to: "cm" }], typed("8 3/8", "10"));
+    expect(cm.fields.w).toBe("21.3");
+    expect(answer(cm, "cm").printMatch).toMatchObject({ kind: "standard", frame: { id: "8x10" } });
+  });
+});

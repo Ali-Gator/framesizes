@@ -17,6 +17,8 @@ export interface State {
   fields: Record<Field, string>;
   /** Which with-a-mat frame is drawn. */
   pick: number;
+  /** A field's length in inches as a unit switch read it, kept until the field is typed in. */
+  exact?: Partial<Record<Field, number>>;
 }
 
 export type Action =
@@ -41,6 +43,12 @@ export const INITIAL: State = {
 /** A length in inches as a field holds it: eighths of an inch, or centimetres to one decimal. */
 const write = (n: number, unit: Unit) => (unit === "cm" ? String(toCm(n)) : inEighths(n));
 
+/** The state without the kept lengths of `fields`. */
+function forget({ exact, ...state }: State, fields: readonly Field[]): State {
+  const left = Object.entries(exact ?? {}).filter(([f]) => !fields.includes(f as Field));
+  return left.length ? { ...state, exact: Object.fromEntries(left) } : state;
+}
+
 /**
  * The widget's state. Every action but `pick` and `unit` draws the first with-a-mat frame again.
  * {@link openspec/specs/poster-frame-sizes/spec.md#requirement-back-to-standard-sizes-keeps-the-chip-and-the-typed-size}
@@ -59,17 +67,26 @@ export function reducer(state: State, action: Action): State {
     case "chips":
       return { ...state, mode: "chips", pick: 0 };
     case "type":
-      return { ...state, fields: { ...state.fields, [action.field]: action.text }, pick: 0 };
+      return {
+        ...forget(state, [action.field]),
+        fields: { ...state.fields, [action.field]: action.text },
+        pick: 0,
+      };
     case "pick":
       return { ...state, pick: action.i };
     case "unit": {
       if (action.from === action.to) return state;
+      // The length read before the first switch is kept, so a rounded field never moves the answer.
       const fields = { ...state.fields };
+      const exact = { ...state.exact };
       for (const f of FIELDS) {
-        const n = inches(fields[f], action.from);
-        if (n !== undefined && Number.isFinite(n) && n > 0) fields[f] = write(n, action.to);
+        const n = exact[f] ?? inches(fields[f], action.from);
+        if (n !== undefined && Number.isFinite(n) && n > 0) {
+          fields[f] = write(n, action.to);
+          exact[f] = n;
+        }
       }
-      return { ...state, fields };
+      return Object.keys(exact).length ? { ...state, fields, exact } : { ...state, fields };
     }
   }
 }
@@ -106,7 +123,10 @@ export function poster(state: State, unit: Unit): PosterPick {
     };
   }
   const text = { w: state.fields.w.trim(), h: state.fields.h.trim() };
-  const n = { w: inches(text.w, unit), h: inches(text.h, unit) };
+  const n = {
+    w: state.exact?.w ?? inches(text.w, unit),
+    h: state.exact?.h ?? inches(text.h, unit),
+  };
   const bad = (f: Field) => {
     const x = n[f] ?? 0;
     return text[f] !== "" && !(Number.isFinite(x) && x > 0);

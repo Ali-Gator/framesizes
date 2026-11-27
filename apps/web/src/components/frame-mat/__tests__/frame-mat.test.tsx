@@ -247,4 +247,22 @@ describe("the calculator in use", () => {
       "Enter your frame size and a mat border. The largest print that fits shows here.",
     );
   });
+
+  /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-no-drawing-while-a-field-is-marked} */
+  it("shows no drawing while a field is marked after a find", () => {
+    act(() => setUnit("cm"));
+    mount();
+    click(button("Reverse: start from a frame"));
+    type(field("Frame width"), "10");
+    type(field("Frame height"), "15");
+    type(field("Mat border"), "2");
+    click(button("Find the print that fits"));
+    expect(host?.querySelector("figure")).not.toBeNull();
+    type(field("Mat border"), "5");
+    click(button("Find the print that fits"));
+    expect(field("Mat border").getAttribute("aria-invalid")).toBe("true");
+    expect(host?.querySelector("figure")).toBeNull();
+    expect(host?.querySelector(".mt-stage")).toBeNull();
+    expect(host?.textContent).not.toContain("11 × 14");
+  });
 });

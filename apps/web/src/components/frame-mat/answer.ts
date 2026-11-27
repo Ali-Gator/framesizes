@@ -305,13 +305,16 @@ function example() {
 
 /**
  * The drawing: frame, mat, opening and the print's edge under the mat, its label in the visitor's
- * unit and its legend in both. Before an answer, the example 8x10 in an 11x14.
+ * unit (or, with `bothUnits`, inches with centimetres in brackets, for the page's server figure) and
+ * its legend in both. Before an answer, the example 8x10 in an 11x14.
  * {@link openspec/specs/frame-mat-calculator/spec.md#requirement-the-answer-is-announced-and-drawn}
+ * {@link openspec/specs/frame-mat-calculator/spec.md#scenario-the-formula-figure-in-both-units}
  */
 export function drawing(
   result: { answer: MatAnswer; width: number } | undefined,
   from: From,
   unit: Unit,
+  bothUnits = false,
 ): Drawing {
   let shown = example();
   if (result) {
@@ -355,12 +358,14 @@ export function drawing(
   const sideAt = { l: ((W / 2 - ((opening.w + b.side) * k) / 2) / W) * 100, t: 50 };
   const topAt = { l: 50, t: ((H / 2 - ((opening.h + b.top) * k) / 2) / H) * 100 };
 
-  const w = number(frame.w, unit);
-  const ln = (x: number) => writeLength(x, unit);
+  const sz = (s: Size, u: Unit) => `${number(s.w, u)} by ${number(s.h, u)} ${u}`;
+  const dims = (s: Size) => (bothUnits ? `${sz(s, "in")} (${sz(s, "cm")})` : sz(s, unit));
+  const ln = (x: number) =>
+    bothUnits ? `${writeLength(x, "in")} (${writeLength(x, "cm")})` : writeLength(x, unit);
   const border = even
     ? `a ${ln(b.side)} mat border at the sides and at the top and bottom`
     : `a ${ln(b.side)} mat border at the sides and ${ln(b.top)} at the top and bottom`;
-  const label = `Drawing of ${withArticle(w)} by ${number(frame.h, unit)} ${unit} frame with ${border}, and ${withArticle(number(opening.w, unit))} by ${number(opening.h, unit)} ${unit} opening. The print's edge is under the mat.`;
+  const label = `Drawing of ${withArticle(dims(frame))} frame with ${border}, and ${withArticle(dims(opening))} opening. The print's edge is under the mat.`;
 
   return {
     frame,

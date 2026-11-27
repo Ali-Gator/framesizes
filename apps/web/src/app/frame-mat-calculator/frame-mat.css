@@ -482,12 +482,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Sized by its inline left/top/width/height, so size containment is safe. */
+  container-type: size;
 }
 .mt-art {
   font-size: 13px;
   line-height: 16px;
   font-weight: 600;
   color: var(--on-tape);
+}
+/* No room for "Poster" (about 46px) or its 16px line: drop the label, as F1 does. */
+@container (max-width: 51px) or (max-height: 17px) {
+  .mt-art {
+    display: none;
+  }
 }
 .mt-hid {
   border: 1.5px dashed var(--ink-muted);

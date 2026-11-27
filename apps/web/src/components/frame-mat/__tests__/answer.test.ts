@@ -277,6 +277,24 @@ group("a reverse answer", () => {
   it("names the 8x10 print for the 11½ × 13½ frame", () => {
     expect(say("frame", "11½", "13½", "2").head).toBe("An 8x10 print fits.");
   });
+
+  /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-a-standard-print-a-little-too-big-is-not-named} */
+  it("names the 4x6, not the 5x7, for an 8x10 frame with a 1⅞ in border", () => {
+    const a = say("frame", "8", "10", "1⅞");
+    expect(a.head).toBe("Largest print: 4¾ × 6¾ in. Not a standard print size.");
+    expect(a.cards[0]).toEqual({
+      title: "Standard print that fits",
+      rows: [{ chip: "4x6 print", border: "Mat border 2¼ in all round." }],
+      text: "The next print up, 5x7, is too big for a 1⅞ in border.",
+    });
+    expect(JSON.stringify(a)).not.toContain("A 5x7 print fits.");
+  });
+
+  /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-a-print-bigger-than-the-frame-is-not-named} */
+  it("does not name the 4x6 for a 10 × 15 cm frame with a 0.7 cm border", () => {
+    const a = say("frame", "10", "15", "0.7", "cm");
+    expect(JSON.stringify(a)).not.toContain("A 4x6 print fits.");
+  });
 });
 
 group("the drawing", () => {
@@ -305,5 +323,13 @@ group("the drawing", () => {
       swatch: "mat",
     });
     expect(d.caption).toBe("Drawn at the exact frame size.");
+  });
+
+  /** {@link openspec/specs/frame-mat-calculator/spec.md#scenario-the-formula-figure-in-both-units} */
+  it("labels the page's formula figure in inches with centimetres in brackets", () => {
+    const d = drawing(result("print", "8", "10", "2"), "print", "in", true);
+    expect(d.label).toBe(
+      "Drawing of an 11½ by 13½ in (29.2 by 34.3 cm) frame with a 2 in (5.1 cm) mat border at the sides and at the top and bottom, and a 7½ by 9½ in (19.1 by 24.1 cm) opening. The print's edge is under the mat.",
+    );
   });
 });

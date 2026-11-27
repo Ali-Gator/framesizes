@@ -247,6 +247,22 @@ group("with a mat", () => {
     ]);
   });
 
+  /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-a-pre-cut-mat-cut-for-a-nearby-print} */
+  it("names the 16x20 print and its real overlap for a typed 40 × 50 cm", () => {
+    const p = typed("40", "50", "cm");
+    for (const [unit, overlap] of [
+      ["in", "⅛ / ⅛ in"],
+      ["cm", "0.3 / 0.2 cm"],
+    ] as const) {
+      const a = say(p, true, unit);
+      const card = a.cards.find((c) => c.rows[0]?.chip === "18x24 frame");
+      expect(card?.rows[0]?.note).toBe(
+        `Sold with a mat cut for a 16x20 print. It overlaps your poster by ${overlap}.`,
+      );
+      expect(JSON.stringify(a)).not.toContain("The mat overlaps the poster by");
+    }
+  });
+
   /** {@link openspec/specs/poster-frame-sizes/spec.md#scenario-landscape} */
   it("turns every frame for a landscape 17x11", () => {
     const a = say(chip("11x17", true), true);
