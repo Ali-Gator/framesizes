@@ -548,7 +548,7 @@ function walk(dir: string, ext: RegExp): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      return ["node_modules", ".next"].includes(entry.name) ? [] : walk(full, ext);
+      return entry.name === "node_modules" || entry.name.startsWith(".next") ? [] : walk(full, ext);
     }
     return ext.test(entry.name) ? [full] : [];
   });

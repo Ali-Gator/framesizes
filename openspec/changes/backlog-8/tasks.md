@@ -33,11 +33,11 @@
 - [x] 2.14 BL-104 — `apps/web/src/components/extension/how-to.tsx:75-79`: the last crumb's path becomes `localizedPath(locale, …)`. Optionally add a docstring line at `apps/web/src/lib/seo.ts:202-203`. Done when 2.13 passes and `e2e/extension-page.spec.ts:209-225`, `e2e/extension-page-locales.spec.ts:138-160` and `seo.test.ts` pass unedited
 - [x] 2.15 BL-31 — failing e2e (e.g. in the site-shell header spec): with `page.emulateMedia({ forcedColors: "active" })` on `/` at 1280, the "Frames" hub link has `text-decoration-line: underline` and the "Gallery wall" link does not ({@link openspec/specs/site-shell/spec.md#scenario-the-current-hub-in-forced-colors}). Verify it fails
 - [x] 2.16 BL-31 — `apps/web/src/components/site/hub-nav.tsx`: add `forced-colors:underline underline-offset-4` to the current link's classes. Done when 2.15 passes
-- [ ] 2.17 BL-35 — APPROVED EXISTING-TEST EDIT (Decision 4): `scripts/__tests__/spec-citations.test.ts:551`, skip any folder whose name starts `.next`. No assertion changes. Done when `pnpm test:unit` passes with `apps/web/.next-e2e` present
+- [x] 2.17 BL-35 — APPROVED EXISTING-TEST EDIT (Decision 4): `scripts/__tests__/spec-citations.test.ts:551`, skip any folder whose name starts `.next`. No assertion changes. Done when `pnpm test:unit` passes with `apps/web/.next-e2e` present
 
 ## 3. Verify, delete, review, archive, ship
 
-- [ ] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
+- [x] 3.1 `pnpm fix`, `pnpm test`, and `pnpm test:e2e`
 - [ ] 3.2 Delete these shipped and retired bullets from `docs/backlog.md`: BL-3, BL-5, BL-13, BL-14, BL-31, BL-35, BL-39, BL-40, BL-89, BL-90, BL-97, BL-103, BL-104, BL-107, BL-108, BL-112, BL-113, BL-116, BL-117, BL-120, BL-121, BL-122, BL-123, BL-124, BL-126, BL-127, BL-132, BL-133. Verify `grep -cE "\[BL-(3|5|13|14|31|35|39|40|89|90|97|103|104|107|108|112|113|116|117|120|121|122|123|124|126|127|132|133)\]" docs/backlog.md` prints 0. BL-74, BL-105, BL-100–102, BL-109, BL-114, BL-125, BL-134 and BL-135 stay
 - [ ] 3.3 `/code-review high` in a fresh subagent. Fix its findings and log the rest as new BL items from the `_Next id:_` counter (candidate: F5 `swap` with a carried cm size rewrites rounded text, BL-126's sibling)
 - [ ] 3.4 Archive with the `/opsx:archive` flow (no Tracker). After archive, edit the permanent specs' other sections:
