@@ -126,7 +126,6 @@ edge: {
 
 `faq.items[2].a` becomes the new browsers answer, shared by both stores. The `satisfies ExtensionCopy` check makes `tsc` refuse a language that is missing a key.
 
-- `rich()` adds "Show in toolbar" to the English tokens, so Edge's label stays English and is marked `lang="en"`.
 - The right-click step's `figure` label is already browser-neutral and serves both stores.
 - The section's strings are English only, because G1 and F2 are English, and live in the table (D3).
 
@@ -148,18 +147,14 @@ Each translation keeps the English sense and names no browser in its head values
 
 ### D6. The canvas's from-memory labels are checked first
 
-The canvas marks Edge's flyout and menu labels as drawn from memory:
+The canvas drew Edge's flyout and menu labels from memory. On 2026-11-28 the owner loaded `dist-edge` in Edge 158 (macOS) and sent screenshots of the Extensions flyout and an image's context menu. They showed:
 
-- the eye's "Show in toolbar";
-- "Open Microsoft Edge Add-ons";
-- "Manage extensions";
-- the horizontal ellipsis;
-- the RTL behaviour.
+- click 2 is a **pin**, as in Chrome, not an eye with "Show in toolbar";
+- the row holds a side-panel button, the pin and `…`;
+- the menu ends with "Manage Extensions" and "Get extensions for Microsoft Edge";
+- the context menu holds "Try on my wall" and "Inspect". The Mac menu reads "Copy Image" in macOS title case; the figure keeps the Windows sentence case "Copy image", as the Chrome figure does.
 
-Playwright cannot capture browser chrome. Before any figure code, the owner opens Edge's Extensions flyout and a context menu on an image, with `apps/extension/dist-edge` loaded unpacked. Claude takes a computer-use screenshot (Edge is a read-tier app) and compares it with the boards.
-
-- A matching label goes in as drawn.
-- A different label changes the approved copy, so it goes to the owner first, with the canvas updated to match.
+The owner approved the pin on 2026-11-28, and the canvas was redrawn (version 1795872373-3de2). Edge's pin `h2`, "Show how to pin it" and "Already pinned?" are now Chrome's, so `ByStore` renders them once; only the answer, pin text, FAQ answer, pin picture and store link differ.
 
 The same session checks the pin poll in real Edge. Playwright `channel: "msedge"` loads `dist-edge`, then opens X1 `?pinned=0&store=edge`. `chrome.action.getUserSettings()` must answer without error, and the status reply must carry `pinned: false`.
 
@@ -197,7 +192,7 @@ This is the T27 row's last step in the Tracker, not a backlog item. Nothing in t
 - **[Risk] Crawlers read the hidden Edge lines next to the Chrome ones.** Mitigation: the lines are short and sit in the same elements. Real Edge users see them, so it is not cloaking, and the head and the visible text stay Chrome's.
 - **[Risk] Existing tests read `textContent`, which now joins the two variants.** Mitigation: the proposal lists them for the owner's approval before any edit. New assertions read visible text (`innerText`, or Playwright `toBeVisible`/`toHaveText`).
 - **[Risk] Edge's user agent changes, or a Chromium fork claims the "Microsoft Edge" brand.** Mitigation: the brands check comes first. A wrong pick only swaps the drawing, and `?store=edge` from the package always wins on the install tab.
-- **[Risk] `getUserSettings` behaves differently in Edge.** Mitigation: the D6 check. If Edge cannot report `isOnToolbar`, its install tab still works, because "Already in the toolbar? See how to use it" leaves pin mode. That case goes in the backlog.
+- **[Risk] `getUserSettings` behaves differently in Edge.** Mitigation: the D6 check. If Edge cannot report `isOnToolbar`, its install tab still works, because "Already pinned? See how to use it" leaves pin mode. That case goes in the backlog.
 - **[Trade-off] Before the Edge go-live, the section in Edge says "Add to Chrome".** A Chrome Web Store install works in Edge, so this is today's behaviour, and it ends with the id edit.
 - **[Trade-off] An Edge-package user's pin poll never resolves before the go-live,** because no Edge id is asked. The link out of pin mode covers it. The owner submits after this ships, so the review starts on the Edge body.
 

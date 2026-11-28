@@ -40,7 +40,7 @@ Every line, link and drawing that differs by store SHALL sit in the server HTML 
 #### Scenario: One heading, two texts
 
 - **WHEN** `/extensions/gallery-wall-layout-generator` is requested
-- **THEN** the pin section holds one `h2`, which holds "Pin it to your toolbar" for Chrome and "Show it in your toolbar" for Edge, and only the Chrome text is visible in Chrome
+- **THEN** the pin section holds one `h2` "Pin it to your toolbar", shared by both stores, and one text paragraph under it, which holds Chrome's text and Edge's text; only the Chrome text is visible in Chrome
 
 #### Scenario: No shift on pick
 
@@ -49,27 +49,27 @@ Every line, link and drawing that differs by store SHALL sit in the server HTML 
 
 ### Requirement: Edge visitors get Edge's how-to
 
-For Edge, the page SHALL tell the visitor to show the button in the toolbar, not to pin it. The answer names Edge's toolbar, the pin `h2` is "Show it in your toolbar", the pin text names the puzzle piece (1) and then the eye (2), "Show in toolbar", and the links between modes and the FAQ "Why isn't the button in my toolbar?" answer say the same. Every language SHALL say the same in its own words.
+For Edge, the page SHALL name Edge where it names Chrome. Edge, like Chrome, pins an extension from the Extensions menu (checked in Edge 158 on 2026-11-28). The answer names Edge's toolbar, the pin text names the puzzle piece (1) at the top right of Edge and then the pin (2), and the FAQ "Why isn't the button in my toolbar?" answer names Edge. The pin `h2`, the links between modes and "Already pinned?" are shared with Chrome. Every language SHALL say the same in its own words.
 
 #### Scenario: Edge's FAQ answer
 
 - **WHEN** `/extensions/gallery-wall-layout-generator?store=edge` is opened
-- **THEN** the visible answer to "Why isn't the button in my toolbar?" is "Edge puts new extensions behind the puzzle-piece button. Click its eye once and it stays in the toolbar."
+- **THEN** the visible answer to "Why isn't the button in my toolbar?" is "Edge puts new extensions behind the puzzle-piece button. Pin it once and it stays in the toolbar."
 
 #### Scenario: Edge's pin mode
 
 - **WHEN** `/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
-- **THEN** the heading "Show it in your toolbar" is visible, the text above the pin picture names "the puzzle piece (1)", "the eye (2)" and "Show in toolbar", and the section ends with "Already in the toolbar? See how to use it", linking to `#usage`
+- **THEN** the heading "Pin it to your toolbar" is visible, the text above the pin picture reads "Edge keeps new extensions behind the puzzle-piece button. Click the puzzle piece (1) at the top right of Edge, then the pin (2) next to Gallery Wall Layout Generator. Its button then stays in the toolbar.", and the section ends with "Already pinned? See how to use it", linking to `#usage`
 
 #### Scenario: Edge's usage mode
 
 - **WHEN** `/extensions/gallery-wall-layout-generator?pinned=1&store=edge` is opened
-- **THEN** the answer paragraph reads "Click the extension's button in Edge's toolbar to open the side panel and plan a gallery wall. On any shop, right-click a print and pick “Try on my wall” to hang it on your wall at true size.", and the link under it reads "Show how to add it to the toolbar" and points to `#pin`
+- **THEN** the answer paragraph reads "Click the extension's button in Edge's toolbar to open the side panel and plan a gallery wall. On any shop, right-click a print and pick “Try on my wall” to hang it on your wall at true size.", and the link under it reads "Show how to pin it" and points to `#pin`
 
 #### Scenario: Edge's pin mode in German
 
 - **WHEN** `/de/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
-- **THEN** the pin section's visible heading and text are German, and "Show in toolbar" in the text is English, marked `lang="en"`
+- **THEN** the pin section's visible heading and text are German, and the visible text names Edge
 
 ### Requirement: Edge's drawings keep Edge's English labels
 
@@ -78,7 +78,7 @@ The Edge pin picture and the Edge right-click figure SHALL draw Edge's own label
 #### Scenario: The Edge pin picture's labels
 
 - **WHEN** `/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
-- **THEN** the visible pin picture is marked 1 on the puzzle-piece button and 2 on the eye next to "Gallery Wall Layout Generator", and its menu reads "Extensions", "Show in toolbar", "Open Microsoft Edge Add-ons" and "Manage extensions"
+- **THEN** the visible pin picture is marked 1 on the puzzle-piece button and 2 on the pin next to "Gallery Wall Layout Generator", and its menu reads "Extensions", "Manage Extensions" and "Get extensions for Microsoft Edge"
 
 #### Scenario: The Edge right-click figure's labels
 
@@ -88,7 +88,7 @@ The Edge pin picture and the Edge right-click figure SHALL draw Edge's own label
 #### Scenario: The Edge pin picture in French
 
 - **WHEN** `/fr/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
-- **THEN** the visible pin picture's menu title is "Extensions" and holds "Show in toolbar", both marked `lang="en"`, and its accessible name is in French and names the puzzle piece marked 1 and the eye marked 2
+- **THEN** the visible pin picture's menu title is "Extensions" and holds "Manage Extensions", both marked `lang="en"`, and its accessible name is in French and names the puzzle piece marked 1 and the pin marked 2
 
 ### Requirement: The right-click figure follows the page's direction
 
@@ -195,7 +195,7 @@ While the page is in pin mode because of `?pinned=0`, has no hash, and knows at 
 
 ### Requirement: The pin picture shows the two clicks
 
-The pin section SHALL hold one drawing per built store of that browser's toolbar with the Extensions menu open. Chrome's is marked 1 on the puzzle-piece button and 2 on the pin next to "Gallery Wall Layout Generator". Edge's is marked 1 on the puzzle-piece button and 2 on the eye, "Show in toolbar". Only the picked store's drawing SHALL show. Each drawing SHALL be `role="img"`, with an `aria-label` that names both clicks, and the text above it SHALL name the same two clicks.
+The pin section SHALL hold one drawing per built store of that browser's toolbar with the Extensions menu open. Chrome's is marked 1 on the puzzle-piece button and 2 on the pin next to "Gallery Wall Layout Generator". Edge's is marked the same way, in Edge's style. Only the picked store's drawing SHALL show. Each drawing SHALL be `role="img"`, with an `aria-label` that names both clicks, and the text above it SHALL name the same two clicks.
 
 #### Scenario: The pin picture's name
 
@@ -205,7 +205,7 @@ The pin section SHALL hold one drawing per built store of that browser's toolbar
 #### Scenario: Edge's pin picture's name
 
 - **WHEN** the pin section of `?pinned=0&store=edge` is read by assistive technology
-- **THEN** exactly one pin picture is exposed, and its accessible name mentions the puzzle piece marked 1 and the eye next to Gallery Wall Layout Generator, Show in toolbar, marked 2
+- **THEN** exactly one pin picture is exposed, and its accessible name mentions the puzzle piece marked 1 and the pin marked 2 next to Gallery Wall Layout Generator
 
 ### Requirement: The extension section sits under the widget on G1 and F2
 

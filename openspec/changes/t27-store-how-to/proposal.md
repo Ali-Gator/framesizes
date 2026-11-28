@@ -19,11 +19,10 @@ The canvas was approved on 2026-11-28 (CLAUDE.md "Design source", T27, https://c
   - Every line that differs by store sits in the HTML once per store, inside the same parent, and CSS shows the picked one. The in/cm toggle works the same way. No layout shift.
 - **X1 for Edge**, with the canvas's Main board as the copy source:
   - the answer ("…in Edge's toolbar…");
-  - "Show how to add it to the toolbar";
-  - the pin `h2` "Show it in your toolbar", the pin text (the puzzle piece (1), then the eye (2), "Show in toolbar"), and "Already in the toolbar?";
+  - the pin text (the puzzle piece (1) at the top right of Edge, then the pin (2)). The pin `h2`, "Show how to pin it" and "Already pinned?" stay shared with Chrome: Edge 158 pins like Chrome (checked 2026-11-28, canvas version 1795872373-3de2);
   - the FAQ "no button" answer;
   - a new Edge pin picture (board d2) and a new Edge right-click figure (e2), each with its own accessible name. On `/ar/` both are mirrored (d4, e4).
-  - All of this comes in all 28 languages. Edge's own labels stay in English and are marked `lang="en"`: "Extensions", "Show in toolbar", "Open Microsoft Edge Add-ons", "Manage extensions", "Copy image" and "Inspect".
+  - All of this comes in all 28 languages. Edge's own labels stay in English and are marked `lang="en"`: "Extensions", "Manage Extensions", "Get extensions for Microsoft Edge", "Copy image" and "Inspect".
 - **Every store, the live Chrome page included.** The FAQ "Which browsers does it run on?" becomes "Chrome 116 or newer, or Microsoft Edge 116 or newer, on a computer. It opens in the browser's side panel.", in all 28 languages.
 - **Browser-neutral head (Q3 B, owner, 2026-11-28).**
   - The title becomes "Gallery Wall Layout Generator Extension" (53 characters with the suffix).

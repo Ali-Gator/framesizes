@@ -27,9 +27,8 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
   Keep the keyword column. Add one line to the X1 paragraph: the title leaves out "chrome" by the owner's Q3 B choice, so the checklist's head-keyword item is a recorded exception. Verify by reading each changed row back.
 
-- [ ] 1.2 Before any copy or drawing, build `pnpm --filter extension zip:edge`. Ask the owner to load `apps/extension/dist-edge` unpacked in Microsoft Edge, open the Extensions flyout, and then right-click an image. Take a computer-use screenshot of each (Edge is read tier). Compare them with boards d2 and e2: the eye and its "Show in toolbar" tooltip, "Open Microsoft Edge Add-ons", "Manage extensions", "Copy image", "Inspect", and where the puzzle piece sits.
-  - Matching labels: record "checked 2026-…" in the `edge` copy comment.
-  - Different labels: show the owner, and update the canvas before 5.1.
+- [x] 1.2 Before any copy or drawing, build `pnpm --filter extension zip:edge`. Ask the owner to load `apps/extension/dist-edge` unpacked in Microsoft Edge, open the Extensions flyout, and then right-click an image. Take a computer-use screenshot of each (Edge is read tier). Compare them with boards d2 and e2: the eye and its "Show in toolbar" tooltip, "Open Microsoft Edge Add-ons", "Manage extensions", "Copy image", "Inspect", and where the puzzle piece sits.
+  - Done 2026-11-28 with the owner's screenshots (Edge 158): click 2 is a pin, the menu reads "Manage Extensions" and "Get extensions for Microsoft Edge". The owner approved the pin; the canvas and this change follow it (design D6).
 
 ## 2. Store table and status client (tests first)
 
@@ -71,10 +70,9 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 - [ ] 5.1 English (`copy/en.ts`):
   - add the `edge` block (design D4) from the canvas Main board;
   - change `faq.items[2].a` to the new browsers answer;
-  - add "Show in toolbar" to `rich()`'s tokens in `how-to.tsx`;
   - update the doc comment so it names Edge's English labels (Q2 A).
 
-  Run `humanizer:humanizer` over the new and changed English lines: the Edge block, the browsers answer, and the section strings for 9.2. It keeps every fact, "Show in toolbar", "puzzle piece (1)", "eye (2)", 116 and "Microsoft Edge Add-ons". If a rewording changes what the canvas says, show it to the owner first.
+  Run `humanizer:humanizer` over the new and changed English lines: the Edge block, the browsers answer, and the section strings for 9.2. It keeps every fact, "puzzle piece (1)", "pin (2)", 116 and "Microsoft Edge Add-ons". If a rewording changes what the canvas says, show it to the owner first.
 
 - [ ] 5.2 `site-map.ts` X1: `name` "Browser extension", `card.question` "How do I use the gallery wall browser extension?", the new `seo.title` and `seo.description`, and `lastModified` set to the apply date. A3: the description from 1.1. Verify the description length checks in `site-map.test.ts` pass, and that the X1 h1 is unchanged.
 - [ ] 5.3 The 27 translations (design D4): in each `copy/<code>.ts`, the `edge` block, the browsers answer, and the new `seo.title`, `seo.description` and `crumbs.page`, none naming a browser. Verify:
@@ -89,7 +87,7 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 7. Drawings
 
-- [ ] 7.1 Add `EdgePinPicture`, LTR and RTL, from boards d2 and d4, and select it through `PinPicture`'s new `store` prop. Its labels are English with `lang="en"`, and its `aria-label` comes from `copy.edge.pin.picture`. Add a unit test citing "The Edge pin picture's labels" and "The Edge pin picture in French", checking the four labels, `lang="en"` on each, and that the accessible name is the French one.
+- [ ] 7.1 Add `EdgePinPicture`, LTR and RTL, from boards d2 and d4 (canvas version 1795872373-3de2: the pin, "Manage Extensions", "Get extensions for Microsoft Edge"), and select it through `PinPicture`'s new `store` prop. Its labels are English with `lang="en"`, and its `aria-label` comes from `copy.edge.pin.picture`. Add a unit test citing "The Edge pin picture's labels" and "The Edge pin picture in French", checking the three labels, `lang="en"` on each, and that the accessible name is the French one.
 - [ ] 7.2 `MenuFigure` gains `store` and `dir`:
   - the Edge style comes from e2;
   - `dir="rtl"` mirrors both stores' figures, as e4 shows (BL-80).
