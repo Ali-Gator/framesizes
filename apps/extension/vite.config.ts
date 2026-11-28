@@ -3,11 +3,17 @@ import path from "node:path";
 
 import { defineConfig, type Plugin } from "vite";
 
-import { type Messages, packageMessages, storeOf } from "./src/stores";
+import { type Messages, packageMessages, STORES, storeOf } from "./src/stores";
 
 const here = import.meta.dirname;
 const web = path.resolve(here, "../web/src");
 // `STORE=edge vite build` builds the Edge Add-ons package into dist-edge/; unset is Chrome's dist/.
+// A store the table lacks stops the build, so a typo never overwrites dist/ with Chrome's package.
+if (process.env.STORE && !(process.env.STORE in STORES)) {
+  throw new Error(
+    `Unknown STORE "${process.env.STORE}": use one of ${Object.keys(STORES).join(", ")}`,
+  );
+}
 const store = storeOf(process.env.STORE);
 const outDir = store === "chrome" ? "dist" : `dist-${store}`;
 
@@ -18,9 +24,14 @@ const outDir = store === "chrome" ? "dist" : `dist-${store}`;
  */
 const storeLocales = (): Plugin => ({
   name: "store-locales",
+  apply: "build",
   closeBundle() {
     const locales = path.resolve(here, outDir, "_locales");
-    for (const locale of fs.readdirSync(locales)) {
+    // A build that failed before `public/` was copied has nothing to rewrite.
+    if (!fs.existsSync(locales)) return;
+    for (const entry of fs.readdirSync(locales, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const locale = entry.name;
       const file = path.join(locales, locale, "messages.json");
       const messages = JSON.parse(fs.readFileSync(file, "utf8")) as Messages;
       const out = packageMessages(store, locale, messages);
