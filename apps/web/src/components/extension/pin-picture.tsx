@@ -1,4 +1,6 @@
 import { type ChromeLabels, en } from "./copy/en";
+import { EdgePinPicture } from "./edge-pin-picture";
+import type { SiteStore } from "./store";
 
 const CHROME_EN = en.chrome;
 
@@ -73,18 +75,21 @@ const DEFS = (
  * A generic Chrome window with the Extensions menu open: 1 on the puzzle-piece button, 2 on the pin
  * next to Gallery Wall Layout Generator. Ported from the canvas's board m; the site's colours are
  * tokens (extension.css `pp-*`), the browser's greys stay as drawn. A right-to-left page gets
- * right-to-left Chrome instead (`RtlPinPicture`).
+ * right-to-left Chrome instead (`RtlPinPicture`). `store="edge"` draws Edge (`EdgePinPicture`).
  * {@link openspec/specs/extension-site/spec.md#requirement-the-pin-picture-shows-the-two-clicks}
  */
 export function PinPicture({
   label = en.pin.picture,
   chrome = CHROME_EN,
   dir = "ltr",
+  store = "chrome",
 }: {
   label?: string;
   chrome?: ChromeLabels;
   dir?: "ltr" | "rtl";
+  store?: SiteStore;
 }) {
+  if (store === "edge") return <EdgePinPicture label={label} dir={dir} />;
   const subSize = fitSize(chrome.noAccessLines);
   if (dir === "rtl") return <RtlPinPicture label={label} chrome={chrome} subSize={subSize} />;
   return (

@@ -97,7 +97,7 @@ On a right-to-left version, every store's right-click figure SHALL be mirrored. 
 #### Scenario: The Arabic right-click figure
 
 - **WHEN** `/ar/extensions/gallery-wall-layout-generator?pinned=1` is opened
-- **THEN** the visible right-click figure's print and menu both sit in the figure's right half, the menu left of the print's right edge, and "Try on my wall" reads left to right
+- **THEN** the visible right-click figure's print sits in the figure's right half, the menu's right edge is left of the print's right edge, and "Try on my wall" reads left to right
 
 #### Scenario: A left-to-right version keeps its figure
 

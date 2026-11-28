@@ -87,8 +87,8 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 7. Drawings
 
-- [ ] 7.1 Add `EdgePinPicture`, LTR and RTL, from boards d2 and d4 (canvas version 1795872373-3de2: the pin, "Manage Extensions", "Get extensions for Microsoft Edge"), and select it through `PinPicture`'s new `store` prop. Its labels are English with `lang="en"`, and its `aria-label` comes from `copy.edge.pin.picture`. Add a unit test citing "The Edge pin picture's labels" and "The Edge pin picture in French", checking the three labels, `lang="en"` on each, and that the accessible name is the French one.
-- [ ] 7.2 `MenuFigure` gains `store` and `dir`:
+- [x] 7.1 Add `EdgePinPicture`, LTR and RTL, from boards d2 and d4 (canvas version 1795872373-3de2: the pin, "Manage Extensions", "Get extensions for Microsoft Edge"), and select it through `PinPicture`'s new `store` prop. Its labels are English with `lang="en"`, and its `aria-label` comes from `copy.edge.pin.picture`. Add a unit test citing "The Edge pin picture's labels" and "The Edge pin picture in French", checking the three labels, `lang="en"` on each, and that the accessible name is the French one.
+- [x] 7.2 `MenuFigure` gains `store` and `dir`:
   - the Edge style comes from e2;
   - `dir="rtl"` mirrors both stores' figures, as e4 shows (BL-80).
 

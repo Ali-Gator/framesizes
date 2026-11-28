@@ -10,6 +10,9 @@ import {
 
 import { SOFA_PARTS } from "@/components/frames-on-wall/display";
 
+import { EDGE_LABELS } from "./edge-pin-picture";
+import type { SiteStore } from "./store";
+
 /**
  * Figures for the extension page and section, drawn at true scale from the size engine's sample room
  * (the current flat room; BL-51 swaps it). Wall inches have y up from the floor; SVG y runs down.
@@ -101,31 +104,70 @@ export function LayoutFigure({ label }: { label: string }) {
   );
 }
 
-/** Step 2: a shop image with the right-click menu open on "Try on my wall"; Chrome's own items in `menu`'s language. */
+/** The extension's mark, as the menu row's icon. */
+const MENU_MARK = (
+  <svg viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="14" className="pp-ink" />
+    <g fill="none" stroke="#fff" strokeWidth="6" strokeLinejoin="round">
+      <rect x="13" y="13" width="38" height="38" />
+      <rect x="13" y="27" width="24" height="24" />
+    </g>
+    <rect x="13" y="40" width="11" height="11" className="pp-tape" />
+  </svg>
+);
+
+/**
+ * Step 2: a shop image with the right-click menu open on "Try on my wall". Chrome's own items come
+ * in `menu`'s language; Edge's (board e2) stay English, marked `lang="en"`, each row with its icon.
+ * `dir="rtl"` mirrors either store's figure (board e4): the print on the right, the menu opening to
+ * its left, icons on the right, text still left to right.
+ * {@link openspec/specs/extension-site/spec.md#requirement-the-right-click-figure-follows-the-pages-direction}
+ * {@link openspec/specs/extension-site/spec.md#requirement-edges-drawings-keep-edges-english-labels}
+ */
 export function MenuFigure({
   label,
   menu = { copyImage: "Copy image", inspect: "Inspect" },
+  store = "chrome",
+  dir = "ltr",
 }: {
   label: string;
   menu?: { copyImage: string; inspect: string };
+  store?: SiteStore;
+  dir?: "ltr" | "rtl";
 }) {
+  const edge = store === "edge";
+  const lang = edge ? "en" : undefined;
+  const items = edge ? EDGE_LABELS : menu;
   return (
-    <div role="img" aria-label={label} className="ext-fig ext-fig-shop">
+    <div
+      role="img"
+      aria-label={label}
+      className={`ext-fig ext-fig-shop${dir === "rtl" ? " ext-fig-rtl" : ""}`}
+    >
       <PrintArt className="ext-fig-shop-print" />
-      <div className="ext-menu" aria-hidden="true">
-        <span>{menu.copyImage}</span>
-        <span className="ext-menu-hot">
-          <svg viewBox="0 0 64 64">
-            <rect width="64" height="64" rx="14" className="pp-ink" />
-            <g fill="none" stroke="#fff" strokeWidth="6" strokeLinejoin="round">
-              <rect x="13" y="13" width="38" height="38" />
-              <rect x="13" y="27" width="24" height="24" />
-            </g>
-            <rect x="13" y="40" width="11" height="11" className="pp-tape" />
-          </svg>
+      <div className={edge ? "ext-menu ext-menu-edge" : "ext-menu"} aria-hidden="true" dir="ltr">
+        <span lang={lang}>
+          {edge && (
+            <svg viewBox="0 0 16 16" fill="none" stroke="#424242" strokeWidth="1.2">
+              <rect x="5" y="5" width="8" height="9" rx="1.5" />
+              <path d="M3 11 V3.5 A1.5 1.5 0 0 1 4.5 2 H10" />
+            </svg>
+          )}
+          {items.copyImage}
+        </span>
+        <span className="ext-menu-hot" lang="en">
+          {MENU_MARK}
           Try on my wall
         </span>
-        <span>{menu.inspect}</span>
+        <span lang={lang}>
+          {edge && (
+            <svg viewBox="0 0 16 16" fill="none" stroke="#424242" strokeWidth="1.2">
+              <rect x="2" y="3" width="12" height="10" rx="1.5" />
+              <path d="M6 7 l-2 1.5 l2 1.5 M10 7 l2 1.5 l-2 1.5" />
+            </svg>
+          )}
+          {items.inspect}
+        </span>
       </div>
     </div>
   );
