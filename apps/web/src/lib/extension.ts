@@ -15,11 +15,11 @@ export const storeUrl = (id: string) => `https://chromewebstore.google.com/detai
 export const STORE_URL = storeUrl(EXTENSION_ID);
 
 /**
- * The Microsoft Edge Add-ons id (Partner Center's CRX id). While it is "", no page links to Edge's
- * store or asks an Edge id; the go-live sets it once the listing is published.
+ * The Microsoft Edge Add-ons id (Partner Center's CRX id), set at the Edge go-live (2026-11-28). While
+ * it is "", no page links to Edge's store or asks an Edge id.
  * {@link openspec/specs/extension-site/spec.md#requirement-edge-appears-only-with-its-store-id}
  */
-export const EDGE_EXTENSION_ID: string = "";
+export const EDGE_EXTENSION_ID: string = "jahhnnkmhgjkcmnkkclanlhlngmjhfmn";
 
 /** The stores the site builds, each with its page and the G1/F2 section's English words. */
 export const STORES = {

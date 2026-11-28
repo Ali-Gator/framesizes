@@ -33,7 +33,9 @@ afterEach(async () => {
 describe("ExtensionSection", () => {
   /** {@link openspec/specs/extension-site/spec.md#scenario-the-section-while-the-extension-page-is-live} */
   it("shows the heading and an Add to Chrome link to the store page", () => {
-    const doc = parse(renderToStaticMarkup(<ExtensionSection pages={LIVE} extensionId={ID} />));
+    const doc = parse(
+      renderToStaticMarkup(<ExtensionSection pages={LIVE} extensionId={ID} edgeId="" />),
+    );
     const section = doc.querySelector("section");
     expect(section?.querySelectorAll("h2")).toHaveLength(1);
     expect(text(section?.querySelector("h2"))).toBe("Plan on any shop's page");
@@ -55,7 +57,9 @@ describe("ExtensionSection", () => {
 
   /** {@link openspec/specs/extension-site/spec.md#scenario-the-section-on-a-phone} */
   it("holds the link and the phone line, and the CSS shows the line on a touch phone", () => {
-    const doc = parse(renderToStaticMarkup(<ExtensionSection pages={LIVE} extensionId={ID} />));
+    const doc = parse(
+      renderToStaticMarkup(<ExtensionSection pages={LIVE} extensionId={ID} edgeId="" />),
+    );
     expect(doc.querySelector(".ext-sec-add a")).not.toBeNull();
     expect(text(doc.querySelector(".ext-sec-phone"))).toBe(
       "Chrome on phones doesn't run extensions. Open this page on a computer to add it.",
@@ -80,7 +84,9 @@ describe("ExtensionSection", () => {
     };
     const host = document.createElement("div");
     document.body.append(host);
-    host.innerHTML = renderToStaticMarkup(<ExtensionSection pages={LIVE} extensionId={ID} />);
+    host.innerHTML = renderToStaticMarkup(
+      <ExtensionSection pages={LIVE} extensionId={ID} edgeId="" />,
+    );
     const before = host.querySelector(".ext-sec-cta");
     expect(before?.children).toHaveLength(2);
     expect((before?.children[1] as HTMLElement).style.visibility).toBe("hidden");
@@ -89,7 +95,9 @@ describe("ExtensionSection", () => {
     document.body.append(mount);
     const created = createRoot(mount);
     root = created;
-    await act(async () => created.render(<ExtensionSection pages={LIVE} extensionId={ID} />));
+    await act(async () =>
+      created.render(<ExtensionSection pages={LIVE} extensionId={ID} edgeId="" />),
+    );
     const cta = mount.querySelector(".ext-sec-cta");
     const [get, have] = [...(cta?.children ?? [])] as HTMLElement[];
     expect(text(have)).toBe(

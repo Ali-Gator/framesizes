@@ -26,9 +26,9 @@ export default function RefundPolicyPage() {
       <Section title="If someone charged you">
         <p>
           Anyone who asks you to pay for Frame Sizes or the extension is not us. The only official
-          sources are framesizes.app and the extension&apos;s page in the Chrome Web Store. If you
-          paid someone, ask your bank or card issuer about a chargeback, and tell us at{" "}
-          <a href={MAILTO}>{COMPANY.email}</a>.
+          sources are framesizes.app and the extension&apos;s pages in the Chrome Web Store and
+          Microsoft Edge Add-ons. If you paid someone, ask your bank or card issuer about a
+          chargeback, and tell us at <a href={MAILTO}>{COMPANY.email}</a>.
         </p>
       </Section>
 
