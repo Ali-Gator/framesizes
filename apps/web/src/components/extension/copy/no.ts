@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const no = {
   seo: {
-    title: "Gallery Wall Layout Generator for Chrome",
+    title: "Gallery Wall Layout Generator-utvidelse",
     h1: "Slik bruker du Gallery Wall Layout Generator",
     description:
-      "Slik bruker du Chrome-utvidelsen Gallery Wall Layout Generator: planlegg en bildevegg i sidepanelet, eller prøv en plakat fra en nettbutikk i ekte størrelse.",
+      "Slik bruker du nettleserutvidelsen Gallery Wall Layout Generator: planlegg en bildevegg i sidepanelet, eller prøv en plakat fra en nettbutikk i ekte størrelse.",
   },
-  crumbs: { home: "Hjem", hub: "Bildevegg", page: "Chrome-utvidelse" },
+  crumbs: { home: "Hjem", hub: "Bildevegg", page: "Nettleserutvidelse" },
   answer:
     "Klikk på knappen til utvidelsen i verktøylinjen i Chrome for å åpne sidepanelet og planlegge en bildevegg. I hvilken som helst nettbutikk høyreklikker du på en plakat og velger «Try on my wall» for å henge den på veggen din i ekte størrelse.",
   store: "Hent den i Chrome Nettmarked",
@@ -81,9 +81,21 @@ export const no = {
       },
       {
         q: "Hvilke nettlesere virker den i?",
-        a: "Chrome 116 eller nyere, på en datamaskin. Den åpnes i sidepanelet i Chrome.",
+        a: "Chrome 116 eller nyere, eller Microsoft Edge 116 eller nyere, på en datamaskin. Den åpnes i sidepanelet i nettleseren.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Klikk på knappen til utvidelsen i verktøylinjen i Edge for å åpne sidepanelet og planlegge en bildevegg. I hvilken som helst nettbutikk høyreklikker du på en plakat og velger «Try on my wall» for å henge den på veggen din i ekte størrelse.",
+    store: "Hent den fra Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge legger nye utvidelser bak puslebrikkeknappen. Klikk på puslebrikken (1) øverst til høyre i Edge, og deretter på nålen (2) ved siden av Gallery Wall Layout Generator. Knappen blir da værende i verktøylinjen.",
+      picture:
+        "Verktøylinjen i Edge: puslebrikkeknappen, merket 1, åpner Utvidelser-menyen, og nålen ved siden av Gallery Wall Layout Generator er merket 2",
+    },
+    faqButton:
+      "Edge legger nye utvidelser bak puslebrikkeknappen. Fest den én gang, så blir den værende i verktøylinjen.",
   },
   chrome: {
     extensions: "Utvidelser",

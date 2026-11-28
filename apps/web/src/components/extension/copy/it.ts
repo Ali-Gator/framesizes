@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const it = {
   seo: {
-    title: "Gallery Wall Layout Generator per Chrome",
+    title: "Estensione Gallery Wall Layout Generator",
     h1: "Come usare Gallery Wall Layout Generator",
     description:
-      "Come usare l'estensione Gallery Wall Layout Generator per Chrome: progetta una parete nel pannello laterale o prova una stampa di un negozio a grandezza reale.",
+      "Come usare l'estensione per browser Gallery Wall Layout Generator: progetta una parete nel pannello laterale o prova una stampa di un negozio a grandezza reale.",
   },
-  crumbs: { home: "Home", hub: "Parete di quadri", page: "Estensione di Chrome" },
+  crumbs: { home: "Home", hub: "Parete di quadri", page: "Estensione per browser" },
   answer:
     "Fai clic sul pulsante dell'estensione nella barra degli strumenti di Chrome per aprire il pannello laterale e progettare una parete di quadri. In qualsiasi negozio, fai clic destro su una stampa e scegli «Try on my wall» per appenderla alla tua parete a grandezza reale.",
   store: "Scaricala dal Chrome Web Store",
@@ -81,9 +81,21 @@ export const it = {
       },
       {
         q: "Su quali browser funziona?",
-        a: "Su Chrome 116 o versioni successive, da computer. Si apre nel pannello laterale di Chrome.",
+        a: "Su Chrome 116 o versioni successive, o su Microsoft Edge 116 o versioni successive, da computer. Si apre nel pannello laterale del browser.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Fai clic sul pulsante dell'estensione nella barra degli strumenti di Edge per aprire il pannello laterale e progettare una parete di quadri. In qualsiasi negozio, fai clic destro su una stampa e scegli «Try on my wall» per appenderla alla tua parete a grandezza reale.",
+    store: "Scaricala da Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge tiene le nuove estensioni dietro il pulsante a forma di pezzo di puzzle. Fai clic sul pezzo di puzzle (1) in alto a destra in Edge, poi sulla puntina (2) accanto a Gallery Wall Layout Generator. Il suo pulsante resterà nella barra degli strumenti.",
+      picture:
+        "La barra degli strumenti di Edge: il pulsante a forma di pezzo di puzzle, segnato con 1, apre il menu Estensioni, e la puntina accanto a Gallery Wall Layout Generator è segnata con 2",
+    },
+    faqButton:
+      "Edge mette le nuove estensioni dietro il pulsante del pezzo di puzzle. Fissala una volta e resterà nella barra degli strumenti.",
   },
   chrome: {
     extensions: "Estensioni",

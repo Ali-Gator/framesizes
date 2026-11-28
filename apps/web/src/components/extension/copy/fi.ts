@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const fi = {
   seo: {
-    title: "Gallery Wall Layout Generator Chromeen",
+    title: "Gallery Wall Layout Generator -laajennus",
     h1: "Näin käytät Gallery Wall Layout Generatoria",
     description:
-      "Näin käytät Chrome-laajennusta Gallery Wall Layout Generator: suunnittele tauluseinä sivupaneelissa tai kokeile kaupan julistetta seinälläsi oikeassa koossa.",
+      "Näin käytät selainlaajennusta Gallery Wall Layout Generator: suunnittele tauluseinä sivupaneelissa tai kokeile kaupan julistetta seinälläsi oikeassa koossa.",
   },
-  crumbs: { home: "Etusivu", hub: "Tauluseinä", page: "Chrome-laajennus" },
+  crumbs: { home: "Etusivu", hub: "Tauluseinä", page: "Selainlaajennus" },
   answer:
     "Avaa sivupaneeli ja suunnittele tauluseinä klikkaamalla laajennuksen painiketta Chromen työkalupalkissa. Klikkaa missä tahansa verkkokaupassa julistetta hiiren oikealla painikkeella ja valitse ”Try on my wall”, niin se ripustetaan seinällesi oikeassa koossa.",
   store: "Hae se Chrome Web Storesta",
@@ -81,9 +81,21 @@ export const fi = {
       },
       {
         q: "Missä selaimissa se toimii?",
-        a: "Chrome 116:ssa tai uudemmassa, tietokoneella. Se avautuu Chromen sivupaneeliin.",
+        a: "Chrome 116:ssa tai uudemmassa tai Microsoft Edge 116:ssa tai uudemmassa, tietokoneella. Se avautuu selaimen sivupaneeliin.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Avaa sivupaneeli ja suunnittele tauluseinä klikkaamalla laajennuksen painiketta Edgen työkalupalkissa. Klikkaa missä tahansa verkkokaupassa julistetta hiiren oikealla painikkeella ja valitse ”Try on my wall”, niin se ripustetaan seinällesi oikeassa koossa.",
+    store: "Hae se Microsoft Edge Add-onsista",
+    pin: {
+      text: "Edge pitää uudet laajennukset palapelinpalan painikkeen takana. Klikkaa palapelinpalaa (1) Edgen oikeassa yläkulmassa ja sitten nastaa (2) kohdan Gallery Wall Layout Generator vieressä. Sen painike pysyy sen jälkeen työkalupalkissa.",
+      picture:
+        "Edgen työkalupalkki: numerolla 1 merkitty palapelinpalan painike avaa Laajennukset-valikon, ja nasta kohdan Gallery Wall Layout Generator vieressä on merkitty numerolla 2",
+    },
+    faqButton:
+      "Edge laittaa uudet laajennukset palapelinpalan painikkeen taakse. Kiinnitä se kerran, niin se pysyy työkalupalkissa.",
   },
   chrome: {
     extensions: "Laajennukset",

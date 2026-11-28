@@ -13,27 +13,39 @@ function storeUrl(id: string): string; // https://chromewebstore.google.com/deta
 const STORE_URL: string; // storeUrl(EXTENSION_ID)
 type ExtensionStatus = { installed: false } | { installed: true; pinned: boolean };
 function askExtension(id: string, timeout = 1000): Promise<ExtensionStatus>; // never rejects
+const EDGE_EXTENSION_ID: string; // Microsoft Edge Add-ons (CRX) id; "" until the Edge listing is published
+const STORES: Record<"chrome" | "edge", { pageUrl(id: string): string; section: { label; sidePanel; add; opens; phone; have } }>;
+function knownIds(chrome = EXTENSION_ID, edge = EDGE_EXTENSION_ID): string[]; // the set ids, Chrome's first
+function askExtensions(ids: readonly string[]): Promise<ExtensionStatus>; // any installed reply; pinned if any says so
 
 // apps/web/src/components/extension/
 function modeOf(hash: string, search: string): { mode: "pin" | "usage"; from: "hash" | "query" };
 const MODE_SCRIPT: string; // the same rule as an inline pre-paint script
-function ModeSwitch(props: { extensionId: string }): null; // client island
-function StoreLink(props: { pages?; extensionId?; label? }): JSX.Element | null;
-function ExtensionSection(props: { pages?; extensionId? }): JSX.Element | null;
-function ExtensionStatus(props: { extensionId: string }): JSX.Element; // client island, the CTA cell
-function PinPicture(props: { label?: string; chrome?: ChromeLabels }): JSX.Element; // English defaults
+type SiteStore = "chrome" | "edge"; // store.ts
+function pickStore(input: { search: string; brands?: { brand: string }[]; ua: string }, fromQuery = true): SiteStore;
+function storeScript(fromQuery: boolean): string; // pickStore as an inline pre-paint script
+function applyStore(fromQuery: boolean): SiteStore; // the same on a client-side visit; Chrome if navigator throws
+function ByStore(props: { chrome: ReactNode; edge?: ReactNode | null; stores: readonly SiteStore[]; as?: "span" | "div" }): JSX.Element;
+function ModeSwitch(props: { extensionId: string; edgeId? }): null; // client island
+function StoreLink(props: { pages?; extensionId?; edgeId?; label?; edgeLabel? }): JSX.Element | null;
+function ExtensionSection(props: { pages?; extensionId?; edgeId? }): JSX.Element | null;
+function ExtensionStatus(props: { extensionId: string; edgeId? }): JSX.Element; // client island, the CTA cell
+function PinPicture(props: { label?: string; chrome?: ChromeLabels; dir?: "ltr" | "rtl"; store?: SiteStore }): JSX.Element;
+function EdgePinPicture(props: { label: string; dir?: "ltr" | "rtl" }): JSX.Element; // edge-pin-picture.tsx
+const EDGE_LABELS: { extensions; manage; get; copyImage; inspect }; // Edge's English labels, every language
 function PrintFigure / LayoutFigure / NailFigure(props: { label: string }): JSX.Element;
-function MenuFigure(props: { label: string; menu?: { copyImage: string; inspect: string } }): JSX.Element;
+function MenuFigure(props: { label: string; menu?: { copyImage: string; inspect: string }; store?: SiteStore; dir?: "ltr" | "rtl" }): JSX.Element;
 function ExtensionHowTo(props: { copy: ExtensionCopy; locale: string }): JSX.Element; // the page body, every language
 
 // apps/web/src/components/extension/copy/
-const en: { seo; crumbs; answer; store; noButton; showPin; pin; usage; steps; wall; perm; faq; chrome };
+const en: { seo; crumbs; answer; store; noButton; showPin; pin; usage; steps; wall; perm; faq; edge; chrome };
+// edge: { answer; store; pin: { text; picture }; faqButton }, the lines that differ for Edge
 type ExtensionCopy = typeof en; // every other copy/<code>.ts `satisfies ExtensionCopy`
 type ChromeLabels = ExtensionCopy["chrome"]; // Chrome's own labels, from Chromium's xtb files
 const COPY: Readonly<Record<string, ExtensionCopy>>; // copy/index.ts, by URL code, all 28
 ```
 
-Routes: `apps/web/src/app/extensions/gallery-wall-layout-generator/` (`page.tsx`, `opengraph-image.tsx`, `extension.css`) and `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/` (`page.tsx` with `generateStaticParams` over the 27 translated codes and `dynamicParams = false`, `opengraph-image.tsx` re-exporting the English image). Section and figure styles live in `apps/web/src/app/widgets.css` (`ext-sec-*`, `ext-fig-*`, `pp-*`).
+Routes: `apps/web/src/app/extensions/gallery-wall-layout-generator/` (`page.tsx`, `opengraph-image.tsx`, `extension.css`) and `apps/web/src/app/[locale]/extensions/gallery-wall-layout-generator/` (`page.tsx` with `generateStaticParams` over the 27 translated codes and `dynamicParams = false`, `opengraph-image.tsx` re-exporting the English image). Section and figure styles live in `apps/web/src/app/widgets.css` (`ext-sec-*`, `ext-fig-*`, `pp-*`, and the global `.st-chrome`/`.st-edge` hide rule).
 
 ## Behavior
 
@@ -45,7 +57,9 @@ Go-live happened on 2026-11-22 (t24-go-live) in one edit: `EXTENSION_ID` set and
 
 The section's call to action and the "You have it" line share one grid cell; `ExtensionStatus` asks once after hydration and hides the other line with `visibility: hidden`, so the cell keeps its height. `@media (hover: none) and (pointer: coarse)` shows the phone line instead of "Add to Chrome".
 
-Every language renders through `ExtensionHowTo`. Its wrapper carries the language's `lang`, `dir` and, for scripts Schibsted lacks, the system font stack. `rich()` marks each "Gallery Wall Layout Generator" and "Try on my wall" in a sentence with `lang="en"` and fills `{door}` with the door height in both units. Breadcrumb names come from the dictionary by position (Home, hub, page); English reads them from the site map. Only English shows Related tools. Each drawing places its own text (`direction: ltr` in `extension.css`): the pin picture follows the page's direction (`PinPicture dir`; Arabic gets the right-to-left drawing), the right-click figure stays left to right (BL-80); the pin picture's grey lines shrink below 11.5 px when a translation is wider than about 46 Latin characters.
+Every language renders through `ExtensionHowTo`. Its wrapper carries the language's `lang`, `dir` and, for scripts Schibsted lacks, the system font stack. `rich()` marks each "Gallery Wall Layout Generator" and "Try on my wall" in a sentence with `lang="en"` and fills `{door}` with the door height in both units. Breadcrumb names come from the dictionary by position (Home, hub, page); English reads them from the site map. Only English shows Related tools. Each drawing places its own text (`direction: ltr` in `extension.css`): the pin picture follows the page's direction (`PinPicture dir`; Arabic gets the right-to-left drawing), the right-click figure mirrors on a right-to-left page (`MenuFigure dir`), its text left to right; the pin picture's grey lines shrink below 11.5 px when a translation is wider than about 46 Latin characters.
+
+The store lives on `<html data-ext-store>`. X1 renders `storeScript(true)` (`?store=edge`, then the browser's brands or user agent, else Chrome); `ExtensionSection` renders `storeScript(false)` (the browser alone). On a client-side visit `ModeSwitch` and `ExtensionStatus` call `applyStore` in a layout effect, before paint, and clear the attribute on unmount. `ByStore` puts each built store's variant side by side (`.st-chrome`, `.st-edge`); the global rule in `widgets.css` hides the one the attribute does not name, so crawlers and no-JS visitors get Chrome. X1 builds Chrome and Edge always; the section, the store link and Edge's id ask build Edge only once `EDGE_EXTENSION_ID` is set. Edge's how-to shares Chrome's pin heading and links: Edge 158 pins from the Extensions menu like Chrome (checked 2026-11-28).
 
 ## Edge Cases
 
@@ -54,6 +68,10 @@ Every language renders through `ExtensionHowTo`. Its wrapper carries the languag
 - A hidden tab: the poll timer keeps running but sends nothing (BL-69).
 - Figures draw the current flat sample room; BL-51 swaps it with F2 and G1.
 - Translated versions share the English social image and its English alt (BL-77).
+- Opera, and `?store=opera`, pick Chrome until Opera is built (T28).
+- Before `EDGE_EXTENSION_ID` is set, an Edge visitor gets Edge's how-to with no store link, the Chrome section on G1/F2, and a pin poll that asks Chrome's id only; "Already pinned? See how to use it" leaves pin mode.
+- A soft navigation from X1 `?store=edge` to G1 picks the store from the browser again.
+- Edge's FAQ answer replaces the second FAQ item by position (BL-142).
 
 ## Requirements
 
@@ -74,7 +92,7 @@ The HTML the server returns for `/extensions/gallery-wall-layout-generator` SHAL
 
 ### Requirement: The page links to the store in plain text
 
-While the extension page is live, the answer paragraph SHALL be followed, in both modes, by one plain text link "Get it from the Chrome Web Store" to the extension's store page, opening in a new tab with `rel="noopener"`. It SHALL be a text link, not a button. While the page is not live, the page SHALL hold no link to the Chrome Web Store.
+While the extension page is live, one plain text link to the picked store's page SHALL follow the answer paragraph, in both modes. It opens in a new tab with `rel="noopener"`. Chrome's reads "Get it from the Chrome Web Store". Edge's reads "Get it from Microsoft Edge Add-ons", and only once Edge's store id is set. It SHALL be a text link, not a button. While the page is not live, the page SHALL hold no link to any store.
 
 #### Scenario: The store link once live
 
@@ -85,7 +103,7 @@ While the extension page is live, the answer paragraph SHALL be followed, in bot
 #### Scenario: No store link before go-live
 
 - **WHEN** `/extensions/gallery-wall-layout-generator` is requested while the extension page is not live
-- **THEN** the response HTML holds no `a` element whose `href` starts with `https://chromewebstore.google.com`
+- **THEN** the response HTML holds no `a` element whose `href` starts with `https://chromewebstore.google.com` or `https://microsoftedge.microsoft.com`
 
 ### Requirement: The page shows one mode at a time
 
@@ -118,7 +136,7 @@ Pin mode SHALL end with "Already pinned? See how to use it", linking to `#usage`
 
 ### Requirement: Pin mode switches itself once the button is pinned
 
-While the page is in pin mode because of `?pinned=0`, has no hash, and knows the extension's store id, it SHALL ask the extension for its status every 2 seconds while the tab is visible. When the reply says pinned, it SHALL switch to usage mode, stop asking, and drop `pinned` from the address without adding a history entry, keeping every other parameter and any hash, so a reload opens in usage mode. A mode picked by a hash SHALL never switch by itself.
+While the page is in pin mode because of `?pinned=0`, has no hash, and knows at least one store id, it SHALL ask the extension for its status every 2 seconds while the tab is visible. It asks each set store id, Chrome's first. When any reply says pinned, it SHALL do three things: switch to usage mode, stop asking, and drop `pinned` from the address without adding a history entry. Every other parameter and any hash stay, so a reload opens in usage mode. A mode picked by a hash SHALL never switch by itself.
 
 #### Scenario: The visitor pins the button
 
@@ -138,14 +156,25 @@ While the page is in pin mode because of `?pinned=0`, has no hash, and knows the
 - **WHEN** the extension's next reply says pinned
 - **THEN** the address's query is `?utm_source=store`, the history length is unchanged, and the page is in usage mode
 
+#### Scenario: The Edge package pins its button
+
+- **GIVEN** a fixture Edge store id, the page open at `?pinned=0&store=edge`, and only the Edge id replying, not pinned
+- **WHEN** the Edge id's next reply says pinned
+- **THEN** within 2 seconds the page is in usage mode and the address's query is `?store=edge`
+
 ### Requirement: The pin picture shows the two clicks
 
-The pin section SHALL hold one drawing of Chrome's toolbar with the Extensions menu open, marked 1 on the puzzle-piece button and 2 on the pin next to "Gallery Wall Layout Generator". The drawing SHALL be `role="img"` with an `aria-label` that names both clicks, and the text above it SHALL name the same two clicks.
+The pin section SHALL hold one drawing per built store of that browser's toolbar with the Extensions menu open. Chrome's is marked 1 on the puzzle-piece button and 2 on the pin next to "Gallery Wall Layout Generator". Edge's is marked the same way, in Edge's style. Only the picked store's drawing SHALL show. Each drawing SHALL be `role="img"`, with an `aria-label` that names both clicks, and the text above it SHALL name the same two clicks.
 
 #### Scenario: The pin picture's name
 
 - **WHEN** the pin section is read by assistive technology
 - **THEN** the drawing's accessible name mentions the puzzle piece marked 1 and the pin marked 2 next to Gallery Wall Layout Generator
+
+#### Scenario: Edge's pin picture's name
+
+- **WHEN** the pin section of `?pinned=0&store=edge` is read by assistive technology
+- **THEN** exactly one pin picture is exposed, and its accessible name mentions the puzzle piece marked 1 and the pin marked 2 next to Gallery Wall Layout Generator
 
 ### Requirement: The page says what the extension can see
 
@@ -187,7 +216,7 @@ Asking the extension SHALL send `{ "type": "status" }` to its store id and resol
 
 ### Requirement: The extension section sits under the widget on G1 and F2
 
-While the extension page is live, G1 and F2 SHALL show one extension section directly after the widget: the extension icon, the label "Chrome extension", the `h2` "Plan on any shop's page", one sentence, an "Add to Chrome" link to the extension's Chrome Web Store page that opens in a new tab, and a picture of the side panel. While the page is not live, neither page SHALL hold the section.
+While the extension page is live, G1 and F2 SHALL show one extension section directly after the widget. It holds the extension icon, the store's label, the `h2` "Plan on any shop's page", one sentence naming the store's side panel, an add link to the store's page that opens in a new tab, and a picture of the side panel. Chrome's label is "Chrome extension" and its link "Add to Chrome", "Opens the Chrome Web Store". Edge's, once Edge's store id is set, are "Edge extension", "Add to Edge", "Opens Microsoft Edge Add-ons". While the page is not live, neither page SHALL hold the section.
 
 #### Scenario: The section while the extension page is live
 
@@ -200,9 +229,15 @@ While the extension page is live, G1 and F2 SHALL show one extension section dir
 - **WHEN** `/gallery-wall-planner` or `/frame-sizes-on-wall` is requested while the extension page is not live
 - **THEN** the response HTML holds no `h2` "Plan on any shop's page"
 
+#### Scenario: The section in Edge
+
+- **GIVEN** a live extension page and a fixture Edge store id
+- **WHEN** G1 is opened in a browser whose user agent holds `Edg/131`
+- **THEN** the section reads "Edge extension" and "…in Edge's side panel…", and its visible "Add to Edge" link points to Edge's store page in a new tab
+
 ### Requirement: The section tells phone visitors to use a computer
 
-On a device whose main pointer is coarse and cannot hover, the section SHALL show "Chrome on phones doesn't run extensions. Open this page on a computer to add it." in place of the "Add to Chrome" link. Both are in the server HTML; the device decides which shows, so the section keeps one height per layout.
+On a device whose main pointer is coarse and cannot hover, the section SHALL show a computer line in place of the add link. Chrome's is "Chrome on phones doesn't run extensions. Open this page on a computer to add it." Edge's is "This extension runs in Edge on a computer. Open this page on a computer to add it." The lines are in the server HTML, and the device and the store decide which one shows, so the section keeps one height per layout.
 
 #### Scenario: The section on a phone
 
@@ -212,7 +247,7 @@ On a device whose main pointer is coarse and cannot hover, the section SHALL sho
 
 ### Requirement: The section knows when the extension is installed
 
-When the extension answers that it is installed, the section SHALL replace its sentence's call to action and the "Add to Chrome" link with "You have it. Click its button in Chrome's toolbar to open the side panel." The section's height SHALL not change.
+The section SHALL ask each set store id. When any of them answers that it is installed, the section SHALL replace its call to action with the store's "You have it" line, and its height SHALL not change. Chrome's line is "You have it. Click its button in Chrome's toolbar to open the side panel." Edge's is "You have it. Click its button in Edge's toolbar to open the side panel."
 
 #### Scenario: A visitor who has the extension
 
@@ -317,14 +352,165 @@ Every translated version SHALL be built while X1 is built. It SHALL carry `noind
 
 ### Requirement: The Arabic pin picture shows right-to-left Chrome
 
-On a right-to-left version, the pin picture SHALL show Chrome as it looks in that language, with the puzzle-piece button and the Extensions menu at the top left, as the text above it says. Text, the extension's mark, the puzzle-piece icon and the numbers 1 and 2 SHALL NOT be mirrored. Left-to-right versions SHALL keep today's drawing. A page SHALL hold one pin picture.
+On a right-to-left version, the pin picture SHALL show each store's browser as it looks in that language. The puzzle-piece button and the Extensions menu sit at the top left, as the text above it says. Text, the extension's mark, the puzzle-piece icon and the numbers 1 and 2 SHALL NOT be mirrored. Left-to-right versions SHALL keep today's drawing. A page SHALL show one pin picture, and assistive technology SHALL see only that one.
 
 #### Scenario: The Arabic pin picture
 
 - **WHEN** `/ar/extensions/gallery-wall-layout-generator?pinned=0` is opened
-- **THEN** the page holds one pin picture, its puzzle-piece button marked 1 and its Extensions menu sit in the drawing's left half, its menu title is Chrome's Arabic "الإضافات", it still names "Gallery Wall Layout Generator", and its accessible name is in Arabic
+- **THEN** the page shows one pin picture, its puzzle-piece button marked 1 and its Extensions menu sit in the drawing's left half, its menu title is Chrome's Arabic "الإضافات", it still names "Gallery Wall Layout Generator", and its accessible name is in Arabic
 
 #### Scenario: A left-to-right version keeps its drawing
 
 - **WHEN** `/de/extensions/gallery-wall-layout-generator?pinned=0` is opened
-- **THEN** the page holds one pin picture, and its puzzle-piece button marked 1 sits in the drawing's right half
+- **THEN** the page shows one pin picture, and its puzzle-piece button marked 1 sits in the drawing's right half
+
+#### Scenario: The Arabic Edge pin picture
+
+- **WHEN** `/ar/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
+- **THEN** the page shows one pin picture, Edge's, with its puzzle-piece button marked 1 and its Extensions menu in the drawing's left half, its labels in English and its accessible name in Arabic
+
+### Requirement: The page picks the visitor's store
+
+The extension page SHALL pick one store before the first paint. `?store=edge` picks Edge. Otherwise the browser decides: Edge when its brands hold "Microsoft Edge" or its user agent holds `Edg/`, `EdgA/` or `EdgiOS/`. Anything else is Chrome. G1 and F2 SHALL pick by the browser alone. With no script, every page shows Chrome. Opera, and any `store` value other than `edge`, are Chrome until Opera is built.
+
+#### Scenario: The Edge install tab
+
+- **WHEN** `/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened in Chrome
+- **THEN** the page shows the Edge lines and the Edge pin picture, and no Chrome line
+
+#### Scenario: A Chrome Web Store install opened in Edge
+
+- **GIVEN** a browser whose user agent holds `Edg/131`
+- **WHEN** `/extensions/gallery-wall-layout-generator?pinned=0` is opened
+- **THEN** the page shows the Edge lines
+
+#### Scenario: Chrome and every other browser
+
+- **WHEN** the page is opened in Chrome with no `store`, or with `?store=opera`, or in a browser whose user agent holds `OPR/`
+- **THEN** the page shows the Chrome lines
+
+#### Scenario: Edge on a phone
+
+- **GIVEN** the user agent holds `EdgA/131`, Edge's id is set, and the extension page is live
+- **WHEN** `/gallery-wall-planner` is opened
+- **THEN** the extension section shows Edge's phone line
+
+#### Scenario: No script
+
+- **WHEN** the page is opened with JavaScript off and `?store=edge`
+- **THEN** the page shows the Chrome lines
+
+### Requirement: Each store's lines sit in the HTML once
+
+Every line, link and drawing that differs by store SHALL sit in the server HTML once for each built store, inside the same parent element, with only the picked store's shown. A line shared by every store SHALL sit once. The page's outline SHALL not change by store: the same headings, sections and order. Picking a store SHALL not move any block after the first paint. Where another requirement quotes a line, it quotes the Chrome line.
+
+#### Scenario: One heading, two texts
+
+- **WHEN** `/extensions/gallery-wall-layout-generator` is requested
+- **THEN** the pin section holds one `h2` "Pin it to your toolbar", shared by both stores, and one text paragraph under it, which holds Chrome's text and Edge's text; only the Chrome text is visible in Chrome
+
+#### Scenario: No shift on pick
+
+- **WHEN** `/extensions/gallery-wall-layout-generator?store=edge` loads
+- **THEN** the page's cumulative layout shift is 0
+
+### Requirement: Edge visitors get Edge's how-to
+
+For Edge, the page SHALL name Edge where it names Chrome. Edge, like Chrome, pins an extension from the Extensions menu (checked in Edge 158 on 2026-11-28). The answer names Edge's toolbar, the pin text names the puzzle piece (1) at the top right of Edge and then the pin (2), and the FAQ "Why isn't the button in my toolbar?" answer names Edge. The pin `h2`, the links between modes and "Already pinned?" are shared with Chrome. Every language SHALL say the same in its own words.
+
+#### Scenario: Edge's FAQ answer
+
+- **WHEN** `/extensions/gallery-wall-layout-generator?store=edge` is opened
+- **THEN** the visible answer to "Why isn't the button in my toolbar?" is "Edge puts new extensions behind the puzzle-piece button. Pin it once and it stays in the toolbar."
+
+#### Scenario: Edge's pin mode
+
+- **WHEN** `/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
+- **THEN** the heading "Pin it to your toolbar" is visible, the text above the pin picture reads "Edge keeps new extensions behind the puzzle-piece button. Click the puzzle piece (1) at the top right of Edge, then the pin (2) next to Gallery Wall Layout Generator. Its button then stays in the toolbar.", and the section ends with "Already pinned? See how to use it", linking to `#usage`
+
+#### Scenario: Edge's usage mode
+
+- **WHEN** `/extensions/gallery-wall-layout-generator?pinned=1&store=edge` is opened
+- **THEN** the answer paragraph reads "Click the extension's button in Edge's toolbar to open the side panel and plan a gallery wall. On any shop, right-click a print and pick “Try on my wall” to hang it on your wall at true size.", and the link under it reads "Show how to pin it" and points to `#pin`
+
+#### Scenario: Edge's pin mode in German
+
+- **WHEN** `/de/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
+- **THEN** the pin section's visible heading and text are German, and the visible text names Edge
+
+### Requirement: Edge's drawings keep Edge's English labels
+
+The Edge pin picture and the Edge right-click figure SHALL draw Edge's own labels in English in every language, each marked `lang="en"`, because Edge publishes no translations of its menus. The extension's name and "Try on my wall" stay English as everywhere. Each drawing's accessible name SHALL be in the page's language.
+
+#### Scenario: The Edge pin picture's labels
+
+- **WHEN** `/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
+- **THEN** the visible pin picture is marked 1 on the puzzle-piece button and 2 on the pin next to "Gallery Wall Layout Generator", and its menu reads "Extensions", "Manage Extensions" and "Get extensions for Microsoft Edge"
+
+#### Scenario: The Edge right-click figure's labels
+
+- **WHEN** `/extensions/gallery-wall-layout-generator?pinned=1&store=edge` is opened
+- **THEN** the visible right-click figure reads "Copy image", "Try on my wall" and "Inspect"
+
+#### Scenario: The Edge pin picture in French
+
+- **WHEN** `/fr/extensions/gallery-wall-layout-generator?pinned=0&store=edge` is opened
+- **THEN** the visible pin picture's menu title is "Extensions" and holds "Manage Extensions", both marked `lang="en"`, and its accessible name is in French and names the puzzle piece marked 1 and the pin marked 2
+
+### Requirement: The right-click figure follows the page's direction
+
+On a right-to-left version, every store's right-click figure SHALL be mirrored. The print sits on the right, and the menu opens to its left with each row's icon on the right. Text and the extension's mark SHALL not be mirrored. Left-to-right versions SHALL keep today's figure.
+
+#### Scenario: The Arabic right-click figure
+
+- **WHEN** `/ar/extensions/gallery-wall-layout-generator?pinned=1` is opened
+- **THEN** the visible right-click figure's print sits in the figure's right half, the menu's right edge is left of the print's right edge, and "Try on my wall" reads left to right
+
+#### Scenario: A left-to-right version keeps its figure
+
+- **WHEN** `/de/extensions/gallery-wall-layout-generator?pinned=1` is opened
+- **THEN** the visible right-click figure's print sits in its left half
+
+### Requirement: The browsers question names Chrome and Edge
+
+For every store, the FAQ "Which browsers does it run on?" SHALL answer "Chrome 116 or newer, or Microsoft Edge 116 or newer, on a computer. It opens in the browser's side panel." Every language SHALL say the same in its own words.
+
+#### Scenario: The browsers answer in Chrome
+
+- **WHEN** `/extensions/gallery-wall-layout-generator` is opened in Chrome
+- **THEN** the answer to "Which browsers does it run on?" names Chrome 116 and Microsoft Edge 116 and "the browser's side panel"
+
+### Requirement: The extension page's head and name name no browser
+
+The extension page's title, meta description, breadcrumb name and card question SHALL hold none of the whole words "Chrome", "Edge" or "Opera" (case-sensitive), in English and in every translation. The English title SHALL be "Gallery Wall Layout Generator Extension". The description SHALL be "How to use the Gallery Wall Layout Generator browser extension: plan a wall in the side panel, or right-click a shop print to hang it at true size." The page's short name SHALL be "Browser extension".
+
+#### Scenario: The English head
+
+- **WHEN** `/extensions/gallery-wall-layout-generator` is requested
+- **THEN** its title is "Gallery Wall Layout Generator Extension | Frame Sizes", its last breadcrumb reads "Browser extension", and its `h1` is still "How to Use the Gallery Wall Layout Generator"
+
+#### Scenario: Every language's head
+
+- **WHEN** the unit suite reads the site map entry and all 28 dictionaries
+- **THEN** no title, description, last crumb name or card question holds "Chrome", "Edge" or "Opera" as a whole word, naming the language that does
+
+### Requirement: Edge appears only with its store id
+
+Edge's store id SHALL be empty or 32 letters from a to p. While it is empty, no page SHALL link to Microsoft Edge Add-ons. The extension page SHALL still show Edge's how-to to Edge visitors, but with no store link. G1 and F2 SHALL show the Chrome section in Edge, and no page SHALL ask an Edge id. Once it is set, Edge's store page SHALL be addressed as `https://microsoftedge.microsoft.com/addons/detail/<id>`.
+
+#### Scenario: The Edge gate
+
+- **WHEN** the unit suite reads Edge's store id
+- **THEN** it is empty or matches `^[a-p]{32}$`
+
+#### Scenario: Edge before its id
+
+- **GIVEN** Edge's store id is empty
+- **WHEN** `/extensions/gallery-wall-layout-generator?store=edge` is opened
+- **THEN** the page shows the Edge lines, holds no `a` element whose `href` starts with `https://microsoftedge.microsoft.com`, and shows no store link
+
+#### Scenario: Edge with its id
+
+- **GIVEN** a fixture Edge store id and a live extension page
+- **WHEN** the page's store link and the section are rendered for Edge
+- **THEN** the link reads "Get it from Microsoft Edge Add-ons" and the section's button reads "Add to Edge", both pointing to `https://microsoftedge.microsoft.com/addons/detail/<the fixture id>`

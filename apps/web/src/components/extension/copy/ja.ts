@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const ja = {
   seo: {
-    title: "Chrome 用 Gallery Wall Layout Generator",
+    title: "Gallery Wall Layout Generator 拡張機能",
     h1: "Gallery Wall Layout Generator の使い方",
     description:
-      "Chrome 拡張機能 Gallery Wall Layout Generator の使い方。サイドパネルで壁のレイアウトを考えたり、ショップのポスターを実物大で壁に試したりできます。",
+      "ブラウザ拡張機能 Gallery Wall Layout Generator の使い方。サイドパネルで壁のレイアウトを考えたり、ショップのポスターを実物大で壁に試したりできます。",
   },
-  crumbs: { home: "ホーム", hub: "ギャラリーウォール", page: "Chrome 拡張機能" },
+  crumbs: { home: "ホーム", hub: "ギャラリーウォール", page: "ブラウザ拡張機能" },
   answer:
     "Chrome のツールバーにある拡張機能のボタンをクリックすると、サイドパネルが開き、ギャラリーウォールを計画できます。どのショップでも、ポスターを右クリックして「Try on my wall」を選ぶと、実物大であなたの壁に掛けられます。",
   store: "Chrome ウェブストアで入手",
@@ -81,9 +81,21 @@ export const ja = {
       },
       {
         q: "どのブラウザで使えますか？",
-        a: "パソコンの Chrome 116 以降で使えます。Chrome のサイドパネルで開きます。",
+        a: "パソコンの Chrome 116 以降、または Microsoft Edge 116 以降で使えます。ブラウザのサイドパネルで開きます。",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Edge のツールバーにある拡張機能のボタンをクリックすると、サイドパネルが開き、ギャラリーウォールを計画できます。どのショップでも、ポスターを右クリックして「Try on my wall」を選ぶと、実物大であなたの壁に掛けられます。",
+    store: "Microsoft Edge Add-ons で入手",
+    pin: {
+      text: "Edge では、新しい拡張機能はパズルピースのボタンの奥に入っています。Edge の右上にあるパズルピース（1）をクリックし、Gallery Wall Layout Generator の横にあるピン（2）をクリックしてください。以後、ボタンはツールバーに表示されたままになります。",
+      picture:
+        "Edge のツールバー：1 の印が付いたパズルピースのボタンで拡張機能メニューが開き、Gallery Wall Layout Generator の横のピンに 2 の印が付いています",
+    },
+    faqButton:
+      "Edge は新しい拡張機能をパズルピースのボタンの奥に入れます。一度固定すれば、ツールバーに表示されたままになります。",
   },
   chrome: {
     extensions: "拡張機能",

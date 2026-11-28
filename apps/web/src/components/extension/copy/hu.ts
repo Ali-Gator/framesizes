@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const hu = {
   seo: {
-    title: "Gallery Wall Layout Generator Chrome-hoz",
+    title: "Gallery Wall Layout Generator bővítmény",
     h1: "A Gallery Wall Layout Generator használata",
     description:
-      "Így használhatja a Gallery Wall Layout Generator Chrome-bővítményt: tervezzen falat az oldalpanelen, vagy próbáljon fel egy bolti posztert valódi méretben.",
+      "Így használhatja a Gallery Wall Layout Generator böngészőbővítményt: tervezzen falat az oldalpanelen, vagy próbáljon fel egy bolti posztert valódi méretben.",
   },
-  crumbs: { home: "Főoldal", hub: "Képfal", page: "Chrome-bővítmény" },
+  crumbs: { home: "Főoldal", hub: "Képfal", page: "Böngészőbővítmény" },
   answer:
     "Kattintson a bővítmény gombjára a Chrome eszköztárán, hogy megnyissa az oldalpanelt és megtervezzen egy képfalat. Bármelyik webáruházban kattintson jobb gombbal egy poszterre, és válassza a „Try on my wall” lehetőséget, hogy valódi méretben a falára kerüljön.",
   store: "Töltse le a Chrome Internetes áruházból",
@@ -81,9 +81,21 @@ export const hu = {
       },
       {
         q: "Mely böngészőkben működik?",
-        a: "A Chrome 116-os vagy újabb verziójában, számítógépen. A Chrome oldalpanelén nyílik meg.",
+        a: "A Chrome 116-os vagy újabb, illetve a Microsoft Edge 116-os vagy újabb verziójában, számítógépen. A böngésző oldalpanelén nyílik meg.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Kattintson a bővítmény gombjára az Edge eszköztárán, hogy megnyissa az oldalpanelt és megtervezzen egy képfalat. Bármelyik webáruházban kattintson jobb gombbal egy poszterre, és válassza a „Try on my wall” lehetőséget, hogy valódi méretben a falára kerüljön.",
+    store: "Töltse le a Microsoft Edge Add-ons oldalról",
+    pin: {
+      text: "Az Edge az új bővítményeket a puzzle-darab gomb mögött tartja. Kattintson az Edge jobb felső sarkában a puzzle-darabra (1), majd a Gallery Wall Layout Generator melletti gombostűre (2). A gombja ezután az eszköztáron marad.",
+      picture:
+        "Az Edge eszköztára: az 1-gyel jelölt puzzle-darab gomb megnyitja a Bővítmények menüt, a Gallery Wall Layout Generator melletti gombostű pedig 2-vel van jelölve",
+    },
+    faqButton:
+      "Az Edge az új bővítményeket a puzzle-darab gomb mögé teszi. Tűzze ki egyszer, és az eszköztáron marad.",
   },
   chrome: {
     extensions: "Bővítmények",

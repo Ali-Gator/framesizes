@@ -80,7 +80,7 @@ test("the German pin picture uses Chrome's German labels and keeps the extension
   page,
 }) => {
   await page.goto(`/de${PATH}?pinned=0`);
-  const picture = page.locator("svg.ext-pin-picture");
+  const picture = page.locator("svg.ext-pin-picture:visible");
   await expect(picture).toBeVisible();
   await expect(picture.locator("text", { hasText: /^Erweiterungen$/ })).toHaveCount(1);
   await expect(
@@ -91,8 +91,12 @@ test("the German pin picture uses Chrome's German labels and keeps the extension
 
 /** Whether an element of the pin picture lies wholly in the drawing's left or right half. */
 async function half(page: Page, selector: string) {
-  const picture = await page.locator("svg.ext-pin-picture").boundingBox();
-  const box = await page.locator("svg.ext-pin-picture").locator(selector).first().boundingBox();
+  const picture = await page.locator("svg.ext-pin-picture:visible").boundingBox();
+  const box = await page
+    .locator("svg.ext-pin-picture:visible")
+    .locator(selector)
+    .first()
+    .boundingBox();
   if (!picture || !box) return null;
   const middle = picture.x + picture.width / 2;
   return box.x + box.width <= middle ? "left" : box.x >= middle ? "right" : "both";
@@ -105,7 +109,7 @@ const MENU = 'rect[filter="url(#pp-shadow)"]';
 /** {@link openspec/specs/extension-site/spec.md#scenario-the-arabic-pin-picture} */
 test("the Arabic pin picture puts the puzzle piece and the menu on the left", async ({ page }) => {
   await page.goto(`/ar${PATH}?pinned=0`);
-  const picture = page.locator("svg.ext-pin-picture");
+  const picture = page.locator("svg.ext-pin-picture:visible");
   await expect(picture).toHaveCount(1);
   await expect(picture).toBeVisible();
   expect(await half(page, RING_1)).toBe("left");
@@ -120,8 +124,8 @@ test("the Arabic pin picture puts the puzzle piece and the menu on the left", as
 /** {@link openspec/specs/extension-site/spec.md#scenario-a-left-to-right-version-keeps-its-drawing} */
 test("the German pin picture keeps the puzzle piece on the right", async ({ page }) => {
   await page.goto(`/de${PATH}?pinned=0`);
-  await expect(page.locator("svg.ext-pin-picture")).toHaveCount(1);
-  await expect(page.locator("svg.ext-pin-picture")).toBeVisible();
+  await expect(page.locator("svg.ext-pin-picture:visible")).toHaveCount(1);
+  await expect(page.locator("svg.ext-pin-picture:visible")).toBeVisible();
   expect(await half(page, RING_1)).toBe("right");
 });
 
@@ -154,9 +158,9 @@ test("the Spanish breadcrumbs are in Spanish and link to the English pages", asy
   expect(crumbs.items).toEqual([
     { text: "Inicio", href: "/", current: false },
     { text: "Pared de cuadros", href: "/gallery-wall-planner", current: false },
-    { text: "Extensión de Chrome", href: null, current: true },
+    { text: "Extensión de navegador", href: null, current: true },
   ]);
-  expect(crumbs.list).toEqual(["Inicio", "Pared de cuadros", "Extensión de Chrome"]);
+  expect(crumbs.list).toEqual(["Inicio", "Pared de cuadros", "Extensión de navegador"]);
 });
 
 /** {@link openspec/specs/extension-site/spec.md#scenario-the-last-crumb-in-the-spanish-breadcrumblist} */

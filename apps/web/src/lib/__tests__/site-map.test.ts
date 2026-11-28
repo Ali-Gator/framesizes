@@ -146,9 +146,7 @@ describe("builtPage", () => {
   it("returns the extension page with the guide's head values", () => {
     const x1 = builtPage("X1");
     expect(x1.path).toBe("/extensions/gallery-wall-layout-generator");
-    expect(fullTitle(x1.seo.title)).toBe(
-      "Gallery Wall Layout Generator Chrome Extension | Frame Sizes",
-    );
+    expect(fullTitle(x1.seo.title)).toBe("Gallery Wall Layout Generator Extension | Frame Sizes");
     expect(x1.seo.h1).toBe("How to Use the Gallery Wall Layout Generator");
   });
 

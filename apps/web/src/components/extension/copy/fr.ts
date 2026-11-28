@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const fr = {
   seo: {
-    title: "Gallery Wall Layout Generator pour Chrome",
+    title: "Extension Gallery Wall Layout Generator",
     h1: "Comment utiliser Gallery Wall Layout Generator",
     description:
-      "Comment utiliser l'extension Chrome Gallery Wall Layout Generator : composez un mur dans le panneau latéral ou essayez une affiche de boutique en taille réelle.",
+      "Comment utiliser l'extension de navigateur Gallery Wall Layout Generator : composez un mur dans le panneau latéral ou essayez une affiche en taille réelle.",
   },
-  crumbs: { home: "Accueil", hub: "Mur de cadres", page: "Extension Chrome" },
+  crumbs: { home: "Accueil", hub: "Mur de cadres", page: "Extension de navigateur" },
   answer:
     "Cliquez sur le bouton de l'extension dans la barre d'outils de Chrome pour ouvrir le panneau latéral et composer un mur de cadres. Sur n'importe quelle boutique, faites un clic droit sur une affiche et choisissez « Try on my wall » pour l'accrocher à votre mur en taille réelle.",
   store: "Téléchargez-la sur le Chrome Web Store",
@@ -81,9 +81,21 @@ export const fr = {
       },
       {
         q: "Sur quels navigateurs fonctionne-t-elle ?",
-        a: "Chrome 116 ou version ultérieure, sur ordinateur. Elle s'ouvre dans le panneau latéral de Chrome.",
+        a: "Chrome 116 ou version ultérieure, ou Microsoft Edge 116 ou version ultérieure, sur ordinateur. Elle s'ouvre dans le panneau latéral du navigateur.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Cliquez sur le bouton de l'extension dans la barre d'outils d'Edge pour ouvrir le panneau latéral et composer un mur de cadres. Sur n'importe quelle boutique, faites un clic droit sur une affiche et choisissez « Try on my wall » pour l'accrocher à votre mur en taille réelle.",
+    store: "Téléchargez-la sur Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge range les nouvelles extensions derrière le bouton en forme de pièce de puzzle. Cliquez sur la pièce de puzzle (1) en haut à droite d'Edge, puis sur l'épingle (2) à côté de Gallery Wall Layout Generator. Son bouton reste ensuite dans la barre d'outils.",
+      picture:
+        "La barre d'outils d'Edge : le bouton pièce de puzzle, marqué 1, ouvre le menu Extensions, et l'épingle à côté de Gallery Wall Layout Generator est marquée 2",
+    },
+    faqButton:
+      "Edge place les nouvelles extensions derrière le bouton pièce de puzzle. Épinglez-la une fois et elle reste dans la barre d'outils.",
   },
   chrome: {
     extensions: "Extensions",

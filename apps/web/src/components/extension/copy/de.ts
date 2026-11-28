@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const de = {
   seo: {
-    title: "Gallery Wall Layout Generator für Chrome",
+    title: "Gallery Wall Layout Generator: Erweiterung",
     h1: "So nutzen Sie den Gallery Wall Layout Generator",
     description:
-      "So nutzen Sie die Chrome-Erweiterung Gallery Wall Layout Generator: Bilderwand in der Seitenleiste planen oder ein Poster aus dem Shop in echter Größe zeigen.",
+      "So nutzen Sie die Browsererweiterung Gallery Wall Layout Generator: Bilderwand in der Seitenleiste planen oder ein Poster aus dem Shop in echter Größe zeigen.",
   },
-  crumbs: { home: "Startseite", hub: "Bilderwand", page: "Chrome-Erweiterung" },
+  crumbs: { home: "Startseite", hub: "Bilderwand", page: "Browsererweiterung" },
   answer:
     "Klicken Sie in der Chrome-Symbolleiste auf die Schaltfläche der Erweiterung, um die Seitenleiste zu öffnen und eine Bilderwand zu planen. Klicken Sie in einem beliebigen Shop mit der rechten Maustaste auf ein Poster und wählen Sie „Try on my wall“, um es in echter Größe an Ihre Wand zu hängen.",
   store: "Im Chrome Web Store herunterladen",
@@ -81,9 +81,21 @@ export const de = {
       },
       {
         q: "In welchen Browsern läuft sie?",
-        a: "In Chrome 116 oder neuer, auf einem Computer. Sie öffnet sich in der Seitenleiste von Chrome.",
+        a: "In Chrome 116 oder neuer oder in Microsoft Edge 116 oder neuer, auf einem Computer. Sie öffnet sich in der Seitenleiste des Browsers.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Klicken Sie in der Edge-Symbolleiste auf die Schaltfläche der Erweiterung, um die Seitenleiste zu öffnen und eine Bilderwand zu planen. Klicken Sie in einem beliebigen Shop mit der rechten Maustaste auf ein Poster und wählen Sie „Try on my wall“, um es in echter Größe an Ihre Wand zu hängen.",
+    store: "Bei Microsoft Edge Add-ons herunterladen",
+    pin: {
+      text: "Edge legt neue Erweiterungen hinter die Puzzleteil-Schaltfläche. Klicken Sie oben rechts in Edge auf das Puzzleteil (1) und dann auf die Pinnnadel (2) neben Gallery Wall Layout Generator. Danach bleibt die Schaltfläche in der Symbolleiste.",
+      picture:
+        "Die Edge-Symbolleiste: Die Puzzleteil-Schaltfläche, markiert mit 1, öffnet das Menü „Erweiterungen“, und die Pinnnadel neben Gallery Wall Layout Generator ist mit 2 markiert",
+    },
+    faqButton:
+      "Edge legt neue Erweiterungen hinter die Puzzleteil-Schaltfläche. Pinnen Sie sie einmal an, dann bleibt sie in der Symbolleiste.",
   },
   chrome: {
     extensions: "Erweiterungen",

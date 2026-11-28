@@ -5,19 +5,24 @@ import { RelatedTools } from "@/components/frame-chart/related-tools";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { FAQ } from "@/components/ui/faq";
 import { U } from "@/components/ui/u";
-import { EXTENSION_ID } from "@/lib/extension";
+import { EDGE_EXTENSION_ID, EXTENSION_ID } from "@/lib/extension";
 import { DEFAULT_LOCALE, localeByCode, localizedPath } from "@/lib/locales";
 import { breadcrumbJsonLd, breadcrumbTrail, jsonLdScript } from "@/lib/seo";
 import { builtPage } from "@/lib/site-map";
 
+import { ByStore } from "./by-store";
 import type { ExtensionCopy } from "./copy/en";
 import { LayoutFigure, MenuFigure, NailFigure } from "./figures";
 import { MODE_SCRIPT } from "./mode";
 import { ModeSwitch } from "./mode-switch";
 import { PinPicture } from "./pin-picture";
+import { storeScript } from "./store";
 import { StoreLink } from "./store-link";
 
 const X1 = builtPage("X1");
+
+/** X1 builds both stores: Edge's how-to needs no store id. */
+const BUILT = ["chrome", "edge"] as const;
 
 /** The extension's own words, shown in English in every language, and the door height. */
 const RICH = /(Gallery Wall Layout Generator|Try on my wall|\{door\})/;
@@ -67,6 +72,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
  * {@link openspec/specs/extension-site/spec.md#requirement-the-page-says-what-the-extension-can-see}
  * {@link openspec/specs/extension-site/spec.md#requirement-the-extension-page-exists-in-every-site-language}
  * {@link openspec/specs/localization/spec.md#requirement-a-language-version-marks-its-own-language}
+ * {@link openspec/specs/extension-site/spec.md#requirement-each-stores-lines-sit-in-the-html-once}
+ * {@link openspec/specs/extension-site/spec.md#requirement-edge-visitors-get-edges-how-to}
  */
 export function ExtensionHowTo({ copy, locale }: { copy: ExtensionCopy; locale: string }) {
   const lang = localeByCode(locale);
@@ -81,10 +88,18 @@ export function ExtensionHowTo({ copy, locale }: { copy: ExtensionCopy; locale: 
   const [plan, shop, nails] = copy.steps;
   const figures = [
     <LayoutFigure key="plan" label={plan?.figure ?? ""} />,
-    <MenuFigure
+    <ByStore
       key="shop"
-      label={shop?.figure ?? ""}
-      menu={{ copyImage: copy.chrome.copyImage, inspect: copy.chrome.inspect }}
+      as="div"
+      stores={BUILT}
+      chrome={
+        <MenuFigure
+          label={shop?.figure ?? ""}
+          menu={{ copyImage: copy.chrome.copyImage, inspect: copy.chrome.inspect }}
+          dir={lang.dir}
+        />
+      }
+      edge={<MenuFigure label={shop?.figure ?? ""} store="edge" dir={lang.dir} />}
     />,
     <NailFigure key="nails" label={nails?.figure ?? ""} />,
   ];
@@ -96,13 +111,16 @@ export function ExtensionHowTo({ copy, locale }: { copy: ExtensionCopy; locale: 
       style={lang.font === "system" ? SYSTEM_FONT : undefined}
     >
       <script dangerouslySetInnerHTML={{ __html: MODE_SCRIPT }} />
-      <ModeSwitch extensionId={EXTENSION_ID} />
+      <script dangerouslySetInnerHTML={{ __html: storeScript(true) }} />
+      <ModeSwitch extensionId={EXTENSION_ID} edgeId={EDGE_EXTENSION_ID} />
       <div className="flex flex-col gap-3">
         <Breadcrumbs items={crumbs.map((crumb) => ({ href: crumb.path, label: crumb.name }))} />
         <h1 className="display md:display-xl">{rich(copy.seo.h1)}</h1>
         {/* {@link openspec/specs/extension-site/spec.md#scenario-the-answer-paragraph} */}
-        <p className="max-w-prose md:body-lg">{rich(copy.answer)}</p>
-        <StoreLink label={copy.store} />
+        <p className="max-w-prose md:body-lg">
+          <ByStore stores={BUILT} chrome={rich(copy.answer)} edge={rich(copy.edge.answer)} />
+        </p>
+        <StoreLink label={copy.store} edgeLabel={copy.edge.store} />
         <p className="ext-usage small text-ink-muted">
           {`${copy.noButton} `}
           <a href="#pin">{copy.showPin}</a>
@@ -113,8 +131,15 @@ export function ExtensionHowTo({ copy, locale }: { copy: ExtensionCopy; locale: 
         <h2 className="h2" tabIndex={-1}>
           {copy.pin.title}
         </h2>
-        <p className="max-w-prose">{rich(copy.pin.text)}</p>
-        <PinPicture label={copy.pin.picture} chrome={copy.chrome} dir={lang.dir} />
+        <p className="max-w-prose">
+          <ByStore stores={BUILT} chrome={rich(copy.pin.text)} edge={rich(copy.edge.pin.text)} />
+        </p>
+        <ByStore
+          as="div"
+          stores={BUILT}
+          chrome={<PinPicture label={copy.pin.picture} chrome={copy.chrome} dir={lang.dir} />}
+          edge={<PinPicture label={copy.edge.pin.picture} dir={lang.dir} store="edge" />}
+        />
         <p>
           {`${copy.pin.pinned} `}
           <a href="#usage">{copy.pin.showUsage}</a>
@@ -158,7 +183,25 @@ export function ExtensionHowTo({ copy, locale }: { copy: ExtensionCopy; locale: 
         </Section>
 
         <Section title={copy.faq.title}>
-          <FAQ items={copy.faq.items.map((item) => ({ q: item.q, a: <p>{rich(item.a)}</p> }))} />
+          <FAQ
+            items={copy.faq.items.map((item, i) => ({
+              q: item.q,
+              // The second question, about the toolbar button, names the picked browser.
+              a: (
+                <p>
+                  {i === 1 ? (
+                    <ByStore
+                      stores={BUILT}
+                      chrome={rich(item.a)}
+                      edge={rich(copy.edge.faqButton)}
+                    />
+                  ) : (
+                    rich(item.a)
+                  )}
+                </p>
+              ),
+            }))}
+          />
         </Section>
 
         {/* Every page Related tools links to is English only. */}

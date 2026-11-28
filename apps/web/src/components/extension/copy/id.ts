@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const id = {
   seo: {
-    title: "Gallery Wall Layout Generator untuk Chrome",
+    title: "Ekstensi Gallery Wall Layout Generator",
     h1: "Cara Menggunakan Gallery Wall Layout Generator",
     description:
-      "Cara menggunakan ekstensi Chrome Gallery Wall Layout Generator: rencanakan dinding di panel samping, atau coba poster dari toko dalam ukuran sebenarnya.",
+      "Cara menggunakan ekstensi browser Gallery Wall Layout Generator: rencanakan dinding di panel samping, atau coba poster dari toko dalam ukuran sebenarnya.",
   },
-  crumbs: { home: "Beranda", hub: "Dinding galeri", page: "Ekstensi Chrome" },
+  crumbs: { home: "Beranda", hub: "Dinding galeri", page: "Ekstensi browser" },
   answer:
     "Klik tombol ekstensi di toolbar Chrome untuk membuka panel samping dan merencanakan dinding galeri. Di toko mana pun, klik kanan sebuah poster dan pilih “Try on my wall” untuk menggantungnya di dinding Anda dalam ukuran sebenarnya.",
   store: "Dapatkan dari Chrome Web Store",
@@ -81,9 +81,21 @@ export const id = {
       },
       {
         q: "Di browser apa saja ekstensi ini berjalan?",
-        a: "Chrome 116 atau yang lebih baru, di komputer. Ekstensi ini terbuka di panel samping Chrome.",
+        a: "Chrome 116 atau yang lebih baru, atau Microsoft Edge 116 atau yang lebih baru, di komputer. Ekstensi ini terbuka di panel samping browser.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Klik tombol ekstensi di toolbar Edge untuk membuka panel samping dan merencanakan dinding galeri. Di toko mana pun, klik kanan sebuah poster dan pilih “Try on my wall” untuk menggantungnya di dinding Anda dalam ukuran sebenarnya.",
+    store: "Dapatkan dari Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge menyimpan ekstensi baru di balik tombol kepingan puzzle. Klik kepingan puzzle (1) di kanan atas Edge, lalu pin (2) di samping Gallery Wall Layout Generator. Tombolnya akan tetap ada di toolbar.",
+      picture:
+        "Toolbar Edge: tombol kepingan puzzle, bertanda 1, membuka menu Ekstensi, dan pin di samping Gallery Wall Layout Generator bertanda 2",
+    },
+    faqButton:
+      "Edge menaruh ekstensi baru di balik tombol kepingan puzzle. Sematkan sekali dan tombolnya akan tetap di toolbar.",
   },
   chrome: {
     extensions: "Ekstensi",

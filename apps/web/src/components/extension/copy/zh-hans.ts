@@ -3,12 +3,12 @@ import type { ExtensionCopy } from "./en";
 /** Chinese (Simplified). */
 export const zhHans = {
   seo: {
-    title: "Gallery Wall Layout Generator Chrome 扩展程序",
+    title: "Gallery Wall Layout Generator 浏览器扩展程序",
     h1: "如何使用 Gallery Wall Layout Generator",
     description:
-      "如何使用 Chrome 扩展程序 Gallery Wall Layout Generator：在侧边栏中规划照片墙，或右键点击商店里的海报，按实际尺寸挂到你的墙上看看。",
+      "如何使用浏览器扩展程序 Gallery Wall Layout Generator：在侧边栏中规划照片墙，或右键点击商店里的海报，按实际尺寸挂到你的墙上看看。",
   },
-  crumbs: { home: "首页", hub: "照片墙", page: "Chrome 扩展程序" },
+  crumbs: { home: "首页", hub: "照片墙", page: "浏览器扩展程序" },
   answer:
     "点击 Chrome 工具栏中的扩展程序按钮，即可打开侧边栏并规划照片墙。在任意商店中，右键点击一张海报并选择“Try on my wall”，就能按实际尺寸把它挂到你的墙上。",
   store: "前往 Chrome 应用商店获取",
@@ -82,9 +82,20 @@ export const zhHans = {
       },
       {
         q: "它支持哪些浏览器？",
-        a: "电脑上的 Chrome 116 或更高版本。它会在 Chrome 的侧边栏中打开。",
+        a: "电脑上的 Chrome 116 或更高版本，或 Microsoft Edge 116 或更高版本。它会在浏览器的侧边栏中打开。",
       },
     ],
+  },
+  edge: {
+    answer:
+      "点击 Edge 工具栏中的扩展程序按钮，即可打开侧边栏并规划照片墙。在任意商店中，右键点击一张海报并选择“Try on my wall”，就能按实际尺寸把它挂到你的墙上。",
+    store: "前往 Microsoft Edge Add-ons 获取",
+    pin: {
+      text: "Edge 会把新扩展程序放在拼图按钮后面。点击 Edge 右上角的拼图图标（1），再点击 Gallery Wall Layout Generator 旁边的图钉（2）。之后它的按钮就会一直显示在工具栏中。",
+      picture:
+        "Edge 工具栏：标有 1 的拼图按钮会打开扩展程序菜单，Gallery Wall Layout Generator 旁边的图钉标有 2",
+    },
+    faqButton: "Edge 会把新扩展程序放在拼图按钮后面。固定一次后，它就会一直留在工具栏中。",
   },
   chrome: {
     extensions: "扩展程序",

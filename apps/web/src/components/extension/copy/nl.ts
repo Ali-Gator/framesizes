@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const nl = {
   seo: {
-    title: "Gallery Wall Layout Generator voor Chrome",
+    title: "Gallery Wall Layout Generator-extensie",
     h1: "Zo gebruik je Gallery Wall Layout Generator",
     description:
-      "Zo gebruik je de Chrome-extensie Gallery Wall Layout Generator: plan een wand in het zijpaneel of probeer een poster uit een webshop op ware grootte.",
+      "Zo gebruik je de browserextensie Gallery Wall Layout Generator: plan een wand in het zijpaneel of probeer een poster uit een webshop op ware grootte.",
   },
-  crumbs: { home: "Home", hub: "Fotowand", page: "Chrome-extensie" },
+  crumbs: { home: "Home", hub: "Fotowand", page: "Browserextensie" },
   answer:
     "Klik op de knop van de extensie in de werkbalk van Chrome om het zijpaneel te openen en een fotowand te plannen. Klik in een willekeurige webshop met de rechtermuisknop op een poster en kies ‘Try on my wall’ om hem op ware grootte aan je muur te hangen.",
   store: "Download in de Chrome Web Store",
@@ -81,9 +81,21 @@ export const nl = {
       },
       {
         q: "In welke browsers werkt het?",
-        a: "In Chrome 116 of nieuwer, op een computer. Het opent in het zijpaneel van Chrome.",
+        a: "In Chrome 116 of nieuwer, of in Microsoft Edge 116 of nieuwer, op een computer. Het opent in het zijpaneel van de browser.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Klik op de knop van de extensie in de werkbalk van Edge om het zijpaneel te openen en een fotowand te plannen. Klik in een willekeurige webshop met de rechtermuisknop op een poster en kies ‘Try on my wall’ om hem op ware grootte aan je muur te hangen.",
+    store: "Download bij Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge bewaart nieuwe extensies achter de puzzelstukknop. Klik rechtsboven in Edge op het puzzelstuk (1) en daarna op de punaise (2) naast Gallery Wall Layout Generator. De knop blijft dan in de werkbalk staan.",
+      picture:
+        "De werkbalk van Edge: de puzzelstukknop, gemarkeerd met 1, opent het menu Extensies, en de punaise naast Gallery Wall Layout Generator is gemarkeerd met 2",
+    },
+    faqButton:
+      "Edge zet nieuwe extensies achter de puzzelstukknop. Zet hem één keer vast en hij blijft in de werkbalk.",
   },
   chrome: {
     extensions: "Extensies",

@@ -23,6 +23,10 @@ const HUB = HUBS.find((h) => h.id === X1.hub);
  * - `copyImage`: 6518014396551869914 ("Cop&y image", the context menu item; mnemonic dropped)
  * - `inspect`: 998747458861718449 ("I&nspect", the context menu item; mnemonic dropped)
  *
+ * `edge` holds the lines that differ for Microsoft Edge (`ByStore`); every other line is shared.
+ * Edge's own menu labels are not here: they stay English in every language (`EDGE_LABELS`,
+ * edge-pin-picture.tsx), checked in Edge 158 on 2026-11-28.
+ *
  * {@link openspec/specs/extension-site/spec.md#requirement-the-extension-page-exists-in-every-site-language}
  * {@link openspec/specs/extension-site/spec.md#requirement-the-drawings-use-chromes-own-labels-in-the-pages-language}
  */
@@ -100,9 +104,21 @@ export const en = {
       },
       {
         q: "Which browsers does it run on?",
-        a: "Chrome 116 or newer, on a computer. It opens in Chrome's side panel.",
+        a: "Chrome 116 or newer, or Microsoft Edge 116 or newer, on a computer. It opens in the browser's side panel.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Click the extension's button in Edge's toolbar to open the side panel and plan a gallery wall. On any shop, right-click a print and pick “Try on my wall” to hang it on your wall at true size.",
+    store: "Get it from Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge keeps new extensions behind the puzzle-piece button. Click the puzzle piece (1) at the top right of Edge, then the pin (2) next to Gallery Wall Layout Generator. Its button then stays in the toolbar.",
+      picture:
+        "Edge's toolbar: the puzzle-piece button, marked 1, opens the Extensions menu, and the pin next to Gallery Wall Layout Generator is marked 2",
+    },
+    faqButton:
+      "Edge puts new extensions behind the puzzle-piece button. Pin it once and it stays in the toolbar.",
   },
   chrome: {
     extensions: "Extensions",

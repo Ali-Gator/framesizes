@@ -102,3 +102,46 @@ describe("ExtensionSection", () => {
     expect(get?.querySelector("a")?.textContent).toBe("Add to Chrome");
   });
 });
+
+describe("ExtensionSection for Edge", () => {
+  const EDGE = "ponmlkjihgfedcbaponmlkjihgfedcba";
+  const edgeText = (doc: Document) => [...doc.querySelectorAll(".st-edge")].map((el) => text(el));
+
+  /**
+   * {@link openspec/specs/extension-site/spec.md#scenario-the-section-in-edge}
+   * {@link openspec/specs/extension-site/spec.md#scenario-edge-on-a-phone}
+   */
+  it("holds Edge's lines beside Chrome's once Edge's id is set", () => {
+    const doc = parse(
+      renderToStaticMarkup(<ExtensionSection pages={LIVE} extensionId={ID} edgeId={EDGE} />),
+    );
+    expect(edgeText(doc)).toEqual([
+      "Edge extension",
+      "Edge's side panel",
+      "Add to Edge",
+      "Opens Microsoft Edge Add-ons",
+      "This extension runs in Edge on a computer. Open this page on a computer to add it.",
+      "You have it. Click its button in Edge's toolbar to open the side panel.",
+    ]);
+    const add = doc.querySelector(".st-edge a");
+    expect(add?.getAttribute("href")).toBe(
+      `https://microsoftedge.microsoft.com/addons/detail/${EDGE}`,
+    );
+    expect(add?.getAttribute("target")).toBe("_blank");
+    expect(add?.getAttribute("rel")).toBe("noopener");
+    expect(doc.querySelectorAll(".st-chrome")).toHaveLength(6);
+  });
+
+  /** {@link openspec/specs/extension-site/spec.md#scenario-edge-before-its-id} */
+  it("builds no Edge line before Edge's id, leaving Chrome's markup as it was", () => {
+    const withoutEdge = renderToStaticMarkup(
+      <ExtensionSection pages={LIVE} extensionId={ID} edgeId="" />,
+    );
+    expect(withoutEdge).not.toContain("st-edge");
+    expect(withoutEdge).not.toContain("st-chrome");
+    expect(withoutEdge).not.toContain("microsoftedge.microsoft.com");
+    expect(text(parse(withoutEdge).querySelector(".ext-sec-text p:nth-of-type(2)"))).toBe(
+      "Gallery Wall Layout Generator puts the gallery wall planner in Chrome's side panel, so you can right-click a print on any shop and see it on your wall at true size.",
+    );
+  });
+});
