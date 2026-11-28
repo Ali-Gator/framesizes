@@ -113,13 +113,7 @@ The table maps each store to its `id`, its `pageUrl(id)` (`chromewebstore.google
 edge: {
   answer: string;
   store: string; // "Get it from Microsoft Edge Add-ons"
-  showPin: string;
-  pin: {
-    title: string;
-    text: string;
-    picture: string;
-    pinned: string;
-  }
+  pin: { text: string; picture: string };
   faqButton: string;
 }
 ```
