@@ -281,7 +281,7 @@ A live page other than the home page, and a built page that is not live, SHALL s
 #### Scenario: The extension page's breadcrumbs
 
 - **WHEN** `/extensions/gallery-wall-layout-generator` is requested
-- **THEN** its breadcrumb `nav` reads "Home", "Gallery wall" linking to `/gallery-wall-planner`, then "Chrome extension" marked `aria-current="page"`, and its `BreadcrumbList` has three items ending `https://framesizes.app/gallery-wall-planner` and `https://framesizes.app/extensions/gallery-wall-layout-generator`
+- **THEN** its breadcrumb `nav` reads "Home", "Gallery wall" linking to `/gallery-wall-planner`, then "Browser extension" marked `aria-current="page"`, and its `BreadcrumbList` has three items ending `https://framesizes.app/gallery-wall-planner` and `https://framesizes.app/extensions/gallery-wall-layout-generator`
 
 ### Requirement: A built page that is not live stays out of the index
 
@@ -291,7 +291,7 @@ A page whose route is built while its site map entry is not live SHALL render wi
 
 - **GIVEN** the extension page X1 is not live
 - **WHEN** `/extensions/gallery-wall-layout-generator` is requested
-- **THEN** it answers 200 with the title "Gallery Wall Layout Generator Chrome Extension | Frame Sizes", one canonical to its own URL, and a robots meta tag holding `noindex`
+- **THEN** it answers 200 with the title "Gallery Wall Layout Generator Extension | Frame Sizes", one canonical to its own URL, and a robots meta tag holding `noindex`
 - **AND** `/sitemap.xml`, the footer and the Related tools on `/gallery-wall-planner` hold no link to it
 
 #### Scenario: Head tags of a page set live
