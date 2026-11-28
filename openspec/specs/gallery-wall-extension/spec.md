@@ -12,8 +12,8 @@ The Chrome extension "Gallery Wall Layout Generator": G1's gallery wall planner 
 //   side_panel.default_path "sidepanel.html", background.js (module), externally_connectable framesizes.app
 // apps/extension/src/background.ts — pure handlers over chrome-shaped Api / MenuApi, wired at the bottom
 const HOW_TO = "https://framesizes.app/extensions/gallery-wall-layout-generator";
-function howToUrl(uiLanguage: string | undefined, pinned: boolean): string; // the how-to in Chrome's language, English when the site lacks it
-function onInstalled(api, details: { reason: string }): Promise<void>; // panel behaviour; install: howToUrl(api.i18n?.getUILanguage(), pinned)
+function howToUrl(uiLanguage: string | undefined, pinned: boolean, store: Store = "chrome"): string; // the how-to in the browser's language, English when the site lacks it; any store but Chrome adds &store=<store>
+function onInstalled(api, details: { reason: string }, store: Store = <built STORE>): Promise<void>; // panel behaviour; install: howToUrl(api.i18n?.getUILanguage(), pinned, store)
 // Api.i18n?: { getUILanguage(): string } — optional; a Chrome that reports none reads as English
 function onStartup(api): Promise<void>;
 function onMessageExternal(api, message, sender: { origin? }, reply): boolean; // { type: "status" } only
@@ -28,6 +28,14 @@ interface TryIo {
   clearTry(): Promise<void>;
   ping(): void;
 }
+
+// apps/extension/src/stores.ts — pure; the store is fixed at build time: `STORE=edge vite build` (pnpm zip:edge)
+//   builds dist-edge/ and gallery-wall-layout-generator-edge.zip; unset builds Chrome's dist/; any other value stops the build.
+//   vite.config.ts defines import.meta.env.STORE and its "store-locales" plugin rewrites <outDir>/_locales through packageMessages.
+type Store = "chrome" | "edge";
+const STORES: Record<Store, { locales: string[] | null; shortDesc?: string; dropStoreDesc: boolean }>;
+function storeOf(value: string | undefined): Store; // "edge", else "chrome"
+function packageMessages(store: Store, locale: string, messages: Messages): Messages | null; // null leaves the locale out; Chrome gets messages back as is
 
 // apps/extension/src/read-page.ts — readPage(srcUrl, linkUrl) injected by scripting.executeScript (self-contained)
 interface PageRead {
@@ -117,9 +125,11 @@ const JOURNAL = "gallery-wall-closing"; // localStorage: a closing page's last S
 - "Try on my wall": the worker injects `readPage`, captures the tab (main frame only) and opens the panel in the click's own tick, and clears the last try. It then keeps the picture (fetch, else the screenshot cropped to the image's box, else none), the title, the host, the image's natural size and `findSizes` of the text as the `try` record, unless a newer click's try is stored, and pings the channel.
 - The panel shows the try while one is stored and the planner is not in a photo flow step. The try's own state is in memory: a reload returns to the size step. The print hangs by `hangPrint` on `placeOf(planner)`'s wall, turned to the picture's shape, with the visitor's move on top; "Add to my layout" dispatches G1's `addPrint` and deletes the try, "Back to my layout" deletes it. The tab ignores the try.
 - Units reuse the site's `localStorage["unit"]`; each page sets `<html data-unit>` before its first render. A typed print size keeps the unit it was typed in.
+- One build per store from the same code and manifest. `pnpm --filter extension zip` builds Chrome's `dist/` with `public/` copied as it is. `pnpm --filter extension zip:edge` builds `dist-edge/` with `_locales/en` only, holding `appName` and the Edge `shortDesc`, and its worker opens the how-to with `&store=edge`.
 
 ## Edge Cases
 
+- `STORE` set to a value `STORES` lacks stops the build, so a typo never overwrites `dist/` with Chrome's package. Anything in `_locales` that is not a folder is left as it is.
 - A record of another version, or none, starts the planner fresh. Storage that throws starts it fresh and keeps nothing.
 - A page closed in the upload or a scale step comes back on the wall it came from: the scaled photo after "Change photo", else the sample room.
 - A stored photo with no bytes, size or scale lays the template out again in the sample room. A print whose picture is missing hangs as a plain frame.
@@ -268,7 +278,7 @@ A change made in the panel SHALL show in an open full-size tab without a reload,
 
 ### Requirement: The first install opens the how-to page
 
-On a first install, and only then, the extension SHALL open one tab on the how-to page in Chrome's interface language, with `?pinned=1` when its toolbar button is pinned and `?pinned=0` when it is not. The English page is `https://framesizes.app/extensions/gallery-wall-layout-generator`; a translated one sits under its site language code, such as `/ru/extensions/gallery-wall-layout-generator`. A language the site lacks, or one Chrome does not report, SHALL open the English page.
+On a first install, and only then, the extension SHALL open one tab on the how-to page in the browser's interface language, with `?pinned=1` when its toolbar button is pinned and `?pinned=0` when it is not. The English page is `https://framesizes.app/extensions/gallery-wall-layout-generator`; a translated one sits under its site language code, such as `/ru/extensions/gallery-wall-layout-generator`. A language the site lacks, or one the browser does not report, SHALL open the English page. The Edge package SHALL add `&store=edge` after `pinned`; the Chrome package SHALL add nothing.
 
 #### Scenario: A fresh install with the button not pinned
 
@@ -291,6 +301,12 @@ On a first install, and only then, the extension SHALL open one tab on the how-t
 
 - **WHEN** the extension is installed in Chrome whose interface language is `zh-TW`, `ca` or `en-GB`, or Chrome reports no language
 - **THEN** the tab opens on the English page, `https://framesizes.app/extensions/gallery-wall-layout-generator`, with its `pinned` query
+
+#### Scenario: A fresh install from Microsoft Edge Add-ons
+
+- **GIVEN** the Edge package, its toolbar button not pinned
+- **WHEN** it is installed in Edge whose interface language is `de`
+- **THEN** one tab opens on `https://framesizes.app/de/extensions/gallery-wall-layout-generator?pinned=0&store=edge`
 
 ### Requirement: The site can ask whether the extension is installed and pinned
 
@@ -541,3 +557,23 @@ Each frame added with "Add a frame" in the panel or the tab SHALL get a frame id
 - **GIVEN** a wall saved with a frame added under the id `a1`
 - **WHEN** the panel opens
 - **THEN** the frame shows, and selecting it selects that frame
+
+### Requirement: Each store gets its own package
+
+The extension SHALL build one package per store from the same code and manifest. The Chrome Web Store package SHALL stay as it was. The Microsoft Edge Add-ons package SHALL declare English only. Its name and short description SHALL be what the Edge store shows, and SHALL name no other browser. The Edge short description SHALL differ from the Chrome one.
+
+#### Scenario: The Chrome package is unchanged
+
+- **WHEN** the Chrome package is built
+- **THEN** its manifest and its 28 `_locales` folders are the ones in `apps/extension/public`, and every `messages.json` keeps its `appName`, `shortDesc` and `storeDesc`
+
+#### Scenario: The Edge package is English only
+
+- **WHEN** the Edge package is built
+- **THEN** its manifest equals the Chrome package's, `_locales` holds only `en`, and that `messages.json` holds exactly `appName` and `shortDesc`
+- **AND** `appName` is "Gallery Wall Layout Generator"
+
+#### Scenario: The Edge short description
+
+- **WHEN** the Edge package's `shortDesc` is read
+- **THEN** it is 132 characters or fewer, differs from the Chrome package's English `shortDesc`, and contains neither "Chrome" nor "Google"
