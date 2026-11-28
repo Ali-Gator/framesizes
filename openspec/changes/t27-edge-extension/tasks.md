@@ -34,7 +34,7 @@ The phase 2 canvas (https://claude.ai/artifact/ME5xpbNULkbax27e4vRqqp) was appro
 
 - [x] 2.1 `apps/extension/src/__tests__/background.test.ts`: add a new case only. `howToUrl("de", false, "edge")` and `onInstalled` with an Edge store open `https://framesizes.app/de/extensions/gallery-wall-layout-generator?pinned=0&store=edge`. Cite {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-from-microsoft-edge-add-ons}. Existing cases stay unedited and still pass with no store argument. Verify the new case fails.
 - [x] 2.2 `apps/extension/src/background.ts`: `howToUrl(uiLanguage, pinned, store = "chrome")` adds `&store=<store>` for any store but Chrome. `onInstalled` passes `import.meta.env.STORE`. Change the doc comments from "Chrome's language" to "the browser's language". Verify all `background.test.ts` cases pass and `pnpm --filter extension typecheck` is clean.
-- [ ] 2.3 Sideload check in Edge. Load `apps/extension/dist-edge` unpacked in Playwright's `msedge` channel (Microsoft Edge is installed on this Mac), with a throwaway script in the scratchpad, not a committed test. Confirm:
+- [x] 2.3 Sideload check in Edge. Load `apps/extension/dist-edge` unpacked in Playwright's `msedge` channel (Microsoft Edge is installed on this Mac), with a throwaway script in the scratchpad, not a committed test. Confirm:
   - first install opens `…?pinned=0&store=edge`;
   - the toolbar button opens the sidebar on the planner;
   - `chrome.action.getUserSettings` answers;
@@ -44,8 +44,8 @@ The phase 2 canvas (https://claude.ai/artifact/ME5xpbNULkbax27e4vRqqp) was appro
 
 ## 3. Privacy Policy and Terms of Use name no browser
 
-- [ ] 3.1 Edit `e2e/company-pages.spec.ts:147` to `section(page, "/privacy-policy", "browser extension")` (approved 2026-11-28). Then add a new e2e test, "the privacy policy names no browser", citing {@link openspec/specs/company-pages/spec.md#scenario-no-browser-is-named}. Verify both fail now.
-- [ ] 3.2 Edit `apps/web/src/app/privacy-policy/page.tsx` and `apps/web/src/app/terms-of-use/page.tsx`:
+- [x] 3.1 Edit `e2e/company-pages.spec.ts:147` to `section(page, "/privacy-policy", "browser extension")` (approved 2026-11-28). Then add a new e2e test, "the privacy policy names no browser", citing {@link openspec/specs/company-pages/spec.md#scenario-no-browser-is-named}. Verify both fail now.
+- [x] 3.2 Edit `apps/web/src/app/privacy-policy/page.tsx` and `apps/web/src/app/terms-of-use/page.tsx`:
   - "The Chrome extension" becomes "The browser extension";
   - "extension for Chrome" becomes "browser extension";
   - "Chrome's side panel" becomes "your browser's side panel";

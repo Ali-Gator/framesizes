@@ -144,10 +144,22 @@ test("the privacy data table", async ({ page }) => {
 
 /** {@link openspec/specs/company-pages/spec.md#scenario-the-extension-section} */
 test("the privacy policy names each extension permission", async ({ page }) => {
-  const text = await section(page, "/privacy-policy", "Chrome extension");
+  const text = await section(page, "/privacy-policy", "browser extension");
   for (const permission of ["sidePanel", "contextMenus", "activeTab", "scripting"]) {
     expect(text).toContain(permission);
   }
+});
+
+/** {@link openspec/specs/company-pages/spec.md#scenario-no-browser-is-named} */
+test("the privacy policy names no browser", async ({ page }) => {
+  const { mainText } = await serverHtml(page, "/privacy-policy");
+  expect(mainText).not.toMatch(/\b(Chrome|Edge|Opera)\b/);
+  // Google appears only as the mail provider.
+  const mail = ["Google as our mail provider", "Google (our Gmail mailbox)", "which Google runs"];
+  for (const phrase of mail) expect(mainText).toContain(phrase);
+  expect(mail.reduce((text, phrase) => text.replaceAll(phrase, ""), mainText)).not.toMatch(
+    /\bGoogle\b/,
+  );
 });
 
 /** {@link openspec/specs/company-pages/spec.md#scenario-the-governing-law-section} */

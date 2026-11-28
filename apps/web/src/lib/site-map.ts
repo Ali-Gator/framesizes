@@ -297,7 +297,7 @@ const PAGE_LIST = [
       h1: "Privacy Policy",
       description:
         "What Frame Sizes and its Chrome extension collect: cookieless visit counts and server logs. Wall photos and saved walls stay on your device, never with us.",
-      lastModified: "2026-11-21",
+      lastModified: "2026-11-28",
     },
   },
   {
@@ -310,7 +310,7 @@ const PAGE_LIST = [
       h1: "Terms of Use",
       description:
         "The rules for using Frame Sizes and the Gallery Wall Layout Generator extension: free use, nominal sizes you should measure, liability and Hong Kong law.",
-      lastModified: "2026-11-21",
+      lastModified: "2026-11-28",
     },
   },
   {

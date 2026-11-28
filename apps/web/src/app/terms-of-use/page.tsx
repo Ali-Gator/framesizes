@@ -18,9 +18,9 @@ export default function TermsOfUsePage() {
       title: "Who provides the service",
       body: (
         <p>
-          Frame Sizes (framesizes.app) and the Gallery Wall Layout Generator extension for Chrome
-          are provided by {COMPANY.legalName}, {addressLine()} (&ldquo;we&rdquo;). By using the site
-          or the extension you agree to these terms. If you do not agree, please do not use them.
+          Frame Sizes (framesizes.app) and the Gallery Wall Layout Generator browser extension are
+          provided by {COMPANY.legalName}, {addressLine()} (&ldquo;we&rdquo;). By using the site or
+          the extension you agree to these terms. If you do not agree, please do not use them.
         </p>
       ),
     },
