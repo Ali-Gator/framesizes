@@ -56,7 +56,7 @@ The phase 2 canvas (https://claude.ai/artifact/ME5xpbNULkbax27e4vRqqp) was appro
 ## 4. Graphics
 
 - [x] 4.1 Add `scripts/render-store-graphics.ts` (design D6). It renders `apps/extension/store/edge/logo-300.png` (300 × 300 from `icon.svg`) and `apps/extension/store/edge/promo-large-1400x560.png`. The tile takes the small tile's colours, mark and font; its headline goes through `humanizer:humanizer` and names no browser. Verify the PNG sizes from their IHDR, as `manifest.test.ts` does.
-- [ ] 4.2 Show the owner both PNGs. On approval, record the large tile under CLAUDE.md "Workflow config" → "Design source" ("T27 Edge store graphics", date) and commit the PNGs. Revisions loop here until approved.
+- [x] 4.2 Show the owner both PNGs. On approval, record the large tile under CLAUDE.md "Workflow config" → "Design source" ("T27 Edge store graphics", date) and commit the PNGs. Revisions loop here until approved.
 
 ## 5. Listing kit
 
