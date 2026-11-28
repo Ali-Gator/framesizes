@@ -18,7 +18,7 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 1. SEO guide first (docs tools)
 
-- [ ] 1.1 Edit the On-page SEO guide (https://claude.ai/artifact/KbaLF8WnJ2jRWc55r5yfcx) as plain edits, since the owner approved the values:
+- [x] 1.1 Edit the On-page SEO guide (https://claude.ai/artifact/KbaLF8WnJ2jRWc55r5yfcx) as plain edits, since the owner approved the values:
   - Per-page map X1 title: "Gallery Wall Layout Generator Extension";
   - description table X1: the new description;
   - link map "X1 Chrome extension" becomes "X1 Browser extension";
@@ -85,7 +85,7 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 6. Check the pin poll in real Edge (design D6)
 
-- [ ] 6.1 With Playwright `channel: "msedge"` and `dist-edge` loaded, open X1 at `?pinned=0&store=edge`. Send the status message to the unpacked id read from `context.serviceWorkers()` (the manifest has no `key`, design D6). Check that the reply is `{ installed: true, pinned: false }` with no `lastError`. This is a one-off script in the scratchpad, not a suite test. If Edge cannot report the toolbar state, log a BL item and say so in the PR.
+- [x] 6.1 With Playwright `channel: "msedge"` and `dist-edge` loaded, open X1 at `?pinned=0&store=edge`. Send the status message to the unpacked id read from `context.serviceWorkers()` (the manifest has no `key`, design D6). Check that the reply is `{ installed: true, pinned: false }` with no `lastError`. This is a one-off script in the scratchpad, not a suite test. If Edge cannot report the toolbar state, log a BL item and say so in the PR.
 
 ## 7. Drawings
 
