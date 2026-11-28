@@ -106,7 +106,7 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 - [x] 8.2 Extend the unit tests:
   - `store-link.test.tsx`: Edge's label and URL with a fixture id; no Edge link without one ("Edge with its id", "Edge before its id");
   - `mode-switch.test.tsx`: the fixture Edge id replying pinned switches modes and keeps `?store=edge` ("The Edge package pins its button").
-- [ ] 8.3 Add e2e `e2e/extension-page-stores.spec.ts`. It reads visible text only and covers:
+- [x] 8.3 Add e2e `e2e/extension-page-stores.spec.ts`. It reads visible text only and covers:
   - "The Edge install tab";
   - "A Chrome Web Store install opened in Edge" (context `userAgent` with `Edg/131`);
   - "Chrome and every other browser" (`?store=opera`, and `OPR/`);
@@ -130,11 +130,11 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 - [x] 9.1 Extend `extension-section.test.tsx`, citing "The section in Edge" and "Edge on a phone". With a fixture Edge id, the markup holds Edge's label, sentence, "Add to Edge" with Edge's URL in a new tab, "Opens Microsoft Edge Add-ons", the phone line and the "You have it" line, each in `.st-edge`. Without the id there is no `st-edge`, and the Chrome markup is unchanged.
 - [x] 9.2 `ExtensionSection` renders `storeScript(false)` and builds Edge only with its id. `ExtensionSection` and `ExtensionStatus` keep `extensionId` and gain `edgeId`. `ExtensionStatus` uses `askExtensions`, calls `pickStore` on mount, and keeps the shared grid cell, so the height stays fixed. The section strings come from the store table. Verify 9.1, and that the existing section tests pass unedited.
-- [ ] 9.3 E2e on G1 with a `Edg/131` user agent, while Edge's id is empty: the section shows "Add to Chrome", and no `a` points to `microsoftedge.microsoft.com` ("Edge before its id").
+- [x] 9.3 E2e on G1 with a `Edg/131` user agent, while Edge's id is empty: the section shows "Add to Chrome", and no `a` points to `microsoftedge.microsoft.com` ("Edge before its id").
 
 ## 10. Company pages (BL-140, BL-141)
 
-- [ ] 10.1 Add to `e2e/company-pages.spec.ts`:
+- [x] 10.1 Add to `e2e/company-pages.spec.ts`:
   - "The head names no browser": `/privacy-policy` `title`, meta description, `og:description` and `twitter:description`;
   - "The terms name no browser": `/terms-of-use` main text, `title` and description, with no whole-word Chrome, Edge or Opera.
 
@@ -142,7 +142,7 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 11. Approved edits to existing tests
 
-- [ ] 11.1 After the owner says yes, edit only the tests in the list at the top, plus any found in 12.1 and approved, to the new name, title and visible-only reads. Verify each passes and asserts the same behaviour under its new strings.
+- [x] 11.1 After the owner says yes, edit only the tests in the list at the top, plus any found in 12.1 and approved, to the new name, title and visible-only reads. Verify each passes and asserts the same behaviour under its new strings.
 
 ## 12. Gates and docs
 

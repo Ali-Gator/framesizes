@@ -257,3 +257,46 @@ for (const p of PAGES) {
     }
   });
 }
+
+const BROWSER = /\b(Chrome|Edge|Opera)\b/;
+
+/** The title, head descriptions and main text of a page's server HTML. */
+async function headAndMain(page: Page, path: string) {
+  const response = await page.request.get(path);
+  expect(response.status(), path).toBe(200);
+  return page.evaluate(
+    (source) => {
+      const doc = new DOMParser().parseFromString(source, "text/html");
+      const meta = (key: string) =>
+        doc
+          .querySelector(`meta[property="${key}"], meta[name="${key}"]`)
+          ?.getAttribute("content") ?? "";
+      return {
+        title: doc.title,
+        description: meta("description"),
+        og: meta("og:description"),
+        twitter: meta("twitter:description"),
+        main: doc.querySelector("main")?.textContent?.replace(/\s+/g, " ") ?? "",
+      };
+    },
+    await response.text(),
+  );
+}
+
+/** {@link openspec/specs/company-pages/spec.md#scenario-the-head-names-no-browser} */
+test("the Privacy Policy's head names no browser", async ({ page }) => {
+  const head = await headAndMain(page, "/privacy-policy");
+  for (const [key, value] of Object.entries({ ...head, main: "" })) {
+    expect(value, key).not.toMatch(BROWSER);
+  }
+  expect(head.description).toMatch(/extension collect/);
+});
+
+/** {@link openspec/specs/company-pages/spec.md#scenario-the-terms-name-no-browser} */
+test("the Terms of Use name no browser", async ({ page }) => {
+  const head = await headAndMain(page, "/terms-of-use");
+  for (const key of ["title", "description", "main"] as const) {
+    expect(head[key], key).not.toMatch(BROWSER);
+  }
+  expect(head.main.length).toBeGreaterThan(500);
+});

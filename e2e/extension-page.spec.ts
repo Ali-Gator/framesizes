@@ -139,7 +139,7 @@ test("Show how to pin it switches to the pin steps and focuses them", async ({ p
 /** {@link openspec/specs/extension-site/spec.md#scenario-the-pin-pictures-name} */
 test("the pin picture names both clicks", async ({ page }) => {
   await page.goto(`${PATH}?pinned=0`);
-  const picture = page.locator("#pin [role='img']");
+  const picture = page.locator("#pin [role='img']:visible");
   await expect(picture).toHaveCount(1);
   const name = (await picture.getAttribute("aria-label")) ?? "";
   expect(name).toMatch(/puzzle-piece button, marked 1/);
@@ -192,7 +192,7 @@ for (const query of ["?pinned=0", "?pinned=1"]) {
 test("before go-live the page is noindex and linked from nowhere", async ({ page }) => {
   test.skip(X1.live, "X1 is live: the go-live scenarios replace this one");
   const html = await serverHtml(page);
-  expect(html.title).toBe("Gallery Wall Layout Generator Chrome Extension | Frame Sizes");
+  expect(html.title).toBe("Gallery Wall Layout Generator Extension | Frame Sizes");
   expect(html.canonicals).toEqual([URL]);
   expect(html.robots).toHaveLength(1);
   expect(html.robots[0]).toMatch(/noindex/);
@@ -212,14 +212,14 @@ test("the breadcrumbs name the hub between Home and the page", async ({ page }) 
   expect(html.crumbs).toEqual([
     { text: "Home", href: "/", current: false },
     { text: "Gallery wall", href: "/gallery-wall-planner", current: false },
-    { text: "Chrome extension", href: null, current: true },
+    { text: "Browser extension", href: null, current: true },
   ]);
   expect(html.breadcrumbLists).toHaveLength(1);
   expect(html.breadcrumbLists[0]).toMatchObject({
     itemListElement: [
       { position: 1, name: "Home", item: "https://framesizes.app" },
       { position: 2, name: "Gallery wall", item: "https://framesizes.app/gallery-wall-planner" },
-      { position: 3, name: "Chrome extension", item: URL },
+      { position: 3, name: "Browser extension", item: URL },
     ],
   });
 });
