@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 import { askExtensions, EDGE_EXTENSION_ID, knownIds, STORES } from "@/lib/extension";
 
@@ -28,9 +28,15 @@ export function ExtensionStatus({
   edgeId?: string;
 }) {
   const [installed, setInstalled] = useState(false);
+  // Before paint, so a client-side visit never shows the other store's lines first.
+  useLayoutEffect(() => {
+    applyStore(false);
+    return () => {
+      delete document.documentElement.dataset.extStore;
+    };
+  }, []);
   useEffect(() => {
     let live = true;
-    applyStore(false);
     void askExtensions(knownIds(extensionId, edgeId)).then((status) => {
       if (live) setInstalled(status.installed);
     });

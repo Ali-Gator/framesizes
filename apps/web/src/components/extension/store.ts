@@ -26,13 +26,22 @@ export function pickStore(
 export const storeScript = (fromQuery: boolean) =>
   `try{var n=navigator,b=n.userAgentData&&n.userAgentData.brands,s=${fromQuery ? 'new URLSearchParams(location.search).get("store")==="edge"||' : ""}(b&&b.some(function(x){return x.brand==="Microsoft Edge"}))||${EDGE_UA}.test(n.userAgent)?"edge":"chrome";document.documentElement.dataset.extStore=s}catch(e){}`;
 
-/** Sets `<html data-ext-store>` after a client-side visit, which runs no inline script. */
+/**
+ * Sets `<html data-ext-store>` after a client-side visit, which runs no inline script. Called from
+ * a layout effect, so it lands before the browser paints. A `navigator` that throws (a hardened
+ * browser) falls back to Chrome, as the inline script leaves the page on Chrome.
+ */
 export function applyStore(fromQuery: boolean): SiteStore {
-  const nav = navigator as Navigator & { userAgentData?: { brands?: { brand: string }[] } };
-  const store = pickStore(
-    { search: location.search, brands: nav.userAgentData?.brands, ua: nav.userAgent },
-    fromQuery,
-  );
+  let store: SiteStore = "chrome";
+  try {
+    const nav = navigator as Navigator & { userAgentData?: { brands?: { brand: string }[] } };
+    store = pickStore(
+      { search: location.search, brands: nav.userAgentData?.brands, ua: nav.userAgent },
+      fromQuery,
+    );
+  } catch {
+    // Chrome, as with no script.
+  }
   document.documentElement.dataset.extStore = store;
   return store;
 }

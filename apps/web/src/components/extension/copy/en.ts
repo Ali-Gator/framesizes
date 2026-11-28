@@ -25,7 +25,7 @@ const HUB = HUBS.find((h) => h.id === X1.hub);
  *
  * `edge` holds the lines that differ for Microsoft Edge (`ByStore`); every other line is shared.
  * Edge's own menu labels are not here: they stay English in every language (`EDGE_LABELS`,
- * pin-picture.tsx), checked in Edge 158 on 2026-11-28.
+ * edge-pin-picture.tsx), checked in Edge 158 on 2026-11-28.
  *
  * {@link openspec/specs/extension-site/spec.md#requirement-the-extension-page-exists-in-every-site-language}
  * {@link openspec/specs/extension-site/spec.md#requirement-the-drawings-use-chromes-own-labels-in-the-pages-language}

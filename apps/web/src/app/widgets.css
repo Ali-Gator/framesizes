@@ -999,15 +999,17 @@
   font-weight: 600;
 }
 
-/*
- * The extension section on G1 and F2 (components/extension/extension-section.tsx). The call to
- * action and the "You have it" line share one grid cell; the hidden one keeps its box.
- */
-/* One store at a time, from `<html data-ext-store>` (components/extension/store.ts, ByStore). */
+/* One store at a time, from `<html data-ext-store>` (components/extension/store.ts, ByStore). Global:
+ * X1 and the G1/F2 section both use it. */
 html:not([data-ext-store="edge"]) .st-edge,
 html[data-ext-store="edge"] .st-chrome {
   display: none !important;
 }
+
+/*
+ * The extension section on G1 and F2 (components/extension/extension-section.tsx). The call to
+ * action and the "You have it" line share one grid cell; the hidden one keeps its box.
+ */
 
 .ext-sec {
   display: flex;

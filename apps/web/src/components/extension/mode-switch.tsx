@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 import { askExtensions, EDGE_EXTENSION_ID, knownIds } from "@/lib/extension";
 
@@ -29,10 +29,16 @@ export function ModeSwitch({
   extensionId: string;
   edgeId?: string;
 }) {
+  // Before paint, so a client-side visit never shows the other store's lines first.
+  useLayoutEffect(() => {
+    applyStore(true);
+    return () => {
+      delete document.documentElement.dataset.extStore;
+    };
+  }, []);
   useEffect(() => {
     const html = document.documentElement;
     const ids = knownIds(extensionId, edgeId);
-    applyStore(true);
     let timer: ReturnType<typeof setTimeout> | undefined;
     // Each run of the poll has its own token, so a reply to a stopped run is ignored.
     let run = 0;
@@ -85,7 +91,6 @@ export function ModeSwitch({
       stop();
       window.removeEventListener("hashchange", onHash);
       delete html.dataset.extMode;
-      delete html.dataset.extStore;
     };
   }, [extensionId, edgeId]);
   return null;

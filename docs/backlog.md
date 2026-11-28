@@ -14,7 +14,7 @@ below and bumps that line by one. Do not use the highest id still in the file, b
 every time a shipped item is deleted. Ids are **never reused**, so a `BL-nn` in a commit message
 or an archived change always means the same item.
 
-_Next id:_ **BL-142**
+_Next id:_ **BL-143**
 
 **Status** is one of: **open** (actionable now), **gated — X** (blocked on a named decision or
 dependency), **deferred — X** (waiting on purpose for a named trigger). Split a multi-part item
@@ -48,6 +48,8 @@ when to add and when to fold items in.
 
 ## Site
 
+- **[BL-142] Edge's FAQ answer is attached by position** — `how-to.tsx` swaps the toolbar answer for Edge's on `faq.items[1]`. A dictionary that reorders or adds a question would put Edge's answer under the wrong one, and no type check or test catches it. Key the Edge answer to its question (an id on each FAQ item) instead.
+  _Refs:_ `apps/web/src/components/extension/how-to.tsx`, `components/extension/copy/*.ts` · _Status:_ open — t27-store-how-to review, 2026-11-28
 - **[BL-87] Write the company-page widget exemption into CLAUDE.md** — CLAUDE.md says every page
   carries its own widget; A1–A5 carry none by design (t26 proposal and design). Add the exemption
   to its Conventions so a later review does not flag it.

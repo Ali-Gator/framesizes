@@ -16,12 +16,6 @@ html[data-ext-mode="pin"] .ext-usage {
   display: none;
 }
 
-/* One store at a time, from `<html data-ext-store>` (components/extension/store.ts, ByStore). */
-html:not([data-ext-store="edge"]) .st-edge,
-html[data-ext-store="edge"] .st-chrome {
-  display: none !important;
-}
-
 .ext-pin h2,
 #usage h2[tabindex] {
   scroll-margin-top: 24px;

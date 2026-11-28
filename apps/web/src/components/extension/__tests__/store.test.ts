@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+// @vitest-environment jsdom
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { pickStore, type SiteStore, storeScript } from "../store";
+import { applyStore, pickStore, type SiteStore, storeScript } from "../store";
 
 type Row = {
   name: string;
@@ -93,5 +94,27 @@ describe("storeScript", () => {
       },
     };
     expect(runScript(true, nav)).toBeUndefined();
+  });
+});
+
+describe("applyStore", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete document.documentElement.dataset.extStore;
+  });
+
+  it("falls back to Chrome when navigator throws", () => {
+    vi.spyOn(navigator, "userAgent", "get").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    expect(applyStore(true)).toBe("chrome");
+    expect(document.documentElement.dataset.extStore).toBe("chrome");
+  });
+
+  it("picks Edge from ?store=edge", () => {
+    window.history.replaceState(null, "", "/?store=edge");
+    expect(applyStore(true)).toBe("edge");
+    expect(applyStore(false)).not.toBe("edge");
+    window.history.replaceState(null, "", "/");
   });
 });
