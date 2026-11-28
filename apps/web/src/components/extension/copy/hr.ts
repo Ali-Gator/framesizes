@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const hr = {
   seo: {
-    title: "Gallery Wall Layout Generator za Chrome",
+    title: "Proširenje Gallery Wall Layout Generator",
     h1: "Kako koristiti Gallery Wall Layout Generator",
     description:
-      "Kako koristiti proširenje Gallery Wall Layout Generator za Chrome: isplanirajte zid u bočnoj ploči ili isprobajte poster iz trgovine u stvarnoj veličini.",
+      "Kako koristiti proširenje preglednika Gallery Wall Layout Generator: isplanirajte zid u bočnoj ploči ili isprobajte poster iz trgovine u stvarnoj veličini.",
   },
-  crumbs: { home: "Početna", hub: "Zid sa slikama", page: "Proširenje za Chrome" },
+  crumbs: { home: "Početna", hub: "Zid sa slikama", page: "Proširenje preglednika" },
   answer:
     "Kliknite gumb proširenja na alatnoj traci Chromea da biste otvorili bočnu ploču i isplanirali zid sa slikama. U bilo kojoj trgovini desnom tipkom miša kliknite poster i odaberite „Try on my wall” da biste ga objesili na svoj zid u stvarnoj veličini.",
   store: "Preuzmite ga iz Chrome web-trgovine",
@@ -81,9 +81,21 @@ export const hr = {
       },
       {
         q: "U kojim preglednicima radi?",
-        a: "U Chromeu 116 ili novijem, na računalu. Otvara se u bočnoj ploči Chromea.",
+        a: "U Chromeu 116 ili novijem ili u Microsoft Edgeu 116 ili novijem, na računalu. Otvara se u bočnoj ploči preglednika.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Kliknite gumb proširenja na alatnoj traci Edgea da biste otvorili bočnu ploču i isplanirali zid sa slikama. U bilo kojoj trgovini desnom tipkom miša kliknite poster i odaberite „Try on my wall” da biste ga objesili na svoj zid u stvarnoj veličini.",
+    store: "Preuzmite ga s Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge drži nova proširenja iza gumba s komadićem slagalice. Kliknite komadić slagalice (1) u gornjem desnom kutu Edgea, a zatim pribadaču (2) pokraj Gallery Wall Layout Generator. Njegov gumb tada ostaje na alatnoj traci.",
+      picture:
+        "Alatna traka Edgea: gumb s komadićem slagalice, označen brojem 1, otvara izbornik Proširenja, a pribadača pokraj Gallery Wall Layout Generator označena je brojem 2",
+    },
+    faqButton:
+      "Edge stavlja nova proširenja iza gumba s komadićem slagalice. Prikvačite ga jednom i ostat će na alatnoj traci.",
   },
   chrome: {
     extensions: "Proširenja",

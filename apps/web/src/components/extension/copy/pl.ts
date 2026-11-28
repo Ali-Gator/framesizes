@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const pl = {
   seo: {
-    title: "Gallery Wall Layout Generator dla Chrome",
+    title: "Rozszerzenie Gallery Wall Layout Generator",
     h1: "Jak używać Gallery Wall Layout Generator",
     description:
-      "Jak używać rozszerzenia Gallery Wall Layout Generator dla Chrome: zaplanuj ścianę w panelu bocznym albo przymierz plakat ze sklepu w prawdziwym rozmiarze.",
+      "Jak używać rozszerzenia przeglądarki Gallery Wall Layout Generator: zaplanuj ścianę w panelu bocznym albo przymierz plakat ze sklepu w prawdziwym rozmiarze.",
   },
-  crumbs: { home: "Strona główna", hub: "Ściana z obrazami", page: "Rozszerzenie Chrome" },
+  crumbs: { home: "Strona główna", hub: "Ściana z obrazami", page: "Rozszerzenie przeglądarki" },
   answer:
     "Kliknij przycisk rozszerzenia na pasku narzędzi Chrome, aby otworzyć panel boczny i zaplanować ścianę z obrazami. W dowolnym sklepie kliknij plakat prawym przyciskiem myszy i wybierz „Try on my wall”, aby powiesić go na swojej ścianie w prawdziwym rozmiarze.",
   store: "Pobierz z Chrome Web Store",
@@ -81,9 +81,21 @@ export const pl = {
       },
       {
         q: "W jakich przeglądarkach działa?",
-        a: "W Chrome 116 lub nowszym, na komputerze. Otwiera się w panelu bocznym Chrome.",
+        a: "W Chrome 116 lub nowszym albo w Microsoft Edge 116 lub nowszym, na komputerze. Otwiera się w panelu bocznym przeglądarki.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Kliknij przycisk rozszerzenia na pasku narzędzi Edge, aby otworzyć panel boczny i zaplanować ścianę z obrazami. W dowolnym sklepie kliknij plakat prawym przyciskiem myszy i wybierz „Try on my wall”, aby powiesić go na swojej ścianie w prawdziwym rozmiarze.",
+    store: "Pobierz z Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge trzyma nowe rozszerzenia za przyciskiem z elementem układanki. Kliknij element układanki (1) w prawym górnym rogu Edge, a potem pinezkę (2) obok Gallery Wall Layout Generator. Jego przycisk zostanie na pasku narzędzi.",
+      picture:
+        "Pasek narzędzi Edge: przycisk z elementem układanki, oznaczony cyfrą 1, otwiera menu Rozszerzenia, a pinezka obok Gallery Wall Layout Generator jest oznaczona cyfrą 2",
+    },
+    faqButton:
+      "Edge chowa nowe rozszerzenia za przyciskiem z elementem układanki. Przypnij je raz, a przycisk zostanie na pasku narzędzi.",
   },
   chrome: {
     extensions: "Rozszerzenia",

@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const ko = {
   seo: {
-    title: "Chrome용 Gallery Wall Layout Generator",
+    title: "Gallery Wall Layout Generator 확장 프로그램",
     h1: "Gallery Wall Layout Generator 사용 방법",
     description:
-      "Chrome 확장 프로그램 Gallery Wall Layout Generator 사용 방법: 사이드 패널에서 벽을 계획하거나 쇼핑몰의 포스터를 실제 크기로 벽에 걸어 보세요.",
+      "브라우저 확장 프로그램 Gallery Wall Layout Generator 사용 방법: 사이드 패널에서 벽을 계획하거나 쇼핑몰의 포스터를 실제 크기로 벽에 걸어 보세요.",
   },
-  crumbs: { home: "홈", hub: "갤러리 월", page: "Chrome 확장 프로그램" },
+  crumbs: { home: "홈", hub: "갤러리 월", page: "브라우저 확장 프로그램" },
   answer:
     "Chrome 툴바에서 확장 프로그램 버튼을 클릭하면 사이드 패널이 열리고 갤러리 월을 계획할 수 있습니다. 어느 쇼핑몰에서든 포스터를 마우스 오른쪽 버튼으로 클릭하고 'Try on my wall'을 선택하면 실제 크기로 내 벽에 걸어 볼 수 있습니다.",
   store: "Chrome 웹 스토어에서 받기",
@@ -81,9 +81,21 @@ export const ko = {
       },
       {
         q: "어떤 브라우저에서 작동하나요?",
-        a: "컴퓨터의 Chrome 116 이상에서 작동합니다. Chrome의 사이드 패널에서 열립니다.",
+        a: "컴퓨터의 Chrome 116 이상 또는 Microsoft Edge 116 이상에서 작동합니다. 브라우저의 사이드 패널에서 열립니다.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Edge 툴바에서 확장 프로그램 버튼을 클릭하면 사이드 패널이 열리고 갤러리 월을 계획할 수 있습니다. 어느 쇼핑몰에서든 포스터를 마우스 오른쪽 버튼으로 클릭하고 'Try on my wall'을 선택하면 실제 크기로 내 벽에 걸어 볼 수 있습니다.",
+    store: "Microsoft Edge Add-ons에서 받기",
+    pin: {
+      text: "Edge는 새 확장 프로그램을 퍼즐 조각 버튼 뒤에 둡니다. Edge 오른쪽 위의 퍼즐 조각(1)을 클릭한 다음 Gallery Wall Layout Generator 옆의 핀(2)을 클릭하세요. 그러면 버튼이 툴바에 계속 표시됩니다.",
+      picture:
+        "Edge 툴바: 1로 표시된 퍼즐 조각 버튼을 누르면 확장 프로그램 메뉴가 열리고, Gallery Wall Layout Generator 옆의 핀은 2로 표시되어 있습니다",
+    },
+    faqButton:
+      "Edge는 새 확장 프로그램을 퍼즐 조각 버튼 뒤에 둡니다. 한 번 고정하면 툴바에 계속 표시됩니다.",
   },
   chrome: {
     extensions: "확장 프로그램",

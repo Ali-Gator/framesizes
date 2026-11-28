@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const tr = {
   seo: {
-    title: "Chrome için Gallery Wall Layout Generator",
+    title: "Gallery Wall Layout Generator Uzantısı",
     h1: "Gallery Wall Layout Generator Nasıl Kullanılır",
     description:
-      "Gallery Wall Layout Generator Chrome uzantısı nasıl kullanılır: yan panelde duvarınızı planlayın ya da bir mağazadaki posteri gerçek boyutunda deneyin.",
+      "Gallery Wall Layout Generator tarayıcı uzantısı nasıl kullanılır: yan panelde duvarınızı planlayın ya da bir mağazadaki posteri gerçek boyutunda deneyin.",
   },
-  crumbs: { home: "Ana sayfa", hub: "Galeri duvarı", page: "Chrome uzantısı" },
+  crumbs: { home: "Ana sayfa", hub: "Galeri duvarı", page: "Tarayıcı uzantısı" },
   answer:
     "Yan paneli açıp bir galeri duvarı planlamak için Chrome araç çubuğundaki uzantı düğmesini tıklayın. Herhangi bir mağazada bir postere sağ tıklayıp “Try on my wall” seçeneğini belirleyin; poster gerçek boyutunda duvarınıza asılsın.",
   store: "Chrome Web Mağazası'ndan edinin",
@@ -81,9 +81,21 @@ export const tr = {
       },
       {
         q: "Hangi tarayıcılarda çalışır?",
-        a: "Bilgisayarda Chrome 116 veya daha yeni sürümlerde. Chrome'un yan panelinde açılır.",
+        a: "Bilgisayarda Chrome 116 veya daha yeni ya da Microsoft Edge 116 veya daha yeni sürümlerde. Tarayıcının yan panelinde açılır.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Yan paneli açıp bir galeri duvarı planlamak için Edge araç çubuğundaki uzantı düğmesini tıklayın. Herhangi bir mağazada bir postere sağ tıklayıp “Try on my wall” seçeneğini belirleyin; poster gerçek boyutunda duvarınıza asılsın.",
+    store: "Microsoft Edge Add-ons'tan edinin",
+    pin: {
+      text: "Edge yeni uzantıları yapboz parçası düğmesinin arkasında tutar. Edge'in sağ üst köşesindeki yapboz parçasını (1), ardından Gallery Wall Layout Generator yanındaki raptiyeyi (2) tıklayın. Düğmesi bundan sonra araç çubuğunda kalır.",
+      picture:
+        "Edge araç çubuğu: 1 ile işaretli yapboz parçası düğmesi Uzantılar menüsünü açar, Gallery Wall Layout Generator yanındaki raptiye 2 ile işaretlidir",
+    },
+    faqButton:
+      "Edge yeni uzantıları yapboz parçası düğmesinin arkasına koyar. Bir kez sabitleyin, araç çubuğunda kalsın.",
   },
   chrome: {
     extensions: "Uzantılar",

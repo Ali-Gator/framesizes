@@ -3,12 +3,12 @@ import type { ExtensionCopy } from "./en";
 /** Filipino. */
 export const tl = {
   seo: {
-    title: "Gallery Wall Layout Generator para sa Chrome",
+    title: "Extension na Gallery Wall Layout Generator",
     h1: "Paano Gamitin ang Gallery Wall Layout Generator",
     description:
-      "Paano gamitin ang Chrome extension na Gallery Wall Layout Generator: magplano ng pader sa side panel, o subukan ang poster mula sa tindahan sa totoong laki.",
+      "Paano gamitin ang browser extension na Gallery Wall Layout Generator: magplano ng pader sa side panel, o subukan ang poster mula sa tindahan sa totoong laki.",
   },
-  crumbs: { home: "Home", hub: "Gallery wall", page: "Chrome extension" },
+  crumbs: { home: "Home", hub: "Gallery wall", page: "Browser extension" },
   answer:
     "I-click ang button ng extension sa toolbar ng Chrome para buksan ang side panel at magplano ng gallery wall. Sa kahit anong tindahan, i-right click ang isang poster at piliin ang “Try on my wall” para isabit ito sa pader mo sa totoong laki.",
   store: "Kunin ito sa Chrome Web Store",
@@ -82,9 +82,21 @@ export const tl = {
       },
       {
         q: "Saang mga browser ito gumagana?",
-        a: "Sa Chrome 116 o mas bago, sa computer. Bumubukas ito sa side panel ng Chrome.",
+        a: "Sa Chrome 116 o mas bago, o sa Microsoft Edge 116 o mas bago, sa computer. Bumubukas ito sa side panel ng browser.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "I-click ang button ng extension sa toolbar ng Edge para buksan ang side panel at magplano ng gallery wall. Sa kahit anong tindahan, i-right click ang isang poster at piliin ang “Try on my wall” para isabit ito sa pader mo sa totoong laki.",
+    store: "Kunin ito sa Microsoft Edge Add-ons",
+    pin: {
+      text: "Itinatago ng Edge ang mga bagong extension sa likod ng button na puzzle piece. I-click ang puzzle piece (1) sa kanang itaas ng Edge, pagkatapos ang pin (2) sa tabi ng Gallery Wall Layout Generator. Mananatili na sa toolbar ang button nito.",
+      picture:
+        "Ang toolbar ng Edge: ang button na puzzle piece, na may markang 1, ay nagbubukas ng menu ng Mga Extension, at may markang 2 ang pin sa tabi ng Gallery Wall Layout Generator",
+    },
+    faqButton:
+      "Inilalagay ng Edge ang mga bagong extension sa likod ng button na puzzle piece. I-pin ito nang isang beses at mananatili ito sa toolbar.",
   },
   chrome: {
     extensions: "Mga Extension",

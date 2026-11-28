@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const vi = {
   seo: {
-    title: "Gallery Wall Layout Generator cho Chrome",
+    title: "Tiện ích Gallery Wall Layout Generator",
     h1: "Cách dùng Gallery Wall Layout Generator",
     description:
-      "Cách dùng tiện ích Chrome Gallery Wall Layout Generator: lên kế hoạch cho bức tường trong bảng điều khiển bên hoặc thử áp phích của cửa hàng ở kích thước thật.",
+      "Cách dùng tiện ích trình duyệt Gallery Wall Layout Generator: lên kế hoạch bức tường trong bảng điều khiển bên hoặc thử áp phích cửa hàng ở kích thước thật.",
   },
-  crumbs: { home: "Trang chủ", hub: "Tường tranh", page: "Tiện ích Chrome" },
+  crumbs: { home: "Trang chủ", hub: "Tường tranh", page: "Tiện ích trình duyệt" },
   answer:
     "Nhấp vào nút của tiện ích trên thanh công cụ Chrome để mở bảng điều khiển bên và lên kế hoạch cho tường tranh. Ở bất kỳ cửa hàng nào, hãy nhấp chuột phải vào một áp phích và chọn “Try on my wall” để treo nó lên tường của bạn ở kích thước thật.",
   store: "Tải từ Cửa hàng Chrome trực tuyến",
@@ -81,9 +81,21 @@ export const vi = {
       },
       {
         q: "Tiện ích chạy trên trình duyệt nào?",
-        a: "Chrome 116 trở lên, trên máy tính. Tiện ích mở trong bảng điều khiển bên của Chrome.",
+        a: "Chrome 116 trở lên hoặc Microsoft Edge 116 trở lên, trên máy tính. Tiện ích mở trong bảng điều khiển bên của trình duyệt.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Nhấp vào nút của tiện ích trên thanh công cụ Edge để mở bảng điều khiển bên và lên kế hoạch cho tường tranh. Ở bất kỳ cửa hàng nào, hãy nhấp chuột phải vào một áp phích và chọn “Try on my wall” để treo nó lên tường của bạn ở kích thước thật.",
+    store: "Tải từ Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge để các tiện ích mới phía sau nút hình mảnh ghép. Nhấp vào mảnh ghép (1) ở góc trên bên phải Edge, rồi nhấp vào ghim (2) bên cạnh Gallery Wall Layout Generator. Sau đó nút của tiện ích sẽ luôn nằm trên thanh công cụ.",
+      picture:
+        "Thanh công cụ Edge: nút hình mảnh ghép, đánh số 1, mở trình đơn Tiện ích, và ghim bên cạnh Gallery Wall Layout Generator được đánh số 2",
+    },
+    faqButton:
+      "Edge để các tiện ích mới phía sau nút hình mảnh ghép. Ghim một lần và nút sẽ luôn nằm trên thanh công cụ.",
   },
   chrome: {
     extensions: "Tiện ích",

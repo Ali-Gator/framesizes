@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const sv = {
   seo: {
-    title: "Gallery Wall Layout Generator för Chrome",
+    title: "Gallery Wall Layout Generator-tillägg",
     h1: "Så använder du Gallery Wall Layout Generator",
     description:
-      "Så använder du Chrome-tillägget Gallery Wall Layout Generator: planera en tavelvägg i sidopanelen eller prova en affisch från en butik i verklig storlek.",
+      "Så använder du webbläsartillägget Gallery Wall Layout Generator: planera en tavelvägg i sidopanelen eller prova en affisch från en butik i verklig storlek.",
   },
-  crumbs: { home: "Start", hub: "Tavelvägg", page: "Chrome-tillägg" },
+  crumbs: { home: "Start", hub: "Tavelvägg", page: "Webbläsartillägg" },
   answer:
     "Klicka på tilläggets knapp i Chromes verktygsfält för att öppna sidopanelen och planera en tavelvägg. Högerklicka på en affisch i valfri webbutik och välj ”Try on my wall” för att hänga den på din vägg i verklig storlek.",
   store: "Hämta det i Chrome Web Store",
@@ -81,9 +81,21 @@ export const sv = {
       },
       {
         q: "Vilka webbläsare fungerar det i?",
-        a: "Chrome 116 eller senare, på en dator. Det öppnas i Chromes sidopanel.",
+        a: "Chrome 116 eller senare, eller Microsoft Edge 116 eller senare, på en dator. Det öppnas i webbläsarens sidopanel.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Klicka på tilläggets knapp i Edges verktygsfält för att öppna sidopanelen och planera en tavelvägg. Högerklicka på en affisch i valfri webbutik och välj ”Try on my wall” för att hänga den på din vägg i verklig storlek.",
+    store: "Hämta det från Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge lägger nya tillägg bakom pusselbitsknappen. Klicka på pusselbiten (1) uppe till höger i Edge och sedan på nålen (2) bredvid Gallery Wall Layout Generator. Knappen ligger sedan kvar i verktygsfältet.",
+      picture:
+        "Edges verktygsfält: pusselbitsknappen, markerad med 1, öppnar menyn Tillägg, och nålen bredvid Gallery Wall Layout Generator är markerad med 2",
+    },
+    faqButton:
+      "Edge lägger nya tillägg bakom pusselbitsknappen. Fäst den en gång så ligger den kvar i verktygsfältet.",
   },
   chrome: {
     extensions: "Tillägg",

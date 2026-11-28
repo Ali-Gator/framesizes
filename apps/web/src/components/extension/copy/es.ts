@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const es = {
   seo: {
-    title: "Gallery Wall Layout Generator para Chrome",
+    title: "Extensión Gallery Wall Layout Generator",
     h1: "Cómo usar Gallery Wall Layout Generator",
     description:
-      "Cómo usar la extensión Gallery Wall Layout Generator para Chrome: planifica una pared en el panel lateral o prueba una lámina de una tienda a tamaño real.",
+      "Cómo usar la extensión de navegador Gallery Wall Layout Generator: planifica una pared en el panel lateral o prueba una lámina de una tienda a tamaño real.",
   },
-  crumbs: { home: "Inicio", hub: "Pared de cuadros", page: "Extensión de Chrome" },
+  crumbs: { home: "Inicio", hub: "Pared de cuadros", page: "Extensión de navegador" },
   answer:
     "Haz clic en el botón de la extensión en la barra de herramientas de Chrome para abrir el panel lateral y planificar una pared de cuadros. En cualquier tienda, haz clic derecho en una lámina y elige «Try on my wall» para colgarla en tu pared a tamaño real.",
   store: "Consíguela en Chrome Web Store",
@@ -81,9 +81,21 @@ export const es = {
       },
       {
         q: "¿En qué navegadores funciona?",
-        a: "En Chrome 116 o posterior, en un ordenador. Se abre en el panel lateral de Chrome.",
+        a: "En Chrome 116 o posterior, o en Microsoft Edge 116 o posterior, en un ordenador. Se abre en el panel lateral del navegador.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Haz clic en el botón de la extensión en la barra de herramientas de Edge para abrir el panel lateral y planificar una pared de cuadros. En cualquier tienda, haz clic derecho en una lámina y elige «Try on my wall» para colgarla en tu pared a tamaño real.",
+    store: "Consíguela en Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge guarda las extensiones nuevas detrás del botón de la pieza de puzle. Haz clic en la pieza de puzle (1), arriba a la derecha de Edge, y luego en la chincheta (2) junto a Gallery Wall Layout Generator. Su botón se quedará en la barra de herramientas.",
+      picture:
+        "La barra de herramientas de Edge: el botón de la pieza de puzle, marcado con un 1, abre el menú Extensiones, y la chincheta junto a Gallery Wall Layout Generator está marcada con un 2",
+    },
+    faqButton:
+      "Edge coloca las extensiones nuevas detrás del botón de la pieza de puzle. Fíjala una vez y se quedará en la barra de herramientas.",
   },
   chrome: {
     extensions: "Extensiones",

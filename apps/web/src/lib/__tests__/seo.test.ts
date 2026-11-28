@@ -187,7 +187,7 @@ describe("pageMetadata for a built page", () => {
     expect(meta.alternates?.canonical).toBe(
       "https://framesizes.app/extensions/gallery-wall-layout-generator",
     );
-    expect(meta.title).toBe("Gallery Wall Layout Generator Chrome Extension");
+    expect(meta.title).toBe("Gallery Wall Layout Generator Extension");
   });
 });
 
@@ -197,7 +197,7 @@ describe("breadcrumbTrail", () => {
     expect(breadcrumbTrail(builtPage("X1"))).toEqual([
       { name: "Home", path: "/" },
       { name: "Gallery wall", path: "/gallery-wall-planner" },
-      { name: "Chrome extension", path: "/extensions/gallery-wall-layout-generator" },
+      { name: "Browser extension", path: "/extensions/gallery-wall-layout-generator" },
     ]);
   });
 

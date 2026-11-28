@@ -67,19 +67,19 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 5. Copy, head values and translations
 
-- [ ] 5.1 English (`copy/en.ts`):
+- [x] 5.1 English (`copy/en.ts`):
   - add the `edge` block (design D4) from the canvas Main board;
   - change `faq.items[2].a` to the new browsers answer;
   - update the doc comment so it names Edge's English labels (Q2 A).
 
   Run `humanizer:humanizer` over the new and changed English lines: the Edge block, the browsers answer, and the section strings for 9.2. It keeps every fact, "puzzle piece (1)", "pin (2)", 116 and "Microsoft Edge Add-ons". If a rewording changes what the canvas says, show it to the owner first.
 
-- [ ] 5.2 `site-map.ts` X1: `name` "Browser extension", `card.question` "How do I use the gallery wall browser extension?", the new `seo.title` and `seo.description`, and `lastModified` set to the apply date. A3: the description from 1.1. Verify the description length checks in `site-map.test.ts` pass, and that the X1 h1 is unchanged.
-- [ ] 5.3 The 27 translations (design D4): in each `copy/<code>.ts`, the `edge` block, the browsers answer, and the new `seo.title`, `seo.description` and `crumbs.page`, none naming a browser. Verify:
+- [x] 5.2 `site-map.ts` X1: `name` "Browser extension", `card.question` "How do I use the gallery wall browser extension?", the new `seo.title` and `seo.description`, and `lastModified` set to the apply date. A3: the description from 1.1. Verify the description length checks in `site-map.test.ts` pass, and that the X1 h1 is unchanged.
+- [x] 5.3 The 27 translations (design D4): in each `copy/<code>.ts`, the `edge` block, the browsers answer, and the new `seo.title`, `seo.description` and `crumbs.page`, none naming a browser. Verify:
   - `pnpm typecheck` (the `satisfies` check);
   - `copy-limits.test.ts` unedited (limits and uniqueness);
   - 5.4.
-- [ ] 5.4 Add a unit test citing "Every language's head". It scans the X1 site-map entry and all 28 dictionaries' `seo.title`, `seo.description` and `crumbs.page` for the whole words Chrome, Edge and Opera, and names the language that has one. Verify it fails on a dictionary changed to break the rule, then passes.
+- [x] 5.4 Add a unit test citing "Every language's head". It scans the X1 site-map entry and all 28 dictionaries' `seo.title`, `seo.description` and `crumbs.page` for the whole words Chrome, Edge and Opera, and names the language that has one. Verify it fails on a dictionary changed to break the rule, then passes.
 
 ## 6. Check the pin poll in real Edge (design D6)
 

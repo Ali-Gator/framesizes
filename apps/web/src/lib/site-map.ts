@@ -244,20 +244,20 @@ const PAGE_LIST = [
     live: false,
   },
   {
-    // The page the Chrome extension opens after install. Live together with the store id
+    // The page the extension opens after install, in every store (Chrome, Edge). Live together with the store id
     // (lib/extension.ts EXTENSION_ID).
     id: "X1",
     path: "/extensions/gallery-wall-layout-generator",
     hub: "gallery",
-    name: "Chrome extension",
-    card: { question: "How do I use the gallery wall Chrome extension?", ratio: [3, 2] },
+    name: "Browser extension",
+    card: { question: "How do I use the gallery wall browser extension?", ratio: [3, 2] },
     live: true,
     seo: {
-      title: "Gallery Wall Layout Generator Chrome Extension",
+      title: "Gallery Wall Layout Generator Extension",
       h1: "How to Use the Gallery Wall Layout Generator",
       description:
-        "How to use the Gallery Wall Layout Generator Chrome extension: plan a wall in the side panel, or right-click a shop print to hang it at true size.",
-      lastModified: "2026-11-22",
+        "How to use the Gallery Wall Layout Generator browser extension: plan a wall in the side panel, or right-click a shop print to hang it at true size.",
+      lastModified: "2026-11-28",
     },
   },
   // Company pages: no hub, no widget, linked from the footer's company row.
@@ -296,7 +296,7 @@ const PAGE_LIST = [
       title: "Privacy Policy",
       h1: "Privacy Policy",
       description:
-        "What Frame Sizes and its Chrome extension collect: cookieless visit counts and server logs. Wall photos and saved walls stay on your device, never with us.",
+        "What Frame Sizes and its extension collect: cookieless visit counts and server logs. Wall photos and saved walls stay on your device, never with us.",
       lastModified: "2026-11-28",
     },
   },

@@ -2,12 +2,12 @@ import type { ExtensionCopy } from "./en";
 
 export const et = {
   seo: {
-    title: "Gallery Wall Layout Generator Chrome'ile",
+    title: "Gallery Wall Layout Generatori laiendus",
     h1: "Kuidas kasutada Gallery Wall Layout Generatorit",
     description:
-      "Kuidas kasutada Chrome'i laiendust Gallery Wall Layout Generator: planeerige seina külgpaneelil või proovige poe plakatit oma seinal päris suuruses.",
+      "Kuidas kasutada brauserilaiendust Gallery Wall Layout Generator: planeerige seina külgpaneelil või proovige poe plakatit oma seinal päris suuruses.",
   },
-  crumbs: { home: "Avaleht", hub: "Pildisein", page: "Chrome'i laiendus" },
+  crumbs: { home: "Avaleht", hub: "Pildisein", page: "Brauserilaiendus" },
   answer:
     "Klõpsake Chrome'i tööriistaribal laienduse nuppu, et avada külgpaneel ja planeerida pildiseina. Paremklõpsake mis tahes poes plakatil ja valige „Try on my wall”, et riputada see päris suuruses oma seinale.",
   store: "Hankige see Chrome'i veebipoest",
@@ -81,9 +81,21 @@ export const et = {
       },
       {
         q: "Millistes brauserites see töötab?",
-        a: "Chrome 116 või uuemas, arvutis. See avaneb Chrome'i külgpaneelil.",
+        a: "Chrome 116 või uuemas või Microsoft Edge 116 või uuemas, arvutis. See avaneb brauseri külgpaneelil.",
       },
     ],
+  },
+  edge: {
+    answer:
+      "Klõpsake Edge'i tööriistaribal laienduse nuppu, et avada külgpaneel ja planeerida pildiseina. Paremklõpsake mis tahes poes plakatil ja valige „Try on my wall”, et riputada see päris suuruses oma seinale.",
+    store: "Hankige see lehelt Microsoft Edge Add-ons",
+    pin: {
+      text: "Edge hoiab uusi laiendusi pusletüki nupu taga. Klõpsake Edge'i paremas ülanurgas pusletükil (1) ja seejärel nööpnõelal (2) laienduse Gallery Wall Layout Generator kõrval. Selle nupp jääb seejärel tööriistaribale.",
+      picture:
+        "Edge'i tööriistariba: numbriga 1 tähistatud pusletüki nupp avab menüü Laiendused ja numbriga 2 on tähistatud nööpnõel laienduse Gallery Wall Layout Generator kõrval",
+    },
+    faqButton:
+      "Edge paneb uued laiendused pusletüki nupu taha. Kinnitage see üks kord ja see jääb tööriistaribale.",
   },
   chrome: {
     extensions: "Laiendused",
