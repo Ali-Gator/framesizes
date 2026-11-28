@@ -1,6 +1,7 @@
 /**
- * The Chrome extension "Gallery Wall Layout Generator" as the site sees it: its store id, its store
- * page, and the status question it answers for framesizes.app (apps/extension background.ts).
+ * The extension "Gallery Wall Layout Generator" as the site sees it: each store's id and page
+ * (Chrome Web Store, Microsoft Edge Add-ons), the section's words per store, and the status
+ * question it answers for framesizes.app (apps/extension background.ts).
  */
 
 /**
@@ -12,6 +13,43 @@ export const EXTENSION_ID: string = "khapjkonaofjfljdakdcmodaclkmffgn";
 
 export const storeUrl = (id: string) => `https://chromewebstore.google.com/detail/${id}`;
 export const STORE_URL = storeUrl(EXTENSION_ID);
+
+/**
+ * The Microsoft Edge Add-ons id (Partner Center's CRX id). While it is "", no page links to Edge's
+ * store or asks an Edge id; the go-live sets it once the listing is published.
+ * {@link openspec/specs/extension-site/spec.md#requirement-edge-appears-only-with-its-store-id}
+ */
+export const EDGE_EXTENSION_ID: string = "";
+
+/** The stores the site builds, each with its page and the G1/F2 section's English words. */
+export const STORES = {
+  chrome: {
+    pageUrl: storeUrl,
+    section: {
+      label: "Chrome extension",
+      sidePanel: "Chrome's side panel",
+      add: "Add to Chrome",
+      opens: "Opens the Chrome Web Store",
+      phone: "Chrome on phones doesn't run extensions. Open this page on a computer to add it.",
+      have: "You have it. Click its button in Chrome's toolbar to open the side panel.",
+    },
+  },
+  edge: {
+    pageUrl: (id: string) => `https://microsoftedge.microsoft.com/addons/detail/${id}`,
+    section: {
+      label: "Edge extension",
+      sidePanel: "Edge's side panel",
+      add: "Add to Edge",
+      opens: "Opens Microsoft Edge Add-ons",
+      phone: "This extension runs in Edge on a computer. Open this page on a computer to add it.",
+      have: "You have it. Click its button in Edge's toolbar to open the side panel.",
+    },
+  },
+} as const;
+
+/** The set store ids, Chrome's first. */
+export const knownIds = (chrome = EXTENSION_ID, edge = EDGE_EXTENSION_ID) =>
+  [chrome, edge].filter(Boolean);
 
 export type ExtensionStatus = { installed: false } | { installed: true; pinned: boolean };
 
@@ -53,4 +91,17 @@ export function askExtension(id: string, timeout = 1000): Promise<ExtensionStatu
       done(NOT_INSTALLED);
     }
   });
+}
+
+/**
+ * Asks every id at once, each with `askExtension`'s timeout. Installed when any reply says so,
+ * pinned when any installed reply says pinned. Never rejects; sends nothing for no ids.
+ * {@link openspec/specs/extension-site/spec.md#requirement-pin-mode-switches-itself-once-the-button-is-pinned}
+ */
+export async function askExtensions(ids: readonly string[]): Promise<ExtensionStatus> {
+  const replies = await Promise.all(ids.map((id) => askExtension(id)));
+  const installed = replies.filter((r) => r.installed);
+  return installed.length
+    ? { installed: true, pinned: installed.some((r) => r.pinned) }
+    : NOT_INSTALLED;
 }

@@ -1,7 +1,16 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { askExtension, EXTENSION_ID, STORE_URL, storeUrl } from "../extension";
+import {
+  askExtension,
+  askExtensions,
+  EDGE_EXTENSION_ID,
+  EXTENSION_ID,
+  knownIds,
+  STORE_URL,
+  STORES,
+  storeUrl,
+} from "../extension";
 import { page } from "../site-map";
 
 const ID = "abcdefghijklmnopabcdefghijklmnop";
@@ -113,5 +122,69 @@ describe("askExtension", () => {
       await expect(askExtension("")).resolves.toEqual({ installed: false });
       expect(send).not.toHaveBeenCalled();
     });
+  });
+});
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-the-edge-gate} */
+describe("the Edge gate", () => {
+  it("takes an empty Edge id or a 32-letter one from a to p", () => {
+    if (EDGE_EXTENSION_ID !== "") expect(EDGE_EXTENSION_ID).toMatch(/^[a-p]{32}$/);
+  });
+
+  /** {@link openspec/specs/extension-site/spec.md#scenario-edge-with-its-id} */
+  it("addresses Edge's store page by its id", () => {
+    expect(STORES.edge.pageUrl(ID)).toBe(`https://microsoftedge.microsoft.com/addons/detail/${ID}`);
+    expect(STORES.chrome.pageUrl(ID)).toBe(storeUrl(ID));
+  });
+
+  it("knows Chrome's id, then Edge's once it is set", () => {
+    expect(knownIds()).toEqual(
+      EDGE_EXTENSION_ID ? [EXTENSION_ID, EDGE_EXTENSION_ID] : [EXTENSION_ID],
+    );
+    expect(knownIds(EXTENSION_ID, "")).toEqual([EXTENSION_ID]);
+    expect(knownIds(EXTENSION_ID, ID)).toEqual([EXTENSION_ID, ID]);
+    expect(knownIds("", ID)).toEqual([ID]);
+  });
+});
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-the-edge-package-pins-its-button} */
+describe("askExtensions", () => {
+  const OTHER = "ponmlkjihgfedcbaponmlkjihgfedcba";
+
+  it("is installed and pinned when only the second id replies pinned", async () => {
+    vi.useFakeTimers();
+    const send = fakeChrome(() => {});
+    send.mockImplementation((id: string, _message: unknown, reply: Reply) => {
+      if (id === OTHER) reply({ installed: true, pinned: true });
+    });
+    const answer = askExtensions([ID, OTHER]);
+    await vi.advanceTimersByTimeAsync(1000);
+    await expect(answer).resolves.toEqual({ installed: true, pinned: true });
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
+  it("is installed and not pinned when the only reply says not pinned", async () => {
+    vi.useFakeTimers();
+    const send = fakeChrome(() => {});
+    send.mockImplementation((id: string, _message: unknown, reply: Reply) => {
+      if (id === OTHER) reply({ installed: true, pinned: false });
+    });
+    const answer = askExtensions([ID, OTHER]);
+    await vi.advanceTimersByTimeAsync(1000);
+    await expect(answer).resolves.toEqual({ installed: true, pinned: false });
+  });
+
+  it("is not installed when both ids time out", async () => {
+    vi.useFakeTimers();
+    fakeChrome(() => {});
+    const answer = askExtensions([ID, OTHER]);
+    await vi.advanceTimersByTimeAsync(1000);
+    await expect(answer).resolves.toEqual({ installed: false });
+  });
+
+  it("sends nothing for no ids", async () => {
+    const send = fakeChrome((reply) => reply({ installed: true, pinned: true }));
+    await expect(askExtensions([])).resolves.toEqual({ installed: false });
+    expect(send).not.toHaveBeenCalled();
   });
 });

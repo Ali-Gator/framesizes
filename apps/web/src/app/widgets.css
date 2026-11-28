@@ -1003,6 +1003,12 @@
  * The extension section on G1 and F2 (components/extension/extension-section.tsx). The call to
  * action and the "You have it" line share one grid cell; the hidden one keeps its box.
  */
+/* One store at a time, from `<html data-ext-store>` (components/extension/store.ts, ByStore). */
+html:not([data-ext-store="edge"]) .st-edge,
+html[data-ext-store="edge"] .st-chrome {
+  display: none !important;
+}
+
 .ext-sec {
   display: flex;
   flex-wrap: wrap;
