@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
+import { EDGE_EXTENSION_ID, STORES } from "../apps/web/src/lib/extension";
+
 const PATH = "/extensions/gallery-wall-layout-generator";
 const WCAG_22_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22a", "wcag22aa"];
 const CHROME_UA =
@@ -18,6 +20,7 @@ const seen = (locator: Locator) => locator.evaluate((el) => (el as HTMLElement).
 const answer = (page: Page) => page.locator("h1 ~ p").first();
 const pinText = (page: Page) => page.locator("#pin h2 + p");
 const visiblePictures = (page: Page) => page.locator("svg.ext-pin-picture:visible");
+const EDGE_STORE = STORES.edge.pageUrl(EDGE_EXTENSION_ID);
 
 /** Which half of its drawing the element's centre sits in. */
 async function half(scope: Locator, selector: string) {
@@ -214,10 +217,21 @@ test.describe("the right-click figure's direction", () => {
 
 /** {@link openspec/specs/extension-site/spec.md#scenario-edge-before-its-id} */
 test("before Edge's id, an Edge visitor sees no store link", async ({ page }) => {
+  test.skip(EDGE_EXTENSION_ID !== "", "Edge's id is set");
   await page.goto(`${PATH}?store=edge`);
   await expect(page.locator('a[href^="https://microsoftedge.microsoft.com"]')).toHaveCount(0);
   await expect(page.locator('a[href^="https://chromewebstore.google.com"]:visible')).toHaveCount(0);
   await expect.poll(() => seen(answer(page))).toBe(EDGE_ANSWER);
+});
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-edge-with-its-id} */
+test("with Edge's id, an Edge visitor gets Edge's store link", async ({ page }) => {
+  test.skip(EDGE_EXTENSION_ID === "", "Edge's id is not set");
+  await page.goto(`${PATH}?store=edge`);
+  const link = page.getByRole("link", { name: "Get it from Microsoft Edge Add-ons" });
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute("href", EDGE_STORE);
+  await expect(page.locator('a[href^="https://chromewebstore.google.com"]:visible')).toHaveCount(0);
 });
 
 /** {@link openspec/specs/extension-site/spec.md#scenario-the-browsers-answer-in-chrome} */
@@ -269,10 +283,24 @@ test.describe("the G1 section in Edge before Edge's id", () => {
   test.use({ userAgent: EDGE_UA });
 
   test("shows Add to Chrome and links nowhere on Microsoft Edge Add-ons", async ({ page }) => {
+    test.skip(EDGE_EXTENSION_ID !== "", "Edge's id is set");
     await page.goto("/gallery-wall-planner");
     await expect(
       page.locator(".ext-sec").getByRole("link", { name: "Add to Chrome" }),
     ).toBeVisible();
     await expect(page.locator('a[href^="https://microsoftedge.microsoft.com"]')).toHaveCount(0);
+  });
+});
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-edge-with-its-id} */
+test.describe("the G1 section in Edge with Edge's id", () => {
+  test.use({ userAgent: EDGE_UA });
+
+  test("shows Add to Edge, pointing to Microsoft Edge Add-ons", async ({ page }) => {
+    test.skip(EDGE_EXTENSION_ID === "", "Edge's id is not set");
+    await page.goto("/gallery-wall-planner");
+    const add = page.locator(".ext-sec").getByRole("link", { name: "Add to Edge" });
+    await expect(add).toBeVisible();
+    await expect(add).toHaveAttribute("href", EDGE_STORE);
   });
 });

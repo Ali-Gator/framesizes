@@ -3,6 +3,7 @@ import { CHECK } from "@framesizes/sizes";
 import { CompanyPage, Section } from "@/components/company/company-page";
 import { PageLink } from "@/components/site/page-link";
 import { addressLine, COMPANY } from "@/lib/company";
+import { EDGE_EXTENSION_ID, STORE_URL, STORES } from "@/lib/extension";
 import { pageMetadata } from "@/lib/seo";
 import { livePage } from "@/lib/site-map";
 
@@ -56,11 +57,13 @@ export default function AboutPage() {
         </p>
       </Section>
 
-      <Section title="The Chrome extension">
+      <Section title="The browser extension">
         <p>
-          The Gallery Wall Layout Generator extension for Chrome plans a gallery wall in
-          Chrome&apos;s side panel. On a shop page, right-click a print and choose &ldquo;Try on my
-          wall&rdquo; to see it on your wall at its real size. Your wall stays on your computer.
+          The Gallery Wall Layout Generator extension plans a gallery wall in your browser&apos;s
+          side panel. Get it from the <a href={STORE_URL}>Chrome Web Store</a> or from{" "}
+          <a href={STORES.edge.pageUrl(EDGE_EXTENSION_ID)}>Microsoft Edge Add-ons</a>. On a shop
+          page, right-click a print and choose &ldquo;Try on my wall&rdquo; to see it on your wall
+          at its real size. Your wall stays on your computer.
         </p>
       </Section>
 

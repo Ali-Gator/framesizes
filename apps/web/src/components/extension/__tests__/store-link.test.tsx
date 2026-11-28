@@ -13,7 +13,9 @@ const parse = (html: string) => new DOMParser().parseFromString(html, "text/html
 describe("StoreLink", () => {
   /** {@link openspec/specs/extension-site/spec.md#scenario-the-store-link-once-live} */
   it("links to the store page in plain text once the extension page is live", () => {
-    const doc = parse(renderToStaticMarkup(<StoreLink pages={withLive("X1")} extensionId={ID} />));
+    const doc = parse(
+      renderToStaticMarkup(<StoreLink pages={withLive("X1")} extensionId={ID} edgeId="" />),
+    );
     const links = doc.querySelectorAll("a");
     expect(links).toHaveLength(1);
     const a = links[0];

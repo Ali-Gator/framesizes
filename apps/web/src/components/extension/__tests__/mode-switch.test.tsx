@@ -31,7 +31,7 @@ async function mount(url: string, extensionId = ID) {
   window.history.replaceState(null, "", url);
   const created = createRoot(host);
   root = created;
-  await act(async () => created.render(<ModeSwitch extensionId={extensionId} />));
+  await act(async () => created.render(<ModeSwitch extensionId={extensionId} edgeId="" />));
 }
 
 const wait = (ms: number) => act(async () => vi.advanceTimersByTimeAsync(ms));

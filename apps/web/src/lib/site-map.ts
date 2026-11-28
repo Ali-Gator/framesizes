@@ -271,7 +271,7 @@ const PAGE_LIST = [
       h1: "About Frame Sizes",
       description:
         "Frame Sizes is a free set of true-scale tools for frames, posters and gallery walls, run by Soft Divisions Limited. Who we are and how we check sizes.",
-      lastModified: "2026-11-21",
+      lastModified: "2026-11-28",
     },
   },
   {
@@ -322,8 +322,8 @@ const PAGE_LIST = [
       title: "Refund Policy",
       h1: "Refund Policy",
       description:
-        "Frame Sizes and its Chrome extension are free, so there is nothing to refund. If we add a paid feature, you get a full refund within 14 days, no reason.",
-      lastModified: "2026-11-21",
+        "Frame Sizes and its browser extension are free, so there is nothing to refund. If we add a paid feature, you get a full refund within 14 days, no reason.",
+      lastModified: "2026-11-28",
     },
   },
 ] as const satisfies readonly SitePage[];
