@@ -55,12 +55,12 @@ The phase 2 canvas (https://claude.ai/artifact/ME5xpbNULkbax27e4vRqqp) was appro
 
 ## 4. Graphics
 
-- [ ] 4.1 Add `scripts/render-store-graphics.ts` (design D6). It renders `apps/extension/store/edge/logo-300.png` (300 × 300 from `icon.svg`) and `apps/extension/store/edge/promo-large-1400x560.png`. The tile takes the small tile's colours, mark and font; its headline goes through `humanizer:humanizer` and names no browser. Verify the PNG sizes from their IHDR, as `manifest.test.ts` does.
+- [x] 4.1 Add `scripts/render-store-graphics.ts` (design D6). It renders `apps/extension/store/edge/logo-300.png` (300 × 300 from `icon.svg`) and `apps/extension/store/edge/promo-large-1400x560.png`. The tile takes the small tile's colours, mark and font; its headline goes through `humanizer:humanizer` and names no browser. Verify the PNG sizes from their IHDR, as `manifest.test.ts` does.
 - [ ] 4.2 Show the owner both PNGs. On approval, record the large tile under CLAUDE.md "Workflow config" → "Design source" ("T27 Edge store graphics", date) and commit the PNGs. Revisions loop here until approved.
 
 ## 5. Listing kit
 
-- [ ] 5.1 Create the Claude Doc "Gallery Wall Layout Generator: Microsoft Edge Add-ons" (design D7) with:
+- [x] 5.1 Create the Claude Doc "Gallery Wall Layout Generator: Microsoft Edge Add-ons" (design D7) with:
   - the long description: written fresh, 250–10,000 characters (count stated in the doc), keywords from the Chrome Google Doc tables with a Times used column, no other browser named, "Edge sidebar" for the panel, ending with "Official website: https://framesizes.app/". Run it through `humanizer:humanizer` before it goes in;
   - the short description and name as packaged;
   - the search-term table;
@@ -72,7 +72,7 @@ The phase 2 canvas (https://claude.ai/artifact/ME5xpbNULkbax27e4vRqqp) was appro
 
   Verify the description's length and that it contains none of "Chrome", "Google", "Firefox", "Safari" or "Opera".
 
-- [ ] 5.2 In the same doc, add the numbered publishing guide:
+- [x] 5.2 In the same doc, add the numbered publishing guide:
   1. personal Microsoft account, then Individual registration and verification;
   2. Partner Center → Create new extension → upload `gallery-wall-layout-generator-edge.zip`;
   3. Availability: Public, all markets;
@@ -88,7 +88,7 @@ The phase 2 canvas (https://claude.ai/artifact/ME5xpbNULkbax27e4vRqqp) was appro
 
 ## 6. Gates
 
-- [ ] 6.1 `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. All pass.
+- [x] 6.1 `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. All pass.
 
 ## Workflow follow-up
 
