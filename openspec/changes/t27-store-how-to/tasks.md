@@ -146,9 +146,9 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 12. Gates and docs
 
-- [ ] 12.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Any test that fails only on the new strings goes to the owner (task 11). Everything else gets fixed.
-- [ ] 12.2 Run the On-page SEO guide's pre-publish checklist for X1 (English and two translations) and A3. Record the result in the PR.
-- [ ] 12.3 `docs/backlog.md`: delete BL-80, BL-140 and BL-141, which ship here. Add anything new found along the way.
+- [x] 12.1 Run `pnpm fix`, then `pnpm test`, then `openspec validate --all --no-interactive`. Any test that fails only on the new strings goes to the owner (task 11). Everything else gets fixed.
+- [x] 12.2 Run the On-page SEO guide's pre-publish checklist for X1 (English and two translations) and A3. Record the result in the PR.
+- [x] 12.3 `docs/backlog.md`: delete BL-80, BL-140 and BL-141, which ship here. Add anything new found along the way.
 
 ## Workflow follow-up
 
