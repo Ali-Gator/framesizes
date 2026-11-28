@@ -31,3 +31,32 @@ describe("StoreLink", () => {
     expect(renderToStaticMarkup(<StoreLink pages={withLive("X1")} extensionId="" />)).toBe("");
   });
 });
+
+describe("StoreLink for Edge", () => {
+  const EDGE = "ponmlkjihgfedcbaponmlkjihgfedcba";
+
+  /** {@link openspec/specs/extension-site/spec.md#scenario-edge-with-its-id} */
+  it("adds Edge's link, hidden outside Edge, once Edge's id is set", () => {
+    const doc = parse(
+      renderToStaticMarkup(<StoreLink pages={withLive("X1")} extensionId={ID} edgeId={EDGE} />),
+    );
+    const edge = doc.querySelector(".st-edge a");
+    expect(edge?.textContent).toBe("Get it from Microsoft Edge Add-ons");
+    expect(edge?.getAttribute("href")).toBe(
+      `https://microsoftedge.microsoft.com/addons/detail/${EDGE}`,
+    );
+    expect(edge?.getAttribute("target")).toBe("_blank");
+    expect(edge?.getAttribute("rel")).toBe("noopener");
+    expect(doc.querySelector(".st-chrome a")?.textContent).toBe("Get it from the Chrome Web Store");
+  });
+
+  /** {@link openspec/specs/extension-site/spec.md#scenario-edge-before-its-id} */
+  it("has no Edge link before Edge's id", () => {
+    const doc = parse(
+      renderToStaticMarkup(<StoreLink pages={withLive("X1")} extensionId={ID} edgeId="" />),
+    );
+    expect(doc.querySelector(".st-edge")).toBeNull();
+    expect(doc.querySelector('a[href^="https://microsoftedge.microsoft.com"]')).toBeNull();
+    expect(doc.querySelector(".st-chrome a")).not.toBeNull();
+  });
+});

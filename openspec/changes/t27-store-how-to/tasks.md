@@ -96,14 +96,14 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 8. X1, store-aware
 
-- [ ] 8.1 `how-to.tsx`:
+- [x] 8.1 `how-to.tsx`:
   - render `storeScript(true)`;
   - wrap the answer, store link, show-pin link, pin `h2`, pin text, pin picture, already-pinned line, right-click figure and FAQ button answer in `ByStore` with `stores = ["chrome", "edge"]`;
   - `StoreLink` takes the store and renders Edge's link only with Edge's id.
 
   `ModeSwitch` keeps `extensionId` and gains `edgeId` (design D3), asks each set id, and calls `pickStore` on mount. The store link uses `ByStore` with `edge: null` while Edge's id is empty. Update the JSDoc `{@link}`s to the new requirement anchors.
 
-- [ ] 8.2 Extend the unit tests:
+- [x] 8.2 Extend the unit tests:
   - `store-link.test.tsx`: Edge's label and URL with a fixture id; no Edge link without one ("Edge with its id", "Edge before its id");
   - `mode-switch.test.tsx`: the fixture Edge id replying pinned switches modes and keeps `?store=edge` ("The Edge package pins its button").
 - [ ] 8.3 Add e2e `e2e/extension-page-stores.spec.ts`. It reads visible text only and covers:
@@ -128,8 +128,8 @@ New tests cite their scenario at its permanent path, `{@link openspec/specs/<cap
 
 ## 9. The G1/F2 section, store-aware
 
-- [ ] 9.1 Extend `extension-section.test.tsx`, citing "The section in Edge" and "Edge on a phone". With a fixture Edge id, the markup holds Edge's label, sentence, "Add to Edge" with Edge's URL in a new tab, "Opens Microsoft Edge Add-ons", the phone line and the "You have it" line, each in `.st-edge`. Without the id there is no `st-edge`, and the Chrome markup is unchanged.
-- [ ] 9.2 `ExtensionSection` renders `storeScript(false)` and builds Edge only with its id. `ExtensionSection` and `ExtensionStatus` keep `extensionId` and gain `edgeId`. `ExtensionStatus` uses `askExtensions`, calls `pickStore` on mount, and keeps the shared grid cell, so the height stays fixed. The section strings come from the store table. Verify 9.1, and that the existing section tests pass unedited.
+- [x] 9.1 Extend `extension-section.test.tsx`, citing "The section in Edge" and "Edge on a phone". With a fixture Edge id, the markup holds Edge's label, sentence, "Add to Edge" with Edge's URL in a new tab, "Opens Microsoft Edge Add-ons", the phone line and the "You have it" line, each in `.st-edge`. Without the id there is no `st-edge`, and the Chrome markup is unchanged.
+- [x] 9.2 `ExtensionSection` renders `storeScript(false)` and builds Edge only with its id. `ExtensionSection` and `ExtensionStatus` keep `extensionId` and gain `edgeId`. `ExtensionStatus` uses `askExtensions`, calls `pickStore` on mount, and keeps the shared grid cell, so the height stays fixed. The section strings come from the store table. Verify 9.1, and that the existing section tests pass unedited.
 - [ ] 9.3 E2e on G1 with a `Edg/131` user agent, while Edge's id is empty: the section shows "Add to Chrome", and no `a` points to `microsoftedge.microsoft.com` ("Edge before its id").
 
 ## 10. Company pages (BL-140, BL-141)

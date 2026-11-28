@@ -190,3 +190,29 @@ describe("ModeSwitch", () => {
     expect(mode()).toBeUndefined();
   });
 });
+
+/** {@link openspec/specs/extension-site/spec.md#scenario-the-edge-package-pins-its-button} */
+describe("the Edge package's pin poll", () => {
+  const EDGE = "ponmlkjihgfedcbaponmlkjihgfedcba";
+
+  it("switches to usage when only Edge's id replies pinned, keeping ?store=edge", async () => {
+    const pinned = [false, true];
+    const send = vi.fn((id: string, _message: unknown, reply: (answer: unknown) => void) => {
+      // Chrome's id has no extension behind it here: it never answers.
+      if (id !== EDGE) return;
+      reply({ installed: true, pinned: pinned.length > 1 ? pinned.shift() : pinned[0] });
+    });
+    win.chrome = { runtime: { sendMessage: send } };
+    window.history.replaceState(null, "", `${PATH}?pinned=0&store=edge`);
+    const created = createRoot(host);
+    root = created;
+    await act(async () => created.render(<ModeSwitch extensionId={ID} edgeId={EDGE} />));
+    expect(document.documentElement.dataset.extStore).toBe("edge");
+    await wait(1000);
+    expect(mode()).toBe("pin");
+    await wait(2000 + 1000);
+    expect(mode()).toBe("usage");
+    expect(location.search).toBe("?store=edge");
+    expect(send.mock.calls.map(([id]) => id)).toEqual(expect.arrayContaining([ID, EDGE]));
+  });
+});
