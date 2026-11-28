@@ -56,7 +56,7 @@ const DATA = [
 
 /** The extension's permissions, in manifest order, in plain words. */
 const PERMISSIONS = [
-  ["sidePanel", "Opens the planner in Chrome's side panel."],
+  ["sidePanel", "Opens the planner in your browser's side panel."],
   [
     "contextMenus",
     "Adds “Try on my wall” to the menu you get when you right-click an image or a link.",
@@ -83,16 +83,16 @@ export default function PrivacyPolicyPage() {
       lead={
         <p className="max-w-prose md:body-lg">
           We collect as little as we can. The site sets no cookies, your wall photos never leave
-          your device, and the Chrome extension sends nothing to us: your wall stays on your
+          your device, and the browser extension sends nothing to us: your wall stays on your
           computer.
         </p>
       }
     >
       <Section title="Who we are">
         <p>
-          Frame Sizes (framesizes.app) and the Gallery Wall Layout Generator extension for Chrome
-          are run by {COMPANY.legalName}, {addressLine()}. We decide what data the site handles and
-          why. Questions about this policy go to <a href={MAILTO}>{COMPANY.email}</a>.
+          Frame Sizes (framesizes.app) and the Gallery Wall Layout Generator browser extension are
+          run by {COMPANY.legalName}, {addressLine()}. We decide what data the site handles and why.
+          Questions about this policy go to <a href={MAILTO}>{COMPANY.email}</a>.
         </p>
       </Section>
 
@@ -155,13 +155,13 @@ export default function PrivacyPolicyPage() {
         </p>
       </Section>
 
-      <Section title="The Chrome extension">
+      <Section title="The browser extension">
         <p>
           The Gallery Wall Layout Generator keeps your wall, its photo and your prints on your
           computer, in the extension&apos;s own storage. The extension itself sends nothing to us
           and has no analytics. Right after you install it, it opens our how-to page once; that
           visit is counted like any other, and the page address says whether you have pinned the
-          extension.
+          extension and, for some stores, which store you installed it from.
         </p>
         <p>
           When you right-click a picture or a link and choose &ldquo;Try on my wall&rdquo;, it reads
@@ -177,7 +177,7 @@ export default function PrivacyPolicyPage() {
           framesizes.app can ask the extension whether it is installed and pinned, to show the right
           instructions. The extension answers with that and its version number, and nothing else.
         </p>
-        <p>The permissions it asks Chrome for:</p>
+        <p>The permissions it asks your browser for:</p>
         <dl className="flex flex-col gap-3">
           {PERMISSIONS.map(([name, use]) => (
             <div key={name}>
