@@ -5,6 +5,7 @@
   "scripts": {
     "build": "vite build",
     "zip": "vite build && cd dist && rm -f ../gallery-wall-layout-generator.zip && zip -qr ../gallery-wall-layout-generator.zip .",
+    "zip:edge": "STORE=edge vite build && cd dist-edge && rm -f ../gallery-wall-layout-generator-edge.zip && zip -qr ../gallery-wall-layout-generator-edge.zip .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { type Api, onInstalled, onMessageExternal, onStartup } from "../background";
+import { type Api, howToUrl, onInstalled, onMessageExternal, onStartup } from "../background";
 
 /** A fake `chrome` that records every call. */
 function fake(pinned = false) {
@@ -124,5 +124,18 @@ describe("the install tab's language", () => {
       await onInstalled(api, { reason: "install" });
       expect(calls.filter((c) => c.startsWith("tab"))).toEqual([`tab ${HOW_TO}?pinned=1`]);
     }
+  });
+});
+
+describe("the install tab's store", () => {
+  /** {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-from-microsoft-edge-add-ons} */
+  it("adds store=edge after pinned for the Edge package", async () => {
+    const url =
+      "https://framesizes.app/de/extensions/gallery-wall-layout-generator?pinned=0&store=edge";
+    expect(howToUrl("de", false, "edge")).toBe(url);
+    const { api, calls } = fake(false);
+    api.i18n = { getUILanguage: () => "de" };
+    await onInstalled(api, { reason: "install" }, "edge");
+    expect(calls.filter((c) => c.startsWith("tab"))).toEqual([`tab ${url}`]);
   });
 });

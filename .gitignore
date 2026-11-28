@@ -28,4 +28,5 @@ playwright-report/
 
 # extension build
 apps/extension/dist/
+apps/extension/dist-*/
 apps/extension/*.zip

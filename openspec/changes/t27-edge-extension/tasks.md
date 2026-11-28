@@ -13,13 +13,13 @@ The phase 2 canvas (https://claude.ai/artifact/ME5xpbNULkbax27e4vRqqp) was appro
 
 ## 1. Per-store packages (tests first)
 
-- [ ] 1.1 Add `apps/extension/src/__tests__/stores.test.ts`. Cite each scenario of "Each store gets its own package" at `openspec/specs/gallery-wall-extension/spec.md#…`. Verify it fails before 1.2. It checks:
+- [x] 1.1 Add `apps/extension/src/__tests__/stores.test.ts`. Cite each scenario of "Each store gets its own package" at `openspec/specs/gallery-wall-extension/spec.md#…`. Verify it fails before 1.2. It checks:
   - `packageMessages("chrome", lang, m)` returns `m` unchanged for all 28 locales;
   - `packageMessages("edge", "en", m)` has exactly `appName` "Gallery Wall Layout Generator" and the Edge `shortDesc`;
   - `packageMessages("edge", lang, m)` is `null` for every other locale;
   - the Edge `shortDesc` is ≤ 132 characters, differs from the English Chrome `shortDesc`, and has no "Chrome" or "Google".
-- [ ] 1.2 Write `apps/extension/src/stores.ts` (design D2) with the Edge `shortDesc` (design D3). Run `humanizer:humanizer` over the short description first; the result keeps "gallery wall planner" and "picture frame layout". Verify 1.1 passes.
-- [ ] 1.3 Packaging:
+- [x] 1.2 Write `apps/extension/src/stores.ts` (design D2) with the Edge `shortDesc` (design D3). Run `humanizer:humanizer` over the short description first; the result keeps "gallery wall planner" and "picture frame layout". Verify 1.1 passes.
+- [x] 1.3 Packaging:
   - `apps/extension/vite.config.ts`: read `STORE` (default `chrome`), set `outDir` to `dist` for Chrome and `dist-<store>` otherwise, `define` `import.meta.env.STORE`, and add the `writeBundle` plugin that rewrites `<outDir>/_locales` through `packageMessages`;
   - `apps/extension/package.json`: add `zip:edge` (builds `dist-edge`, zips it to `gallery-wall-layout-generator-edge.zip`);
   - `.gitignore`: add `apps/extension/dist-*/`.
@@ -32,8 +32,8 @@ The phase 2 canvas (https://claude.ai/artifact/ME5xpbNULkbax27e4vRqqp) was appro
 
 ## 2. Install tab names the store (tests first)
 
-- [ ] 2.1 `apps/extension/src/__tests__/background.test.ts`: add a new case only. `howToUrl("de", false, "edge")` and `onInstalled` with an Edge store open `https://framesizes.app/de/extensions/gallery-wall-layout-generator?pinned=0&store=edge`. Cite {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-from-microsoft-edge-add-ons}. Existing cases stay unedited and still pass with no store argument. Verify the new case fails.
-- [ ] 2.2 `apps/extension/src/background.ts`: `howToUrl(uiLanguage, pinned, store = "chrome")` adds `&store=<store>` for any store but Chrome. `onInstalled` passes `import.meta.env.STORE`. Change the doc comments from "Chrome's language" to "the browser's language". Verify all `background.test.ts` cases pass and `pnpm --filter extension typecheck` is clean.
+- [x] 2.1 `apps/extension/src/__tests__/background.test.ts`: add a new case only. `howToUrl("de", false, "edge")` and `onInstalled` with an Edge store open `https://framesizes.app/de/extensions/gallery-wall-layout-generator?pinned=0&store=edge`. Cite {@link openspec/specs/gallery-wall-extension/spec.md#scenario-a-fresh-install-from-microsoft-edge-add-ons}. Existing cases stay unedited and still pass with no store argument. Verify the new case fails.
+- [x] 2.2 `apps/extension/src/background.ts`: `howToUrl(uiLanguage, pinned, store = "chrome")` adds `&store=<store>` for any store but Chrome. `onInstalled` passes `import.meta.env.STORE`. Change the doc comments from "Chrome's language" to "the browser's language". Verify all `background.test.ts` cases pass and `pnpm --filter extension typecheck` is clean.
 - [ ] 2.3 Sideload check in Edge. Load `apps/extension/dist-edge` unpacked in Playwright's `msedge` channel (Microsoft Edge is installed on this Mac), with a throwaway script in the scratchpad, not a committed test. Confirm:
   - first install opens `…?pinned=0&store=edge`;
   - the toolbar button opens the sidebar on the planner;
